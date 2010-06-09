@@ -1,0 +1,140 @@
+
+#
+# AppLauncherTest3
+#
+
+set(launcher_name "@LAUNCHER_NAME@")
+set(launcher_binary_dir "@LAUNCHER_BINARY_DIR@")
+set(launcher_build_type "@LAUNCHER_BUILD_TYPE@")
+set(app4test_binary_dir "@APP4TEST_BINARY_DIR@")
+set(app4test_build_type "@APP4TEST_BUILD_TYPE@")
+
+# --------------------------------------------------------------------------
+# Sanity checks
+
+if(NOT EXISTS ${launcher_binary_dir})
+  message(FATAL_ERROR "Make sure variable CTKAppLauncher_BINARY_DIR is set to a valid directory. "
+                      "CTKAppLauncher_BINARY_DIR [${launcher_binary_dir}]")
+endif()
+
+if(NOT EXISTS ${app4test_binary_dir})
+  message(FATAL_ERROR "Make sure variable APP4TEST_BINARY_DIR is set to a valid directory. "
+                      "APP4TEST_BINARY_DIR [${app4test_binary_dir}]")
+endif()
+
+# --------------------------------------------------------------------------
+# Set launcher variable
+
+set(launcher_dir ${launcher_binary_dir}/bin)
+if(WIN32)
+  set(launcher_dir ${launcher_dir}/${launcher_build_type})
+endif()
+set(launcher ${launcher_dir}/${launcher_name})
+
+
+# --------------------------------------------------------------------------
+# Check if launcher exists
+if (NOT EXISTS ${launcher})
+  message(FATAL_ERROR "Application ${launcher} doesn't exists !")
+endif()
+
+# --------------------------------------------------------------------------
+# Set application variable
+
+set(application_dir "${app4test_binary_dir}/bin")
+if(WIN32)
+  set(application_dir ${application_dir}/${app4test_build_type})
+endif()
+set(application_name App4Test)
+
+set(application ${application_dir}/${application_name})
+
+# --------------------------------------------------------------------------
+# Check if application exists
+
+if (NOT EXISTS ${application})
+  message(FATAL_ERROR "Application ${application} doesn't exists !")
+endif()
+
+# --------------------------------------------------------------------------
+# Attempt to start launcher from its directory
+# Since there is no setting file and no parameter are given to the launcher, 
+# we expect it to fail with the following message:  "error: Application do NOT exists []"
+set(expected_error_msg "error: Application do NOT exists []")
+execute_process(
+  COMMAND ${launcher} --launcher-no-splash
+  WORKING_DIRECTORY ${launcher_dir}
+  ERROR_VARIABLE ev
+  ERROR_STRIP_TRAILING_WHITESPACE
+  RESULT_VARIABLE rv
+  )
+
+if(NOT ${ev} STREQUAL ${expected_error_msg})
+  message(FATAL_ERROR "Test1 - Since ${launcher_name} was started without any setting file or "
+                      " parameter, it should have failed to start.")
+endif()
+
+
+# --------------------------------------------------------------------------
+# Sanity check
+
+set(library_path ${app4test_binary_dir}/libs)
+if (NOT EXISTS ${library_path})
+  message(FATAL_ERROR "Library path [${library_path}] doesn't exist")
+endif()
+
+# --------------------------------------------------------------------------
+# Configure settings file
+file(WRITE "${launcher}Settings.ini" "
+[LibraryPaths]
+1\\path=${library_path}
+size=1
+")
+
+# --------------------------------------------------------------------------
+# Attempt to start launcher from its directory
+# Since no application to launch has been specified - An error message is expected ...
+execute_process(
+  COMMAND ${launcher} --launcher-no-splash --launch 
+  WORKING_DIRECTORY ${launcher_dir}
+  ERROR_VARIABLE ev
+  OUTPUT_QUIET
+  ERROR_STRIP_TRAILING_WHITESPACE
+  RESULT_VARIABLE rv
+  )
+
+set(expected_error_msg "Error\n  Argument --launch has 0 value(s) associated whereas exacly 1 are expected.")
+if (NOT ${ev} STREQUAL ${expected_error_msg})
+  message(FATAL_ERROR "Test2 - \nexpected_error_msg[${expected_error_msg}]\ncurrent[${ev}]")
+endif()
+
+# --------------------------------------------------------------------------
+# Attempt to start launcher from its directory
+execute_process(
+  COMMAND ${launcher} --launcher-no-splash --launch ${application}
+  WORKING_DIRECTORY ${launcher_dir}
+  ERROR_VARIABLE ev
+  OUTPUT_QUIET
+  ERROR_STRIP_TRAILING_WHITESPACE
+  RESULT_VARIABLE rv
+  )
+
+if(rv)
+  message(FATAL_ERROR "Test3 - [${launcher}] failed to start application [${application}] from "
+                      "directory [${launcher_dir}]\n${ev}")
+endif()
+
+
+# --------------------------------------------------------------------------
+# Attempt to start launcher from an other directory
+execute_process(
+  COMMAND ${launcher} --launcher-no-splash --launch ${application}
+  WORKING_DIRECTORY ${launcher_binary_dir}
+  OUTPUT_VARIABLE ov
+  RESULT_VARIABLE rv
+  )
+if(rv)
+  message(FATAL_ERROR "Test3 - [${launcher}] failed to start application [${application}] from "
+                      "directory [${launcher_binary_dir}]\n${ev}")
+endif()
+

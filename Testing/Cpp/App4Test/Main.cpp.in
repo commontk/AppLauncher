@@ -1,0 +1,83 @@
+
+// Library includes
+@LIB_INCLUDES@
+
+#ifdef _WIN32
+#include <windows.h>
+inline void sleepMs(unsigned int ms)
+{
+    ::Sleep(ms);
+}
+#else
+#include <unistd.h>
+inline void sleepMs(unsigned int ms)
+{
+    static const unsigned MilliToMicro = 1000;
+    ::usleep(ms * MilliToMicro);
+}
+#endif
+
+// STD includes
+#include <cstdlib>
+#include <iostream>
+#include <fstream>
+
+int main(int argc, char** argv)
+{
+  //std::cout << "Hello World !" << std::endl;
+
+  if (argc > 1)
+    {
+    std::string argName(argv[1]);
+    if (argName == "--foo")
+      {
+      std::cout << "Argument passed:" << argName;
+      for(int i=2; i < argc; i++)
+        {
+        std::cout << " " << argv[i];
+        }
+      std::cout << std::endl;
+      }
+    else if (argName == "--test-timeout")
+      {
+      int timeout = 3;
+      std::cout << "App4Test will exit in " << timeout 
+                << " seconds with error_code=" << timeout << std::endl;
+      sleepMs(timeout * 1000);
+      
+      // Generate filename
+      std::string filename(argv[0]);
+      filename += "-timeout.txt";
+      
+      // Create file argv[0]-timeout.txt
+      std::ofstream timeoutFile;
+      timeoutFile.open (filename.c_str());
+      timeoutFile << timeout << "\n";
+      timeoutFile.close();
+      std::cout << "Generated: " << filename << std::endl;
+      return timeout;
+      }
+    else if (argName == "--forever")
+      {
+      std::cout << "App4Test - Forever" << std::endl;
+      while(true){}
+      }
+    else if (argName == "--check-path")
+      {
+      char * path = getenv("PATH");
+      std::cout << "PATH=" << (path ? path : "NULL") << std::endl;
+      }
+    else if (argName == "--check-env")
+      {
+      char * env1 = getenv("SOMETHING_NICE");
+      std::cout << "SOMETHING_NICE=" << (env1 ? env1 : "NULL") << std::endl;
+      char * env2 = getenv("SOMETHING_AWESOME");
+      std::cout << "SOMETHING_AWESOME=" << (env2 ? env2 : "NULL") << std::endl;
+      }
+    }
+  
+  // Instanciate library objects
+@LIB_INSTANCIATES@
+  
+  return EXIT_SUCCESS;
+}

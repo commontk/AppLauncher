@@ -1,0 +1,12 @@
+#ifndef __app4TestLib@LIBSUFFIX@_h
+#define __app4TestLib@LIBSUFFIX@_h
+
+class app4TestLib@LIBSUFFIX@
+{
+public:
+  app4TestLib@LIBSUFFIX@();
+  virtual ~app4TestLib@LIBSUFFIX@();
+};
+
+#endif
+

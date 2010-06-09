@@ -1,0 +1,17 @@
+
+#include "app4TestLib@LIBSUFFIX@.h"
+
+// STD includes
+#include <iostream>
+
+// --------------------------------------------------------------------------
+app4TestLib@LIBSUFFIX@::app4TestLib@LIBSUFFIX@()
+{
+  std::cout<<"Instanciate " << "app4TestLib@LIBSUFFIX@" << std::endl;
+}
+
+// --------------------------------------------------------------------------
+app4TestLib@LIBSUFFIX@::~app4TestLib@LIBSUFFIX@()
+{
+}
+

@@ -1,0 +1,657 @@
+
+//Qt includes
+#include <QFile>
+#include <QFileInfo>
+#include <QProcessEnvironment>
+#include <QDebug>
+#include <QTimer>
+#include <QApplication>
+
+// CTK includes
+#include "ctkAppLauncher.h"
+#include "ctkAppLauncher_p.h"
+#include "ctkAppLauncherCommandLineParser.h"
+
+// STD includes
+#include <iostream>
+#include <cstdlib>
+
+// --------------------------------------------------------------------------
+// ctkAppLauncherInternal methods
+
+// --------------------------------------------------------------------------
+ctkAppLauncherInternal::ctkAppLauncherInternal()
+{
+  this->Verbose = false;
+  this->DisplayHelp = false;
+  this->Application = 0;
+  this->Initialized = false;
+  this->GenerateTemplate = false;
+  this->TimeoutInSeconds = -1;
+  this->DisableSplash = false;
+  this->DefaultLauncherSplashImagePath;
+  this->DetachApplicationToLaunch = false;
+
+#if defined(WIN32) || defined(_WIN32)
+  this->PathSep = ";";
+  this->LibraryPathVariableName = "PATH";
+#endif
+#ifdef __APPLE__
+  this->PathSep = ":";
+  this->LibraryPathVariableName = "DYLD_LIBRARY_PATH";
+#endif
+#ifdef __linux__
+  this->PathSep = ":";
+  this->LibraryPathVariableName = "LD_LIBRARY_PATH";
+#endif
+//#if defined(sun) || defined(__sun)
+//#endif
+}
+
+// --------------------------------------------------------------------------
+void ctkAppLauncherInternal::reportError(const QString& msg)
+{
+  std::cerr << "error: " << qPrintable(msg) << std::endl;
+}
+  
+// --------------------------------------------------------------------------
+void ctkAppLauncherInternal::reportInfo(const QString& msg)
+{
+  if (this->Verbose)
+    {
+    std::cout << "info: " << qPrintable(msg) << std::endl;
+    }
+}
+
+// --------------------------------------------------------------------------
+bool ctkAppLauncherInternal::processSplashPathArgument()
+{
+  if (this->LauncherSplashImagePath.isEmpty())
+    {
+    this->LauncherSplashImagePath = this->DefaultLauncherSplashImagePath;
+    }
+
+  this->reportInfo(QString("LauncherSplashImagePath  [%1]").arg(this->LauncherSplashImagePath));
+    
+  // Make sure the splash image exists
+  if (!QFile::exists(this->LauncherSplashImagePath))
+    {
+    this->reportError(
+      QString("SplashImage do NOT exists [%1]").arg(this->LauncherSplashImagePath));
+    return false;
+    }
+  return true;
+}
+
+// --------------------------------------------------------------------------
+bool ctkAppLauncherInternal::processApplicationToLaunchArgument()
+{
+  // Overwrite applicationToLaunch with the value read from the settings file
+  if (this->ApplicationToLaunch.isEmpty())
+    {
+    this->ApplicationToLaunch = this->DefaultApplicationToLaunch;
+    }
+
+  this->reportInfo(QString("ApplicationToLaunch  [%1]").arg(this->ApplicationToLaunch));
+
+  // Make sure the program to launch exists
+  if (!QFile::exists(this->ApplicationToLaunch))
+    {
+    this->reportError(
+      QString("Application do NOT exists [%1]").arg(this->ApplicationToLaunch));
+    return false;
+    }
+  
+  // ... and is executable
+  if (!(QFile::permissions(this->ApplicationToLaunch) & QFile::ExeUser))
+    {
+    this->reportError(
+      QString("Application is NOT executable [%1]").arg(this->ApplicationToLaunch));
+    return false;
+    }
+
+  // Overwrite ApplicationToLaunchArguments with the value read from the settings file
+  if (this->ApplicationToLaunchArguments.empty())
+    {
+    this->ApplicationToLaunchArguments = this->DefaultApplicationToLaunchArguments.split(" ");
+    }
+
+  this->reportInfo(QString("ApplicationToLaunchArguments  [%1]").
+                   arg(this->ApplicationToLaunchArguments.join(" ")));
+    
+  return true;
+}
+
+// --------------------------------------------------------------------------
+QStringList ctkAppLauncherInternal::readArrayValues(
+  QSettings& settings, const QString& arrayName, const QString fieldName)
+  {
+  Q_ASSERT(!arrayName.isEmpty());
+  Q_ASSERT(!fieldName.isEmpty());
+  QStringList listOfValues;
+  int size = settings.beginReadArray(arrayName);
+  for (int i=0; i < size; ++i)
+    {
+    settings.setArrayIndex(i);
+    listOfValues << settings.value(fieldName).toString();
+    }
+  settings.endArray();
+  return listOfValues;
+  }
+
+// --------------------------------------------------------------------------
+QHash<QString, QString> ctkAppLauncherInternal::readKeyValuePairs(QSettings& settings,
+  const QString& groupName)
+  {
+  Q_ASSERT(!groupName.isEmpty());
+  QHash<QString, QString> keyValuePairs;
+  settings.beginGroup(groupName);
+  foreach(const QString& key, settings.childKeys())
+    {
+    keyValuePairs[key] = settings.value(key).toString();
+    }
+  settings.endGroup();
+  return keyValuePairs;
+  }
+
+// --------------------------------------------------------------------------
+void ctkAppLauncherInternal::writeArrayValues(QSettings& settings, const QStringList& values,
+    const QString& arrayName, const QString fieldName)
+{
+  Q_ASSERT(!arrayName.isEmpty());
+  Q_ASSERT(!fieldName.isEmpty());
+  settings.beginWriteArray(arrayName);
+  for(int i=0; i < values.size(); ++i)
+    {
+    settings.setArrayIndex(i);
+    settings.setValue(fieldName, values.at(i));
+    }
+  settings.endArray();
+}
+
+// --------------------------------------------------------------------------
+void ctkAppLauncherInternal::writeKeyValuePairs(QSettings& settings,
+  const QHash<QString, QString>& map, const QString& groupName)
+{
+  Q_ASSERT(!groupName.isEmpty());
+  settings.beginGroup(groupName);
+  foreach(const QString& key, map.keys())
+    {
+    settings.setValue(key, map[key]);
+    }
+  settings.endGroup();
+}
+    
+// --------------------------------------------------------------------------
+bool ctkAppLauncherInternal::extractLauncherNameAndDir(const QString& applicationFilePath)
+{
+
+
+  QFileInfo fileInfo(applicationFilePath);
+  
+  // Follow symlink if it applies
+  if (fileInfo.isSymLink())
+    {
+    // symLinkTarget() handles links pointing to symlinks.
+    fileInfo = QFileInfo(fileInfo.symLinkTarget());
+    }
+
+  // Make sure the obtained target exists and is a "file"
+  if (!fileInfo.exists() && !fileInfo.isFile())
+    {
+    this->reportError("Failed to obtain launcher executable name !");
+    return false;
+    }
+
+  // Obtain executable name
+  this->LauncherName = fileInfo.baseName();
+    
+  // Obtain executable dir
+  this->LauncherDir = fileInfo.absolutePath();
+  
+  return true;
+}
+
+// --------------------------------------------------------------------------
+void ctkAppLauncherInternal::runProcess()
+{
+  QProcess process;
+
+  process.setProcessChannelMode(QProcess::ForwardedChannels);
+
+  QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
+
+  // LD_LIBRARY_PATH (linux), DYLD_LIBRARY_PATH (mac), PATH (win) ...
+  QString libPathVarName = this->LibraryPathVariableName;
+
+  // Set library paths
+  foreach(const QString& path, this->ListOfLibraryPaths)
+    {
+    this->reportInfo(QString("Setting library path [%1]").arg(path));
+    env.insert(libPathVarName, path + this->PathSep + env.value(libPathVarName));
+    }
+
+  // Update Path - First path of the list will be the first on the PATH
+  for(int i =  this->ListOfPaths.size() - 1; i >= 0; --i)
+    {
+    this->reportInfo(QString("Setting path [%1]").arg(this->ListOfPaths.at(i)));
+    env.insert("PATH", this->ListOfPaths.at(i) + this->PathSep + env.value("PATH"));
+    }
+
+  // Set additional environment variables
+  foreach(const QString& key, this->MapOfEnvVars.keys())
+    {
+    QString value = this->MapOfEnvVars[key];
+    this->reportInfo(QString("Setting env. variable [%1]:%2").arg(key).arg(value));
+    env.insert(key, value);
+    }
+
+  process.setProcessEnvironment(env);
+
+  this->reportInfo(QString("Starting [%1]").arg(this->ApplicationToLaunch));
+  if (this->Verbose)
+    {
+    foreach(const QString& argument, this->ApplicationToLaunchArguments)
+      {
+      this->reportInfo(QString("argument [%1]").arg(argument));
+      }
+    }
+
+  connect(&process, SIGNAL(finished(int, QProcess::ExitStatus)),
+          this, SLOT(applicationFinished(int, QProcess::ExitStatus)));
+
+  if (!this->DetachApplicationToLaunch)
+    {
+    process.start(this->ApplicationToLaunch, this->ApplicationToLaunchArguments);
+    int timeoutInMs = this->TimeoutInSeconds;
+    if (timeoutInMs > 0)
+      {
+      timeoutInMs = timeoutInMs * 1000;
+      }
+    process.waitForFinished(timeoutInMs);
+    }
+  else
+    {
+    process.startDetached(
+      this->ApplicationToLaunch, this->ApplicationToLaunchArguments);
+    this->Application->quit();
+    }
+}
+
+// --------------------------------------------------------------------------
+void ctkAppLauncherInternal::applicationFinished(int exitCode, QProcess::ExitStatus  exitStatus)
+{
+  if (exitStatus == QProcess::NormalExit)
+    {
+    this->Application->exit(exitCode);
+    }
+  else if (exitStatus == QProcess::CrashExit)
+    {
+    this->reportError(
+      QString("[%1] exit abnormally - Report the problem.").
+        arg(this->ApplicationToLaunch));
+    this->Application->exit(EXIT_FAILURE);
+    }
+}
+
+// --------------------------------------------------------------------------
+// ctkAppLauncher methods
+
+// --------------------------------------------------------------------------
+ctkAppLauncher::ctkAppLauncher(const QCoreApplication& application, QObject* parentObject):
+  Superclass(parentObject)
+{
+  this->Internal = new ctkAppLauncherInternal();
+  this->Internal->Application = application.instance();
+}
+
+// --------------------------------------------------------------------------
+ctkAppLauncher::~ctkAppLauncher()
+{
+  delete this->Internal;
+}
+
+// --------------------------------------------------------------------------
+void ctkAppLauncher::displayHelp(std::ostream &output)
+{
+  if (this->Internal->LauncherName.isEmpty())
+    {
+    return;
+    }
+  output << "Usage\n";
+  output << "  " << qPrintable(this->Internal->LauncherName) << " [options]\n\n";
+  output << "Options\n";
+  output << qPrintable(this->Internal->Parser.helpText());
+}
+
+// --------------------------------------------------------------------------
+bool ctkAppLauncher::initialize()
+{
+  if (this->Internal->Initialized)
+    {
+    this->Internal->reportError("AppLauncher already initialized !");
+    return true;
+    }
+  if (!this->Internal->extractLauncherNameAndDir(
+    this->Internal->Application->applicationFilePath()))
+    {
+    return false;
+    }
+
+  ctkAppLauncherCommandLineParser & parser = this->Internal->Parser;
+
+  parser.addBooleanArgument("--launcher-help", 0, &this->Internal->DisplayHelp,
+                            "Display help");
+  parser.addBooleanArgument("--launcher-verbose", 0, &this->Internal->Verbose,
+                            "Verbose mode");
+  parser.addStringArgument("--launch", 0, &this->Internal->ApplicationToLaunch,
+                           "Specify the application to launch",
+                           this->Internal->DefaultApplicationToLaunch, true /*ignoreRest*/);
+  parser.addBooleanArgument("--launcher-detach", 0, &this->Internal->DetachApplicationToLaunch,
+                            "Launcher will NOT wait for the application to finish");
+  parser.addBooleanArgument("--launcher-no-splash", 0, &this->Internal->DisableSplash,
+                            "Hide launcher splash");
+  parser.addIntegerArgument("--launcher-timeout", 0, &this->Internal->TimeoutInSeconds,
+                            "Specify the time in second before the launcher kills the application. "
+                            "-1 means no timeout");
+  parser.setExactMatchRegularExpression("--launcher-timeout",
+                                        "(-1)|([0-9]+)", "-1 or a positive integer is expected.");
+  parser.addBooleanArgument("--launcher-generate-template", 0, &this->Internal->GenerateTemplate,
+                            "Generate an example of setting file");
+
+  this->Internal->Initialized = true;
+  return true;
+}
+
+// --------------------------------------------------------------------------
+int ctkAppLauncher::processArguments()
+{  
+  if (!this->Internal->Initialized)
+    {
+    return Self::ExitWithError;
+    }
+
+  if (!this->Internal->Parser.parseArguments(this->Internal->Application->arguments()))
+    {
+    std::cerr << "Error\n  " 
+              << qPrintable(this->Internal->Parser.errorString()) << "\n" << std::endl;
+    this->displayHelp();
+    return Self::ExitWithError;
+    }
+
+  this->Internal->reportInfo(
+      QString("LauncherDir [%1]").arg(this->Internal->LauncherDir));
+
+  this->Internal->reportInfo(
+      QString("LauncherName [%1]").arg(this->Internal->LauncherName));
+
+  this->Internal->reportInfo(
+      QString("SettingsFileName [%1]").arg(this->settingsFileName()));
+
+
+  if (this->Internal->DisplayHelp)
+    {
+    this->displayHelp();
+    return Self::ExitWithSuccess;
+    }
+    
+  if (this->Internal->GenerateTemplate)
+    {
+    this->generateTemplate();
+    return Self::ExitWithSuccess;
+    }
+  
+  if (!this->Internal->processSplashPathArgument())
+    {
+    return Self::ExitWithError;
+    }
+    
+  if (!this->Internal->processApplicationToLaunchArgument())
+    {
+    return Self::ExitWithError;
+    }
+    
+  return Self::Continue;
+}
+
+// --------------------------------------------------------------------------
+QString ctkAppLauncher::settingsFileName()const
+{
+  if (!this->Internal->Initialized)
+    {
+    return QString();
+    }
+    
+  QString fileName = 
+    QString("%1/%2Settings.ini").arg(this->Internal->LauncherDir).arg(this->Internal->LauncherName);
+  return fileName; 
+}
+
+// --------------------------------------------------------------------------
+bool ctkAppLauncher::readSettings(const QString& fileName)
+{
+  if (!this->Internal->Initialized)
+    {
+    return false;
+    }
+    
+  // Check if settings file exists
+  if (!QFile::exists(fileName))
+    {
+    this->Internal->reportError(
+      QString("Launcher setting file do NOT exist [%1]").arg(fileName));
+    return false;
+    }
+    
+  if (! (QFile::permissions(fileName) & QFile::ReadOwner) )
+    {
+    this->Internal->reportError(
+      QString("Failed to read launcher setting file [%1]").arg(fileName));
+    return false;
+    }
+  
+  // Open settings file ... 
+  QSettings settings(fileName, QSettings::IniFormat);
+  if (settings.status() != QSettings::NoError)
+    {
+    this->Internal->reportError(
+      QString("Failed to open setting file [%1]").arg(fileName));
+    return false;
+    }
+
+  // Read default launcher image path
+  this->Internal->DefaultLauncherSplashImagePath =
+    settings.value("launcherSplashImagePath", ":Images/ctk-splash.png").toString();
+
+  // Read default application to launch
+  QHash<QString, QString> applicationGroup =
+    ctkAppLauncherInternal::readKeyValuePairs(settings, "Application");
+  this->Internal->DefaultApplicationToLaunch = applicationGroup["path"];
+  this->Internal->DefaultApplicationToLaunchArguments = applicationGroup["arguments"];
+    
+  // Read PATHs
+  this->Internal->ListOfPaths = ctkAppLauncherInternal::readArrayValues(settings, "Paths", "path");
+  
+  // Read LibraryPaths
+  this->Internal->ListOfLibraryPaths =
+    ctkAppLauncherInternal::readArrayValues(settings, "LibraryPaths", "path");
+
+  // Read additional environment variables
+  this->Internal->MapOfEnvVars =
+    ctkAppLauncherInternal::readKeyValuePairs(settings, "EnvironmentVariables");
+    
+  return true;
+}
+
+// --------------------------------------------------------------------------  
+bool ctkAppLauncher::writeSettings(const QString& outputFilePath)
+{
+  if (!this->Internal->Initialized)
+    {
+    return false;
+    }
+    
+  // Create or open settings file ... 
+  QSettings settings(outputFilePath, QSettings::IniFormat);
+  if (settings.status() != QSettings::NoError)
+    {
+    this->Internal->reportError(
+      QString("Failed to open setting file [%1]").arg(outputFilePath));
+    return false;
+    }
+    
+  // Clear settings 
+  settings.clear();
+  
+  settings.setValue("launcherSplashImagePath", this->Internal->LauncherSplashImagePath);
+  
+  QHash<QString, QString> applicationGroup;
+  applicationGroup["path"] = this->Internal->ApplicationToLaunch;
+  applicationGroup["arguments"] = this->Internal->ApplicationToLaunchArguments.join(" ");
+  ctkAppLauncherInternal::writeKeyValuePairs(settings, applicationGroup, "Application");
+
+  ctkAppLauncherInternal::writeArrayValues(settings, this->Internal->ListOfPaths, "Paths", "path");
+  ctkAppLauncherInternal::writeArrayValues(
+      settings, this->Internal->ListOfLibraryPaths, "LibraryPaths", "path");
+  ctkAppLauncherInternal::writeKeyValuePairs(
+      settings, this->Internal->MapOfEnvVars, "EnvironmentVariables");
+  
+  return true;
+}
+
+// --------------------------------------------------------------------------
+const QStringList& ctkAppLauncher::libraryPaths()const
+{
+  return this->Internal->ListOfPaths;
+}
+
+// --------------------------------------------------------------------------  
+void ctkAppLauncher::setLibraryPaths(const QStringList& listOfLibraryPaths)
+{
+  this->Internal->ListOfLibraryPaths = listOfLibraryPaths;
+}
+
+// --------------------------------------------------------------------------  
+const QStringList& ctkAppLauncher::paths()const
+{
+  return this->Internal->ListOfPaths;
+}
+
+// --------------------------------------------------------------------------  
+void ctkAppLauncher::setPaths(const QStringList& listOfPaths)
+{
+  this->Internal->ListOfPaths = listOfPaths;
+}
+
+// --------------------------------------------------------------------------  
+QString ctkAppLauncher::applicationToLaunch()
+{
+  return this->Internal->ApplicationToLaunch;
+}
+
+// --------------------------------------------------------------------------  
+QString ctkAppLauncher::splashImagePath()
+{
+  if (!this->Internal->Initialized)
+    {
+    return QString();
+    }
+  
+  return this->Internal->LauncherSplashImagePath;
+}
+
+// --------------------------------------------------------------------------
+bool ctkAppLauncher::verbose()
+{
+  return this->Internal->Verbose;
+}
+
+// --------------------------------------------------------------------------
+void ctkAppLauncher::setVerbose(bool value)
+{
+  this->Internal->Verbose = value;
+}
+
+// --------------------------------------------------------------------------  
+void ctkAppLauncher::startApplication()
+{
+  if (!this->Internal->Initialized)
+    {
+    return;
+    }
+    
+  this->Internal->SplashPixmap.load(this->splashImagePath());
+  this->Internal->SplashScreen =
+      QSharedPointer<QSplashScreen>(new QSplashScreen(this->Internal->SplashPixmap, Qt::WindowStaysOnTopHint));
+  if (!this->Internal->DisableSplash)
+    {
+    this->Internal->reportInfo(QString("DisableSplash [%1]").arg(this->Internal->DisableSplash));
+    this->Internal->SplashScreen->show();
+    }
+
+  QTimer::singleShot(50, this->Internal, SLOT(runProcess()));
+}
+
+// --------------------------------------------------------------------------  
+void ctkAppLauncher::generateTemplate()
+{
+  this->Internal->ListOfPaths.clear();
+  this->Internal->ListOfPaths << "/home/john/app1"
+                              << "/home/john/app2"; 
+
+  this->Internal->ListOfLibraryPaths.clear();
+  this->Internal->ListOfLibraryPaths << "/home/john/lib1" 
+                                     << "/home/john/lib2"; 
+
+  this->Internal->MapOfEnvVars.clear();
+  this->Internal->MapOfEnvVars["SOMETHING_NICE"] = "Chocolate";
+  this->Internal->MapOfEnvVars["SOMETHING_AWESOME"] = "Rock climbing !";
+
+  this->Internal->ApplicationToLaunch = "/usr/bin/xcalc";
+  this->Internal->LauncherSplashImagePath = "/home/john/images/splash.png";
+  this->Internal->ApplicationToLaunchArguments.clear();
+  this->Internal->ApplicationToLaunchArguments << "-rpn";
+  
+  QString outputFile = QString("%1/%2Settings.ini.template").
+    arg(this->Internal->LauncherDir).
+    arg(this->Internal->LauncherName);
+  
+  this->writeSettings(outputFile);
+}
+
+// --------------------------------------------------------------------------  
+void ctkAppLauncher::startLauncher()
+{
+  if (!this->initialize())
+    {
+    this->Internal->Application->exit(EXIT_FAILURE);
+    return;
+    }
+
+  if (!this->readSettings(this->settingsFileName()))
+    {
+    this->Internal->Application->exit(EXIT_FAILURE);
+    return;
+    }
+
+  int status = this->processArguments();
+  if (status == ctkAppLauncher::ExitWithError)
+    {
+    this->Internal->Application->exit(EXIT_FAILURE);
+    return;
+    }
+  else if (status == ctkAppLauncher::ExitWithSuccess)
+    {
+    this->Internal->Application->exit(EXIT_SUCCESS);
+    return;
+    }
+
+  if (this->Internal->Parser.argumentParsed("--launch"))
+    {
+    this->Internal->ApplicationToLaunchArguments = this->Internal->Parser.unparsedArguments();
+    }
+    
+  this->startApplication();
+}
+
+
