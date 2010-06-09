@@ -122,17 +122,56 @@ IF(BUILD_TESTING)
       ")
 ENDIF()
 
+#-----------------------------------------------------------------------------
+# Coverage
 #
+OPTION(WITH_COVERAGE "Enable/Disable coverage" OFF)
+
+#-----------------------------------------------------------------------------
+# Additional CXX/C Flags
+#
+SET(ADDITIONAL_C_FLAGS "" CACHE STRING "Additional C Flags")
+MARK_AS_ADVANCED(ADDITIONAL_C_FLAGS)
+SET(ADDITIONAL_CXX_FLAGS "" CACHE STRING "Additional CXX Flags")
+MARK_AS_ADVANCED(ADDITIONAL_CXX_FLAGS)
+
+#-----------------------------------------------------------------------------
+# Set coverage Flags
+#
+IF(WITH_COVERAGE)
+  IF(CMAKE_CXX_COMPILER_ID AND ${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
+    SET(coverage_flags "-g -fdiagnostics-show-option -fprofile-arcs -ftest-coverage -O3 -DNDEBUG")
+    SET(COVERAGE_CXX_FLAGS ${coverage_flags})
+    SET(COVERAGE_C_FLAGS ${coverage_flags})
+  ENDIF()
+ENDIF()
+
+#-----------------------------------------------------------------------------
+# Set C/CXX Flags
+#
+SET(CMAKE_CXX_FLAGS "${COVERAGE_C_FLAGS} ${ADDITIONAL_C_FLAGS}" CACHE STRING "CMake C Flags" FORCE)
+SET(CMAKE_C_FLAGS "${COVERAGE_CXX_FLAGS} ${ADDITIONAL_CXX_FLAGS}" CACHE STRING "CMake CXX Flags" FORCE)
+
+
+#-----------------------------------------------------------------------------
 # Qt
 #
 FIND_PACKAGE(Qt4 4.6 REQUIRED)
 INCLUDE(${QT_USE_FILE})
 
+#-----------------------------------------------------------------------------
 # Update CTK_BASE_LIBRARIES with QT libraries
+#
 SET(CTK_BASE_LIBRARIES ${CTK_BASE_LIBRARIES} ${QT_LIBRARIES} CACHE INTERNAL "CTK base libraries" FORCE)
 
+#-----------------------------------------------------------------------------
+# Build ctkAppLauncherBase and associated tests
+#
 ADD_SUBDIRECTORY(Base)
 
+#-----------------------------------------------------------------------------
+# Build executable
+#
 INCLUDE_DIRECTORIES(
   ${CMAKE_CURRENT_SOURCE_DIR}
   ${CMAKE_CURRENT_BINARY_DIR}
