@@ -268,6 +268,8 @@ void ctkAppLauncherInternal::runProcess()
   connect(&process, SIGNAL(finished(int, QProcess::ExitStatus)),
           this, SLOT(applicationFinished(int, QProcess::ExitStatus)));
 
+  connect(&process, SIGNAL(started()), this, SLOT(applicationStarted()));
+
   if (!this->DetachApplicationToLaunch)
     {
     process.start(this->ApplicationToLaunch, this->ApplicationToLaunchArguments);
@@ -300,6 +302,13 @@ void ctkAppLauncherInternal::applicationFinished(int exitCode, QProcess::ExitSta
         arg(this->ApplicationToLaunch));
     this->Application->exit(EXIT_FAILURE);
     }
+}
+
+// --------------------------------------------------------------------------
+void ctkAppLauncherInternal::applicationStarted()
+{
+  // Hide the splash screen
+  this->SplashScreen->close();
 }
 
 // --------------------------------------------------------------------------

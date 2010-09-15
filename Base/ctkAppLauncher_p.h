@@ -60,6 +60,9 @@ public slots:
   /// Slot called when the ApplicationToLaunch process is terminated
   void applicationFinished(int exitCode, QProcess::ExitStatus  exitStatus);
 
+  /// Slot called when the ApplicationToLaunch process is started
+  void applicationStarted();
+
 public:
   /// Options passed to the launcher from the command line
   QString     ApplicationToLaunch;
