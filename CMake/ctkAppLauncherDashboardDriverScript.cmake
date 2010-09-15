@@ -104,7 +104,7 @@ ${ADDITIONNAL_CMAKECACHE_OPTION}
   endif()
   
   if (res GREATER 0 OR force_build)
-    message("----------- [ Configure CTKAppLauncher ] -----------")
+    message("----------- [ Configure ${CTEST_PROJECT_NAME} ] -----------")
     
     set(label ctkAppLauncher)
     
@@ -118,11 +118,11 @@ ${ADDITIONNAL_CMAKECACHE_OPTION}
     #ctest_submit(FILES "${CTEST_BINARY_DIRECTORY}/Project.xml")
 
     # Build top level
-    message("----------- [ Build CTKAppLauncher ] -----------")
+    message("----------- [ Build ${CTEST_PROJECT_NAME} ] -----------")
     ctest_build(BUILD "${CTEST_BINARY_DIRECTORY}" APPEND)
     ctest_submit(PARTS Build)
     
-    message("----------- [ Test CTKAppLauncher ] -----------")
+    message("----------- [ Test ${CTEST_PROJECT_NAME} ] -----------")
     ctest_test(
       BUILD "${CTEST_BINARY_DIRECTORY}" 
       INCLUDE_LABEL ${label}
