@@ -3,11 +3,25 @@
 
 // STD includes
 #include <iostream>
+#include <cstdio>
+#include <ctime>
+
+namespace
+{
+// See http://www.cplusplus.com/reference/clibrary/ctime/clock/
+void wait(double seconds)
+{
+  clock_t endwait;
+  endwait = clock () + seconds * CLOCKS_PER_SEC;
+  while (clock() < endwait) {}
+}
+}
 
 // --------------------------------------------------------------------------
 app4TestLib@LIBSUFFIX@::app4TestLib@LIBSUFFIX@()
 {
   std::cout<<"Instanciate " << "app4TestLib@LIBSUFFIX@" << std::endl;
+  wait(0.02);
 }
 
 // --------------------------------------------------------------------------
