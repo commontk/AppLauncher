@@ -11,7 +11,7 @@
 #include <QHash>
 
 // CTK includes
-#include "ctkAppLauncherCommandLineParser.h"
+#include "ctkCommandLineParser.h"
 
 class QCoreApplication;
 
@@ -49,6 +49,9 @@ public:
   static void writeKeyValuePairs(QSettings& settings, const QHash<QString, QString>& map,
   const QString& groupName);
 
+  bool verbose()const;
+  bool disableSplash()const;
+
 public slots:
 
   /// Called 50ms after the splashscreen is shown and the eventloop flushed
@@ -59,16 +62,13 @@ public slots:
 
 public:
   /// Options passed to the launcher from the command line
-  bool        Verbose;
-  bool        DisplayHelp;
   QString     ApplicationToLaunch;
   QStringList ApplicationToLaunchArguments;
   QString     LauncherSplashImagePath;
-  int         TimeoutInSeconds;
-  bool        DisableSplash;
 
   /// Variable used internally
-  ctkAppLauncherCommandLineParser Parser;
+  ctkCommandLineParser            Parser;
+  QHash<QString, QVariant>        ParsedArgs;
   QString                         ParseError;
   QString                         DefaultApplicationToLaunch;
   QString                         DefaultLauncherSplashImagePath;
@@ -77,7 +77,7 @@ public:
   QString                         LauncherDir;
   QStringList                     ListOfPaths;
   QStringList                     ListOfLibraryPaths;
-  QHash<QString, QString>          MapOfEnvVars;
+  QHash<QString, QString>         MapOfEnvVars;
   QCoreApplication*               Application;
   bool                            Initialized;
   bool                            GenerateTemplate;

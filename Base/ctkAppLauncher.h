@@ -58,20 +58,19 @@ public:
   void setPaths(const QStringList& listOfPaths);
   
   /// Get applicationToLaunch
-  QString applicationToLaunch();
+  QString applicationToLaunch()const;
   
   /// Start the ApplicationToLaunch as a child process
   /// Will return False if the object is NOT initialized
   void startApplication();
   
   /// Return the associated splash screen image path
-  QString splashImagePath();
+  QString splashImagePath()const;
 
-  /// Set/Get verbose flag
-  /// If set to True, print to standard output information associated with the parameters
+  /// Get verbose flag
+  /// If True, print to standard output information associated with the parameters
   /// passed to the launcher, launcher settings, etc ...
-  bool verbose();
-  void setVerbose(bool value);
+  bool verbose()const;
   
   void generateTemplate();
   

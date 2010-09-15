@@ -10,7 +10,6 @@
 // CTK includes
 #include "ctkAppLauncher.h"
 #include "ctkAppLauncher_p.h"
-#include "ctkAppLauncherCommandLineParser.h"
 
 // STD includes
 #include <iostream>
@@ -22,13 +21,9 @@
 // --------------------------------------------------------------------------
 ctkAppLauncherInternal::ctkAppLauncherInternal()
 {
-  this->Verbose = false;
-  this->DisplayHelp = false;
   this->Application = 0;
   this->Initialized = false;
   this->GenerateTemplate = false;
-  this->TimeoutInSeconds = -1;
-  this->DisableSplash = false;
   this->DefaultLauncherSplashImagePath;
   this->DetachApplicationToLaunch = false;
 
@@ -57,7 +52,7 @@ void ctkAppLauncherInternal::reportError(const QString& msg)
 // --------------------------------------------------------------------------
 void ctkAppLauncherInternal::reportInfo(const QString& msg)
 {
-  if (this->Verbose)
+  if (this->verbose())
     {
     std::cout << "info: " << qPrintable(msg) << std::endl;
     }
@@ -87,6 +82,7 @@ bool ctkAppLauncherInternal::processSplashPathArgument()
 bool ctkAppLauncherInternal::processApplicationToLaunchArgument()
 {
   // Overwrite applicationToLaunch with the value read from the settings file
+  this->ApplicationToLaunch = this->ParsedArgs.value("launch").toString();
   if (this->ApplicationToLaunch.isEmpty())
     {
     this->ApplicationToLaunch = this->DefaultApplicationToLaunch;
@@ -181,6 +177,18 @@ void ctkAppLauncherInternal::writeKeyValuePairs(QSettings& settings,
     }
   settings.endGroup();
 }
+
+// --------------------------------------------------------------------------
+bool ctkAppLauncherInternal::verbose() const
+{
+  return this->ParsedArgs.value("launcher-verbose").toBool();
+}
+
+// --------------------------------------------------------------------------
+bool ctkAppLauncherInternal::disableSplash() const
+{
+  return this->ParsedArgs.value("launcher-no-splash").toBool();
+}
     
 // --------------------------------------------------------------------------
 bool ctkAppLauncherInternal::extractLauncherNameAndDir(const QString& applicationFilePath)
@@ -249,7 +257,7 @@ void ctkAppLauncherInternal::runProcess()
   process.setProcessEnvironment(env);
 
   this->reportInfo(QString("Starting [%1]").arg(this->ApplicationToLaunch));
-  if (this->Verbose)
+  if (this->verbose())
     {
     foreach(const QString& argument, this->ApplicationToLaunchArguments)
       {
@@ -263,7 +271,7 @@ void ctkAppLauncherInternal::runProcess()
   if (!this->DetachApplicationToLaunch)
     {
     process.start(this->ApplicationToLaunch, this->ApplicationToLaunchArguments);
-    int timeoutInMs = this->TimeoutInSeconds;
+    int timeoutInMs = this->ParsedArgs.value("launcher-timeout").toInt();
     if (timeoutInMs > 0)
       {
       timeoutInMs = timeoutInMs * 1000;
@@ -338,26 +346,23 @@ bool ctkAppLauncher::initialize()
     return false;
     }
 
-  ctkAppLauncherCommandLineParser & parser = this->Internal->Parser;
+  ctkCommandLineParser & parser = this->Internal->Parser;
+  parser.setArgumentPrefix("--", "-");
 
-  parser.addBooleanArgument("--launcher-help", 0, &this->Internal->DisplayHelp,
-                            "Display help");
-  parser.addBooleanArgument("--launcher-verbose", 0, &this->Internal->Verbose,
-                            "Verbose mode");
-  parser.addStringArgument("--launch", 0, &this->Internal->ApplicationToLaunch,
-                           "Specify the application to launch",
-                           this->Internal->DefaultApplicationToLaunch, true /*ignoreRest*/);
-  parser.addBooleanArgument("--launcher-detach", 0, &this->Internal->DetachApplicationToLaunch,
-                            "Launcher will NOT wait for the application to finish");
-  parser.addBooleanArgument("--launcher-no-splash", 0, &this->Internal->DisableSplash,
-                            "Hide launcher splash");
-  parser.addIntegerArgument("--launcher-timeout", 0, &this->Internal->TimeoutInSeconds,
-                            "Specify the time in second before the launcher kills the application. "
-                            "-1 means no timeout");
-  parser.setExactMatchRegularExpression("--launcher-timeout",
+  parser.addArgument("launcher-help","", QVariant::Bool, "Display help");
+  parser.addArgument("launcher-verbose", "", QVariant::Bool, "Verbose mode");
+  parser.addArgument("launch", "", QVariant::String, "Specify the application to launch",
+                     QVariant(this->Internal->DefaultApplicationToLaunch), true /*ignoreRest*/);
+  parser.addArgument("launcher-detach", "", QVariant::Bool,
+                     "Launcher will NOT wait for the application to finish");
+  parser.addArgument("launcher-no-splash", "", QVariant::Bool,"Hide launcher splash");
+  parser.addArgument("launcher-timeout", "", QVariant::Int,
+                     "Specify the time in second before the launcher kills the application. "
+                     "-1 means no timeout", QVariant(-1));
+  parser.setExactMatchRegularExpression("launcher-timeout",
                                         "(-1)|([0-9]+)", "-1 or a positive integer is expected.");
-  parser.addBooleanArgument("--launcher-generate-template", 0, &this->Internal->GenerateTemplate,
-                            "Generate an example of setting file");
+  parser.addArgument("launcher-generate-template", "", QVariant::Bool,
+                     "Generate an example of setting file");
 
   this->Internal->Initialized = true;
   return true;
@@ -371,7 +376,10 @@ int ctkAppLauncher::processArguments()
     return Self::ExitWithError;
     }
 
-  if (!this->Internal->Parser.parseArguments(this->Internal->Application->arguments()))
+  bool ok = false;
+  this->Internal->ParsedArgs =
+      this->Internal->Parser.parseArguments(this->Internal->Application->arguments(), &ok);
+  if (!ok)
     {
     std::cerr << "Error\n  " 
               << qPrintable(this->Internal->Parser.errorString()) << "\n" << std::endl;
@@ -388,14 +396,13 @@ int ctkAppLauncher::processArguments()
   this->Internal->reportInfo(
       QString("SettingsFileName [%1]").arg(this->settingsFileName()));
 
-
-  if (this->Internal->DisplayHelp)
+  if (this->Internal->ParsedArgs.value("launcher-help").toBool())
     {
     this->displayHelp();
     return Self::ExitWithSuccess;
     }
     
-  if (this->Internal->GenerateTemplate)
+  if (this->Internal->ParsedArgs.value("launcher-generate-template").toBool())
     {
     this->generateTemplate();
     return Self::ExitWithSuccess;
@@ -544,13 +551,13 @@ void ctkAppLauncher::setPaths(const QStringList& listOfPaths)
 }
 
 // --------------------------------------------------------------------------  
-QString ctkAppLauncher::applicationToLaunch()
+QString ctkAppLauncher::applicationToLaunch()const
 {
   return this->Internal->ApplicationToLaunch;
 }
 
 // --------------------------------------------------------------------------  
-QString ctkAppLauncher::splashImagePath()
+QString ctkAppLauncher::splashImagePath()const
 {
   if (!this->Internal->Initialized)
     {
@@ -561,15 +568,9 @@ QString ctkAppLauncher::splashImagePath()
 }
 
 // --------------------------------------------------------------------------
-bool ctkAppLauncher::verbose()
+bool ctkAppLauncher::verbose()const
 {
-  return this->Internal->Verbose;
-}
-
-// --------------------------------------------------------------------------
-void ctkAppLauncher::setVerbose(bool value)
-{
-  this->Internal->Verbose = value;
+  return this->Internal->verbose();
 }
 
 // --------------------------------------------------------------------------  
@@ -583,9 +584,9 @@ void ctkAppLauncher::startApplication()
   this->Internal->SplashPixmap.load(this->splashImagePath());
   this->Internal->SplashScreen =
       QSharedPointer<QSplashScreen>(new QSplashScreen(this->Internal->SplashPixmap, Qt::WindowStaysOnTopHint));
-  if (!this->Internal->DisableSplash)
+  if (!this->Internal->disableSplash())
     {
-    this->Internal->reportInfo(QString("DisableSplash [%1]").arg(this->Internal->DisableSplash));
+    this->Internal->reportInfo(QString("DisableSplash [%1]").arg(this->Internal->disableSplash()));
     this->Internal->SplashScreen->show();
     }
 
@@ -646,7 +647,7 @@ void ctkAppLauncher::startLauncher()
     return;
     }
 
-  if (this->Internal->Parser.argumentParsed("--launch"))
+  if (this->Internal->Parser.argumentParsed("launch"))
     {
     this->Internal->ApplicationToLaunchArguments = this->Internal->Parser.unparsedArguments();
     }

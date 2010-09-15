@@ -15,8 +15,8 @@ SET(KIT_SRCS
   ctkAppLauncher.cpp
   ctkAppLauncher.h
   ctkAppLauncher_p.h
-  ctkAppLauncherCommandLineParser.cpp
-  ctkAppLauncherCommandLineParser.h
+  ctkCommandLineParser.cpp
+  ctkCommandLineParser.h
   )
 
 # Headers that should run through moc

@@ -1,7 +1,7 @@
 SET(KIT ${PROJECT_NAME})
 
 CREATE_TEST_SOURCELIST(Tests ${KIT}CppTests.cpp
-  ctkAppLauncherCommandLineParserTest1.cpp
+  ctkCommandLineParserTest1.cpp
   ctkAppLauncherTest1.cpp
   #EXTRA_INCLUDE TestingMacros.h
   )
@@ -30,6 +30,6 @@ ENDMACRO( SIMPLE_TEST  )
 # Add Tests
 #
 
-SIMPLE_TEST( ctkAppLauncherCommandLineParserTest1 )
+SIMPLE_TEST( ctkCommandLineParserTest1 )
 SIMPLE_TEST( ctkAppLauncherTest1 )
 SET_TESTS_PROPERTIES(ctkAppLauncherTest1 PROPERTIES DEPENDS ctkAppLauncherCommandLineParserTest1)
