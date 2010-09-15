@@ -23,7 +23,6 @@ ctkAppLauncherInternal::ctkAppLauncherInternal()
 {
   this->Application = 0;
   this->Initialized = false;
-  this->GenerateTemplate = false;
   this->DefaultLauncherSplashImagePath;
   this->DetachApplicationToLaunch = false;
 

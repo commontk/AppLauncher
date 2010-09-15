@@ -83,7 +83,6 @@ public:
   QHash<QString, QString>         MapOfEnvVars;
   QCoreApplication*               Application;
   bool                            Initialized;
-  bool                            GenerateTemplate;
   bool                            DetachApplicationToLaunch;
   QString                         PathSep;
   QString                         LibraryPathVariableName;
