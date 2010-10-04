@@ -39,6 +39,11 @@ if (NOT EXISTS ${launcher})
 endif()
 
 # --------------------------------------------------------------------------
+# Remove settings file if any
+
+execute_process(COMMAND ${CMAKE_COMMAND} -E remove -f ${launcher}LauncherSettings.ini)
+
+# --------------------------------------------------------------------------
 # Set application variable
 
 set(application_dir "${app4test_binary_dir}/bin")
