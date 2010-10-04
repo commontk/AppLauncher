@@ -65,7 +65,7 @@ endif()
 # Attempt to start launcher from its directory
 # Since there is no setting file and no parameter are given to the launcher, 
 # we expect it to fail with the following message:  "error: Application do NOT exists []"
-set(expected_error_msg "error: Application do NOT exists []")
+set(expected_error_msg "error: Launcher setting file does NOT exist [${launcher}LauncherSettings.ini]")
 execute_process(
   COMMAND ${launcher} --launcher-no-splash
   WORKING_DIRECTORY ${launcher_dir}

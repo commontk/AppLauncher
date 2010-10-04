@@ -68,7 +68,6 @@ bool ctkAppLauncherInternal::processSplashPathArgument()
     this->LauncherSplashImagePath = this->DefaultLauncherSplashImagePath;
     }
   this->reportInfo(QString("LauncherSplashImagePath [%1]").arg(this->LauncherSplashImagePath));
-
     
   // Make sure the splash image exists
   if (!QFile::exists(this->LauncherSplashImagePath))
@@ -102,13 +101,13 @@ bool ctkAppLauncherInternal::processApplicationToLaunchArgument()
     this->ApplicationToLaunch = this->DefaultApplicationToLaunch;
     }
 
-  this->reportInfo(QString("ApplicationToLaunch  [%1]").arg(this->ApplicationToLaunch));
+  this->reportInfo(QString("ApplicationToLaunch [%1]").arg(this->ApplicationToLaunch));
 
   // Make sure the program to launch exists
   if (!QFile::exists(this->ApplicationToLaunch))
     {
     this->reportError(
-      QString("Application do NOT exists [%1]").arg(this->ApplicationToLaunch));
+      QString("Application does NOT exists [%1]").arg(this->ApplicationToLaunch));
     return false;
     }
   
@@ -126,7 +125,7 @@ bool ctkAppLauncherInternal::processApplicationToLaunchArgument()
     this->ApplicationToLaunchArguments = this->DefaultApplicationToLaunchArguments.split(" ");
     }
 
-  this->reportInfo(QString("ApplicationToLaunchArguments  [%1]").
+  this->reportInfo(QString("ApplicationToLaunchArguments [%1]").
                    arg(this->ApplicationToLaunchArguments.join(" ")));
     
   return true;
@@ -497,7 +496,7 @@ bool ctkAppLauncher::readSettings(const QString& fileName)
   if (!QFile::exists(fileName))
     {
     this->Internal->reportError(
-      QString("Launcher setting file do NOT exist [%1]").arg(fileName));
+      QString("Launcher setting file does NOT exist [%1]").arg(fileName));
     return false;
     }
     
