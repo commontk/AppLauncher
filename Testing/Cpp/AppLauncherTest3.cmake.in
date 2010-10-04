@@ -85,7 +85,7 @@ endif()
 
 # --------------------------------------------------------------------------
 # Configure settings file
-file(WRITE "${launcher}Settings.ini" "
+file(WRITE "${launcher}LauncherSettings.ini" "
 [LibraryPaths]
 1\\path=${library_path}
 size=1

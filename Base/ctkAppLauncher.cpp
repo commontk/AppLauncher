@@ -481,7 +481,7 @@ QString ctkAppLauncher::settingsFileName()const
     }
     
   QString fileName = 
-    QString("%1/%2Settings.ini").arg(this->Internal->LauncherDir).arg(this->Internal->LauncherName);
+    QString("%1/%2LauncherSettings.ini").arg(this->Internal->LauncherDir).arg(this->Internal->LauncherName);
   return fileName; 
 }
 
@@ -678,7 +678,7 @@ void ctkAppLauncher::generateTemplate()
   this->Internal->ApplicationToLaunchArguments.clear();
   this->Internal->ApplicationToLaunchArguments << "-rpn";
   
-  QString outputFile = QString("%1/%2Settings.ini.template").
+  QString outputFile = QString("%1/%2LauncherSettings.ini.template").
     arg(this->Internal->LauncherDir).
     arg(this->Internal->LauncherName);
   
