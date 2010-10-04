@@ -25,6 +25,8 @@ ctkAppLauncherInternal::ctkAppLauncherInternal()
   this->Initialized = false;
   this->DefaultLauncherSplashImagePath;
   this->DetachApplicationToLaunch = false;
+  this->LauncherSplashScreenHideDelayMs = -1;
+  this->DefaultLauncherSplashScreenHideDelayMs = 0;
 
 #if defined(WIN32) || defined(_WIN32)
   this->PathSep = ";";
@@ -74,6 +76,18 @@ bool ctkAppLauncherInternal::processSplashPathArgument()
       QString("SplashImage do NOT exists [%1]").arg(this->LauncherSplashImagePath));
     return false;
     }
+  return true;
+}
+
+// --------------------------------------------------------------------------
+bool ctkAppLauncherInternal::processScreenHideDelayMsArgument()
+{
+  if (this->LauncherSplashScreenHideDelayMs == -1)
+    {
+    this->LauncherSplashScreenHideDelayMs = this->DefaultLauncherSplashScreenHideDelayMs;
+    }
+  this->reportInfo(QString("LauncherSplashScreenHideDelayMs [%1]").arg(this->LauncherSplashScreenHideDelayMs));
+
   return true;
 }
 
@@ -222,9 +236,7 @@ bool ctkAppLauncherInternal::extractLauncherNameAndDir(const QString& applicatio
 // --------------------------------------------------------------------------
 void ctkAppLauncherInternal::runProcess()
 {
-  QProcess process;
-
-  process.setProcessChannelMode(QProcess::ForwardedChannels);
+  this->Process.setProcessChannelMode(QProcess::ForwardedChannels);
 
   QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
 
@@ -253,7 +265,7 @@ void ctkAppLauncherInternal::runProcess()
     env.insert(key, value);
     }
 
-  process.setProcessEnvironment(env);
+  this->Process.setProcessEnvironment(env);
 
   this->reportInfo(QString("Starting [%1]").arg(this->ApplicationToLaunch));
   if (this->verbose())
@@ -264,27 +276,31 @@ void ctkAppLauncherInternal::runProcess()
       }
     }
 
-  connect(&process, SIGNAL(finished(int, QProcess::ExitStatus)),
+  connect(&this->Process, SIGNAL(finished(int, QProcess::ExitStatus)),
           this, SLOT(applicationFinished(int, QProcess::ExitStatus)));
-
-  connect(&process, SIGNAL(started()), this, SLOT(applicationStarted()));
+  connect(&this->Process, SIGNAL(started()), this, SLOT(applicationStarted()));
 
   if (!this->DetachApplicationToLaunch)
     {
-    process.start(this->ApplicationToLaunch, this->ApplicationToLaunchArguments);
-    int timeoutInMs = this->ParsedArgs.value("launcher-timeout").toInt();
+    this->Process.start(this->ApplicationToLaunch, this->ApplicationToLaunchArguments);
+    int timeoutInMs = this->ParsedArgs.value("launcher-timeout").toInt() * 1000;
     if (timeoutInMs > 0)
       {
-      timeoutInMs = timeoutInMs * 1000;
+      QTimer::singleShot(timeoutInMs, this, SLOT(terminateProcess()));
       }
-    process.waitForFinished(timeoutInMs);
     }
   else
     {
-    process.startDetached(
+    this->Process.startDetached(
       this->ApplicationToLaunch, this->ApplicationToLaunchArguments);
     this->Application->quit();
     }
+}
+
+// --------------------------------------------------------------------------
+void ctkAppLauncherInternal::terminateProcess()
+{
+  this->Process.terminate();
 }
 
 // --------------------------------------------------------------------------
@@ -306,8 +322,8 @@ void ctkAppLauncherInternal::applicationFinished(int exitCode, QProcess::ExitSta
 // --------------------------------------------------------------------------
 void ctkAppLauncherInternal::applicationStarted()
 {
-  // Hide the splash screen
-  this->SplashScreen->close();
+  QTimer::singleShot(this->LauncherSplashScreenHideDelayMs,
+                     this->SplashScreen.data(), SLOT(hide()));
 }
 
 // --------------------------------------------------------------------------
@@ -372,6 +388,8 @@ bool ctkAppLauncher::initialize()
   parser.addArgument("launcher-generate-template", "", QVariant::Bool,
                      "Generate an example of setting file");
 
+  // TODO Should SplashImagePath and SplashScreenHideDelayMs be added as parameters ?
+
   this->Internal->Initialized = true;
   return true;
 }
@@ -420,12 +438,17 @@ int ctkAppLauncher::processArguments()
     {
     return Self::ExitWithError;
     }
-    
+
+  if (!this->Internal->processScreenHideDelayMsArgument())
+    {
+    return Self::ExitWithError;
+    }
+
   if (!this->Internal->processApplicationToLaunchArgument())
     {
     return Self::ExitWithError;
     }
-    
+
   return Self::Continue;
 }
 
@@ -477,6 +500,8 @@ bool ctkAppLauncher::readSettings(const QString& fileName)
   // Read default launcher image path
   this->Internal->DefaultLauncherSplashImagePath =
     settings.value("launcherSplashImagePath", ":Images/ctk-splash.png").toString();
+  this->Internal->DefaultLauncherSplashScreenHideDelayMs =
+    settings.value("launcherSplashScreenHideDelayMs", 0).toInt();
 
   // Read default application to launch
   QHash<QString, QString> applicationGroup =
@@ -519,6 +544,7 @@ bool ctkAppLauncher::writeSettings(const QString& outputFilePath)
   settings.clear();
   
   settings.setValue("launcherSplashImagePath", this->Internal->LauncherSplashImagePath);
+  settings.setValue("launcherSplashScreenHideDelayMs", this->Internal->LauncherSplashScreenHideDelayMs);
   
   QHash<QString, QString> applicationGroup;
   applicationGroup["path"] = this->Internal->ApplicationToLaunch;
@@ -573,6 +599,17 @@ QString ctkAppLauncher::splashImagePath()const
     }
   
   return this->Internal->LauncherSplashImagePath;
+}
+
+// --------------------------------------------------------------------------
+int ctkAppLauncher::splashScreenHideDelayMs()const
+{
+  if (!this->Internal->Initialized)
+    {
+    return this->Internal->DefaultLauncherSplashScreenHideDelayMs;
+    }
+
+  return this->Internal->LauncherSplashScreenHideDelayMs;
 }
 
 // --------------------------------------------------------------------------

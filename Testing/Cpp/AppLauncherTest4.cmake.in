@@ -251,12 +251,6 @@ if (NOT rv)
   message(FATAL_ERROR "Test5b - Failed to run [${launcher}] with parameter --launcher-timeout\n${ev}")
 endif()
 
-set(regex "QProcess: Destroyed while process is still running.*error:.*exit abnormally - Report the problem")
-string(REGEX MATCH ${regex} current_msg ${ev})
-if ("${current_msg}" STREQUAL "")
-  message(FATAL_ERROR "Test5c - Problem with flag --launcher-timeout.\n${ev}")
-endif()
-
 # Since launcher-timeout < App4Test-timeout, file ${application}-timeout.txt should NOT exists 
 if (EXISTS ${application}-timeout.txt)
    message(FATAL_ERROR "Test5d - Problem with flag --launcher-timeout."

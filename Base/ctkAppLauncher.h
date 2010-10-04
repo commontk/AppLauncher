@@ -67,6 +67,10 @@ public:
   /// Return the associated splash screen image path
   QString splashImagePath()const;
 
+  /// \brief Return the delay in ms before the launcher hide the splashscreen.
+  /// The delay is applied after the application finishes to start.
+  int splashScreenHideDelayMs()const;
+
   /// Get verbose flag
   /// If True, print to standard output information associated with the parameters
   /// passed to the launcher, launcher settings, etc ...

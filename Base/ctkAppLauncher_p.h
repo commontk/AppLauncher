@@ -31,6 +31,7 @@ public:
 
   bool processApplicationToLaunchArgument();
   bool processSplashPathArgument();
+  bool processScreenHideDelayMsArgument();
 
   bool extractLauncherNameAndDir(const QString& applicationFilePath);
 
@@ -57,6 +58,9 @@ public slots:
   /// Called 50ms after the splashscreen is shown and the eventloop flushed
   void runProcess();
 
+  /// Terminate the started process
+  void terminateProcess();
+
   /// Slot called when the ApplicationToLaunch process is terminated
   void applicationFinished(int exitCode, QProcess::ExitStatus  exitStatus);
 
@@ -68,13 +72,16 @@ public:
   QString     ApplicationToLaunch;
   QStringList ApplicationToLaunchArguments;
   QString     LauncherSplashImagePath;
+  int         LauncherSplashScreenHideDelayMs;
 
   /// Variable used internally
+  QProcess                        Process;
   ctkCommandLineParser            Parser;
   QHash<QString, QVariant>        ParsedArgs;
   QString                         ParseError;
   QString                         DefaultApplicationToLaunch;
   QString                         DefaultLauncherSplashImagePath;
+  int                             DefaultLauncherSplashScreenHideDelayMs;
   QString                         DefaultApplicationToLaunchArguments;
   QString                         LauncherName;
   QString                         LauncherDir;
