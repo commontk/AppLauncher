@@ -234,6 +234,22 @@ bool ctkAppLauncherInternal::extractLauncherNameAndDir(const QString& applicatio
 }
 
 // --------------------------------------------------------------------------
+QString ctkAppLauncherInternal::expandValue(const QString& value)
+{
+  QHash<QString, QString> keyValueMap;
+  keyValueMap["<APPLAUNCHER_DIR>"] = this->LauncherDir;
+  keyValueMap["<APPLAUNCHER_NAME>"] = this->LauncherName;
+  keyValueMap["<PATHSEP>"] = this->PathSep;
+
+  QString updatedValue = value;
+  foreach(const QString& key, keyValueMap.keys())
+    {
+    updatedValue.replace(key, keyValueMap.value(key), Qt::CaseInsensitive);
+    }
+  return updatedValue;
+}
+
+// --------------------------------------------------------------------------
 void ctkAppLauncherInternal::runProcess()
 {
   this->Process.setProcessChannelMode(QProcess::ForwardedChannels);
@@ -243,18 +259,21 @@ void ctkAppLauncherInternal::runProcess()
   // LD_LIBRARY_PATH (linux), DYLD_LIBRARY_PATH (mac), PATH (win) ...
   QString libPathVarName = this->LibraryPathVariableName;
 
+  this->reportInfo(QString("<APPLAUNCHER_DIR> -> [%1]").arg(this->LauncherDir));
+
   // Set library paths
   foreach(const QString& path, this->ListOfLibraryPaths)
     {
     this->reportInfo(QString("Setting library path [%1]").arg(path));
-    env.insert(libPathVarName, path + this->PathSep + env.value(libPathVarName));
+    env.insert(libPathVarName, path + this->PathSep + this->expandValue(env.value(libPathVarName)));
     }
 
   // Update Path - First path of the list will be the first on the PATH
   for(int i =  this->ListOfPaths.size() - 1; i >= 0; --i)
     {
     this->reportInfo(QString("Setting path [%1]").arg(this->ListOfPaths.at(i)));
-    env.insert("PATH", this->ListOfPaths.at(i) + this->PathSep + env.value("PATH"));
+    env.insert("PATH", this->ListOfPaths.at(i) + this->PathSep
+               + this->expandValue(env.value("PATH")));
     }
 
   // Set additional environment variables
@@ -262,7 +281,7 @@ void ctkAppLauncherInternal::runProcess()
     {
     QString value = this->MapOfEnvVars[key];
     this->reportInfo(QString("Setting env. variable [%1]:%2").arg(key).arg(value));
-    env.insert(key, value);
+    env.insert(key, this->expandValue(value));
     }
 
   this->Process.setProcessEnvironment(env);

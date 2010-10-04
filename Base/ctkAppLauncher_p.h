@@ -35,6 +35,15 @@ public:
 
   bool extractLauncherNameAndDir(const QString& applicationFilePath);
 
+  /// \brief Expand setting \a value
+  /// The following string will be updated:
+  /// <ul>
+  ///  <li>&lt;APPLAUNCHER_DIR&gt; -> LauncherDir</li>
+  ///  <li>&lt;APPLAUNCHER_NAME&gt; -> LauncherName</li>
+  ///  <li>&lt;PATHSEP&gt; -> PathSep</li>
+  /// </ul>
+  QString expandValue(const QString& value);
+
   /// Read list of value stored in an array into a QStringList
   static QStringList readArrayValues(QSettings& settings,
     const QString& arrayName, const QString fieldName);
