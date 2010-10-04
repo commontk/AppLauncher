@@ -26,6 +26,7 @@ ctkAppLauncherInternal::ctkAppLauncherInternal()
   this->DefaultLauncherSplashImagePath;
   this->DetachApplicationToLaunch = false;
   this->LauncherSplashScreenHideDelayMs = -1;
+  this->DefaultLauncherSplashImagePath = ":Images/ctk-splash.png";
   this->DefaultLauncherSplashScreenHideDelayMs = 0;
 
 #if defined(WIN32) || defined(_WIN32)
@@ -66,8 +67,8 @@ bool ctkAppLauncherInternal::processSplashPathArgument()
     {
     this->LauncherSplashImagePath = this->DefaultLauncherSplashImagePath;
     }
+  this->reportInfo(QString("LauncherSplashImagePath [%1]").arg(this->LauncherSplashImagePath));
 
-  this->reportInfo(QString("LauncherSplashImagePath  [%1]").arg(this->LauncherSplashImagePath));
     
   // Make sure the splash image exists
   if (!QFile::exists(this->LauncherSplashImagePath))
@@ -614,7 +615,7 @@ QString ctkAppLauncher::splashImagePath()const
 {
   if (!this->Internal->Initialized)
     {
-    return QString();
+    return this->Internal->DefaultLauncherSplashImagePath;
     }
   
   return this->Internal->LauncherSplashImagePath;
