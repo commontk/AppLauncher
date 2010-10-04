@@ -200,14 +200,19 @@ bool ctkAppLauncherInternal::verbose() const
 // --------------------------------------------------------------------------
 bool ctkAppLauncherInternal::disableSplash() const
 {
-  return this->ParsedArgs.value("launcher-no-splash").toBool();
+  QStringList unparsedArgs = this->Parser.unparsedArguments();
+  if (this->ParsedArgs.value("launcher-no-splash").toBool() ||
+      unparsedArgs.contains(this->LauncherAdditionalNoSplashShortArgument) ||
+      unparsedArgs.contains(this->LauncherAdditionalNoSplashLongArgument))
+    {
+    return true;
+    }
+  return false;
 }
     
 // --------------------------------------------------------------------------
 bool ctkAppLauncherInternal::extractLauncherNameAndDir(const QString& applicationFilePath)
 {
-
-
   QFileInfo fileInfo(applicationFilePath);
   
   // Follow symlink if it applies
@@ -446,13 +451,20 @@ int ctkAppLauncher::processArguments()
     this->displayHelp();
     return Self::ExitWithSuccess;
     }
-    
+
+  QStringList unparsedArgs = this->Internal->Parser.unparsedArguments();
+  if (unparsedArgs.contains(this->Internal->LauncherAdditionalHelpShortArgument) ||
+      unparsedArgs.contains(this->Internal->LauncherAdditionalHelpLongArgument))
+    {
+    this->displayHelp();
+    }
+
   if (this->Internal->ParsedArgs.value("launcher-generate-template").toBool())
     {
     this->generateTemplate();
     return Self::ExitWithSuccess;
     }
-  
+
   if (!this->Internal->processSplashPathArgument())
     {
     return Self::ExitWithError;
@@ -527,6 +539,16 @@ bool ctkAppLauncher::readSettings(const QString& fileName)
     ctkAppLauncherInternal::readKeyValuePairs(settings, "Application");
   this->Internal->DefaultApplicationToLaunch = applicationGroup["path"];
   this->Internal->DefaultApplicationToLaunchArguments = applicationGroup["arguments"];
+
+  // Read additional launcher arguments
+  this->Internal->LauncherAdditionalHelpShortArgument =
+      settings.value("additionalLauncherHelpShortArgument").toString();
+  this->Internal->LauncherAdditionalHelpLongArgument =
+      settings.value("additionalLauncherHelpLongArgument").toString();
+  this->Internal->LauncherAdditionalNoSplashShortArgument =
+      settings.value("additionalLauncherNoSplashShortArgument").toString();
+  this->Internal->LauncherAdditionalNoSplashLongArgument =
+      settings.value("additionalLauncherNoSplashLongArgument").toString();
     
   // Read PATHs
   this->Internal->ListOfPaths = ctkAppLauncherInternal::readArrayValues(settings, "Paths", "path");
@@ -564,6 +586,10 @@ bool ctkAppLauncher::writeSettings(const QString& outputFilePath)
   
   settings.setValue("launcherSplashImagePath", this->Internal->LauncherSplashImagePath);
   settings.setValue("launcherSplashScreenHideDelayMs", this->Internal->LauncherSplashScreenHideDelayMs);
+  settings.setValue("additionalLauncherHelpShortArgument", this->Internal->LauncherAdditionalHelpShortArgument);
+  settings.setValue("additionalLauncherHelpLongArgument", this->Internal->LauncherAdditionalHelpLongArgument);
+  settings.setValue("additionalLauncherNoSplashShortArgument", this->Internal->LauncherAdditionalNoSplashShortArgument);
+  settings.setValue("additionalLauncherNoSplashLongArgument", this->Internal->LauncherAdditionalNoSplashLongArgument);
   
   QHash<QString, QString> applicationGroup;
   applicationGroup["path"] = this->Internal->ApplicationToLaunch;
@@ -672,6 +698,11 @@ void ctkAppLauncher::generateTemplate()
   this->Internal->MapOfEnvVars["SOMETHING_NICE"] = "Chocolate";
   this->Internal->MapOfEnvVars["SOMETHING_AWESOME"] = "Rock climbing !";
 
+  this->Internal->LauncherAdditionalHelpShortArgument = "h";
+  this->Internal->LauncherAdditionalHelpLongArgument = "help";
+  this->Internal->LauncherAdditionalNoSplashShortArgument = "ns";
+  this->Internal->LauncherAdditionalNoSplashLongArgument = "no-splash";
+
   this->Internal->ApplicationToLaunch = "/usr/bin/xcalc";
   this->Internal->LauncherSplashImagePath = "/home/john/images/splash.png";
   this->Internal->ApplicationToLaunchArguments.clear();
@@ -715,8 +746,20 @@ void ctkAppLauncher::startLauncher()
     {
     this->Internal->ApplicationToLaunchArguments = this->Internal->Parser.unparsedArguments();
     }
-    
+
+  QStringList additionalArgs;
+  additionalArgs << this->Internal->LauncherAdditionalHelpShortArgument
+      << this->Internal->LauncherAdditionalHelpLongArgument
+      << this->Internal->LauncherAdditionalNoSplashShortArgument
+      << this->Internal->LauncherAdditionalNoSplashLongArgument;
+  foreach(const QString& additionalArg, additionalArgs)
+    {
+    if (!additionalArg.isEmpty() &&
+        this->Internal->Parser.unparsedArguments().contains(additionalArg))
+      {
+      this->Internal->ApplicationToLaunchArguments.prepend(additionalArg);
+      }
+    }
+
   this->startApplication();
 }
-
-

@@ -94,6 +94,10 @@ public:
   QString                         DefaultApplicationToLaunchArguments;
   QString                         LauncherName;
   QString                         LauncherDir;
+  QString                         LauncherAdditionalHelpShortArgument;
+  QString                         LauncherAdditionalHelpLongArgument;
+  QString                         LauncherAdditionalNoSplashShortArgument;
+  QString                         LauncherAdditionalNoSplashLongArgument;
   QStringList                     ListOfPaths;
   QStringList                     ListOfLibraryPaths;
   QHash<QString, QString>         MapOfEnvVars;
