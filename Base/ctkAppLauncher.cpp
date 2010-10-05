@@ -28,6 +28,7 @@ ctkAppLauncherInternal::ctkAppLauncherInternal()
   this->LauncherSplashScreenHideDelayMs = -1;
   this->DefaultLauncherSplashImagePath = ":Images/ctk-splash.png";
   this->DefaultLauncherSplashScreenHideDelayMs = 0;
+  this->LauncherSettingSubDirs << "." << "bin" << "lib";
 
 #if defined(WIN32) || defined(_WIN32)
   this->PathSep = ";";
@@ -444,7 +445,7 @@ int ctkAppLauncher::processArguments()
       QString("LauncherName [%1]").arg(this->Internal->LauncherName));
 
   this->Internal->reportInfo(
-      QString("SettingsFileName [%1]").arg(this->settingsFileName()));
+      QString("SettingsFileName [%1]").arg(this->findSettingFile()));
 
   if (this->Internal->ParsedArgs.value("launcher-help").toBool())
     {
@@ -484,16 +485,24 @@ int ctkAppLauncher::processArguments()
 }
 
 // --------------------------------------------------------------------------
-QString ctkAppLauncher::settingsFileName()const
+QString ctkAppLauncher::findSettingFile()const
 {
   if (!this->Internal->Initialized)
     {
     return QString();
     }
-    
-  QString fileName = 
-    QString("%1/%2LauncherSettings.ini").arg(this->Internal->LauncherDir).arg(this->Internal->LauncherName);
-  return fileName; 
+
+  foreach(const QString& subdir, this->Internal->LauncherSettingSubDirs)
+    {
+    QString fileName = QString("%1/%2/%3LauncherSettings.ini").
+                       arg(this->Internal->LauncherDir).arg(subdir).
+                       arg(this->Internal->LauncherName);
+    if (QFile::exists(fileName))
+      {
+      return fileName;
+      }
+    }
+  return QString();
 }
 
 // --------------------------------------------------------------------------
@@ -724,7 +733,22 @@ void ctkAppLauncher::startLauncher()
     return;
     }
 
-  if (!this->readSettings(this->settingsFileName()))
+  QString settingFileName = this->findSettingFile();
+  if (settingFileName.isEmpty())
+    {
+    QString msg = QString("Launcher setting file [%1LauncherSettings.ini] does NOT exist in "
+                          "any of these directories:\n").arg(this->Internal->LauncherName);
+    foreach(const QString& subdir, this->Internal->LauncherSettingSubDirs)
+      {
+      msg.append(QString("%1/%2\n").arg(this->Internal->LauncherDir).arg(subdir));
+      }
+    this->Internal->reportError(msg);
+
+    this->Internal->Application->exit(EXIT_FAILURE);
+    return;
+    }
+
+  if (!this->readSettings(settingFileName))
     {
     this->Internal->Application->exit(EXIT_FAILURE);
     return;

@@ -41,8 +41,9 @@ public:
   int processArguments();
   
   /// Return associated settingsFileName
-  /// Will return an empty string if the object is NOT initialized
-  QString settingsFileName()const;
+  /// Will return an empty string if the object is NOT initialized or
+  /// if the file does NOT exist
+  QString findSettingFile()const;
   
   /// Read/Write settings
   /// Will return False if the object is NOT initialized

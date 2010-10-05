@@ -94,6 +94,7 @@ public:
   QString                         DefaultApplicationToLaunchArguments;
   QString                         LauncherName;
   QString                         LauncherDir;
+  QStringList                     LauncherSettingSubDirs;
   QString                         LauncherAdditionalHelpShortArgument;
   QString                         LauncherAdditionalHelpLongArgument;
   QString                         LauncherAdditionalNoSplashShortArgument;
