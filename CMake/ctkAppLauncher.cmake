@@ -118,7 +118,7 @@ MACRO(ctkAppLauncherConfigure)
   #-----------------------------------------------------------------------------
   # Settings shared between the build tree and install tree.
   EXECUTE_PROCESS(COMMAND ${CMAKE_COMMAND} -E copy_if_different 
-    ${CTKAPPLAUNCHER_EXECUTABLE} ${CTKAPPLAUNCHER_DESTINATION_DIR}/${CTKAPPLAUNCHER_APPLICATION_NAME})
+    ${CTKAPPLAUNCHER_EXECUTABLE} ${CTKAPPLAUNCHER_DESTINATION_DIR}/${CTKAPPLAUNCHER_APPLICATION_NAME}${CMAKE_EXECUTABLE_SUFFIX})
   
   IF(DEFINED CTKAPPLAUNCHER_SPLASH_IMAGE_PATH)
     EXECUTE_PROCESS(COMMAND ${CMAKE_COMMAND} -E copy_if_different 
