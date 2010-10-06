@@ -11,8 +11,8 @@ cmake_minimum_required(VERSION 2.8)
 
 #
 # For additional information, 
-# See http://github.com/jcfr/CTKAppLauncher/raw/master/CMake/ctkAppLauncherDashboardScript.EXAMPLE.cmake
-# See http://github.com/jcfr/CTKAppLauncher/raw/master/CMake/ctkAppLauncherDashboardDriverScript.cmake
+# See http://github.com/commontk/AppLauncher/raw/master/CMake/ctkAppLauncherDashboardScript.EXAMPLE.cmake
+# See http://github.com/commontk/AppLauncher/raw/master/CMake/ctkAppLauncherDashboardDriverScript.cmake
 #
 
 #
@@ -110,7 +110,7 @@ ENDMACRO()
 #
 # Download and include dashboard driver script 
 #
-set(url http://github.com/jcfr/CTKAppLauncher/raw/master/CMake/ctkAppLauncherDashboardDriverScript.cmake)
+set(url http://github.com/commontk/AppLauncher/raw/master/CMake/ctkAppLauncherDashboardDriverScript.cmake)
 set(dest ${CTEST_SCRIPT_DIRECTORY}/${CTEST_SCRIPT_NAME}.driver)
 downloadFile(${url} ${dest})
 INCLUDE(${dest})

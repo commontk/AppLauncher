@@ -40,7 +40,7 @@ foreach(var ${expected_variables})
   endif()
 endforeach()
 
-set(git_repository http://github.com/jcfr/CTKAppLauncher.git)
+set(git_repository http://github.com/commontk/AppLauncher.git)
 
 # Should binary directory be cleaned?
 set(empty_binary_directory FALSE)
