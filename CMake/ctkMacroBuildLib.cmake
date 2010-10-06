@@ -153,11 +153,11 @@ MACRO(ctkMacroBuildLib)
   SET(CTK_BASE_LIBRARIES ${my_libs} ${lib_name} CACHE INTERNAL "CTK base libraries" FORCE)
   
   # Install headers
-  FILE(GLOB headers "${CMAKE_CURRENT_SOURCE_DIR}/*.h")
-  INSTALL(FILES
-    ${headers}
-    ${dynamicHeaders}
-    DESTINATION ${CTK_INSTALL_INCLUDE_DIR} COMPONENT Development
-    )
+  #FILE(GLOB headers "${CMAKE_CURRENT_SOURCE_DIR}/*.h")
+  #INSTALL(FILES
+  #  ${headers}
+  #  ${dynamicHeaders}
+  #  DESTINATION ${CTK_INSTALL_INCLUDE_DIR} COMPONENT Development
+  #  )
 
 ENDMACRO()
