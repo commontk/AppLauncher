@@ -60,6 +60,15 @@ FOREACH(type LIBRARY RUNTIME ARCHIVE)
 ENDFOREACH()
 
 #-----------------------------------------------------------------------------
+# CTKAppLauncher version number.  An even minor number corresponds to releases.
+#
+SET(CTKAppLauncher_MAJOR_VERSION 0)
+SET(CTKAppLauncher_MINOR_VERSION 1)
+SET(CTKAppLauncher_BUILD_VERSION 0)
+SET(CTKAppLauncher_VERSION
+    "${CTKAppLauncher_MAJOR_VERSION}.${CTKAppLauncher_MINOR_VERSION}.${CTKAppLauncher_BUILD_VERSION}")
+
+#-----------------------------------------------------------------------------
 # Install directories, used for install rules.
 #
 SET(CTK_INSTALL_BIN_DIR "bin")
@@ -187,10 +196,17 @@ TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${CTK_BASE_LIBRARIES})
 
 # Set labels associated with the target.
 SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES LABELS ctkAppLauncher)
-  
+
 IF(BUILD_TESTING)
   ADD_SUBDIRECTORY(Testing)
 ENDIF()
+
+# Install rules
+INSTALL(TARGETS ${PROJECT_NAME}
+  RUNTIME DESTINATION ${CTK_INSTALL_BIN_DIR} COMPONENT Runtime
+  LIBRARY DESTINATION ${CTK_INSTALL_LIB_DIR} COMPONENT Runtime
+  ARCHIVE DESTINATION ${CTK_INSTALL_LIB_DIR} COMPONENT Development)
+
 INSTALL(FILES
   CMake/ctkAppLauncher.cmake
   DESTINATION CMake COMPONENT Development)
@@ -199,3 +215,5 @@ INSTALL(FILES
   CTKAppLauncherSettings.ini.in
   DESTINATION ${CTK_INSTALL_BIN_DIR} COMPONENT Development)
 
+# Setup CPack
+INCLUDE(CTKAppLauncherCPack.cmake)
