@@ -74,10 +74,10 @@ int ctkAppLauncherTest1(int argc, char* argv[])
 
   helpText.clear();
   appLauncher.displayHelp(helpText);
-  if (expectedHelpText != QString::fromStdString(helpText.str()))
+  if (expectedHelpText != QString(helpText.str().c_str()))
     {
     qCritical() << "Test3 - Problem with displayHelp() function - expected\n-----\n"
-        << expectedHelpText << "\n-----\ncurrent\n-----\n" << QString::fromStdString(helpText.str());
+        << expectedHelpText << "\n-----\ncurrent\n-----\n" << QString(helpText.str().c_str());
     return EXIT_FAILURE;
     }
 
