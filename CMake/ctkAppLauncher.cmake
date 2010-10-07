@@ -116,8 +116,11 @@ MACRO(ctkAppLauncherConfigure)
     ENDIF()
   ENDFOREACH()
   
+  # Note: Since the target associated with APPLICATION_PATH doesn't exist at configure time, let's
+  # not check if it exists
+  
   # Sanity checks - Do files/directories exist ?
-  FOREACH(varname EXECUTABLE APPLICATION_PATH SETTINGS_TEMPLATE DESTINATION_DIR)
+  FOREACH(varname EXECUTABLE SETTINGS_TEMPLATE DESTINATION_DIR)
     IF(NOT EXISTS ${CTKAPPLAUNCHER_${varname}})
       MESSAGE(FATAL_ERROR "${varname} [${CTKAPPLAUNCHER_${varname}}] doesn't seem to exist !")
     ENDIF()
