@@ -152,7 +152,7 @@ MACRO(ctkAppLauncherConfigure)
   # Build type
   SET(CTKAPPLAUNCHER_BUILD_TYPE)
   IF(WIN32)
-    SET(CTKAPPLAUNCHER_BUILD_TYPE ${CTKAPPLAUNCHER_BUILD_TYPE})
+    SET(CTKAPPLAUNCHER_BUILD_TYPE ${CMAKE_BUILD_TYPE})
   ENDIF()
   
   #-----------------------------------------------------------------------------
