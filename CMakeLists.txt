@@ -150,16 +150,16 @@ MARK_AS_ADVANCED(ADDITIONAL_CXX_FLAGS)
 IF(WITH_COVERAGE)
   IF(CMAKE_CXX_COMPILER_ID AND ${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
     SET(coverage_flags "-g -fdiagnostics-show-option -fprofile-arcs -ftest-coverage -O3 -DNDEBUG")
-    SET(COVERAGE_CXX_FLAGS ${coverage_flags})
     SET(COVERAGE_C_FLAGS ${coverage_flags})
+    SET(COVERAGE_CXX_FLAGS ${coverage_flags})
   ENDIF()
 ENDIF()
 
 #-----------------------------------------------------------------------------
 # Set C/CXX Flags
 #
-SET(CMAKE_CXX_FLAGS "${COVERAGE_C_FLAGS} ${ADDITIONAL_C_FLAGS}" CACHE STRING "CMake C Flags" FORCE)
-SET(CMAKE_C_FLAGS "${COVERAGE_CXX_FLAGS} ${ADDITIONAL_CXX_FLAGS}" CACHE STRING "CMake CXX Flags" FORCE)
+SET(CMAKE_C_FLAGS "${COVERAGE_C_FLAGS} ${ADDITIONAL_C_FLAGS}" CACHE STRING "CMake C Flags" FORCE)
+SET(CMAKE_CXX_FLAGS "${COVERAGE_CXX_FLAGS} ${ADDITIONAL_CXX_FLAGS}" CACHE STRING "CMake CXX Flags" FORCE)
 
 
 #-----------------------------------------------------------------------------
