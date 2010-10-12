@@ -54,7 +54,7 @@ execute_process(
   RESULT_VARIABLE rv
   )
   
-if(NOT rv)
-  message(FATAL_ERROR "Since ${application_name} has been build with SKIP_BUILD_RPATH ON, "
+if(NOT rv AND NOT APPLE)
+  message(FATAL_ERROR "Since ${application_name} has been build with SKIP_BUILD_RPATH ON"
                       "Without the help of the launcher, the application shouldn't start !")
 endif()
