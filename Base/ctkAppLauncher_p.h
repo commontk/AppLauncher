@@ -59,6 +59,7 @@ public:
   static void writeKeyValuePairs(QSettings& settings, const QHash<QString, QString>& map,
   const QString& groupName);
 
+  QString invalidSettingsMessage()const;
   bool verbose()const;
   bool disableSplash()const;
 
@@ -95,6 +96,7 @@ public:
   QString                         LauncherName;
   QString                         LauncherDir;
   QStringList                     LauncherSettingSubDirs;
+  bool                            ValidSettingsFile;
   QString                         LauncherAdditionalHelpShortArgument;
   QString                         LauncherAdditionalHelpLongArgument;
   QString                         LauncherAdditionalNoSplashShortArgument;

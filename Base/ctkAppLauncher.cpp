@@ -29,6 +29,7 @@ ctkAppLauncherInternal::ctkAppLauncherInternal()
   this->DefaultLauncherSplashImagePath = ":Images/ctk-splash.png";
   this->DefaultLauncherSplashScreenHideDelayMs = 0;
   this->LauncherSettingSubDirs << "." << "bin" << "lib";
+  this->ValidSettingsFile = false;
 
 #if defined(WIN32) || defined(_WIN32)
   this->PathSep = ";";
@@ -109,6 +110,11 @@ bool ctkAppLauncherInternal::processApplicationToLaunchArgument()
     {
     this->reportError(
       QString("Application does NOT exists [%1]").arg(this->ApplicationToLaunch));
+
+    if (!this->ParsedArgs.contains("launch") && !this->ValidSettingsFile)
+      {
+      this->reportError("--launch argument has NOT been specified");
+      }
     return false;
     }
   
@@ -190,6 +196,18 @@ void ctkAppLauncherInternal::writeKeyValuePairs(QSettings& settings,
     settings.setValue(key, map[key]);
     }
   settings.endGroup();
+}
+
+// --------------------------------------------------------------------------
+QString ctkAppLauncherInternal::invalidSettingsMessage() const
+{
+  QString msg = QString("Launcher setting file [%1LauncherSettings.ini] does NOT exist in "
+                        "any of these directories:\n").arg(this->LauncherName);
+  foreach(const QString& subdir, this->LauncherSettingSubDirs)
+    {
+    msg.append(QString("%1/%2\n").arg(this->LauncherDir).arg(subdir));
+    }
+  return msg;
 }
 
 // --------------------------------------------------------------------------
@@ -516,8 +534,8 @@ bool ctkAppLauncher::readSettings(const QString& fileName)
   // Check if settings file exists
   if (!QFile::exists(fileName))
     {
-    this->Internal->reportError(
-      QString("Launcher setting file does NOT exist [%1]").arg(fileName));
+//    this->Internal->reportError(
+//      QString("Launcher setting file does NOT exist [%1]").arg(fileName));
     return false;
     }
     
@@ -734,29 +752,21 @@ void ctkAppLauncher::startLauncher()
     }
 
   QString settingFileName = this->findSettingFile();
-  if (settingFileName.isEmpty())
-    {
-    QString msg = QString("Launcher setting file [%1LauncherSettings.ini] does NOT exist in "
-                          "any of these directories:\n").arg(this->Internal->LauncherName);
-    foreach(const QString& subdir, this->Internal->LauncherSettingSubDirs)
-      {
-      msg.append(QString("%1/%2\n").arg(this->Internal->LauncherDir).arg(subdir));
-      }
-    this->Internal->reportError(msg);
 
-    this->Internal->Application->exit(EXIT_FAILURE);
-    return;
-    }
-
-  if (!this->readSettings(settingFileName))
-    {
-    this->Internal->Application->exit(EXIT_FAILURE);
-    return;
-    }
+  this->Internal->ValidSettingsFile = this->readSettings(settingFileName);
+//  if (!this->readSettings(settingFileName))
+//    {
+//    this->Internal->Application->exit(EXIT_FAILURE);
+//    return;
+//    }
 
   int status = this->processArguments();
   if (status == ctkAppLauncher::ExitWithError)
     {
+    if (!this->Internal->ValidSettingsFile)
+      {
+      this->Internal->reportError(this->Internal->invalidSettingsMessage());
+      }
     this->Internal->Application->exit(EXIT_FAILURE);
     return;
     }
