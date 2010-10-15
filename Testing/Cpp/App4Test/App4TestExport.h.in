@@ -1,15 +1,19 @@
-// .NAME __@MY_EXPORT_HEADER_PREFIX@Export - manage Windows system differences
+// .NAME __@MY_LIBNAME@Export - manage Windows system differences
 // .SECTION Description
-// The __@MY_EXPORT_HEADER_PREFIX@Export captures some system differences between Unix
+// The __@MY_LIBNAME@Export captures some system differences between Unix
 // and Windows operating systems.
 
-#ifndef __@MY_EXPORT_HEADER_PREFIX@Export_h
-#define __@MY_EXPORT_HEADER_PREFIX@Export_h
+#ifndef __@MY_LIBNAME@Export_h
+#define __@MY_LIBNAME@Export_h
 
-#if defined(@MY_LIBNAME@_EXPORTS)
- #define @MY_LIBRARY_EXPORT_DIRECTIVE@ _declspec( dllexport )
+#if defined(_WIN32)
+  #if defined(@MY_LIBNAME@_EXPORTS)
+   #define @MY_LIBNAME@_EXPORT _declspec( dllexport )
+  #else
+   #define @MY_LIBNAME@_EXPORT _declspec( dllimport )
+  #endif
 #else
- #define @MY_LIBRARY_EXPORT_DIRECTIVE@ _declspec( dllimport )
+  #define @MY_LIBNAME@_EXPORT
 #endif
 
 #endif

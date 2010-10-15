@@ -1,7 +1,9 @@
 #ifndef __app4TestLib@LIBSUFFIX@_h
 #define __app4TestLib@LIBSUFFIX@_h
 
-class app4TestLib@LIBSUFFIX@
+#include "app4TestLib@LIBSUFFIX@Export.h"
+
+class app4TestLib@LIBSUFFIX@_EXPORT app4TestLib@LIBSUFFIX@
 {
 public:
   app4TestLib@LIBSUFFIX@();

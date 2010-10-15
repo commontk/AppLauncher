@@ -132,6 +132,57 @@ IF(BUILD_TESTING)
 ENDIF()
 
 #-----------------------------------------------------------------------------
+# Additional Linker Flags
+#
+
+SET(ADDITIONAL_EXE_LINKER_FLAGS_RELEASE "" 
+  CACHE STRING "Additional flags used by the linker during release builds.")
+MARK_AS_ADVANCED(ADDITIONAL_EXE_LINKER_FLAGS_RELEASE)
+
+SET(ADDITIONAL_EXE_LINKER_FLAGS_MINSIZEREL "" 
+  CACHE STRING "Additional flags used by the linker during release minsize builds.")
+MARK_AS_ADVANCED(ADDITIONAL_EXE_LINKER_FLAGS_MINSIZEREL)
+
+SET(ADDITIONAL_EXE_LINKER_FLAGS_RELWITHDEBINFO "" 
+  CACHE STRING "Additional flags used by the linker during Release with Debug Info builds.")
+MARK_AS_ADVANCED(ADDITIONAL_EXE_LINKER_FLAGS_RELWITHDEBINFO)
+
+SET(ADDITIONAL_EXE_LINKER_FLAGS_DEBUG "" 
+  CACHE STRING "Additional flags used by the linker during debug builds.")
+MARK_AS_ADVANCED(ADDITIONAL_EXE_LINKER_FLAGS_DEBUG)
+
+#-----------------------------------------------------------------------------
+# Specific Linker Flags
+#
+SET(SPECIFIC_EXE_LINKER_FLAGS_RELEASE)
+SET(SPECIFIC_EXE_LINKER_FLAGS_MINSIZEREL)
+SET(SPECIFIC_EXE_LINKER_FLAGS_RELWITHDEBINFO)
+SET(SPECIFIC_EXE_LINKER_FLAGS_DEBUG)
+
+IF(MSVC90)
+  SET(SPECIFIC_EXE_LINKER_FLAGS_DEBUG "/NODEFAULTLIB:msvcrtd.lib")
+ENDIF()
+
+#-----------------------------------------------------------------------------
+# Set Linker Flags
+#
+SET(CMAKE_EXE_LINKER_FLAGS_RELEASE 
+  "${ADDITIONAL_EXE_LINKER_FLAGS_RELEASE} ${SPECIFIC_EXE_LINKER_FLAGS_RELEASE}" 
+  CACHE STRING "Flags used by the linker during release builds." FORCE)
+  
+SET(CMAKE_EXE_LINKER_FLAGS_MINSIZEREL 
+  "${ADDITIONAL_EXE_LINKER_FLAGS_MINSIZEREL} ${SPECIFIC_EXE_LINKER_FLAGS_MINSIZEREL}" 
+  CACHE STRING "Flags used by the linker during release minsize builds." FORCE)
+  
+SET(CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO 
+  "${ADDITIONAL_EXE_LINKER_FLAGS_RELWITHDEBINFO} ${SPECIFIC_EXE_LINKER_FLAGS_RELWITHDEBINFO}" 
+  CACHE STRING "Flags used by the linker during Release with Debug Info builds." FORCE)
+  
+SET(CMAKE_EXE_LINKER_FLAGS_DEBUG 
+  "${ADDITIONAL_EXE_LINKER_FLAGS_DEBUG} ${SPECIFIC_EXE_LINKER_FLAGS_DEBUG}" 
+  CACHE STRING "Flags used by the linker during debug builds." FORCE)
+
+#-----------------------------------------------------------------------------
 # Coverage
 #
 OPTION(WITH_COVERAGE "Enable/Disable coverage" OFF)
@@ -156,10 +207,18 @@ IF(WITH_COVERAGE)
 ENDIF()
 
 #-----------------------------------------------------------------------------
+# Compiler specific C/CXX Flags
+#
+SET(COMPILER_SPECIFIC_CXX_FLAGS)
+IF(MSVC90)
+  SET(COMPILER_SPECIFIC_CXX_FLAGS "/EHsc")
+ENDIF()
+
+#-----------------------------------------------------------------------------
 # Set C/CXX Flags
 #
 SET(CMAKE_C_FLAGS "${COVERAGE_C_FLAGS} ${ADDITIONAL_C_FLAGS}" CACHE STRING "CMake C Flags" FORCE)
-SET(CMAKE_CXX_FLAGS "${COVERAGE_CXX_FLAGS} ${ADDITIONAL_CXX_FLAGS}" CACHE STRING "CMake CXX Flags" FORCE)
+SET(CMAKE_CXX_FLAGS "${COVERAGE_CXX_FLAGS} ${ADDITIONAL_CXX_FLAGS} ${COMPILER_SPECIFIC_CXX_FLAGS}" CACHE STRING "CMake CXX Flags" FORCE)
 
 
 #-----------------------------------------------------------------------------

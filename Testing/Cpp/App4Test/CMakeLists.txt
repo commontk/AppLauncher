@@ -2,6 +2,12 @@ cmake_minimum_required(VERSION 2.8)
 
 project(App4Test)
 
+# Disable warning C4996: [...] This function or variable may be unsafe. [...]
+# To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details
+IF(MSVC90)
+  add_definitions(-D_CRT_SECURE_NO_WARNINGS)
+ENDIF()
+
 SET(APP4TEST_LIBRARIES CACHE INTERNAL "App4Test libraries" FORCE)
 SET(APP4TEST_INCLUDE_DIRS CACHE INTERNAL "App4Test include dirs" FORCE)
 
