@@ -159,6 +159,9 @@ SET(SPECIFIC_EXE_LINKER_FLAGS_MINSIZEREL)
 SET(SPECIFIC_EXE_LINKER_FLAGS_RELWITHDEBINFO)
 SET(SPECIFIC_EXE_LINKER_FLAGS_DEBUG)
 
+IF(MSVC90)
+  SET(SPECIFIC_EXE_LINKER_FLAGS_DEBUG "/NODEFAULTLIB:msvcrtd.lib")
+ENDIF()
 
 #-----------------------------------------------------------------------------
 # Set Linker Flags
