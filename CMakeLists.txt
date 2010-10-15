@@ -132,6 +132,22 @@ IF(BUILD_TESTING)
 ENDIF()
 
 #-----------------------------------------------------------------------------
+# Additional Linker Flags
+#
+SET(ADDITIONAL_EXE_LINKER_FLAGS "" CACHE STRING "Additional flags used by the linker.")
+MARK_AS_ADVANCED(ADDITIONAL_EXE_LINKER_FLAGS)
+
+#-----------------------------------------------------------------------------
+# Specific Linker Flags
+#
+SET(SPECIFIC_EXE_LINKER_FLAGS)
+
+#-----------------------------------------------------------------------------
+# Set Linker Flags
+#
+SET(CMAKE_EXE_LINKER_FLAGS "${ADDITIONAL_EXE_LINKER_FLAGS} ${SPECIFIC_EXE_LINKER_FLAGS}" CACHE STRING "Flags used by the linker." FORCE)
+
+#-----------------------------------------------------------------------------
 # Coverage
 #
 OPTION(WITH_COVERAGE "Enable/Disable coverage" OFF)
