@@ -1,8 +1,8 @@
-# File name: ctkAppLauncherDashboardDriverScript.cmake
 #
 # OS: Ubuntu 10.04  2.6.32-22-generic
 # Hardware: x86_64 GNU/Linux
 # GPU: NA
+#
 
 # Note: The specific version and processor type of this machine should be reported in the 
 # header above. Indeed, this file will be send to the dashboard as a NOTE file. 
@@ -10,9 +10,7 @@
 cmake_minimum_required(VERSION 2.8)
 
 #
-# For additional information, 
-# See http://github.com/commontk/AppLauncher/raw/master/CMake/ctkAppLauncherDashboardScript.EXAMPLE.cmake
-# See http://github.com/commontk/AppLauncher/raw/master/CMake/ctkAppLauncherDashboardDriverScript.cmake
+# For additional information, see http://www.commontk.org/index.php/CTKAppLauncher:Dashboard_setup
 #
 
 #
@@ -32,7 +30,7 @@ set(CTEST_CMAKE_GENERATOR "Unix Makefiles")
 #
 set(WITH_KWSTYLE FALSE)
 set(WITH_MEMCHECK FALSE)
-set(WITH_COVERAGE TRUE)
+set(WITH_COVERAGE FALSE)
 set(WITH_DOCUMENTATION FALSE)
 #set(DOCUMENTATION_ARCHIVES_OUTPUT_DIRECTORY ) # for example: $ENV{HOME}/Projects/Doxygen
 set(CTEST_BUILD_CONFIGURATION "Release")
@@ -67,9 +65,9 @@ set(ADDITIONNAL_CMAKECACHE_OPTION "
 set(TEST_TO_EXCLUDE_REGEX "")
 
 # set any extra environment variables here
-set(ENV{DISPLAY} ":0")
-set(ENV{CXX} "/usr/bin/g++")
-set(ENV{CC} "/usr/bin/gcc")
+if(UNIX)
+  set(ENV{DISPLAY} ":0")
+endif()
 
 find_program(CTEST_COVERAGE_COMMAND NAMES gcov)
 find_program(CTEST_MEMORYCHECK_COMMAND NAMES valgrind)
