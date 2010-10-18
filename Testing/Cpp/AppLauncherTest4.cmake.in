@@ -28,8 +28,9 @@ endif()
 set(launcher_dir ${launcher_binary_dir}/bin)
 if(WIN32)
   set(launcher_dir ${launcher_dir}/${launcher_build_type})
+  set(CMAKE_EXECUTABLE_SUFFIX ".exe")
 endif()
-set(launcher ${launcher_dir}/${launcher_name})
+set(launcher ${launcher_dir}/${launcher_name}${CMAKE_EXECUTABLE_SUFFIX})
 
 
 # --------------------------------------------------------------------------
@@ -52,7 +53,7 @@ if(WIN32)
 endif()
 set(application_name App4Test)
 
-set(application ${application_dir}/${application_name})
+set(application ${application_dir}/${application_name}${CMAKE_EXECUTABLE_SUFFIX})
 
 # --------------------------------------------------------------------------
 # Check if application exists
