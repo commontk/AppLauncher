@@ -77,7 +77,10 @@ endif()
 
 # --------------------------------------------------------------------------
 # Build App4Test
-set(command ${CMAKE_COMMAND} --build ${app4test_binary_dir})
+set(command ${CMAKE_COMMAND} --build ${app4test_binary_dir} --config ${app4test_build_type})
+#if(MSVC)
+#  list(APPEND command --config=${app4test_build_type})
+#endif()
 execute_process(
   COMMAND ${command}
   WORKING_DIRECTORY ${app4test_binary_dir}
