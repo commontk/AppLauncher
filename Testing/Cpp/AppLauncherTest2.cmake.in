@@ -53,6 +53,7 @@ execute_process(
   ERROR_QUIET
   OUTPUT_QUIET
   RESULT_VARIABLE rv
+  TIMEOUT 3
   )
   
 if(NOT rv AND NOT APPLE)
