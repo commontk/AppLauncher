@@ -31,10 +31,11 @@ endif()
 set(application_dir "${app4test_binary_dir}/bin")
 if(WIN32)
   set(application_dir ${application_dir}/${app4test_build_type})
+  set(CMAKE_EXECUTABLE_SUFFIX ".exe")
 endif()
 set(application_name App4Test)
 
-set(application ${application_dir}/${application_name})
+set(application ${application_dir}/${application_name}${CMAKE_EXECUTABLE_SUFFIX})
 
 # --------------------------------------------------------------------------
 # Check if application exists
