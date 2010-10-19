@@ -30,13 +30,14 @@ if(WIN32)
   set(launcher_dir ${launcher_dir}/${launcher_build_type})
   set(CMAKE_EXECUTABLE_SUFFIX ".exe")
 endif()
-set(launcher ${launcher_dir}/${launcher_name}${CMAKE_EXECUTABLE_SUFFIX})
+set(launcher ${launcher_dir}/${launcher_name})
+set(launcher_exe ${launcher}${CMAKE_EXECUTABLE_SUFFIX})
 
 
 # --------------------------------------------------------------------------
 # Check if launcher exists
-if (NOT EXISTS ${launcher})
-  message(FATAL_ERROR "Application ${launcher} doesn't exists !")
+if (NOT EXISTS ${launcher_exe})
+  message(FATAL_ERROR "Application ${launcher_exe} doesn't exists !")
 endif()
 
 # --------------------------------------------------------------------------
@@ -74,7 +75,7 @@ ${launcher_dir}/bin
 ${launcher_dir}/lib")
 
 execute_process(
-  COMMAND ${launcher} --launcher-no-splash
+  COMMAND ${launcher_exe} --launcher-no-splash
   WORKING_DIRECTORY ${launcher_dir}
   ERROR_VARIABLE ev
   ERROR_STRIP_TRAILING_WHITESPACE
@@ -110,7 +111,7 @@ size=1
 # Attempt to start launcher from its directory
 # Since no application to launch has been specified - An error message is expected ...
 execute_process(
-  COMMAND ${launcher} --launcher-no-splash --launch 
+  COMMAND ${launcher_exe} --launcher-no-splash --launch 
   WORKING_DIRECTORY ${launcher_dir}
   ERROR_VARIABLE ev
   OUTPUT_QUIET
@@ -135,7 +136,7 @@ execute_process(
   )
 
 if(rv)
-  message(FATAL_ERROR "Test3 - [${launcher}] failed to start application [${application}] from "
+  message(FATAL_ERROR "Test3 - [${launcher_exe}] failed to start application [${application}] from "
                       "directory [${launcher_dir}]\n${ev}")
 endif()
 
@@ -143,13 +144,13 @@ endif()
 # --------------------------------------------------------------------------
 # Attempt to start launcher from an other directory
 execute_process(
-  COMMAND ${launcher} --launcher-no-splash --launch ${application}
+  COMMAND ${launcher_exe} --launcher-no-splash --launch ${application}
   WORKING_DIRECTORY ${launcher_binary_dir}
   OUTPUT_VARIABLE ov
   RESULT_VARIABLE rv
   )
 if(rv)
-  message(FATAL_ERROR "Test3 - [${launcher}] failed to start application [${application}] from "
+  message(FATAL_ERROR "Test3 - [${launcher_exe}] failed to start application [${application}] from "
                       "directory [${launcher_binary_dir}]\n${ev}")
 endif()
 
