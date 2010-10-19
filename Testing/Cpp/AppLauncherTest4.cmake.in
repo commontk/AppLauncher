@@ -256,14 +256,14 @@ execute_process(
 
 print_command_as_string("${command}")
 
-# Since we force the application to shutdown, we expect the error code to >0
+# Since we force the application to shutdown, we expect the error code to be >0
 if (NOT rv)
   message(FATAL_ERROR "Test5b - Failed to run [${launcher_exe}] with parameter --launcher-timeout\n${ev}")
 endif()
 
 # Since launcher-timeout < App4Test-timeout, file ${application}-timeout.txt should NOT exists 
 if (EXISTS ${application}-timeout.txt)
-   message(FATAL_ERROR "Test5d - Problem with flag --launcher-timeout."
+   message(FATAL_ERROR "Test5d - Problem with flag --launcher-timeout. "
                        "File [${application}-timeout.txt] should NOT exist.")
 endif()
 
