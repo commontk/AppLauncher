@@ -91,6 +91,9 @@ endif()
 # Sanity check
 
 set(library_path ${app4test_binary_dir}/libs)
+if(WIN32)
+  set(library_path ${library_path}/${app4test_build_type})
+endif()
 if (NOT EXISTS ${library_path})
   message(FATAL_ERROR "Library path [${library_path}] doesn't exist")
 endif()
