@@ -30,13 +30,14 @@ if(WIN32)
   set(launcher_dir ${launcher_dir}/${launcher_build_type})
   set(CMAKE_EXECUTABLE_SUFFIX ".exe")
 endif()
-set(launcher ${launcher_dir}/${launcher_name}${CMAKE_EXECUTABLE_SUFFIX})
+set(launcher ${launcher_dir}/${launcher_name})
+set(launcher_exe ${launcher}${CMAKE_EXECUTABLE_SUFFIX})
 
 
 # --------------------------------------------------------------------------
 # Check if launcher exists
-if (NOT EXISTS ${launcher})
-  message(FATAL_ERROR "Application ${launcher} doesn't exists !")
+if (NOT EXISTS ${launcher_exe})
+  message(FATAL_ERROR "Application ${launcher_exe} doesn't exists !")
 endif()
 
 # --------------------------------------------------------------------------
@@ -66,6 +67,9 @@ endif()
 # Sanity check
 
 set(library_path ${app4test_binary_dir}/libs)
+if(WIN32)
+  set(library_path ${library_path}/${app4test_build_type})
+endif()
 if (NOT EXISTS ${library_path})
   message(FATAL_ERROR "Library path [${library_path}] doesn't exist")
 endif()
@@ -96,7 +100,7 @@ ENDFUNCTION()
 
 # --------------------------------------------------------------------------
 # Test1 - Make sure the launcher output an error message if no application is specified
-set(command ${launcher} --launcher-no-splash)
+set(command ${launcher_exe} --launcher-no-splash)
 execute_process(
   COMMAND ${command}
   WORKING_DIRECTORY ${launcher_binary_dir}
@@ -129,7 +133,7 @@ path=this-app-do-not-exist
 size=1
 ")
 
-set(command ${launcher} --launcher-no-splash)
+set(command ${launcher_exe} --launcher-no-splash)
 execute_process(
   COMMAND ${command}
   WORKING_DIRECTORY ${launcher_binary_dir}
@@ -162,7 +166,7 @@ path=${application}
 size=1
 ")
 
-set(command ${launcher} --launcher-no-splash)
+set(command ${launcher_exe} --launcher-no-splash)
 execute_process(
   COMMAND ${command}
   WORKING_DIRECTORY ${launcher_binary_dir}
@@ -194,7 +198,7 @@ size=1
 # --------------------------------------------------------------------------
 # Test4 - Make sure the launcher works as expected if the application 
 # to launch and the associated arguments are properly set in the settings file
-set(command ${launcher} --launcher-no-splash)
+set(command ${launcher_exe} --launcher-no-splash)
 execute_process(
   COMMAND ${command}
   WORKING_DIRECTORY ${launcher_binary_dir}
@@ -206,7 +210,7 @@ execute_process(
 print_command_as_string("${command}")
 
 if (rv)
-  message(FATAL_ERROR "Test4 - [${launcher}] failed to start application [${application}] from "
+  message(FATAL_ERROR "Test4 - [${launcher_exe}] failed to start application [${application}] from "
                       "directory [${launcher_binary_dir}]\n${ev}")
 endif()
 
@@ -237,7 +241,7 @@ SOMETHING_AWESOME=Rock climbing !
 
 # --------------------------------------------------------------------------
 # Test5 - Make sure the launcher passes the environment variable to the application
-set(command ${launcher} --launcher-no-splash)
+set(command ${launcher_exe} --launcher-no-splash)
 execute_process(
   COMMAND ${command}
   WORKING_DIRECTORY ${launcher_binary_dir}
@@ -249,7 +253,7 @@ execute_process(
 print_command_as_string("${command}")
 
 if (rv)
-  message(FATAL_ERROR "Test5 - [${launcher}] failed to start application [${application}] from "
+  message(FATAL_ERROR "Test5 - [${launcher_exe}] failed to start application [${application}] from "
                       "directory [${launcher_binary_dir}]\n${ev}")
 endif()
 
@@ -281,7 +285,7 @@ size=2
 
 # --------------------------------------------------------------------------
 # Test6 - Make sure the launcher passes the PATH variable to the application
-set(command ${launcher} --launcher-no-splash)
+set(command ${launcher_exe} --launcher-no-splash)
 execute_process(
   COMMAND ${command}
   WORKING_DIRECTORY ${launcher_binary_dir}
@@ -293,7 +297,7 @@ execute_process(
 print_command_as_string("${command}")
 
 if (rv)
-  message(FATAL_ERROR "Test6 - [${launcher}] failed to start application [${application}] from "
+  message(FATAL_ERROR "Test6 - [${launcher_exe}] failed to start application [${application}] from "
                       "directory [${launcher_binary_dir}]\n${ev}")
 endif()
 
@@ -301,7 +305,7 @@ set(pathsep ":")
 if(WIN32)
   set(pathsep ";")
 endif()
-set(expected_msg "PATH=/home/john/app1:/home/john/app2")
+set(expected_msg "PATH=/home/john/app1${pathsep}/home/john/app2")
 string(REGEX MATCH ${expected_msg} current_msg ${ov})
 if ("${current_msg}" STREQUAL "")
   message(FATAL_ERROR "Test6 - Failed to pass PATH variable from ${launcher_name} "

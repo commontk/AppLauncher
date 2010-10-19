@@ -30,13 +30,14 @@ if(WIN32)
   set(launcher_dir ${launcher_dir}/${launcher_build_type})
   set(CMAKE_EXECUTABLE_SUFFIX ".exe")
 endif()
-set(launcher ${launcher_dir}/${launcher_name}${CMAKE_EXECUTABLE_SUFFIX})
+set(launcher ${launcher_dir}/${launcher_name})
+set(launcher_exe ${launcher}${CMAKE_EXECUTABLE_SUFFIX})
 
 
 # --------------------------------------------------------------------------
 # Check if launcher exists
-if (NOT EXISTS ${launcher})
-  message(FATAL_ERROR "Application ${launcher} doesn't exists !")
+if (NOT EXISTS ${launcher_exe})
+  message(FATAL_ERROR "Application ${launcher_exe} doesn't exists !")
 endif()
 
 # --------------------------------------------------------------------------
@@ -66,6 +67,9 @@ endif()
 # Sanity check
 
 set(library_path ${app4test_binary_dir}/libs)
+if(WIN32)
+  set(library_path ${library_path}/${app4test_build_type})
+endif()
 if (NOT EXISTS ${library_path})
   message(FATAL_ERROR "Library path [${library_path}] doesn't exist")
 endif()
@@ -96,7 +100,7 @@ ENDFUNCTION()
 
 # --------------------------------------------------------------------------
 # Test1 - Pass arguments to the application using the launcher
-set(command ${launcher} --launcher-no-splash --launch ${application} --foo myarg --list item1 item2 item3 --verbose)
+set(command ${launcher_exe} --launcher-no-splash --launch ${application} --foo myarg --list item1 item2 item3 --verbose)
 execute_process(
   COMMAND ${command}
   WORKING_DIRECTORY ${launcher_binary_dir}
@@ -108,7 +112,7 @@ execute_process(
 print_command_as_string("${command}")
 
 if (rv)
-  message(FATAL_ERROR "Test1 - [${launcher}] failed to start application [${application}] from "
+  message(FATAL_ERROR "Test1 - [${launcher_exe}] failed to start application [${application}] from "
                       "directory [${launcher_binary_dir}]\n${ev}")
 endif()
 
@@ -121,7 +125,7 @@ endif()
 
 # --------------------------------------------------------------------------
 # Test2 - Check if flag --launcher-verbose works as expected
-set(command ${launcher} --launcher-no-splash --launcher-verbose --launch ${application})
+set(command ${launcher_exe} --launcher-no-splash --launcher-verbose --launch ${application})
 execute_process(
   COMMAND ${command}
   WORKING_DIRECTORY ${launcher_binary_dir}
@@ -133,7 +137,7 @@ execute_process(
 print_command_as_string("${command}")
 
 if (rv)
-  message(FATAL_ERROR "Test2 - [${launcher}] failed to start application [${application}] from "
+  message(FATAL_ERROR "Test2 - [${launcher_exe}] failed to start application [${application}] from "
                       "directory [${launcher_binary_dir}]\n${ev}")
 endif()
 
@@ -145,7 +149,7 @@ endif()
 
 # --------------------------------------------------------------------------
 # Test3 - Check if flag --launcher-help works as expected
-set(command ${launcher} --launcher-help --launch ${application})
+set(command ${launcher_exe} --launcher-help --launch ${application})
 execute_process(
   COMMAND ${command}
   WORKING_DIRECTORY ${launcher_binary_dir}
@@ -157,7 +161,7 @@ execute_process(
 print_command_as_string("${command}")
 
 if (rv)
-  message(FATAL_ERROR "Test3 - [${launcher}] failed to start application [${application}] from "
+  message(FATAL_ERROR "Test3 - [${launcher_exe}] failed to start application [${application}] from "
                       "directory [${launcher_binary_dir}]\n${ev}")
 endif()
 
@@ -190,7 +194,7 @@ execute_process(
   
 # --------------------------------------------------------------------------
 # Test4 - Check if flag --launcher-generate-template works as expected
-set(command ${launcher} --launcher-generate-template)
+set(command ${launcher_exe} --launcher-generate-template)
 execute_process(
   COMMAND ${command}
   WORKING_DIRECTORY ${launcher_binary_dir}
@@ -201,7 +205,7 @@ execute_process(
 print_command_as_string("${command}")
 
 if (rv)
-  message(FATAL_ERROR "Test4 - Failed to run [${launcher}] with parameter --launcher-generate-template\n${ev}")
+  message(FATAL_ERROR "Test4 - Failed to run [${launcher_exe}] with parameter --launcher-generate-template\n${ev}")
 endif()
 
 if (NOT EXISTS ${launcher}LauncherSettings.ini.template)
@@ -217,7 +221,7 @@ execute_process(
   
 # --------------------------------------------------------------------------
 # Test5 - Check if flag --launcher-timeout works as expected
-set(command ${launcher} --launcher-no-splash --launcher-timeout 4 --launch ${application} --test-timeout)
+set(command ${launcher_exe} --launcher-no-splash --launcher-timeout 4 --launch ${application} --test-timeout)
 execute_process(
   COMMAND ${command}
   WORKING_DIRECTORY ${launcher_binary_dir}
@@ -227,7 +231,7 @@ execute_process(
 print_command_as_string("${command}")
 
 if (NOT "${rv}" STREQUAL "3")
-  message(FATAL_ERROR "Test5a - Failed to run [${launcher}] with parameter --launcher-timeout\n${ev}")
+  message(FATAL_ERROR "Test5a - Failed to run [${launcher_exe}] with parameter --launcher-timeout\n${ev}")
 endif()
 
 # Since launcher-timeout > App4Test-timeout, file ${application}-timeout.txt should exists 
@@ -242,7 +246,7 @@ execute_process(
   )
 
 # Re-try with launcher-timeout < App4Test-timeout
-set(command ${launcher} --launcher-no-splash --launcher-timeout 1 --launch ${application} --test-timeout)
+set(command ${launcher_exe} --launcher-no-splash --launcher-timeout 1 --launch ${application} --test-timeout)
 execute_process(
   COMMAND ${command}
   WORKING_DIRECTORY ${launcher_binary_dir}
@@ -252,14 +256,14 @@ execute_process(
 
 print_command_as_string("${command}")
 
-# Since we force the application to shutdown, we expect the error code to >0
+# Since we force the application to shutdown, we expect the error code to be >0
 if (NOT rv)
-  message(FATAL_ERROR "Test5b - Failed to run [${launcher}] with parameter --launcher-timeout\n${ev}")
+  message(FATAL_ERROR "Test5b - Failed to run [${launcher_exe}] with parameter --launcher-timeout\n${ev}")
 endif()
 
 # Since launcher-timeout < App4Test-timeout, file ${application}-timeout.txt should NOT exists 
 if (EXISTS ${application}-timeout.txt)
-   message(FATAL_ERROR "Test5d - Problem with flag --launcher-timeout."
+   message(FATAL_ERROR "Test5d - Problem with flag --launcher-timeout. "
                        "File [${application}-timeout.txt] should NOT exist.")
 endif()
 
