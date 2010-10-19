@@ -327,6 +327,7 @@ void ctkAppLauncherInternal::runProcess()
     {
     this->Process.start(this->ApplicationToLaunch, this->ApplicationToLaunchArguments);
     int timeoutInMs = this->ParsedArgs.value("launcher-timeout").toInt() * 1000;
+    this->reportInfo(QString("launcher-timeout (ms) [%1]").arg(timeoutInMs));
     if (timeoutInMs > 0)
       {
       QTimer::singleShot(timeoutInMs, this, SLOT(terminateProcess()));
