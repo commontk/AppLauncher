@@ -3,9 +3,13 @@
 # AppLauncherTest5
 #
 
+set(CMAKE_CONFIGURATION_TYPES "@CMAKE_CONFIGURATION_TYPES@")
+set(CMAKE_BUILD_TYPE "@CMAKE_BUILD_TYPE@")
+set(CMAKE_EXECUTABLE_SUFFIX "@CMAKE_EXECUTABLE_SUFFIX@")
+
 set(launcher_name "@LAUNCHER_NAME@")
 set(launcher_binary_dir "@LAUNCHER_BINARY_DIR@")
-set(launcher_build_type "@LAUNCHER_BUILD_TYPE@")
+
 set(app4test_binary_dir "@APP4TEST_BINARY_DIR@")
 set(app4test_build_type "@APP4TEST_BUILD_TYPE@")
 
@@ -23,9 +27,21 @@ if(NOT EXISTS ${app4test_binary_dir})
 endif()
 
 # --------------------------------------------------------------------------
-# Set launcher variable
+# Attempt to guess launcher build type
 
 set(launcher_dir ${launcher_binary_dir}/bin)
+set(launcher_build_type "@CMAKE_BUILD_TYPE@")
+if(WIN32)
+  foreach (type ${CMAKE_CONFIGURATION_TYPES})
+    if(EXISTS ${launcher_dir}/${type}/${launcher_name}${CMAKE_EXECUTABLE_SUFFIX})
+      set(launcher_build_type ${type})
+    endif()
+  endforeach()
+endif()
+
+# --------------------------------------------------------------------------
+# Set launcher variable
+
 if(WIN32)
   set(launcher_dir ${launcher_dir}/${launcher_build_type})
   set(CMAKE_EXECUTABLE_SUFFIX ".exe")
