@@ -10,6 +10,7 @@
 set(app4test_source_dir "@APP4TEST_SOURCE_DIR@")
 set(app4test_binary_dir "@APP4TEST_BINARY_DIR@")
 set(app4test_build_type "@APP4TEST_BUILD_TYPE@")
+set(app4test_cmake_generator "@APP4TEST_CMAKE_GENERATOR@")
 
 # --------------------------------------------------------------------------
 # Sanity checks
@@ -61,7 +62,7 @@ ENDFUNCTION()
 
 # --------------------------------------------------------------------------
 # Configure App4Test
-set(command ${CMAKE_COMMAND} -DCMAKE_BUILD_TYPE:STRING=${app4test_build_type} ${app4test_source_dir})
+set(command ${CMAKE_COMMAND} -DCMAKE_BUILD_TYPE:STRING=${app4test_build_type} -G ${app4test_cmake_generator} ${app4test_source_dir})
 execute_process(
   COMMAND ${command}
   WORKING_DIRECTORY ${app4test_binary_dir}
