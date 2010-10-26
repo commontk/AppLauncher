@@ -85,7 +85,6 @@ set(CTEST_UPDATE_COMMAND "${CTEST_GIT_COMMAND}")
 MACRO(run_ctest)
   ctest_start(${model})
   ctest_update(SOURCE "${CTEST_SOURCE_DIRECTORY}" RETURN_VALUE res)
-  #ctest_submit(PARTS Update Notes)
 
   # force a build if this is the first run and the build dir is empty
   if(NOT EXISTS "${CTEST_BINARY_DIRECTORY}/CMakeCache.txt")
@@ -105,6 +104,9 @@ ${ADDITIONNAL_CMAKECACHE_OPTION}
   endif()
   
   if (res GREATER 0 OR force_build)
+    
+    ctest_submit(PARTS Update)
+    
     message("----------- [ Configure ${CTEST_PROJECT_NAME} ] -----------")
     
     set(label ctkAppLauncher)
