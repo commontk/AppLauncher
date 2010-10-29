@@ -207,18 +207,10 @@ IF(WITH_COVERAGE)
 ENDIF()
 
 #-----------------------------------------------------------------------------
-# Compiler specific C/CXX Flags
-#
-SET(COMPILER_SPECIFIC_CXX_FLAGS)
-IF(MSVC90)
-  SET(COMPILER_SPECIFIC_CXX_FLAGS "/EHsc")
-ENDIF()
-
-#-----------------------------------------------------------------------------
 # Set C/CXX Flags
 #
-SET(CMAKE_C_FLAGS "${COVERAGE_C_FLAGS} ${ADDITIONAL_C_FLAGS}" CACHE STRING "CMake C Flags" FORCE)
-SET(CMAKE_CXX_FLAGS "${COVERAGE_CXX_FLAGS} ${ADDITIONAL_CXX_FLAGS} ${COMPILER_SPECIFIC_CXX_FLAGS}" CACHE STRING "CMake CXX Flags" FORCE)
+SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS_INIT} ${COVERAGE_C_FLAGS} ${ADDITIONAL_C_FLAGS}" CACHE STRING "CMake C Flags" FORCE)
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS_INIT} ${COVERAGE_CXX_FLAGS} ${ADDITIONAL_CXX_FLAGS}" CACHE STRING "CMake CXX Flags" FORCE)
 
 
 #-----------------------------------------------------------------------------
