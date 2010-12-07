@@ -260,6 +260,7 @@ INSTALL(TARGETS ${PROJECT_NAME}
 
 INSTALL(FILES
   CMake/ctkAppLauncher.cmake
+  CMake/ctkAppLauncher-configure.cmake
   DESTINATION CMake COMPONENT Development)
 
 INSTALL(FILES
