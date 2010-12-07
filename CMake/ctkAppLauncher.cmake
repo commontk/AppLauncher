@@ -168,12 +168,8 @@ MACRO(ctkAppLauncherConfigure)
   #-----------------------------------------------------------------------------
   # Settings shared between the build tree and install tree.
   
-  # Copy launcher executable into the build tree
-  EXECUTE_PROCESS(COMMAND ${CMAKE_COMMAND} -E copy_if_different 
-    ${CTKAPPLAUNCHER_EXECUTABLE} 
-    ${CTKAPPLAUNCHER_DESTINATION_DIR}/${CTKAPPLAUNCHER_APPLICATION_NAME}${CMAKE_EXECUTABLE_SUFFIX})
-  
   SET(COMMON_SETTING_VARS
+    CTKAPPLAUNCHER_EXECUTABLE
     CTKAPPLAUNCHER_SETTINGS_TEMPLATE 
     CTKAPPLAUNCHER_APPLICATION_NAME
     CTKAPPLAUNCHER_DESTINATION_DIR
