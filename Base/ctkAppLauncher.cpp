@@ -126,10 +126,11 @@ bool ctkAppLauncherInternal::processApplicationToLaunchArgument()
     return false;
     }
 
-  // Overwrite ApplicationToLaunchArguments with the value read from the settings file
+  // Set ApplicationToLaunchArguments with the value read from the settings file
   if (this->ApplicationToLaunchArguments.empty())
     {
-    this->ApplicationToLaunchArguments = this->DefaultApplicationToLaunchArguments.split(" ");
+    this->ApplicationToLaunchArguments =
+        this->DefaultApplicationToLaunchArguments.split(" ", QString::SkipEmptyParts);
     }
 
   this->reportInfo(QString("ApplicationToLaunchArguments [%1]").
@@ -777,24 +778,7 @@ void ctkAppLauncher::startLauncher()
     return;
     }
 
-  if (this->Internal->Parser.argumentParsed("launch"))
-    {
-    this->Internal->ApplicationToLaunchArguments = this->Internal->Parser.unparsedArguments();
-    }
-
-  QStringList additionalArgs;
-  additionalArgs << this->Internal->LauncherAdditionalHelpShortArgument
-      << this->Internal->LauncherAdditionalHelpLongArgument
-      << this->Internal->LauncherAdditionalNoSplashShortArgument
-      << this->Internal->LauncherAdditionalNoSplashLongArgument;
-  foreach(const QString& additionalArg, additionalArgs)
-    {
-    if (!additionalArg.isEmpty() &&
-        this->Internal->Parser.unparsedArguments().contains(additionalArg))
-      {
-      this->Internal->ApplicationToLaunchArguments.prepend(additionalArg);
-      }
-    }
+  this->Internal->ApplicationToLaunchArguments.append(this->Internal->Parser.unparsedArguments());
 
   this->startApplication();
 }
