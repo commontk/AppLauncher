@@ -10,13 +10,15 @@
 #
 # The different parameters are:
 #
-#    TARGET_NAME .........:
+#    TARGET_NAME ...............:
 #
-#    TARGET_SUBDIR .......:
+#    TARGET_SUBDIR .............:
+#
+#    CMAKE_EXECUTABLE_SUFFIX ...:
 #
 
 # Check for non-defined var
-FOREACH(var TARGET_NAME TARGET_SUBDIR)
+FOREACH(var TARGET_NAME TARGET_SUBDIR CMAKE_EXECUTABLE_SUFFIX)
   IF(NOT DEFINED ${var})
     MESSAGE(SEND_ERROR "${var} not specified when calling ctkAppLauncher-configure.cmake")
   ENDIF()
