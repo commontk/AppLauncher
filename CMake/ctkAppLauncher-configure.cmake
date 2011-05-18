@@ -12,8 +12,6 @@
 #
 #    TARGET_NAME ...............:
 #
-#    TARGET_OUTPUT_NAME ........:
-#
 #    TARGET_SUBDIR .............:
 #
 #    CMAKE_EXECUTABLE_SUFFIX ...:
@@ -30,7 +28,7 @@ ENDFOREACH()
 # Settings common to build and install tree
 #-----------------------------------------------------------------------------
 
-SET(CTKAPPLAUNCHER_APPLICATION_EXECUTABLE_NAME ${TARGET_OUTPUT_NAME}${CMAKE_EXECUTABLE_SUFFIX})
+SET(CTKAPPLAUNCHER_APPLICATION_EXECUTABLE_NAME ${TARGET_NAME}${CMAKE_EXECUTABLE_SUFFIX})
 
 # Replace <CMAKE_CFG_INTDIR> with the appropriate value
 SET(settings_file CTKAppLauncher-${TARGET_NAME}-common-settings)
