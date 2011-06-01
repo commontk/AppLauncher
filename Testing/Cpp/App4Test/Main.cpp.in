@@ -2,11 +2,29 @@
 // Library includes
 @LIB_INCLUDES@
 
+// STD includes
+#include <cstdlib>
+#include <iostream>
+#include <fstream>
+#include <string>
+
 #ifdef _WIN32
+#include <direct.h>
 #include <windows.h>
 inline void sleepMs(unsigned int ms)
 {
     ::Sleep(ms);
+}
+inline std::string currentWorkingDirectory()
+{
+  char * currentPath = _getcwd(NULL, 0);
+  std::string currentPathAsStr;
+  if (currentPath)
+    {
+    currentPathAsStr = std::string(currentPath);
+    free(currentPath);
+    }
+  return currentPathAsStr;
 }
 #else
 #include <unistd.h>
@@ -15,13 +33,18 @@ inline void sleepMs(unsigned int ms)
     static const unsigned MilliToMicro = 1000;
     ::usleep(ms * MilliToMicro);
 }
+inline std::string currentWorkingDirectory()
+{
+  char * currentPath = get_current_dir_name();
+  std::string currentPathAsStr;
+  if (currentPath)
+    {
+    currentPathAsStr = std::string(currentPath);
+    free(currentPath);
+    }
+  return currentPathAsStr;
+}
 #endif
-
-// STD includes
-#include <cstdlib>
-#include <iostream>
-#include <fstream>
-#include <string>
 
 int main(int argc, char** argv)
 {
@@ -74,6 +97,10 @@ int main(int argc, char** argv)
       std::cout << "SOMETHING_NICE=" << (env1 ? env1 : "NULL") << std::endl;
       char * env2 = getenv("SOMETHING_AWESOME");
       std::cout << "SOMETHING_AWESOME=" << (env2 ? env2 : "NULL") << std::endl;
+      }
+    else if (argName == "--print-current-working-directory")
+      {
+      std::cout << "currentWorkingDirectory=" << currentWorkingDirectory() << std::endl;
       }
     }
   
