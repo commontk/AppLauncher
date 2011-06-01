@@ -1,5 +1,6 @@
 
 //Qt includes
+#include <QDir>
 #include <QFile>
 #include <QFileInfo>
 #include <QProcessEnvironment>
@@ -409,11 +410,17 @@ bool ctkAppLauncher::initialize()
     this->Internal->reportError("AppLauncher already initialized !");
     return true;
     }
+
   if (!this->Internal->extractLauncherNameAndDir(
     this->Internal->Application->applicationFilePath()))
     {
     return false;
     }
+
+  // Set launcher current working directory so that it works if:
+  //  - started using a symlink
+  //  - started from an other directory (cd /home && /path/to/launcher)
+  QDir::setCurrent(this->Internal->LauncherDir);
 
   ctkCommandLineParser & parser = this->Internal->Parser;
   parser.setArgumentPrefix("--", "-");
