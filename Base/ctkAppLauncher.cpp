@@ -311,10 +311,12 @@ void ctkAppLauncherInternal::runProcess()
     }
 
   this->Process.setProcessEnvironment(env);
+  this->Process.setWorkingDirectory(this->LauncherDir);
 
   this->reportInfo(QString("Starting [%1]").arg(this->ApplicationToLaunch));
   if (this->verbose())
     {
+    this->reportInfo(QString("working directory [%1]").arg(this->Process.workingDirectory()));
     foreach(const QString& argument, this->ApplicationToLaunchArguments)
       {
       this->reportInfo(QString("argument [%1]").arg(argument));

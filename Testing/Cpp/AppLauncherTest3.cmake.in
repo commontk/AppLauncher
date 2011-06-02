@@ -159,13 +159,19 @@ endif()
 # --------------------------------------------------------------------------
 # Attempt to start launcher from an other directory
 execute_process(
-  COMMAND ${launcher_exe} --launcher-no-splash --launch ${application}
-  WORKING_DIRECTORY ${launcher_binary_dir}
+  COMMAND ${launcher_exe} --launcher-no-splash --launch ${application} --print-current-working-directory
+  WORKING_DIRECTORY ${launcher_binary_dir}/../
   OUTPUT_VARIABLE ov
   RESULT_VARIABLE rv
   )
-if(rv)
-  message(FATAL_ERROR "Test3 - [${launcher_exe}] failed to start application [${application}] from "
+if (rv)
+  message(FATAL_ERROR "Test4 - [${launcher_exe}] failed to start application [${application}] from "
                       "directory [${launcher_binary_dir}]\n${ev}")
 endif()
 
+set(expected_msg "currentWorkingDirectory=${launcher_dir}")
+string(REGEX MATCH ${expected_msg} current_msg ${ov})
+if (NOT "${expected_msg}" STREQUAL "${current_msg}")
+  message(FATAL_ERROR "Test5 - Working directory associated with ${application_name} is incorrect ! "
+                      "ExpectedWorkingDirectory:${launcher_dir}\n${ov}")
+endif()

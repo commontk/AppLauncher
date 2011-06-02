@@ -11,6 +11,7 @@
 #ifdef _WIN32
 #include <direct.h>
 #include <windows.h>
+#include <algorithm>
 inline void sleepMs(unsigned int ms)
 {
     ::Sleep(ms);
@@ -24,6 +25,7 @@ inline std::string currentWorkingDirectory()
     currentPathAsStr = std::string(currentPath);
     free(currentPath);
     }
+  std::replace(currentPathAsStr.begin(), currentPathAsStr.end(), '\\', '/');
   return currentPathAsStr;
 }
 #else
