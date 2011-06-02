@@ -559,6 +559,7 @@ int ctkCommandLineParserTest1(int, char*[])
     }
 
   // ==================== QSettings tests ====================
+  QSettings::setDefaultFormat(QSettings::IniFormat);
 
   QSettings settings;
   settings.setValue("long-settings-argument", 5);
