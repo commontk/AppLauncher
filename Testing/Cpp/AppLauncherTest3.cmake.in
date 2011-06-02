@@ -142,11 +142,11 @@ endif()
 # --------------------------------------------------------------------------
 # Attempt to start launcher from its directory
 execute_process(
-  COMMAND ${launcher} --launcher-no-splash --launch ${application}
+  COMMAND ${launcher} --launcher-no-splash --launch ${application} --print-current-working-directory
   WORKING_DIRECTORY ${launcher_dir}
   ERROR_VARIABLE ev
-  OUTPUT_QUIET
   ERROR_STRIP_TRAILING_WHITESPACE
+  OUTPUT_VARIABLE ov
   RESULT_VARIABLE rv
   )
 
@@ -155,12 +155,19 @@ if(rv)
                       "directory [${launcher_dir}]\n${ev}")
 endif()
 
+set(expected_msg "currentWorkingDirectory=${launcher_dir}")
+string(REGEX MATCH ${expected_msg} current_msg ${ov})
+if (NOT "${expected_msg}" STREQUAL "${current_msg}")
+  message(FATAL_ERROR "Test3 - Working directory associated with ${application_name} is incorrect ! "
+                      "ExpectedWorkingDirectory:${launcher_dir}\n${ov}")
+endif()
 
 # --------------------------------------------------------------------------
 # Attempt to start launcher from an other directory
+get_filename_component(launcher_working_dir ${launcher_dir}/../ REALPATH)
 execute_process(
   COMMAND ${launcher_exe} --launcher-no-splash --launch ${application} --print-current-working-directory
-  WORKING_DIRECTORY ${launcher_binary_dir}/../
+  WORKING_DIRECTORY ${launcher_working_dir}
   OUTPUT_VARIABLE ov
   RESULT_VARIABLE rv
   )
@@ -169,9 +176,9 @@ if (rv)
                       "directory [${launcher_binary_dir}]\n${ev}")
 endif()
 
-set(expected_msg "currentWorkingDirectory=${launcher_dir}")
+set(expected_msg "currentWorkingDirectory=${launcher_working_dir}")
 string(REGEX MATCH ${expected_msg} current_msg ${ov})
 if (NOT "${expected_msg}" STREQUAL "${current_msg}")
-  message(FATAL_ERROR "Test5 - Working directory associated with ${application_name} is incorrect ! "
-                      "ExpectedWorkingDirectory:${launcher_dir}\n${ov}")
+  message(FATAL_ERROR "Test4 - Working directory associated with ${application_name} is incorrect ! "
+                      "ExpectedWorkingDirectory:${launcher_working_dir}\n${ov}")
 endif()

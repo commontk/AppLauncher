@@ -1,6 +1,5 @@
 
 //Qt includes
-#include <QDir>
 #include <QFile>
 #include <QFileInfo>
 #include <QProcessEnvironment>
@@ -311,12 +310,10 @@ void ctkAppLauncherInternal::runProcess()
     }
 
   this->Process.setProcessEnvironment(env);
-  this->Process.setWorkingDirectory(this->LauncherDir);
 
   this->reportInfo(QString("Starting [%1]").arg(this->ApplicationToLaunch));
   if (this->verbose())
     {
-    this->reportInfo(QString("working directory [%1]").arg(this->Process.workingDirectory()));
     foreach(const QString& argument, this->ApplicationToLaunchArguments)
       {
       this->reportInfo(QString("argument [%1]").arg(argument));
@@ -418,11 +415,6 @@ bool ctkAppLauncher::initialize()
     {
     return false;
     }
-
-  // Set launcher current working directory so that it works if:
-  //  - started using a symlink
-  //  - started from an other directory (cd /home && /path/to/launcher)
-  QDir::setCurrent(this->Internal->LauncherDir);
 
   ctkCommandLineParser & parser = this->Internal->Parser;
   parser.setArgumentPrefix("--", "-");

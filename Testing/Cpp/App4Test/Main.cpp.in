@@ -37,7 +37,7 @@ inline void sleepMs(unsigned int ms)
 }
 inline std::string currentWorkingDirectory()
 {
-  char * currentPath = get_current_dir_name();
+  char * currentPath = getcwd(NULL, 0);
   std::string currentPathAsStr;
   if (currentPath)
     {
