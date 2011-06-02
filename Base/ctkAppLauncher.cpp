@@ -69,6 +69,7 @@ bool ctkAppLauncherInternal::processSplashPathArgument()
     {
     this->LauncherSplashImagePath = this->DefaultLauncherSplashImagePath;
     }
+  this->LauncherSplashImagePath = this->expandValue(this->LauncherSplashImagePath);
   this->reportInfo(QString("LauncherSplashImagePath [%1]").arg(this->LauncherSplashImagePath));
     
   // Make sure the splash image exists
@@ -102,6 +103,8 @@ bool ctkAppLauncherInternal::processApplicationToLaunchArgument()
     {
     this->ApplicationToLaunch = this->DefaultApplicationToLaunch;
     }
+
+  this->ApplicationToLaunch = this->expandValue(this->ApplicationToLaunch);
 
   this->reportInfo(QString("ApplicationToLaunch [%1]").arg(this->ApplicationToLaunch));
 
