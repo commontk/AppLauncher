@@ -100,6 +100,12 @@ bool ctkAppLauncherInternal::processApplicationToLaunchArgument()
 {
   // Overwrite applicationToLaunch with the value read from the settings file
   this->ApplicationToLaunch = this->ParsedArgs.value("launch").toString();
+
+  if (!this->ExtraApplicationToLaunch.isEmpty())
+    {
+    this->ApplicationToLaunch = this->ExtraApplicationToLaunch;
+    }
+
   if (this->ApplicationToLaunch.isEmpty())
     {
     this->ApplicationToLaunch = this->DefaultApplicationToLaunch;
@@ -130,6 +136,12 @@ bool ctkAppLauncherInternal::processApplicationToLaunchArgument()
     return false;
     }
 
+  if (!this->ExtraApplicationToLaunchArguments.isEmpty())
+    {
+    this->ApplicationToLaunchArguments =
+        this->ExtraApplicationToLaunchArguments.split(" ", QString::SkipEmptyParts);
+    }
+
   // Set ApplicationToLaunchArguments with the value read from the settings file
   if (this->ApplicationToLaunchArguments.empty())
     {
@@ -140,6 +152,31 @@ bool ctkAppLauncherInternal::processApplicationToLaunchArgument()
   this->reportInfo(QString("ApplicationToLaunchArguments [%1]").
                    arg(this->ApplicationToLaunchArguments.join(" ")));
     
+  return true;
+}
+
+// --------------------------------------------------------------------------
+bool ctkAppLauncherInternal::processExtraApplicationToLaunchArgument(const QStringList& unparsedArgs)
+{
+  foreach(const QString& extraAppLongArgument, this->ExtraApplicationToLaunchList.keys())
+    {
+    ctkAppLauncherInternal::ExtraApplicationToLaunchProperty extraAppToLaunchProperty =
+        this->ExtraApplicationToLaunchList[extraAppLongArgument];
+    QString extraAppShortArgument = extraAppToLaunchProperty.value("shortArgument");
+    bool hasShortArgument = false;
+    if (!extraAppShortArgument.isEmpty())
+      {
+      hasShortArgument = unparsedArgs.contains(this->Parser.shortPrefix() + extraAppShortArgument);
+      }
+    if (unparsedArgs.contains(this->Parser.longPrefix() + extraAppLongArgument) || hasShortArgument)
+      {
+      this->ExtraApplicationToLaunchLongArgument = extraAppLongArgument;
+      this->ExtraApplicationToLaunchShortArgument = extraAppToLaunchProperty.value("shortArgument");
+      this->ExtraApplicationToLaunch = extraAppToLaunchProperty.value("path");
+      this->ExtraApplicationToLaunchArguments = extraAppToLaunchProperty.value("arguments");
+      break;
+      }
+    }
   return true;
 }
 
@@ -339,6 +376,17 @@ void ctkAppLauncher::displayHelp(std::ostream &output)
     {
     return;
     }
+
+  // Add "extra application to launch" arguments so that helpText() consider them.
+  foreach(const QString& extraAppLongArgument, this->Internal->ExtraApplicationToLaunchList.keys())
+    {
+    ctkAppLauncherInternal::ExtraApplicationToLaunchProperty extraAppToLaunchProperty =
+        this->Internal->ExtraApplicationToLaunchList[extraAppLongArgument];
+    QString extraAppShortArgument = extraAppToLaunchProperty.value("shortArgument");
+    this->Internal->Parser.addArgument(extraAppLongArgument, extraAppShortArgument, QVariant::Bool,
+                                       extraAppToLaunchProperty.value("help"));
+    }
+
   output << "Usage\n";
   output << "  " << qPrintable(this->Internal->LauncherName) << " [options]\n\n";
   output << "Options\n";
@@ -441,6 +489,11 @@ int ctkAppLauncher::processArguments()
     return Self::ExitWithError;
     }
 
+  if (!this->Internal->processExtraApplicationToLaunchArgument(unparsedArgs))
+    {
+    return Self::ExitWithError;
+    }
+
   if (!this->Internal->processApplicationToLaunchArgument())
     {
     return Self::ExitWithError;
@@ -522,6 +575,16 @@ bool ctkAppLauncher::readSettings(const QString& fileName)
       settings.value("additionalLauncherNoSplashShortArgument").toString();
   this->Internal->LauncherAdditionalNoSplashLongArgument =
       settings.value("additionalLauncherNoSplashLongArgument").toString();
+
+  // Read list of 'extra application to launch'
+  settings.beginGroup("ExtraApplicationToLaunch");
+  QStringList extraApplicationToLaunchLongArguments = settings.childGroups();
+  foreach(const QString& extraApplicationLongArgument, extraApplicationToLaunchLongArguments)
+    {
+    this->Internal->ExtraApplicationToLaunchList[extraApplicationLongArgument] =
+        ctk::readKeyValuePairs(settings, extraApplicationLongArgument);
+    }
+  settings.endGroup();
     
   // Read PATHs
   this->Internal->ListOfPaths = ctk::readArrayValues(settings, "Paths", "path");
@@ -566,6 +629,15 @@ bool ctkAppLauncher::writeSettings(const QString& outputFilePath)
   applicationGroup["path"] = this->Internal->ApplicationToLaunch;
   applicationGroup["arguments"] = this->Internal->ApplicationToLaunchArguments.join(" ");
   ctk::writeKeyValuePairs(settings, applicationGroup, "Application");
+
+  settings.beginGroup("ExtraApplicationToLaunch");
+  foreach(const QString& extraAppLongArgument, this->Internal->ExtraApplicationToLaunchList.keys())
+    {
+    ctkAppLauncherInternal::ExtraApplicationToLaunchProperty extraAppToLaunchProperty =
+        this->Internal->ExtraApplicationToLaunchList.value(extraAppLongArgument);
+    ctk::writeKeyValuePairs(settings, extraAppToLaunchProperty, extraAppLongArgument);
+    }
+  settings.endGroup();
 
   ctk::writeArrayValues(settings, this->Internal->ListOfPaths, "Paths", "path");
   ctk::writeArrayValues(settings, this->Internal->ListOfLibraryPaths, "LibraryPaths", "path");
@@ -672,6 +744,14 @@ void ctkAppLauncher::generateTemplate()
   this->Internal->LauncherAdditionalNoSplashShortArgument = "ns";
   this->Internal->LauncherAdditionalNoSplashLongArgument = "no-splash";
 
+  this->Internal->ExtraApplicationToLaunchList.clear();
+  ctkAppLauncherInternal::ExtraApplicationToLaunchProperty extraAppToLaunchProperty;
+  extraAppToLaunchProperty["shortArgument"] = "t";
+  extraAppToLaunchProperty["help"] = "What time is it ?";
+  extraAppToLaunchProperty["path"] = "/usr/bin/xclock";
+  extraAppToLaunchProperty["arguments"] = "-digital";
+  this->Internal->ExtraApplicationToLaunchList.insert("time", extraAppToLaunchProperty);
+
   this->Internal->ApplicationToLaunch = "/usr/bin/xcalc";
   this->Internal->LauncherSplashImagePath = "/home/john/images/splash.png";
   this->Internal->ApplicationToLaunchArguments.clear();
@@ -718,7 +798,20 @@ void ctkAppLauncher::startLauncher()
     return;
     }
 
-  this->Internal->ApplicationToLaunchArguments.append(this->Internal->Parser.unparsedArguments());
+  // Append 'unparsed arguments' to list of arguments that will be used to start the application.
+  // If it applies, extra 'application to launch' short and long arguments should be
+  // removed from that list.
+  QStringList unparsedArguments = this->Internal->Parser.unparsedArguments();
+  if (!this->Internal->ExtraApplicationToLaunchShortArgument.isEmpty())
+    {
+    unparsedArguments.removeAll(this->Internal->Parser.shortPrefix() + this->Internal->ExtraApplicationToLaunchShortArgument);
+    }
+  if (!this->Internal->ExtraApplicationToLaunchLongArgument.isEmpty())
+    {
+    unparsedArguments.removeAll(this->Internal->Parser.longPrefix() + this->Internal->ExtraApplicationToLaunchLongArgument);
+    }
+
+  this->Internal->ApplicationToLaunchArguments.append(unparsedArguments);
 
   this->startApplication();
 }

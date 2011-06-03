@@ -30,6 +30,7 @@ public:
   void reportInfo(const QString& msg);
 
   bool processApplicationToLaunchArgument();
+  bool processExtraApplicationToLaunchArgument(const QStringList& unparsedArgs);
   bool processSplashPathArgument();
   bool processScreenHideDelayMsArgument();
 
@@ -96,6 +97,14 @@ public:
   QString                         LibraryPathVariableName;
   QSharedPointer<QSplashScreen>   SplashScreen;
   QPixmap                         SplashPixmap;
+
+  /// Extra 'application to launch'
+  QString                                          ExtraApplicationToLaunchLongArgument;
+  QString                                          ExtraApplicationToLaunchShortArgument;
+  QString                                          ExtraApplicationToLaunch;
+  QString                                          ExtraApplicationToLaunchArguments;
+  typedef QHash<QString, QString>                  ExtraApplicationToLaunchProperty;
+  QHash<QString, ExtraApplicationToLaunchProperty> ExtraApplicationToLaunchList;
 };
 
 #endif
