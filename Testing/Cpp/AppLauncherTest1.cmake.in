@@ -3,26 +3,14 @@
 # AppLauncherTest1
 #
 
-get_filename_component(CMAKE_CURRENT_LIST_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
-include(${CMAKE_CURRENT_LIST_DIR}/AppLauncherTestMacros.cmake)
+include(${TEST_SOURCE_DIR}/AppLauncherTestMacros.cmake)
+include(${TEST_BINARY_DIR}/AppLauncherTest1Prerequisites.cmake)
 
 #
 # Configure and build App4Test
 #
 
-set(app4test_source_dir "@APP4TEST_SOURCE_DIR@")
-set(app4test_binary_dir "@APP4TEST_BINARY_DIR@")
-set(app4test_build_type "@APP4TEST_BUILD_TYPE@")
-set(app4test_cmake_generator "@APP4TEST_CMAKE_GENERATOR@")
-
 # --------------------------------------------------------------------------
-# Sanity checks
-
-if(NOT EXISTS ${app4test_source_dir})
-  message(FATAL_ERROR "Make sure variable APP4TEST_SOURCE_DIR is set to a valid directory. "
-                      "APP4TEST_SOURCE_DIR [${app4test_source_dir}]")
-endif()
-
 # Note: app4test_binary_dir is NOT suppose to exist. Let's check if the parent directory is valid
 get_filename_component(app4test_binary_parent_dir ${app4test_binary_dir}/../ ABSOLUTE)
 if(NOT EXISTS ${app4test_binary_parent_dir})

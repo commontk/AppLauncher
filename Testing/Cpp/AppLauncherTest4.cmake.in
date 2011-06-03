@@ -3,9 +3,8 @@
 # AppLauncherTest4
 #
 
-get_filename_component(CMAKE_CURRENT_LIST_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
-include(${CMAKE_CURRENT_LIST_DIR}/AppLauncherTestMacros.cmake)
-include(${CMAKE_CURRENT_LIST_DIR}/AppLauncherTestPrerequisites.cmake)
+include(${TEST_SOURCE_DIR}/AppLauncherTestMacros.cmake)
+include(${TEST_BINARY_DIR}/AppLauncherTestPrerequisites.cmake)
 
 # --------------------------------------------------------------------------
 # Configure settings file

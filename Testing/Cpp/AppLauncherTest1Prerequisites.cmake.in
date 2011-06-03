@@ -1,0 +1,14 @@
+
+set(app4test_source_dir "@APP4TEST_SOURCE_DIR@")
+set(app4test_binary_dir "@APP4TEST_BINARY_DIR@")
+set(app4test_build_type "@APP4TEST_BUILD_TYPE@")
+set(app4test_cmake_generator "@APP4TEST_CMAKE_GENERATOR@")
+
+# --------------------------------------------------------------------------
+# Sanity checks
+
+if(NOT EXISTS ${app4test_source_dir})
+  message(FATAL_ERROR "Make sure variable APP4TEST_SOURCE_DIR is set to a valid directory. "
+                      "APP4TEST_SOURCE_DIR [${app4test_source_dir}]")
+endif()
+

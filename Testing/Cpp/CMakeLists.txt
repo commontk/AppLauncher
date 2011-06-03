@@ -15,43 +15,30 @@ configure_file(
   ${CMAKE_CURRENT_BINARY_DIR}/AppLauncherTestPrerequisites.cmake
   @ONLY
   )
+
 configure_file(
-  ${CMAKE_CURRENT_SOURCE_DIR}/AppLauncherTestMacros.cmake
-  ${CMAKE_CURRENT_BINARY_DIR}/AppLauncherTestMacros.cmake
-  COPYONLY
+  ${CMAKE_CURRENT_SOURCE_DIR}/AppLauncherTest1Prerequisites.cmake.in
+  ${CMAKE_CURRENT_BINARY_DIR}/AppLauncherTest1Prerequisites.cmake
+  @ONLY
   )
 
-#
-# Configure Tests
-#
-foreach(testid RANGE 1 5)
-  configure_file(
-    ${CMAKE_CURRENT_SOURCE_DIR}/AppLauncherTest${testid}.cmake.in
-    ${CMAKE_CURRENT_BINARY_DIR}/AppLauncherTest${testid}.cmake
-    @ONLY
-    )
-endforeach()
+MACRO(APPLAUNCHER_ADD_TEST testname depends)
+  ADD_TEST(${testname} ${CMAKE_COMMAND}
+    -DTEST_SOURCE_DIR:PATH=${CMAKE_CURRENT_SOURCE_DIR}
+    -DTEST_BINARY_DIR:PATH=${CMAKE_CURRENT_BINARY_DIR}
+    -P ${CMAKE_CURRENT_SOURCE_DIR}/${testname}.cmake.in)
+  IF(NOT ${depends} STREQUAL "NODEPENDS")
+    SET_TESTS_PROPERTIES(${testname} PROPERTIES DEPENDS ${depends})
+  ENDIF()
+  SET_PROPERTY(TEST ${testname} PROPERTY LABELS ctkAppLauncher)
+ENDMACRO()
 
 #
 # Add Tests
 #
 
-ADD_TEST(AppLauncherTest1 ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/AppLauncherTest1.cmake)
-SET_PROPERTY(TEST AppLauncherTest1 PROPERTY LABELS ${label})
-
-ADD_TEST(AppLauncherTest2 ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/AppLauncherTest2.cmake)
-SET_TESTS_PROPERTIES(AppLauncherTest2 PROPERTIES DEPENDS AppLauncherTest1)
-SET_PROPERTY(TEST AppLauncherTest2 PROPERTY LABELS ${label})
-
-ADD_TEST(AppLauncherTest3 ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/AppLauncherTest3.cmake)
-SET_TESTS_PROPERTIES(AppLauncherTest3 PROPERTIES DEPENDS AppLauncherTest2)
-SET_PROPERTY(TEST AppLauncherTest3 PROPERTY LABELS ${label})
-
-ADD_TEST(AppLauncherTest4 ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/AppLauncherTest4.cmake)
-SET_TESTS_PROPERTIES(AppLauncherTest4 PROPERTIES DEPENDS AppLauncherTest3)
-SET_PROPERTY(TEST AppLauncherTest4 PROPERTY LABELS ${label})
-
-ADD_TEST(AppLauncherTest5 ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/AppLauncherTest5.cmake)
-SET_TESTS_PROPERTIES(AppLauncherTest5 PROPERTIES DEPENDS AppLauncherTest4)
-SET_PROPERTY(TEST AppLauncherTest5 PROPERTY LABELS ${label})
-
+APPLAUNCHER_ADD_TEST(AppLauncherTest1 NODEPENDS)
+APPLAUNCHER_ADD_TEST(AppLauncherTest2 AppLauncherTest1)
+APPLAUNCHER_ADD_TEST(AppLauncherTest3 AppLauncherTest2)
+APPLAUNCHER_ADD_TEST(AppLauncherTest4 AppLauncherTest3)
+APPLAUNCHER_ADD_TEST(AppLauncherTest5 AppLauncherTest4)

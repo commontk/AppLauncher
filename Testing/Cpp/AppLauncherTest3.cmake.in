@@ -3,8 +3,7 @@
 # AppLauncherTest3
 #
 
-get_filename_component(CMAKE_CURRENT_LIST_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
-include(${CMAKE_CURRENT_LIST_DIR}/AppLauncherTestPrerequisites.cmake)
+include(${TEST_BINARY_DIR}/AppLauncherTestPrerequisites.cmake)
 
 # --------------------------------------------------------------------------
 # Attempt to start launcher from its directory
