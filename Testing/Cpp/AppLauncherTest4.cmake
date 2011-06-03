@@ -1,6 +1,6 @@
 
 #
-# AppLauncherTest4
+# AppLauncherTest5
 #
 
 include(${TEST_SOURCE_DIR}/AppLauncherTestMacros.cmake)
@@ -19,8 +19,106 @@ size=1
 set(PRINT_COMMAND 0)
 
 # --------------------------------------------------------------------------
-# Test1 - Pass arguments to the application using the launcher
-set(command ${launcher_exe} --launcher-no-splash --launch ${application} --foo myarg --list item1 item2 item3 --verbose)
+# Test1 - Make sure the launcher output an error message if no application is specified
+set(command ${launcher_exe} --launcher-no-splash)
+execute_process(
+  COMMAND ${command}
+  WORKING_DIRECTORY ${launcher_binary_dir}
+  ERROR_VARIABLE ev
+  ERROR_STRIP_TRAILING_WHITESPACE
+  )
+
+print_command_as_string("${command}")
+
+set(expected_error_msg "error: Application does NOT exists []")
+if (NOT "${ev}" STREQUAL "${expected_error_msg}")
+  message(FATAL_ERROR "Test1 - expected_error_msg:${expected_error_msg}, "
+                      "current_error_msg:${ev}")
+endif()
+
+# --------------------------------------------------------------------------
+# Test2 - Make sure the launcher output an error message if the application specified
+# in the settings file is incorrect
+
+# --------------------------------------------------------------------------
+# Configure settings file
+file(WRITE "${launcher}LauncherSettings.ini" "
+[General]
+
+[Application]
+path=this-app-do-not-exist
+
+[LibraryPaths]
+1\\path=${library_path}
+size=1
+")
+
+set(command ${launcher_exe} --launcher-no-splash)
+execute_process(
+  COMMAND ${command}
+  WORKING_DIRECTORY ${launcher_binary_dir}
+  ERROR_VARIABLE ev
+  ERROR_STRIP_TRAILING_WHITESPACE
+  )
+
+print_command_as_string("${command}")
+
+set(expected_error_msg "error: Application does NOT exists [this-app-do-not-exist]")
+if (NOT "${ev}" STREQUAL "${expected_error_msg}")
+  message(FATAL_ERROR "Test2 - expected_error_msg:${expected_error_msg}, "
+                      "current_error_msg:${ev}")
+endif()
+
+# --------------------------------------------------------------------------
+# Test3 - Make sure the launcher works as expected if the application 
+# to launch is properly set in the settings file
+
+# --------------------------------------------------------------------------
+# Configure settings file
+file(WRITE "${launcher}LauncherSettings.ini" "
+[General]
+
+[Application]
+path=${application}
+
+[LibraryPaths]
+1\\path=${library_path}
+size=1
+")
+
+set(command ${launcher_exe} --launcher-no-splash)
+execute_process(
+  COMMAND ${command}
+  WORKING_DIRECTORY ${launcher_binary_dir}
+  OUTPUT_QUIET
+  ERROR_QUIET
+  RESULT_VARIABLE rv
+  )
+
+print_command_as_string("${command}")
+
+if (rv)
+  message(FATAL_ERROR "Test3 - Failed to start [${application}]")
+endif()
+
+# --------------------------------------------------------------------------
+# Configure settings file
+file(WRITE "${launcher}LauncherSettings.ini" "
+[General]
+
+[Application]
+path=${application}
+arguments=--foo myarg --list item1 item2 item3 --verbose
+
+[LibraryPaths]
+1\\path=${library_path}
+size=1
+")
+
+# --------------------------------------------------------------------------
+# Test4 - Make sure the launcher works as expected if the application 
+# to launch and the associated arguments are properly set in the settings file
+set(command ${launcher_exe} --launcher-no-splash)
 execute_process(
   COMMAND ${command}
   WORKING_DIRECTORY ${launcher_binary_dir}
@@ -32,159 +130,143 @@ execute_process(
 print_command_as_string("${command}")
 
 if (rv)
-  message(FATAL_ERROR "Test1 - [${launcher_exe}] failed to start application [${application}] from "
+  message(FATAL_ERROR "Test4 - [${launcher_exe}] failed to start application [${application}] from "
                       "directory [${launcher_binary_dir}]\n${ev}")
 endif()
 
 set(expected_msg "Argument passed:--foo myarg --list item1 item2 item3 --verbose")
 string(REGEX MATCH ${expected_msg} current_msg ${ov})
 if (NOT "${expected_msg}" STREQUAL "${current_msg}")
-  message(FATAL_ERROR "Test1 - Failed to pass parameters from ${launcher_name} "
+  message(FATAL_ERROR "Test4 - Failed to pass parameters from ${launcher_name} "
                       "to ${application_name}.")
 endif()
 
 # --------------------------------------------------------------------------
-# Test2 - Check if flag --launcher-verbose works as expected
-set(command ${launcher_exe} --launcher-no-splash --launcher-verbose --launch ${application})
-execute_process(
-  COMMAND ${command}
-  WORKING_DIRECTORY ${launcher_binary_dir}
-  ERROR_VARIABLE ev
-  OUTPUT_VARIABLE ov
-  RESULT_VARIABLE rv
-  )
+# Configure settings file
+file(WRITE "${launcher}LauncherSettings.ini" "
+[General]
 
-print_command_as_string("${command}")
+[Application]
+path=${application}
+arguments=--check-env
 
-if (rv)
-  message(FATAL_ERROR "Test2 - [${launcher_exe}] failed to start application [${application}] from "
-                      "directory [${launcher_binary_dir}]\n${ev}")
-endif()
+[LibraryPaths]
+1\\path=${library_path}
+size=1
 
-set(regex "info: Setting library path.*info: Starting.*")
-string(REGEX MATCH ${regex} current_msg ${ov})
-if ("${current_msg}" STREQUAL "")
-  message(FATAL_ERROR "Test2 - Problem with flag --launcher-verbose")
-endif()
-
-# --------------------------------------------------------------------------
-# Test3 - Check if flag --launcher-help works as expected
-set(command ${launcher_exe} --launcher-help --launch ${application})
-execute_process(
-  COMMAND ${command}
-  WORKING_DIRECTORY ${launcher_binary_dir}
-  ERROR_VARIABLE ev
-  OUTPUT_VARIABLE ov
-  RESULT_VARIABLE rv
-  )
-
-print_command_as_string("${command}")
-
-if (rv)
-  message(FATAL_ERROR "Test3 - [${launcher_exe}] failed to start application [${application}] from "
-                      "directory [${launcher_binary_dir}]\n${ev}")
-endif()
-
-set(expected_msg "Usage
-  CTKAppLauncher [options]
-
-Options
-
-  --launcher-help                Display help
-  --launcher-verbose             Verbose mode
-  --launch                       Specify the application to launch
-  --launcher-detach              Launcher will NOT wait for the application to finish
-  --launcher-no-splash           Hide launcher splash
-  --launcher-timeout             Specify the time in second before the launcher kills the application. -1 means no timeout (default: -1)
-  --launcher-generate-template   Generate an example of setting file
+[EnvironmentVariables]
+SOMETHING_NICE=Chocolate
+SOMETHING_AWESOME=Rock climbing !
 ")
 
-# TODO Comparison of expected string and current string doesn't seem to work ?
-#if (NOT ${expected_msg} STREQUAL ${ov})
-#  message(FATAL_ERROR "Test3 - Problem with flag --launcher-help."
-#                      "\n expected_msg:\n ${expected_msg}"
-#                      "\n current_msg:\n ${ov}")
-#endif()
-
 # --------------------------------------------------------------------------
-# Delete template file if it exists
-execute_process(
-  COMMAND ${CMAKE_COMMAND} -E remove -f ${launcher}LauncherSettings.ini.template
-  )
-  
-# --------------------------------------------------------------------------
-# Test4 - Check if flag --launcher-generate-template works as expected
-set(command ${launcher_exe} --launcher-generate-template)
+# Test5 - Make sure the launcher passes the environment variable to the application
+set(command ${launcher_exe} --launcher-no-splash)
 execute_process(
   COMMAND ${command}
   WORKING_DIRECTORY ${launcher_binary_dir}
   ERROR_VARIABLE ev
+  OUTPUT_VARIABLE ov
   RESULT_VARIABLE rv
   )
 
 print_command_as_string("${command}")
 
 if (rv)
-  message(FATAL_ERROR "Test4 - Failed to run [${launcher_exe}] with parameter --launcher-generate-template\n${ev}")
+  message(FATAL_ERROR "Test5 - [${launcher_exe}] failed to start application [${application}] from "
+                      "directory [${launcher_binary_dir}]\n${ev}")
 endif()
 
-if (NOT EXISTS ${launcher}LauncherSettings.ini.template)
-   message(FATAL_ERROR "Test4 - Problem with flag --launcher-generate-template."   
-                       "Failed to generate template settings file: ${launcher}LauncherSettings.ini.template")
+set(expected_msg "SOMETHING_NICE=Chocolate\nSOMETHING_AWESOME=Rock climbing !")
+string(REGEX MATCH ${expected_msg} current_msg ${ov})
+if (NOT "${expected_msg}" STREQUAL "${current_msg}")
+  message(FATAL_ERROR "Test5 - Failed to pass environment variable from ${launcher_name} "
+                      "to ${application_name}.\n${ov}")
 endif()
 
-# --------------------------------------------------------------------------  
-# Delete timeout file if it exists
-execute_process(
-  COMMAND ${CMAKE_COMMAND} -E remove -f ${application}-timeout.txt
-  )
-  
 # --------------------------------------------------------------------------
-# Test5 - Check if flag --launcher-timeout works as expected
-set(command ${launcher_exe} --launcher-no-splash --launcher-timeout 4 --launch ${application} --test-timeout)
+# Configure settings file
+file(WRITE "${launcher}LauncherSettings.ini" "
+[General]
+
+[Application]
+path=${application}
+arguments=--check-path
+
+[LibraryPaths]
+1\\path=${library_path}
+size=1
+
+[Paths]
+1\\path=/home/john/app1
+2\\path=/home/john/app2
+size=2
+")
+
+# --------------------------------------------------------------------------
+# Test6 - Make sure the launcher passes the PATH variable to the application
+set(command ${launcher_exe} --launcher-no-splash)
 execute_process(
   COMMAND ${command}
   WORKING_DIRECTORY ${launcher_binary_dir}
   ERROR_VARIABLE ev
-  RESULT_VARIABLE rv
-  )
-print_command_as_string("${command}")
-
-if (NOT "${rv}" STREQUAL "3")
-  message(FATAL_ERROR "Test5a - Failed to run [${launcher_exe}] with parameter --launcher-timeout\n${ev}")
-endif()
-
-# Since launcher-timeout > App4Test-timeout, file ${application}-timeout.txt should exists 
-if (NOT EXISTS ${application}-timeout.txt)
-   message(FATAL_ERROR "Test5a - Problem with flag --launcher-timeout. "
-                       "File [${application}-timeout.txt] should exist.")
-endif()
-
-# Delete timeout file if it exists
-execute_process(
-  COMMAND ${CMAKE_COMMAND} -E remove -f ${application}-timeout.txt
-  )
-
-# Re-try with launcher-timeout < App4Test-timeout
-set(command ${launcher_exe} --launcher-no-splash --launcher-timeout 1 --launch ${application} --test-timeout)
-execute_process(
-  COMMAND ${command}
-  WORKING_DIRECTORY ${launcher_binary_dir}
-  ERROR_VARIABLE ev
+  OUTPUT_VARIABLE ov
   RESULT_VARIABLE rv
   )
 
 print_command_as_string("${command}")
 
-# Since we force the application to shutdown, we expect the error code to be >0
-if (NOT rv)
-  message(FATAL_ERROR "Test5b - Failed to run [${launcher_exe}] with parameter --launcher-timeout\n${ev}")
+if (rv)
+  message(FATAL_ERROR "Test6 - [${launcher_exe}] failed to start application [${application}] from "
+                      "directory [${launcher_binary_dir}]\n${ev}")
 endif()
 
-# Since launcher-timeout < App4Test-timeout, file ${application}-timeout.txt should NOT exists 
-if (EXISTS ${application}-timeout.txt)
-   message(FATAL_ERROR "Test5d - Problem with flag --launcher-timeout. "
-                       "File [${application}-timeout.txt] should NOT exist.")
+set(pathsep ":")
+if(WIN32)
+  set(pathsep ";")
+endif()
+set(expected_msg "PATH=/home/john/app1${pathsep}/home/john/app2")
+string(REGEX MATCH ${expected_msg} current_msg ${ov})
+if ("${current_msg}" STREQUAL "")
+  message(FATAL_ERROR "Test6 - Failed to pass PATH variable from ${launcher_name} "
+                      "to ${application_name}.\n${ov}")
 endif()
 
+# --------------------------------------------------------------------------
+# Configure settings file
+file(WRITE "${launcher}LauncherSettings.ini" "
+[General]
 
+[Application]
+path=${application}
+arguments=
+
+[LibraryPaths]
+1\\path=${library_path}
+size=1
+")
+
+# --------------------------------------------------------------------------
+# Test7 - Make sure the command line arguments are passed to the launcher
+set(command ${launcher_exe} --launcher-no-splash --foo --int 2)
+execute_process(
+  COMMAND ${command}
+  WORKING_DIRECTORY ${launcher_binary_dir}
+  ERROR_VARIABLE ev
+  OUTPUT_VARIABLE ov
+  RESULT_VARIABLE rv
+  )
+
+print_command_as_string("${command}")
+
+if (rv)
+  message(FATAL_ERROR "Test7 - [${launcher_exe}] failed to start application [${application}] from "
+                      "directory [${launcher_binary_dir}]\n${ev}")
+endif()
+
+set(expected_msg "Argument passed:--foo --int 2")
+string(REGEX MATCH ${expected_msg} current_msg ${ov})
+if (NOT "${expected_msg}" STREQUAL "${current_msg}")
+  message(FATAL_ERROR "Test7 - Failed to pass parameters from ${launcher_name} "
+                      "to ${application_name}.")
+endif()
