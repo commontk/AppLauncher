@@ -296,6 +296,20 @@ public:
   void setArgumentPrefix(const QString& longPrefix, const QString& shortPrefix);
 
   /**
+   * Expected prefix in front of long argument.
+   *
+   * @return The long prefix
+   */
+  QString longPrefix()const;
+
+  /**
+   * Expected prefix in front of short argument.
+   *
+   * @return The short prefix
+   */
+  QString shortPrefix()const;
+
+  /**
    * Begins a new group for documenting arguments. All newly added arguments via
    * <code>addArgument()</code> will be put in the new group. You can close the
    * current group by calling <code>endGroup()</code> or be opening a new group.

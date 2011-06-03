@@ -798,6 +798,18 @@ void ctkCommandLineParser::setArgumentPrefix(const QString& longPrefix, const QS
 }
 
 // --------------------------------------------------------------------------
+QString ctkCommandLineParser::longPrefix()const
+{
+  return this->Internal->LongPrefix;
+}
+
+// --------------------------------------------------------------------------
+QString ctkCommandLineParser::shortPrefix()const
+{
+  return this->Internal->ShortPrefix;
+}
+
+// --------------------------------------------------------------------------
 void ctkCommandLineParser::setStrictModeEnabled(bool strictMode)
 {
   this->Internal->StrictMode = strictMode;
