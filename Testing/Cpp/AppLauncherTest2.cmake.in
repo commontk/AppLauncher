@@ -3,46 +3,15 @@
 # AppLauncherTest2
 #
 
+get_filename_component(CMAKE_CURRENT_LIST_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
+include(${CMAKE_CURRENT_LIST_DIR}/AppLauncherTestPrerequisites.cmake)
+
 #
 # Attempt to run the application without the launcher
 # Note that the application should NOT start since it has been built with SKIP_BUILD_RPATH ON.
 # In other word, it means execute_process result_variable (error_code) should be greater than 0
 #
 
-set(app4test_binary_dir "@APP4TEST_BINARY_DIR@")
-set(app4test_build_type "@APP4TEST_BUILD_TYPE@")
-
-# --------------------------------------------------------------------------
-# Sanity checks
-
-if(NOT EXISTS ${app4test_binary_dir})
-  message(FATAL_ERROR "Make sure variable APP4TEST_BINARY_DIR is set to a valid directory. "
-                      "APP4TEST_BINARY_DIR [${app4test_binary_dir}]")
-endif()
-
-if(${app4test_build_type} STREQUAL "")
-  message(FATAL_ERROR "Make sure variable APP4TEST_BUILD_TYPE is not empty. "
-                      "APP4TEST_BUILD_TYPE [${app4test_build_type}]")
-endif()
-
-# --------------------------------------------------------------------------
-# Set variables
-
-set(application_dir "${app4test_binary_dir}/bin")
-if(WIN32)
-  set(application_dir ${application_dir}/${app4test_build_type})
-  set(CMAKE_EXECUTABLE_SUFFIX ".exe")
-endif()
-set(application_name App4Test)
-
-set(application ${application_dir}/${application_name}${CMAKE_EXECUTABLE_SUFFIX})
-
-# --------------------------------------------------------------------------
-# Check if application exists
-
-if (NOT EXISTS ${application})
-  message(FATAL_ERROR "Application ${application} doesn't exists !")
-endif()
 
 # --------------------------------------------------------------------------
 # Attempt to run the application

@@ -3,6 +3,9 @@
 # AppLauncherTest1
 #
 
+get_filename_component(CMAKE_CURRENT_LIST_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
+include(${CMAKE_CURRENT_LIST_DIR}/AppLauncherTestMacros.cmake)
+
 #
 # Configure and build App4Test
 #
@@ -47,18 +50,6 @@ execute_process(
 # --------------------------------------------------------------------------
 # Debug flags - Set to True to display the command as string
 set(PRINT_COMMAND 0)
-
-# --------------------------------------------------------------------------
-# Helper macro
-FUNCTION(print_command_as_string command)
-  if(PRINT_COMMAND)
-    set(command_as_string)
-    foreach(elem ${command})
-      set(command_as_string "${command_as_string} ${elem}")
-    endforeach()
-    message(STATUS "COMMAND:${command_as_string}")
-  endif()
-ENDFUNCTION()
 
 # --------------------------------------------------------------------------
 # Configure App4Test

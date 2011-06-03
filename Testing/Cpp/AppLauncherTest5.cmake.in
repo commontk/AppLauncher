@@ -3,92 +3,9 @@
 # AppLauncherTest5
 #
 
-set(CMAKE_CONFIGURATION_TYPES "@CMAKE_CONFIGURATION_TYPES@")
-set(CMAKE_BUILD_TYPE "@CMAKE_BUILD_TYPE@")
-set(CMAKE_EXECUTABLE_SUFFIX "@CMAKE_EXECUTABLE_SUFFIX@")
-
-set(launcher_name "@LAUNCHER_NAME@")
-set(launcher_binary_dir "@LAUNCHER_BINARY_DIR@")
-
-set(app4test_binary_dir "@APP4TEST_BINARY_DIR@")
-set(app4test_build_type "@APP4TEST_BUILD_TYPE@")
-
-# --------------------------------------------------------------------------
-# Sanity checks
-
-if(NOT EXISTS ${launcher_binary_dir})
-  message(FATAL_ERROR "Make sure variable CTKAppLauncher_BINARY_DIR is set to a valid directory. "
-                      "CTKAppLauncher_BINARY_DIR [${launcher_binary_dir}]")
-endif()
-
-if(NOT EXISTS ${app4test_binary_dir})
-  message(FATAL_ERROR "Make sure variable APP4TEST_BINARY_DIR is set to a valid directory. "
-                      "APP4TEST_BINARY_DIR [${app4test_binary_dir}]")
-endif()
-
-# --------------------------------------------------------------------------
-# Attempt to guess launcher build type
-
-set(launcher_dir ${launcher_binary_dir}/bin)
-set(launcher_build_type "@CMAKE_BUILD_TYPE@")
-if(WIN32)
-  foreach (type ${CMAKE_CONFIGURATION_TYPES})
-    if(EXISTS ${launcher_dir}/${type}/${launcher_name}${CMAKE_EXECUTABLE_SUFFIX})
-      set(launcher_build_type ${type})
-    endif()
-  endforeach()
-endif()
-
-# --------------------------------------------------------------------------
-# Set launcher variable
-
-if(WIN32)
-  set(launcher_dir ${launcher_dir}/${launcher_build_type})
-  set(CMAKE_EXECUTABLE_SUFFIX ".exe")
-endif()
-set(launcher ${launcher_dir}/${launcher_name})
-set(launcher_exe ${launcher}${CMAKE_EXECUTABLE_SUFFIX})
-
-
-# --------------------------------------------------------------------------
-# Check if launcher exists
-if (NOT EXISTS ${launcher_exe})
-  message(FATAL_ERROR "Application ${launcher_exe} doesn't exists !")
-endif()
-
-# --------------------------------------------------------------------------
-# Remove settings file if any
-
-execute_process(COMMAND ${CMAKE_COMMAND} -E remove -f ${launcher}LauncherSettings.ini)
-
-# --------------------------------------------------------------------------
-# Set application variable
-
-set(application_dir "${app4test_binary_dir}/bin")
-if(WIN32)
-  set(application_dir ${application_dir}/${app4test_build_type})
-endif()
-set(application_name App4Test)
-
-set(application ${application_dir}/${application_name}${CMAKE_EXECUTABLE_SUFFIX})
-
-# --------------------------------------------------------------------------
-# Check if application exists
-
-if (NOT EXISTS ${application})
-  message(FATAL_ERROR "Application ${application} does NOT exists !")
-endif()
-
-# --------------------------------------------------------------------------
-# Sanity check
-
-set(library_path ${app4test_binary_dir}/libs)
-if(WIN32)
-  set(library_path ${library_path}/${app4test_build_type})
-endif()
-if (NOT EXISTS ${library_path})
-  message(FATAL_ERROR "Library path [${library_path}] doesn't exist")
-endif()
+get_filename_component(CMAKE_CURRENT_LIST_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
+include(${CMAKE_CURRENT_LIST_DIR}/AppLauncherTestMacros.cmake)
+include(${CMAKE_CURRENT_LIST_DIR}/AppLauncherTestPrerequisites.cmake)
 
 # --------------------------------------------------------------------------
 # Configure settings file
@@ -101,18 +18,6 @@ size=1
 # --------------------------------------------------------------------------
 # Debug flags - Set to True to display the command as string
 set(PRINT_COMMAND 0)
-
-# --------------------------------------------------------------------------
-# Helper macro
-FUNCTION(print_command_as_string command)
-  if(PRINT_COMMAND)
-    set(command_as_string)
-    foreach(elem ${command})
-      set(command_as_string "${command_as_string} ${elem}")
-    endforeach()
-    message(STATUS "COMMAND:${command_as_string}")
-  endif()
-ENDFUNCTION()
 
 # --------------------------------------------------------------------------
 # Test1 - Make sure the launcher output an error message if no application is specified

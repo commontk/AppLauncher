@@ -34,6 +34,20 @@ set(APP4TEST_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/App4Test)
 set(APP4TEST_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/App4Test-build)
 
 #
+# Configure Test Prerequisites
+#
+configure_file(
+  ${CMAKE_CURRENT_SOURCE_DIR}/AppLauncherTestPrerequisites.cmake.in
+  ${CMAKE_CURRENT_BINARY_DIR}/AppLauncherTestPrerequisites.cmake
+  @ONLY
+  )
+configure_file(
+  ${CMAKE_CURRENT_SOURCE_DIR}/AppLauncherTestMacros.cmake
+  ${CMAKE_CURRENT_BINARY_DIR}/AppLauncherTestMacros.cmake
+  COPYONLY
+  )
+
+#
 # Configure Tests
 #
 foreach(testid RANGE 1 5)
@@ -43,15 +57,6 @@ foreach(testid RANGE 1 5)
     @ONLY
     )
 endforeach()
-
-#
-# Set variables
-#
-set(application_dir "${APP4TEST_BINARY_DIR}/bin")
-if(WIN32)
-  set(application_dir ${APP4TEST_BINARY_DIR}/${APP4TEST_BUILD_TYPE})
-endif()
-set(application_name App4Test)
 
 #
 # Add Tests
