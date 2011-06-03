@@ -17,11 +17,14 @@ configure_file(
   )
 
 configure_file(
-  ${CMAKE_CURRENT_SOURCE_DIR}/AppLauncherTest1Prerequisites.cmake.in
-  ${CMAKE_CURRENT_BINARY_DIR}/AppLauncherTest1Prerequisites.cmake
+  ${CMAKE_CURRENT_SOURCE_DIR}/App4TestStepPrerequisites.cmake.in
+  ${CMAKE_CURRENT_BINARY_DIR}/App4TestStepPrerequisites.cmake
   @ONLY
   )
 
+#
+# Helper macro
+#
 MACRO(APPLAUNCHER_ADD_TEST testname depends)
   ADD_TEST(${testname} ${CMAKE_COMMAND}
     -DTEST_SOURCE_DIR:PATH=${CMAKE_CURRENT_SOURCE_DIR}
@@ -36,9 +39,9 @@ ENDMACRO()
 #
 # Add Tests
 #
-
-APPLAUNCHER_ADD_TEST(AppLauncherTest1 NODEPENDS)
-APPLAUNCHER_ADD_TEST(AppLauncherTest2 AppLauncherTest1)
+APPLAUNCHER_ADD_TEST(App4TestConfigureStep NODEPENDS)
+APPLAUNCHER_ADD_TEST(App4TestBuildStep App4TestConfigureStep)
+APPLAUNCHER_ADD_TEST(AppLauncherTest2 App4TestBuildStep)
 APPLAUNCHER_ADD_TEST(AppLauncherTest3 AppLauncherTest2)
 APPLAUNCHER_ADD_TEST(AppLauncherTest4 AppLauncherTest3)
 APPLAUNCHER_ADD_TEST(AppLauncherTest5 AppLauncherTest4)

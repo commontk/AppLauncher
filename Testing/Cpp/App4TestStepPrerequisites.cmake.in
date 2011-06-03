@@ -11,4 +11,3 @@ if(NOT EXISTS ${app4test_source_dir})
   message(FATAL_ERROR "Make sure variable APP4TEST_SOURCE_DIR is set to a valid directory. "
                       "APP4TEST_SOURCE_DIR [${app4test_source_dir}]")
 endif()
-
