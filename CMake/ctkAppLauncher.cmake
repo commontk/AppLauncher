@@ -457,3 +457,41 @@ IF(TEST_ctkAppLauncherAppendExtraAppToLaunchToListTest)
   ENDFUNCTION()
   ctkAppLauncherAppendExtraAppToLaunchToListTest()
 ENDIF()
+
+IF(TEST_ctkAppLauncherExtraAppToLaunchListToQtSettingsTest)
+  FUNCTION(ctkAppLauncherExtraAppToLaunchListToQtSettingsTest)
+    SET(properties)
+    ctkAppLauncherAppendExtraAppToLaunchToList(
+      LONG_ARG helloworld
+      HELP "Print hello world"
+      PATH "/path/to/app"
+      OUTPUTVAR properties
+      )
+    ctkAppLauncherAppendExtraAppToLaunchToList(
+      LONG_ARG hellouniverse SHORT_ARG u
+      HELP "Print hello universe"
+      PATH "/path/to/app"
+      ARGUMENTS "--universe"
+      OUTPUTVAR properties
+      )
+    SET(output)
+    ctkAppLauncherExtraAppToLaunchListToQtSettings(LIST ${properties} OUTPUTVAR output)
+    SET(expected_output "${expected_output}\n")
+    SET(expected_output "${expected_output}helloworld/shortArgument=\n")
+    SET(expected_output "${expected_output}helloworld/help=Print hello world\n")
+    SET(expected_output "${expected_output}helloworld/path=/path/to/app\n")
+    SET(expected_output "${expected_output}helloworld/arguments=\n")
+    SET(expected_output "${expected_output}\n")
+    SET(expected_output "${expected_output}hellouniverse/shortArgument=u\n")
+    SET(expected_output "${expected_output}hellouniverse/help=Print hello universe\n")
+    SET(expected_output "${expected_output}hellouniverse/path=/path/to/app\n")
+    SET(expected_output "${expected_output}hellouniverse/arguments=--universe\n")
+    IF(NOT "${output}" STREQUAL "${expected_output}")
+      MESSAGE(FATAL_ERROR "Problem with ctkAppLauncherExtraAppToLaunchListToQtSettings()\n"
+                          "output:${output}\n"
+                          "expected_output:${expected_output}")
+    ENDIF()
+    MESSAGE("SUCCESS")
+  ENDFUNCTION()
+  ctkAppLauncherExtraAppToLaunchListToQtSettingsTest()
+ENDIF()

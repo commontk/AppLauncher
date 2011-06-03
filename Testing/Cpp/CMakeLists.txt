@@ -39,6 +39,7 @@ ENDMACRO()
 #
 APPLAUNCHER_ADD_CMAKESCRIPT_TEST(ctkAppLauncherListToQtSettingsArrayTest ctkAppLauncher)
 APPLAUNCHER_ADD_CMAKESCRIPT_TEST(ctkAppLauncherAppendExtraAppToLaunchToListTest ctkAppLauncher)
+APPLAUNCHER_ADD_CMAKESCRIPT_TEST(ctkAppLauncherExtraAppToLaunchListToQtSettingsTest ctkAppLauncher)
 
 #
 # Helper macro
