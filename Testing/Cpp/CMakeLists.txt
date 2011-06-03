@@ -25,6 +25,23 @@ configure_file(
 #
 # Helper macro
 #
+MACRO(APPLAUNCHER_ADD_CMAKESCRIPT_TEST testname script)
+  ADD_TEST(cmake_${testname} ${CMAKE_COMMAND}
+    -DTEST_${testname}:BOOL=ON
+    -P ${CTKAppLauncher_SOURCE_DIR}/CMake/${script}.cmake)
+  SET_TESTS_PROPERTIES(cmake_${testname} PROPERTIES
+    LABELS ctkAppLauncher
+    PASS_REGULAR_EXPRESSION "SUCCESS")
+ENDMACRO()
+
+#
+# Add 'CMake script' Tests
+#
+APPLAUNCHER_ADD_CMAKESCRIPT_TEST(ctkAppLauncherListToQtSettingsArrayTest ctkAppLauncher)
+
+#
+# Helper macro
+#
 MACRO(APPLAUNCHER_ADD_TEST testname depends)
   ADD_TEST(${testname} ${CMAKE_COMMAND}
     -DTEST_SOURCE_DIR:PATH=${CMAKE_CURRENT_SOURCE_DIR}

@@ -405,3 +405,26 @@ SET(CTKAPPLAUNCHER_ENVVARS \"${CTKAPPLAUNCHER_ENVVARS}\")
   ADD_DEPENDENCIES(${CTKAPPLAUNCHER_APPLICATION_NAME}ConfigureLauncher ${CTKAPPLAUNCHER_TARGET})
   
 ENDMACRO()
+
+#
+# Testing - cmake -D<TESTNAME>:BOOL=ON -P ctkAppLauncher.cmake
+#
+IF(TEST_ctkAppLauncherListToQtSettingsArrayTest)
+  FUNCTION(ctkAppLauncherListToQtSettingsArrayTest)
+    SET(input "/path/to/app1" "/path/to/app2" "/path/to/app3")
+    SET(itemname "path")
+    SET(output)
+    ctkAppLauncherListToQtSettingsArray("${input}" ${itemname} output)
+    SET(expected_output "1\\\\path=/path/to/app1\n")
+    SET(expected_output "${expected_output}2\\\\path=/path/to/app2\n")
+    SET(expected_output "${expected_output}3\\\\path=/path/to/app3\n")
+    SET(expected_output "${expected_output}size=3")
+    IF(NOT "${output}" STREQUAL "${expected_output}")
+      MESSAGE(FATAL_ERROR "Problem with ctkAppLauncherListToQtSettingsArray()\n"
+                          "output:${output}\n"
+                          "expected_output:${expected_output}")
+    ENDIF()
+    MESSAGE("SUCCESS")
+  ENDFUNCTION()
+  ctkAppLauncherListToQtSettingsArrayTest()
+ENDIF()
