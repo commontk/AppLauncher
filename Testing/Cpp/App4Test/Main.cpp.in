@@ -104,6 +104,10 @@ int main(int argc, char** argv)
       {
       std::cout << "currentWorkingDirectory=" << currentWorkingDirectory() << std::endl;
       }
+    else if (argName == "--print-hello-world")
+      {
+      std::cout << "Hello world !" << std::endl;
+      }
     }
   
   // Instanciate library objects
