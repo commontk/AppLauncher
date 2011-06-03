@@ -204,7 +204,8 @@ bool ctkAppLauncherInternal::disableSplash() const
   QStringList unparsedArgs = this->Parser.unparsedArguments();
   if (this->ParsedArgs.value("launcher-no-splash").toBool() ||
       unparsedArgs.contains(this->LauncherAdditionalNoSplashShortArgument) ||
-      unparsedArgs.contains(this->LauncherAdditionalNoSplashLongArgument))
+      unparsedArgs.contains(this->LauncherAdditionalNoSplashLongArgument) ||
+      !this->ExtraApplicationToLaunch.isEmpty())
     {
     return true;
     }
