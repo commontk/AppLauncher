@@ -44,21 +44,6 @@ public:
   /// </ul>
   QString expandValue(const QString& value);
 
-  /// Read list of value stored in an array into a QStringList
-  static QStringList readArrayValues(QSettings& settings,
-    const QString& arrayName, const QString fieldName);
-
-  /// Read list of value stored in a group into a QHash<QString, QString>
-  static QHash<QString, QString> readKeyValuePairs(QSettings& settings, const QString& groupName);
-
-  /// Write QStringList
-  static void writeArrayValues(QSettings& settings, const QStringList& values,
-    const QString& arrayName, const QString fieldName);
-
-  /// Write QHash<QString, QString>
-  static void writeKeyValuePairs(QSettings& settings, const QHash<QString, QString>& map,
-  const QString& groupName);
-
   QString invalidSettingsMessage()const;
   bool verbose()const;
   bool disableSplash()const;

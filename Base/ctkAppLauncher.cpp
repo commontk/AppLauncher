@@ -10,6 +10,7 @@
 // CTK includes
 #include "ctkAppLauncher.h"
 #include "ctkAppLauncher_p.h"
+#include "ctkSettingsHelper.h"
 
 // STD includes
 #include <iostream>
@@ -140,66 +141,6 @@ bool ctkAppLauncherInternal::processApplicationToLaunchArgument()
                    arg(this->ApplicationToLaunchArguments.join(" ")));
     
   return true;
-}
-
-// --------------------------------------------------------------------------
-QStringList ctkAppLauncherInternal::readArrayValues(
-  QSettings& settings, const QString& arrayName, const QString fieldName)
-  {
-  Q_ASSERT(!arrayName.isEmpty());
-  Q_ASSERT(!fieldName.isEmpty());
-  QStringList listOfValues;
-  int size = settings.beginReadArray(arrayName);
-  for (int i=0; i < size; ++i)
-    {
-    settings.setArrayIndex(i);
-    listOfValues << settings.value(fieldName).toString();
-    }
-  settings.endArray();
-  return listOfValues;
-  }
-
-// --------------------------------------------------------------------------
-QHash<QString, QString> ctkAppLauncherInternal::readKeyValuePairs(QSettings& settings,
-  const QString& groupName)
-  {
-  Q_ASSERT(!groupName.isEmpty());
-  QHash<QString, QString> keyValuePairs;
-  settings.beginGroup(groupName);
-  foreach(const QString& key, settings.childKeys())
-    {
-    keyValuePairs[key] = settings.value(key).toString();
-    }
-  settings.endGroup();
-  return keyValuePairs;
-  }
-
-// --------------------------------------------------------------------------
-void ctkAppLauncherInternal::writeArrayValues(QSettings& settings, const QStringList& values,
-    const QString& arrayName, const QString fieldName)
-{
-  Q_ASSERT(!arrayName.isEmpty());
-  Q_ASSERT(!fieldName.isEmpty());
-  settings.beginWriteArray(arrayName);
-  for(int i=0; i < values.size(); ++i)
-    {
-    settings.setArrayIndex(i);
-    settings.setValue(fieldName, values.at(i));
-    }
-  settings.endArray();
-}
-
-// --------------------------------------------------------------------------
-void ctkAppLauncherInternal::writeKeyValuePairs(QSettings& settings,
-  const QHash<QString, QString>& map, const QString& groupName)
-{
-  Q_ASSERT(!groupName.isEmpty());
-  settings.beginGroup(groupName);
-  foreach(const QString& key, map.keys())
-    {
-    settings.setValue(key, map[key]);
-    }
-  settings.endGroup();
 }
 
 // --------------------------------------------------------------------------
@@ -568,8 +509,7 @@ bool ctkAppLauncher::readSettings(const QString& fileName)
     settings.value("launcherSplashScreenHideDelayMs", 0).toInt();
 
   // Read default application to launch
-  QHash<QString, QString> applicationGroup =
-    ctkAppLauncherInternal::readKeyValuePairs(settings, "Application");
+  QHash<QString, QString> applicationGroup = ctk::readKeyValuePairs(settings, "Application");
   this->Internal->DefaultApplicationToLaunch = applicationGroup["path"];
   this->Internal->DefaultApplicationToLaunchArguments = applicationGroup["arguments"];
 
@@ -584,15 +524,13 @@ bool ctkAppLauncher::readSettings(const QString& fileName)
       settings.value("additionalLauncherNoSplashLongArgument").toString();
     
   // Read PATHs
-  this->Internal->ListOfPaths = ctkAppLauncherInternal::readArrayValues(settings, "Paths", "path");
+  this->Internal->ListOfPaths = ctk::readArrayValues(settings, "Paths", "path");
   
   // Read LibraryPaths
-  this->Internal->ListOfLibraryPaths =
-    ctkAppLauncherInternal::readArrayValues(settings, "LibraryPaths", "path");
+  this->Internal->ListOfLibraryPaths = ctk::readArrayValues(settings, "LibraryPaths", "path");
 
   // Read additional environment variables
-  this->Internal->MapOfEnvVars =
-    ctkAppLauncherInternal::readKeyValuePairs(settings, "EnvironmentVariables");
+  this->Internal->MapOfEnvVars = ctk::readKeyValuePairs(settings, "EnvironmentVariables");
     
   return true;
 }
@@ -627,13 +565,11 @@ bool ctkAppLauncher::writeSettings(const QString& outputFilePath)
   QHash<QString, QString> applicationGroup;
   applicationGroup["path"] = this->Internal->ApplicationToLaunch;
   applicationGroup["arguments"] = this->Internal->ApplicationToLaunchArguments.join(" ");
-  ctkAppLauncherInternal::writeKeyValuePairs(settings, applicationGroup, "Application");
+  ctk::writeKeyValuePairs(settings, applicationGroup, "Application");
 
-  ctkAppLauncherInternal::writeArrayValues(settings, this->Internal->ListOfPaths, "Paths", "path");
-  ctkAppLauncherInternal::writeArrayValues(
-      settings, this->Internal->ListOfLibraryPaths, "LibraryPaths", "path");
-  ctkAppLauncherInternal::writeKeyValuePairs(
-      settings, this->Internal->MapOfEnvVars, "EnvironmentVariables");
+  ctk::writeArrayValues(settings, this->Internal->ListOfPaths, "Paths", "path");
+  ctk::writeArrayValues(settings, this->Internal->ListOfLibraryPaths, "LibraryPaths", "path");
+  ctk::writeKeyValuePairs(settings, this->Internal->MapOfEnvVars, "EnvironmentVariables");
   
   return true;
 }
