@@ -428,3 +428,32 @@ IF(TEST_ctkAppLauncherListToQtSettingsArrayTest)
   ENDFUNCTION()
   ctkAppLauncherListToQtSettingsArrayTest()
 ENDIF()
+
+IF(TEST_ctkAppLauncherAppendExtraAppToLaunchToListTest)
+  FUNCTION(ctkAppLauncherAppendExtraAppToLaunchToListTest)
+    SET(properties)
+    ctkAppLauncherAppendExtraAppToLaunchToList(
+      LONG_ARG helloworld
+      HELP "Print hello world"
+      PATH "/path/to/app"
+      OUTPUTVAR properties
+      )
+    ctkAppLauncherAppendExtraAppToLaunchToList(
+      LONG_ARG hellouniverse SHORT_ARG u
+      HELP "Print hello universe"
+      PATH "/path/to/app"
+      ARGUMENTS "--universe"
+      OUTPUTVAR properties
+      )
+    SET(expected_properties
+      "helloworld^^^^Print hello world^^/path/to/app^^"
+      "hellouniverse^^u^^Print hello universe^^/path/to/app^^--universe")
+    IF(NOT "${properties}" STREQUAL "${expected_properties}")
+      MESSAGE(FATAL_ERROR "Problem with ctkAppLauncherAppendExtraAppToLaunchToList()\n"
+                          "properties:${properties}\n"
+                          "expected_properties:${expected_properties}")
+    ENDIF()
+    MESSAGE("SUCCESS")
+  ENDFUNCTION()
+  ctkAppLauncherAppendExtraAppToLaunchToListTest()
+ENDIF()
