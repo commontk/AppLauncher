@@ -1,6 +1,5 @@
 
 // Qt includes
-#include <QHash>
 #include <QSettings>
 #include <QStringList>
 

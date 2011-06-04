@@ -1,10 +1,12 @@
 #ifndef __ctkSettingsHelper_h
 #define __ctkSettingsHelper_h
 
+// Qt includes
+#include <QHash>
+#include <QString>
+
 class QSettings;
-class QString;
 class QStringList;
-template class QHash<QString, QString>;
 
 namespace ctk {
 
