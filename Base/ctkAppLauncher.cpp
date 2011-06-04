@@ -202,10 +202,17 @@ bool ctkAppLauncherInternal::verbose() const
 bool ctkAppLauncherInternal::disableSplash() const
 {
   QStringList unparsedArgs = this->Parser.unparsedArguments();
-  if (this->ParsedArgs.value("launcher-no-splash").toBool() ||
-      unparsedArgs.contains(this->LauncherAdditionalNoSplashShortArgument) ||
-      unparsedArgs.contains(this->LauncherAdditionalNoSplashLongArgument) ||
-      !this->ExtraApplicationToLaunch.isEmpty())
+  bool hasNoSplashArgument = false;
+  foreach(const QString& arg, this->LauncherAdditionalNoSplashArguments)
+    {
+    if (unparsedArgs.contains(arg))
+      {
+      hasNoSplashArgument = true;
+      break;
+      }
+    }
+  if (this->ParsedArgs.value("launcher-no-splash").toBool() || hasNoSplashArgument
+      || !this->ExtraApplicationToLaunch.isEmpty())
     {
     return true;
     }
@@ -572,10 +579,8 @@ bool ctkAppLauncher::readSettings(const QString& fileName)
       settings.value("additionalLauncherHelpShortArgument").toString();
   this->Internal->LauncherAdditionalHelpLongArgument =
       settings.value("additionalLauncherHelpLongArgument").toString();
-  this->Internal->LauncherAdditionalNoSplashShortArgument =
-      settings.value("additionalLauncherNoSplashShortArgument").toString();
-  this->Internal->LauncherAdditionalNoSplashLongArgument =
-      settings.value("additionalLauncherNoSplashLongArgument").toString();
+  this->Internal->LauncherAdditionalNoSplashArguments =
+      settings.value("additionalLauncherNoSplashArguments").toStringList();
 
   // Read list of 'extra application to launch'
   settings.beginGroup("ExtraApplicationToLaunch");
@@ -623,8 +628,7 @@ bool ctkAppLauncher::writeSettings(const QString& outputFilePath)
   settings.setValue("launcherSplashScreenHideDelayMs", this->Internal->LauncherSplashScreenHideDelayMs);
   settings.setValue("additionalLauncherHelpShortArgument", this->Internal->LauncherAdditionalHelpShortArgument);
   settings.setValue("additionalLauncherHelpLongArgument", this->Internal->LauncherAdditionalHelpLongArgument);
-  settings.setValue("additionalLauncherNoSplashShortArgument", this->Internal->LauncherAdditionalNoSplashShortArgument);
-  settings.setValue("additionalLauncherNoSplashLongArgument", this->Internal->LauncherAdditionalNoSplashLongArgument);
+  settings.setValue("additionalLauncherNoSplashArguments", this->Internal->LauncherAdditionalNoSplashArguments);
   
   QHash<QString, QString> applicationGroup;
   applicationGroup["path"] = this->Internal->ApplicationToLaunch;
@@ -742,8 +746,8 @@ void ctkAppLauncher::generateTemplate()
 
   this->Internal->LauncherAdditionalHelpShortArgument = "h";
   this->Internal->LauncherAdditionalHelpLongArgument = "help";
-  this->Internal->LauncherAdditionalNoSplashShortArgument = "ns";
-  this->Internal->LauncherAdditionalNoSplashLongArgument = "no-splash";
+  this->Internal->LauncherAdditionalNoSplashArguments.clear();
+  this->Internal->LauncherAdditionalNoSplashArguments << "ns" << "no-splash";
 
   this->Internal->ExtraApplicationToLaunchList.clear();
   ctkAppLauncherInternal::ExtraApplicationToLaunchProperty extraAppToLaunchProperty;

@@ -85,8 +85,7 @@ public:
   bool                            ValidSettingsFile;
   QString                         LauncherAdditionalHelpShortArgument;
   QString                         LauncherAdditionalHelpLongArgument;
-  QString                         LauncherAdditionalNoSplashShortArgument;
-  QString                         LauncherAdditionalNoSplashLongArgument;
+  QStringList                     LauncherAdditionalNoSplashArguments;
   QStringList                     ListOfPaths;
   QStringList                     ListOfLibraryPaths;
   QHash<QString, QString>         MapOfEnvVars;
