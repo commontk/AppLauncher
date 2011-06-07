@@ -1,10 +1,31 @@
 
-
 #-----------------------------------------------------------------------------
 # Build a CPack installer if CPack is available and this is a build of just
 # CTKAppLauncher (as opposed to a build of CTKAppLauncher included in some other project...)
 
 IF("${CTKAppLauncher_BINARY_DIR}" STREQUAL "${CMAKE_BINARY_DIR}")
+
+  IF(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+    SET(CPACK_SYSTEM_NAME "win32-x86")
+    IF(CMAKE_SIZEOF_VOID_P EQUAL 8)
+      SET(CPACK_SYSTEM_NAME "win64-x86")
+    ENDIF()
+  ELSEIF(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+    SET(CPACK_SYSTEM_NAME "linux-i386")
+    IF(CMAKE_SIZEOF_VOID_P EQUAL 8)
+      SET(CPACK_SYSTEM_NAME "linux-amd64")
+    ENDIF()
+  ELSEIF(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+    IF(CMAKE_SYSTEM_PROCESSOR MATCHES "powerpc")
+      SET(CPACK_SYSTEM_NAME "macosx-ppc")
+    ELSE()
+      SET(CPACK_SYSTEM_NAME "macosx-i386")
+      IF(CMAKE_SIZEOF_VOID_P EQUAL 8)
+        SET(CPACK_SYSTEM_NAME "macosx-amd64")
+      ENDIF()
+    ENDIF()
+  ENDIF()
+  
   SET(CPACK_MONOLITHIC_INSTALL ON)
   SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "CTKAppLauncher - The Common Toolkit Application Launcher")
   SET(CPACK_PACKAGE_VENDOR "Kitware, Inc.")
@@ -14,7 +35,6 @@ IF("${CTKAppLauncher_BINARY_DIR}" STREQUAL "${CMAKE_BINARY_DIR}")
   SET(CPACK_PACKAGE_VERSION_MINOR "${CTKAppLauncher_MINOR_VERSION}")
   SET(CPACK_PACKAGE_VERSION_PATCH "${CTKAppLauncher_BUILD_VERSION}")
   SET(CPACK_PACKAGE_INSTALL_DIRECTORY "CTKAppLauncher ${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}")
-  SET(CPACK_SOURCE_PACKAGE_FILE_NAME "CTKAppLauncher-${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH}")
   SET(CPACK_PACKAGE_EXECUTABLES "CTKAppLauncher")
   SET(CPACK_GENERATOR "TGZ")
   INCLUDE(CPack)
