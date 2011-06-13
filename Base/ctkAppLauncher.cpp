@@ -279,15 +279,15 @@ void ctkAppLauncherInternal::runProcess()
   foreach(const QString& path, this->ListOfLibraryPaths)
     {
     this->reportInfo(QString("Setting library path [%1]").arg(path));
-    env.insert(libPathVarName, path + this->PathSep + this->expandValue(env.value(libPathVarName)));
+    env.insert(libPathVarName, this->expandValue(path) + this->PathSep + env.value(libPathVarName));
     }
 
   // Update Path - First path of the list will be the first on the PATH
   for(int i =  this->ListOfPaths.size() - 1; i >= 0; --i)
     {
     this->reportInfo(QString("Setting path [%1]").arg(this->ListOfPaths.at(i)));
-    env.insert("PATH", this->ListOfPaths.at(i) + this->PathSep
-               + this->expandValue(env.value("PATH")));
+    env.insert("PATH", this->expandValue(this->ListOfPaths.at(i)) + this->PathSep
+               + env.value("PATH"));
     }
 
   // Set additional environment variables
