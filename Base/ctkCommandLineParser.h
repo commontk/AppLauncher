@@ -5,11 +5,9 @@
 #include <QString>
 #include <QStringList>
 #include <QVariant>
+#include <ctkApplauncherBaseExport.h>
 
 class QSettings;
-
-// CTK includes
-//#include "CTKCoreExport.h"
 
 /**
  * The CTK command line parser.
@@ -81,7 +79,7 @@ class QSettings;
  * }
  * \endcode
  */
-class /*CTK_CORE_EXPORT*/ ctkCommandLineParser
+class ApplauncherBaseExports ctkCommandLineParser
 {
 public:
 
