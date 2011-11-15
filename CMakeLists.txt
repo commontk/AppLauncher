@@ -65,8 +65,25 @@ ENDFOREACH()
 SET(CTKAppLauncher_MAJOR_VERSION 0)
 SET(CTKAppLauncher_MINOR_VERSION 1)
 SET(CTKAppLauncher_BUILD_VERSION 4)
+SET(CTKAppLauncher_VERSION_IS_RELEASE 0)
+#SET(CTKAppLauncher_VERSION_RC 1)
+
+IF(CTKAppLauncher_VERSION_IS_RELEASE)
+  SET(CTKAppLauncher_VERSION_SOURCE "")
+ELSE()
+  INCLUDE(${CMAKE_SOURCE_DIR}/CMake/ctkVersionSource.cmake)
+ENDIF()
+
+# Compute the full version string.
 SET(CTKAppLauncher_VERSION
     "${CTKAppLauncher_MAJOR_VERSION}.${CTKAppLauncher_MINOR_VERSION}.${CTKAppLauncher_BUILD_VERSION}")
+IF(CTKAppLauncher_VERSION_RC)
+  SET(CTKAppLauncher_VERSION ${CTKAppLauncher_VERSION}-rc${CTKAppLauncher_VERSION_RC})
+ENDIF()
+IF(CTKAppLauncher_VERSION_SOURCE)
+  SET(CTKAppLauncher_VERSION ${CTKAppLauncher_VERSION}-${CTKAppLauncher_VERSION_SOURCE})
+ENDIF()
+message(STATUS "CTKAppLauncher version: ${CTKAppLauncher_VERSION}")
 
 #-----------------------------------------------------------------------------
 # Install directories, used for install rules.
