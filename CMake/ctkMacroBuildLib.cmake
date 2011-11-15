@@ -88,7 +88,7 @@ MACRO(ctkMacroBuildLib)
     SET(MY_LIBNAME ${lib_name})
     
     CONFIGURE_FILE(
-      ${CTK_SOURCE_DIR}/Libs/CTKExport.h.in
+      ${CMAKE_SOURCE_DIR}/CTKExport.h.in
       ${CMAKE_CURRENT_BINARY_DIR}/${MY_EXPORT_HEADER_PREFIX}Export.h
       )
     SET(dynamicHeaders

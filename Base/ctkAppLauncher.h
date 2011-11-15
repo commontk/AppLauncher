@@ -10,10 +10,12 @@
 // STD includes
 #include <iostream>
 
+#include <ctkAppLauncherBaseExport.h>
+
 class ctkAppLauncherInternal;
 
 // --------------------------------------------------------------------------
-class ctkAppLauncher : public QObject
+class ApplauncherBaseExports ctkAppLauncher : public QObject
 {
   Q_OBJECT
 public:

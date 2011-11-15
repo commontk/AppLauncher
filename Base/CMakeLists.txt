@@ -41,18 +41,23 @@ SET(KIT_target_libraries
   ${QT_LIBRARIES}
   )
 
+IF(NOT BUILD_SHARED_LIBS)
+  set(applauncher_base_libtype "LIBRARY_TYPE STATIC")
+ELSE()
+  set(applauncher_base_libtype "")
+ENDIF()
+
 ctkMacroBuildLib(
   NAME ${PROJECT_NAME}
-  #EXPORT_DIRECTIVE ${KIT_export_directive}
+  EXPORT_DIRECTIVE ApplauncherBaseExports
   INCLUDE_DIRECTORIES ${KIT_include_directories}
   SRCS ${KIT_SRCS}
   MOC_SRCS ${KIT_MOC_SRCS}
   UI_FORMS ${KIT_UI_FORMS}
   TARGET_LIBRARIES ${KIT_target_libraries}
   RESOURCES ${KIT_resources}
-  LIBRARY_TYPE "STATIC"
-  LABEL ctkAppLauncher
-  )
+  ${applauncher_base_libtype}
+  LABEL ctkAppLauncher)
 
 # Testing
 IF(BUILD_TESTING)

@@ -18,8 +18,10 @@ int main(int argc, char** argv)
   #endif
   QApplication app(argc, argv);
   
+  #ifndef APPLAUNCHER_SHARED
   // Initialize resources in static libs
   Q_INIT_RESOURCE(CTKAppLauncherBase);
+  #endif
   
   ctkAppLauncher appLauncher(app);
   
