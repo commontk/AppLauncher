@@ -12,6 +12,10 @@
 // CTK includes
 #include "ctkCommandLineParser.h"
 
+#if defined (_WIN32)
+#include <windows.h>
+#endif
+
 namespace
 {
 // --------------------------------------------------------------------------
@@ -815,3 +819,106 @@ void ctkCommandLineParser::setStrictModeEnabled(bool strictMode)
   this->Internal->StrictMode = strictMode;
 }
 
+// --------------------------------------------------------------------------
+void ctkCommandLineParser::convertWindowsCommandLineToUnixArguments(
+  const char *cmd_line, int *argc, char ***argv)
+{
+  if (!cmd_line || !argc || !argv)
+    {
+    return;
+    }
+
+  // A space delimites an argument except when it is inside a quote
+
+  (*argc) = 1;
+
+  size_t cmd_line_len = strlen(cmd_line);
+
+  size_t i;
+  for (i = 0; i < cmd_line_len; i++)
+    {
+    while (isspace(cmd_line[i]) && i < cmd_line_len)
+      {
+      i++;
+      }
+    if (i < cmd_line_len)
+      {
+      if (cmd_line[i] == '\"')
+        {
+        i++;
+        while (cmd_line[i] != '\"' && i < cmd_line_len)
+          {
+          i++;
+          }
+        (*argc)++;
+        }
+      else
+        {
+        while (!isspace(cmd_line[i]) && i < cmd_line_len)
+          {
+          i++;
+          }
+        (*argc)++;
+        }
+      }
+    }
+
+  (*argv) = new char* [(*argc) + 1];
+  (*argv)[(*argc)] = NULL;
+
+  // Set the first arg to be the exec name
+
+  (*argv)[0] = new char [1024];
+#ifdef _WIN32
+  ::GetModuleFileName(0, (*argv)[0], 1024);
+#else
+  (*argv)[0][0] = '\0';
+#endif
+
+  // Allocate the others
+
+  int j;
+  for (j = 1; j < (*argc); j++)
+    {
+    (*argv)[j] = new char [cmd_line_len + 10];
+    }
+
+  // Grab the args
+
+  size_t pos;
+  int argc_idx = 1;
+
+  for (i = 0; i < cmd_line_len; i++)
+    {
+    while (isspace(cmd_line[i]) && i < cmd_line_len)
+      {
+      i++;
+      }
+    if (i < cmd_line_len)
+      {
+      if (cmd_line[i] == '\"')
+        {
+        i++;
+        pos = i;
+        while (cmd_line[i] != '\"' && i < cmd_line_len)
+          {
+          i++;
+          }
+        memcpy((*argv)[argc_idx], &cmd_line[pos], i - pos);
+        (*argv)[argc_idx][i - pos] = '\0';
+        argc_idx++;
+        }
+      else
+        {
+        pos = i;
+        while (!isspace(cmd_line[i]) && i < cmd_line_len)
+          {
+          i++;
+          }
+        memcpy((*argv)[argc_idx], &cmd_line[pos], i - pos);
+        (*argv)[argc_idx][i - pos] = '\0';
+        argc_idx++;
+        }
+      }
+    }
+ }

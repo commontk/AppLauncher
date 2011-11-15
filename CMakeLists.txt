@@ -249,7 +249,7 @@ include_directories(
   )
 
 # Add excutable
-add_executable(${PROJECT_NAME}
+ADD_EXECUTABLE(${PROJECT_NAME} WIN32
   Main.cpp
   )
 
