@@ -65,59 +65,59 @@
 #  
 
 # By requiring version 2.8, we also make sure CMP0007 is set to NEW
-CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
+cmake_minimum_required(VERSION 2.8)
 
 #
 # Helper macro used internally - See http://www.cmake.org/Wiki/CMakeMacroParseArguments
 #
-MACRO(ctkAppLauncherMacroParseArguments prefix arg_names option_names)
-  SET(DEFAULT_ARGS)
-  FOREACH(arg_name ${arg_names})
-    SET(${prefix}_${arg_name})
-  ENDFOREACH(arg_name)
-  FOREACH(option ${option_names})
-    SET(${prefix}_${option} FALSE)
-  ENDFOREACH(option)
+macro(ctkAppLauncherMacroParseArguments prefix arg_names option_names)
+  set(DEFAULT_ARGS)
+  foreach(arg_name ${arg_names})
+    set(${prefix}_${arg_name})
+  endforeach(arg_name)
+  foreach(option ${option_names})
+    set(${prefix}_${option} FALSE)
+  endforeach(option)
 
-  SET(current_arg_name DEFAULT_ARGS)
-  SET(current_arg_list)
-  FOREACH(arg ${ARGN})
-    SET(larg_names ${arg_names})
-    LIST(FIND larg_names "${arg}" is_arg_name)
+  set(current_arg_name DEFAULT_ARGS)
+  set(current_arg_list)
+  foreach(arg ${ARGN})
+    set(larg_names ${arg_names})
+    list(FIND larg_names "${arg}" is_arg_name)
     IF (is_arg_name GREATER -1)
-      SET(${prefix}_${current_arg_name} ${current_arg_list})
-      SET(current_arg_name ${arg})
-      SET(current_arg_list)
+      set(${prefix}_${current_arg_name} ${current_arg_list})
+      set(current_arg_name ${arg})
+      set(current_arg_list)
     ELSE (is_arg_name GREATER -1)
-      SET(loption_names ${option_names})    
-      LIST(FIND loption_names "${arg}" is_option)
+      set(loption_names ${option_names})    
+      list(FIND loption_names "${arg}" is_option)
       IF (is_option GREATER -1)
-        SET(${prefix}_${arg} TRUE)
+        set(${prefix}_${arg} TRUE)
       ELSE (is_option GREATER -1)
-        SET(current_arg_list ${current_arg_list} ${arg})
+        set(current_arg_list ${current_arg_list} ${arg})
       ENDIF (is_option GREATER -1)
     ENDIF (is_arg_name GREATER -1)
-  ENDFOREACH(arg)
-  SET(${prefix}_${current_arg_name} ${current_arg_list})
-ENDMACRO()
+  endforeach(arg)
+  set(${prefix}_${current_arg_name} ${current_arg_list})
+endmacro()
 
 #
 # ctkAppLauncherGenerateQtSettingsArray(ITEMS ITEMNAME OUTPUTVAR)
 #
-FUNCTION(ctkAppLauncherListToQtSettingsArray ITEMS ITEMNAME OUTPUTVAR)
-  SET(idx 1)
-  SET(SETTINGS_ARRAY)
-  LIST(LENGTH ITEMS item_count)
-  FOREACH(item ${ITEMS})
-    SET(SETTINGS_ARRAY "${SETTINGS_ARRAY}${idx}\\\\${ITEMNAME}=${item}\n")
-    MATH(EXPR idx "${idx} + 1")
-  ENDFOREACH()
-  SET(SETTINGS_ARRAY "${SETTINGS_ARRAY}size=${item_count}")
-  SET(${OUTPUTVAR} ${SETTINGS_ARRAY} PARENT_SCOPE)
-ENDFUNCTION()
+function(ctkAppLauncherListToQtSettingsArray ITEMS ITEMNAME OUTPUTVAR)
+  set(idx 1)
+  set(SETTINGS_ARRAY)
+  list(LENGTH ITEMS item_count)
+  foreach(item ${ITEMS})
+    set(SETTINGS_ARRAY "${SETTINGS_ARRAY}${idx}\\\\${ITEMNAME}=${item}\n")
+    math(EXPR idx "${idx} + 1")
+  endforeach()
+  set(SETTINGS_ARRAY "${SETTINGS_ARRAY}size=${item_count}")
+  set(${OUTPUTVAR} ${SETTINGS_ARRAY} PARENT_SCOPE)
+endfunction()
 
 #
-# ctkAppLauncherAppendExtraAppToLaunchToList(
+# ctkAppLauncherAppendExtraAppToLaunchTolist(
 #      LONG_ARG longarg
 #      [SHORT_ARG shortarg]
 #      [HELP help]
@@ -125,69 +125,69 @@ ENDFUNCTION()
 #      [ARGUMENTS arguments]
 #      OUTPUTVAR)
 #
-FUNCTION(ctkAppLauncherAppendExtraAppToLaunchToList)
+function(ctkAppLauncherAppendExtraAppToLaunchToList)
   ctkAppLauncherMacroParseArguments(MY
     "LONG_ARG;SHORT_ARG;HELP;PATH;ARGUMENTS;OUTPUTVAR"
     ""
     ${ARGN}
     )
   # Sanity checks - Are mandatory variable defined
-  FOREACH(varname LONG_ARG PATH OUTPUTVAR)
-    IF(NOT DEFINED MY_${varname})
-      MESSAGE(FATAL_ERROR "${varname} is mandatory")
-    ENDIF()
-  ENDFOREACH()
-  SET(output "${MY_LONG_ARG}^^")
-  SET(output "${output}${MY_SHORT_ARG}^^")
-  SET(output "${output}${MY_HELP}^^")
-  SET(output "${output}${MY_PATH}^^")
-  SET(output "${output}${MY_ARGUMENTS}")
-  SET(output_list ${${MY_OUTPUTVAR}})
-  LIST(APPEND output_list ${output})
-  SET(${MY_OUTPUTVAR} ${output_list} PARENT_SCOPE)
-ENDFUNCTION()
+  foreach(varname LONG_ARG PATH OUTPUTVAR)
+    if(NOT DEFINED MY_${varname})
+      message(FATAL_ERROR "${varname} is mandatory")
+    endif()
+  endforeach()
+  set(output "${MY_LONG_ARG}^^")
+  set(output "${output}${MY_SHORT_ARG}^^")
+  set(output "${output}${MY_HELP}^^")
+  set(output "${output}${MY_PATH}^^")
+  set(output "${output}${MY_ARGUMENTS}")
+  set(output_list ${${MY_OUTPUTVAR}})
+  list(APPEND output_list ${output})
+  set(${MY_OUTPUTVAR} ${output_list} PARENT_SCOPE)
+endfunction()
 
 #
 # ctkAppLauncherExtraAppToLaunchListToQtSettings()
 #
-FUNCTION(ctkAppLauncherExtraAppToLaunchListToQtSettings)
+function(ctkAppLauncherExtraAppToLaunchListToQtSettings)
   ctkAppLauncherMacroParseArguments(MY
     "LIST;OUTPUTVAR"
     ""
     ${ARGN}
     )
   # Sanity checks - Are mandatory variable defined
-  FOREACH(varname LIST OUTPUTVAR)
-    IF(NOT DEFINED MY_${varname})
-      MESSAGE(FATAL_ERROR "${varname} is mandatory")
-    ENDIF()
-  ENDFOREACH()
-  SET(settings)
-  FOREACH(item ${MY_LIST})
+  foreach(varname LIST OUTPUTVAR)
+    if(NOT DEFINED MY_${varname})
+      message(FATAL_ERROR "${varname} is mandatory")
+    endif()
+  endforeach()
+  set(settings)
+  foreach(item ${MY_LIST})
     # Split by "^^"
-    STRING(REPLACE "^^" "\\;" item ${item})
-    SET(item_list ${item})
+    string(REPLACE "^^" "\\;" item ${item})
+    set(item_list ${item})
     # Extract 'application to launch' properties
-    LIST(GET item_list 0 longArgument)
-    LIST(GET item_list 1 shortArgument)
-    LIST(GET item_list 2 help)
-    LIST(GET item_list 3 path)
-    LIST(GET item_list 4 arguments)
+    list(GET item_list 0 longArgument)
+    list(GET item_list 1 shortArgument)
+    list(GET item_list 2 help)
+    list(GET item_list 3 path)
+    list(GET item_list 4 arguments)
     # Generate settings
-    SET(settings "${settings}\n")
-    SET(settings "${settings}${longArgument}/shortArgument=${shortArgument}\n")
-    SET(settings "${settings}${longArgument}/help=${help}\n")
-    SET(settings "${settings}${longArgument}/path=${path}\n")
-    SET(settings "${settings}${longArgument}/arguments=${arguments}\n")
+    set(settings "${settings}\n")
+    set(settings "${settings}${longArgument}/shortArgument=${shortArgument}\n")
+    set(settings "${settings}${longArgument}/help=${help}\n")
+    set(settings "${settings}${longArgument}/path=${path}\n")
+    set(settings "${settings}${longArgument}/arguments=${arguments}\n")
     #message("longArgument:${longArgument}, shortArgument:${shortArgument}, help:${help}, path:${path}, arguments:${arguments}")
-  ENDFOREACH()
-  SET(${MY_OUTPUTVAR} ${settings} PARENT_SCOPE)
-ENDFUNCTION()
+  endforeach()
+  set(${MY_OUTPUTVAR} ${settings} PARENT_SCOPE)
+endfunction()
 
 #
 # ctkAppLauncherConfigure
 #
-MACRO(ctkAppLauncherConfigure)
+macro(ctkAppLauncherConfigure)
   ctkAppLauncherMacroParseArguments(CTKAPPLAUNCHER
     "EXECUTABLE;APPLICATION_NAME;TARGET;APPLICATION_INSTALL_SUBDIR;SETTINGS_TEMPLATE;DESTINATION_DIR;SPLASHSCREEN_HIDE_DELAY_MS;SPLASH_IMAGE_PATH;SPLASH_IMAGE_INSTALL_SUBDIR;DEFAULT_APPLICATION_ARGUMENT;EXTRA_APPLICATION_TO_LAUNCH_BUILD;EXTRA_APPLICATION_TO_LAUNCH_INSTALLED;LIBRARY_PATHS_BUILD;LIBRARY_PATHS_INSTALLED;PATHS_BUILD;PATHS_INSTALLED;ENVVARS_BUILD;ENVVARS_INSTALLED;HELP_SHORT_ARG;HELP_LONG_ARG;NOSPLASH_ARGS"
     "VERBOSE_CONFIG"
@@ -195,55 +195,55 @@ MACRO(ctkAppLauncherConfigure)
     )
   
   # If CTKAPPLAUNCHER_DIR is set, try to autodiscover the location of launcher executable and settings template file
-  IF(EXISTS "${CTKAPPLAUNCHER_DIR}")
-    UNSET(CTKAPPLAUNCHER_EXECUTABLE CACHE)
-    FIND_PROGRAM(CTKAPPLAUNCHER_EXECUTABLE CTKAppLauncher PATHS ${CTKAPPLAUNCHER_DIR}/bin NO_DEFAULT_PATH)
-    UNSET(CTKAPPLAUNCHER_SETTINGS_TEMPLATE CACHE)
-    FIND_FILE(CTKAPPLAUNCHER_SETTINGS_TEMPLATE CTKAppLauncherSettings.ini.in PATHS ${CTKAPPLAUNCHER_DIR}/bin NO_DEFAULT_PATH)
-  ENDIF()
+  if(EXISTS "${CTKAPPLAUNCHER_DIR}")
+    unset(CTKAPPLAUNCHER_EXECUTABLE CACHE)
+    find_program(CTKAPPLAUNCHER_EXECUTABLE CTKAppLauncher PATHS ${CTKAPPLAUNCHER_DIR}/bin NO_DEFAULT_PATH)
+    unset(CTKAPPLAUNCHER_SETTINGS_TEMPLATE CACHE)
+    find_file(CTKAPPLAUNCHER_SETTINGS_TEMPLATE CTKAppLauncherSettings.ini.in PATHS ${CTKAPPLAUNCHER_DIR}/bin NO_DEFAULT_PATH)
+  endif()
     
   # Sanity checks - Are mandatory variable defined
-  FOREACH(varname EXECUTABLE APPLICATION_NAME TARGET SETTINGS_TEMPLATE DESTINATION_DIR)
-    IF(NOT DEFINED CTKAPPLAUNCHER_${varname})
-      MESSAGE(FATAL_ERROR "${varname} is mandatory")
-    ENDIF()
-  ENDFOREACH()
+  foreach(varname EXECUTABLE APPLICATION_NAME TARGET SETTINGS_TEMPLATE DESTINATION_DIR)
+    if(NOT DEFINED CTKAPPLAUNCHER_${varname})
+      message(FATAL_ERROR "${varname} is mandatory")
+    endif()
+  endforeach()
   
   # Sanity checks - Make sure TARGET is valid
-  IF(NOT TARGET ${CTKAPPLAUNCHER_TARGET})
-    MESSAGE(FATAL_ERROR "TARGET specified doesn't seem to be correct !")
-  ENDIF()
+  if(NOT TARGET ${CTKAPPLAUNCHER_TARGET})
+    message(FATAL_ERROR "TARGET specified doesn't seem to be correct !")
+  endif()
   
   # Sanity checks - Do files/directories exist ?
-  FOREACH(varname EXECUTABLE SETTINGS_TEMPLATE DESTINATION_DIR)
-    IF(NOT EXISTS ${CTKAPPLAUNCHER_${varname}})
-      MESSAGE(FATAL_ERROR "${varname} [${CTKAPPLAUNCHER_${varname}}] doesn't seem to exist !")
-    ENDIF()
-  ENDFOREACH()
+  foreach(varname EXECUTABLE SETTINGS_TEMPLATE DESTINATION_DIR)
+    if(NOT EXISTS ${CTKAPPLAUNCHER_${varname}})
+      message(FATAL_ERROR "${varname} [${CTKAPPLAUNCHER_${varname}}] doesn't seem to exist !")
+    endif()
+  endforeach()
   
   # Set splash image name
-  SET(CTKAPPLAUNCHER_SPLASH_IMAGE_NAME)
-  IF(DEFINED CTKAPPLAUNCHER_SPLASH_IMAGE_PATH)
-    IF(NOT EXISTS ${CTKAPPLAUNCHER_SPLASH_IMAGE_PATH})
-      MESSAGE(FATAL_ERROR "SPLASH_IMAGE_PATH [${CTKAPPLAUNCHER_SPLASH_IMAGE_PATH}] doesn't seem to exist !")
-    ENDIF()
+  set(CTKAPPLAUNCHER_SPLASH_IMAGE_NAME)
+  if(DEFINED CTKAPPLAUNCHER_SPLASH_IMAGE_PATH)
+    if(NOT EXISTS ${CTKAPPLAUNCHER_SPLASH_IMAGE_PATH})
+      message(FATAL_ERROR "SPLASH_IMAGE_PATH [${CTKAPPLAUNCHER_SPLASH_IMAGE_PATH}] doesn't seem to exist !")
+    endif()
     get_filename_component(CTKAPPLAUNCHER_SPLASH_IMAGE_NAME ${CTKAPPLAUNCHER_SPLASH_IMAGE_PATH} NAME)
     get_filename_component(CTKAPPLAUNCHER_SPLASH_IMAGE_PATH ${CTKAPPLAUNCHER_SPLASH_IMAGE_PATH} PATH)
-  ENDIF()
+  endif()
   
   # Set splashscreen hide delay in ms
-  IF(DEFINED CTKAPPLAUNCHER_SPLASHSCREEN_HIDE_DELAY_MS)
-    IF(CTKAPPLAUNCHER_SPLASHSCREEN_HIDE_DELAY_MS LESS 0)
-      MESSAGE(FATAL_ERROR "SPLASHSCREEN_HIDE_DELAY_MS [${CTKAPPLAUNCHER_SPLASHSCREEN_HIDE_DELAY_MS}] should be >= 0 !")
-    ENDIF()
-  ELSE()
-    SET(SPLASHSCREEN_HIDE_DELAY_MS 0)
-  ENDIF()
+  if(DEFINED CTKAPPLAUNCHER_SPLASHSCREEN_HIDE_DELAY_MS)
+    if(CTKAPPLAUNCHER_SPLASHSCREEN_HIDE_DELAY_MS LESS 0)
+      message(FATAL_ERROR "SPLASHSCREEN_HIDE_DELAY_MS [${CTKAPPLAUNCHER_SPLASHSCREEN_HIDE_DELAY_MS}] should be >= 0 !")
+    endif()
+  else()
+    set(SPLASHSCREEN_HIDE_DELAY_MS 0)
+  endif()
   
   #-----------------------------------------------------------------------------
   # Settings shared between the build tree and install tree.
   
-  SET(COMMON_SETTING_VARS
+  set(COMMON_SETTING_VARS
     CTKAPPLAUNCHER_EXECUTABLE
     CTKAPPLAUNCHER_SETTINGS_TEMPLATE 
     CTKAPPLAUNCHER_APPLICATION_NAME
@@ -255,131 +255,131 @@ MACRO(ctkAppLauncherConfigure)
     CTKAPPLAUNCHER_APPLICATION_DEFAULT_ARGUMENTS
     CTKAPPLAUNCHER_SPLASH_IMAGE_NAME
     )
-  SET(COMMON_SETTINGS)
-  FOREACH(v ${COMMON_SETTING_VARS})
-    SET(COMMON_SETTINGS "${COMMON_SETTINGS}
-SET(${v} \"${${v}}\")")
-  ENDFOREACH()
+  set(COMMON_SETTINGS)
+  foreach(v ${COMMON_SETTING_VARS})
+    set(COMMON_SETTINGS "${COMMON_SETTINGS}
+set(${v} \"${${v}}\")")
+  endforeach()
   
   # Retrieve the output name of the target application
-  GET_TARGET_PROPERTY(CTKAPPLAUNCHER_TARGET_OUTPUT_NAME
+  get_target_property(CTKAPPLAUNCHER_TARGET_OUTPUT_NAME
     ${CTKAPPLAUNCHER_TARGET} OUTPUT_NAME)
   
   # Default to target name if OUTPUT_NAME is not set
-  IF(NOT CTKAPPLAUNCHER_TARGET_OUTPUT_NAME)
-    SET(CTKAPPLAUNCHER_TARGET_OUTPUT_NAME ${CTKAPPLAUNCHER_TARGET})
-  ENDIF()
+  if(NOT CTKAPPLAUNCHER_TARGET_OUTPUT_NAME)
+    set(CTKAPPLAUNCHER_TARGET_OUTPUT_NAME ${CTKAPPLAUNCHER_TARGET})
+  endif()
   
   # Let's dump settings common to build and install config into a file.
-  FILE(WRITE ${CMAKE_CURRENT_BINARY_DIR}/CTKAppLauncher-${CTKAPPLAUNCHER_TARGET_OUTPUT_NAME}-common-settings.cmake
+  file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/CTKAppLauncher-${CTKAPPLAUNCHER_TARGET_OUTPUT_NAME}-common-settings.cmake
 "${COMMON_SETTINGS}")
 
   #-----------------------------------------------------------------------------
   # Settings specific to the build tree.
   
-  SET(CTKAPPLAUNCHER_SPLASH_IMAGE_SUBDIR)
+  set(CTKAPPLAUNCHER_SPLASH_IMAGE_SUBDIR)
   IF (DEFINED CTKAPPLAUNCHER_SPLASH_IMAGE_PATH AND NOT ${CTKAPPLAUNCHER_SPLASH_IMAGE_PATH} STREQUAL "")
-    SET(CTKAPPLAUNCHER_SPLASH_IMAGE_SUBDIR "${CTKAPPLAUNCHER_SPLASH_IMAGE_PATH}/")
-  ENDIF()
+    set(CTKAPPLAUNCHER_SPLASH_IMAGE_SUBDIR "${CTKAPPLAUNCHER_SPLASH_IMAGE_PATH}/")
+  endif()
   
   # Retrieve location of the target application
-  GET_TARGET_PROPERTY(CTKAPPLAUNCHER_TARGET_DIR 
+  get_target_property(CTKAPPLAUNCHER_TARGET_DIR 
     ${CTKAPPLAUNCHER_TARGET} RUNTIME_OUTPUT_DIRECTORY)
 
-  FILE(RELATIVE_PATH CTKAPPLAUNCHER_APPLICATION_RELPATH ${CTKAPPLAUNCHER_DESTINATION_DIR} ${CTKAPPLAUNCHER_TARGET_DIR})
-  SET(CTKAPPLAUNCHER_APPLICATION_SUBDIR)
-  IF(NOT "${CTKAPPLAUNCHER_APPLICATION_RELPATH}" STREQUAL "")
-    SET(CTKAPPLAUNCHER_APPLICATION_SUBDIR "${CTKAPPLAUNCHER_APPLICATION_RELPATH}/")
-  ENDIF()
-  SET(CTKAPPLAUNCHER_APPLICATION_SUBDIR "<APPLAUNCHER_DIR>/${CTKAPPLAUNCHER_APPLICATION_SUBDIR}")
+  file(RELATIVE_PATH CTKAPPLAUNCHER_APPLICATION_RELPATH ${CTKAPPLAUNCHER_DESTINATION_DIR} ${CTKAPPLAUNCHER_TARGET_DIR})
+  set(CTKAPPLAUNCHER_APPLICATION_SUBDIR)
+  if(NOT "${CTKAPPLAUNCHER_APPLICATION_RELPATH}" STREQUAL "")
+    set(CTKAPPLAUNCHER_APPLICATION_SUBDIR "${CTKAPPLAUNCHER_APPLICATION_RELPATH}/")
+  endif()
+  set(CTKAPPLAUNCHER_APPLICATION_SUBDIR "<APPLAUNCHER_DIR>/${CTKAPPLAUNCHER_APPLICATION_SUBDIR}")
   
-  IF(APPLE)
+  if(APPLE)
     # Is the target an app bundle?
-    GET_TARGET_PROPERTY(CTK_APPLAUNCHER_TARGET_BUNDLE ${CTKAPPLAUNCHER_TARGET} MACOSX_BUNDLE)
+    get_target_property(CTK_APPLAUNCHER_TARGET_BUNDLE ${CTKAPPLAUNCHER_TARGET} MACOSX_BUNDLE)
 
-    IF(CTK_APPLAUNCHER_TARGET_BUNDLE)
-      SET(CTKAPPLAUNCHER_APPLICATION_SUBDIR "${CTKAPPLAUNCHER_APPLICATION_SUBDIR}${CTKAPPLAUNCHER_APPLICATION_NAME}.app/Contents/MacOS/")
-    ENDIF()
-  ENDIF()
+    if(CTK_APPLAUNCHER_TARGET_BUNDLE)
+      set(CTKAPPLAUNCHER_APPLICATION_SUBDIR "${CTKAPPLAUNCHER_APPLICATION_SUBDIR}${CTKAPPLAUNCHER_APPLICATION_NAME}.app/Contents/MacOS/")
+    endif()
+  endif()
 
-  SET(CTKAPPLAUNCHER_EXTRA_APPLICATION_TO_LAUNCH)
-  IF(DEFINED CTKAPPLAUNCHER_EXTRA_APPLICATION_TO_LAUNCH_BUILD)
+  set(CTKAPPLAUNCHER_EXTRA_APPLICATION_TO_LAUNCH)
+  if(DEFINED CTKAPPLAUNCHER_EXTRA_APPLICATION_TO_LAUNCH_BUILD)
     ctkAppLauncherExtraAppToLaunchListToQtSettings(
       LIST ${CTKAPPLAUNCHER_EXTRA_APPLICATION_TO_LAUNCH_BUILD}
       OUTPUTVAR CTKAPPLAUNCHER_EXTRA_APPLICATION_TO_LAUNCH)
-  ENDIF()
+  endif()
   
-  SET(CTKAPPLAUNCHER_LIBRARY_PATHS)
+  set(CTKAPPLAUNCHER_LIBRARY_PATHS)
   ctkAppLauncherListToQtSettingsArray("${CTKAPPLAUNCHER_LIBRARY_PATHS_BUILD}" "path" CTKAPPLAUNCHER_LIBRARY_PATHS)
   
-  SET(CTKAPPLAUNCHER_PATHS)
+  set(CTKAPPLAUNCHER_PATHS)
   ctkAppLauncherListToQtSettingsArray("${CTKAPPLAUNCHER_PATHS_BUILD}" "path" CTKAPPLAUNCHER_PATHS)
   
-  SET(CTKAPPLAUNCHER_ENVVARS)
-  FOREACH(envvar ${CTKAPPLAUNCHER_ENVVARS_BUILD})
-    SET(CTKAPPLAUNCHER_ENVVARS "${CTKAPPLAUNCHER_ENVVARS}${envvar}\n")
-  ENDFOREACH()
+  set(CTKAPPLAUNCHER_ENVVARS)
+  foreach(envvar ${CTKAPPLAUNCHER_ENVVARS_BUILD})
+    set(CTKAPPLAUNCHER_ENVVARS "${CTKAPPLAUNCHER_ENVVARS}${envvar}\n")
+  endforeach()
   
   # Let's dump settings specific to build config into a file.
-  FILE(WRITE ${CMAKE_CURRENT_BINARY_DIR}/CTKAppLauncher-${CTKAPPLAUNCHER_TARGET_OUTPUT_NAME}-buildtree-settings.cmake 
-"SET(CTKAPPLAUNCHER_APPLICATION_SUBDIR \"${CTKAPPLAUNCHER_APPLICATION_SUBDIR}\")
-SET(CTKAPPLAUNCHER_SPLASH_IMAGE_SUBDIR \"${CTKAPPLAUNCHER_SPLASH_IMAGE_SUBDIR}\")
-SET(CTKAPPLAUNCHER_EXTRA_APPLICATION_TO_LAUNCH \"${CTKAPPLAUNCHER_EXTRA_APPLICATION_TO_LAUNCH}\")
-SET(CTKAPPLAUNCHER_LIBRARY_PATHS \"${CTKAPPLAUNCHER_LIBRARY_PATHS}\")
-SET(CTKAPPLAUNCHER_PATHS \"${CTKAPPLAUNCHER_PATHS}\")
-SET(CTKAPPLAUNCHER_ENVVARS \"${CTKAPPLAUNCHER_ENVVARS}\")
+  file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/CTKAppLauncher-${CTKAPPLAUNCHER_TARGET_OUTPUT_NAME}-buildtree-settings.cmake 
+"set(CTKAPPLAUNCHER_APPLICATION_SUBDIR \"${CTKAPPLAUNCHER_APPLICATION_SUBDIR}\")
+set(CTKAPPLAUNCHER_SPLASH_IMAGE_SUBDIR \"${CTKAPPLAUNCHER_SPLASH_IMAGE_SUBDIR}\")
+set(CTKAPPLAUNCHER_EXTRA_APPLICATION_TO_LAUNCH \"${CTKAPPLAUNCHER_EXTRA_APPLICATION_TO_LAUNCH}\")
+set(CTKAPPLAUNCHER_LIBRARY_PATHS \"${CTKAPPLAUNCHER_LIBRARY_PATHS}\")
+set(CTKAPPLAUNCHER_PATHS \"${CTKAPPLAUNCHER_PATHS}\")
+set(CTKAPPLAUNCHER_ENVVARS \"${CTKAPPLAUNCHER_ENVVARS}\")
 ")
   
   #-----------------------------------------------------------------------------
   # Settings specific to the install tree.
   
-  SET(CTKAPPLAUNCHER_SPLASH_IMAGE_SUBDIR)
+  set(CTKAPPLAUNCHER_SPLASH_IMAGE_SUBDIR)
   IF (DEFINED CTKAPPLAUNCHER_SPLASH_IMAGE_INSTALL_SUBDIR AND NOT ${CTKAPPLAUNCHER_SPLASH_IMAGE_INSTALL_SUBDIR} STREQUAL "")
-    SET(CTKAPPLAUNCHER_SPLASH_IMAGE_SUBDIR "<APPLAUNCHER_DIR>/${CTKAPPLAUNCHER_SPLASH_IMAGE_INSTALL_SUBDIR}/")
-  ENDIF()
+    set(CTKAPPLAUNCHER_SPLASH_IMAGE_SUBDIR "<APPLAUNCHER_DIR>/${CTKAPPLAUNCHER_SPLASH_IMAGE_INSTALL_SUBDIR}/")
+  endif()
   
-  SET(CTKAPPLAUNCHER_APPLICATION_SUBDIR)
-  IF(NOT "${CTKAPPLAUNCHER_APPLICATION_INSTALL_SUBDIR}" STREQUAL "")
-    SET(CTKAPPLAUNCHER_APPLICATION_SUBDIR "${CTKAPPLAUNCHER_APPLICATION_INSTALL_SUBDIR}/")
-  ENDIF()
-  SET(CTKAPPLAUNCHER_APPLICATION_SUBDIR "<APPLAUNCHER_DIR>/${CTKAPPLAUNCHER_APPLICATION_SUBDIR}")
+  set(CTKAPPLAUNCHER_APPLICATION_SUBDIR)
+  if(NOT "${CTKAPPLAUNCHER_APPLICATION_INSTALL_SUBDIR}" STREQUAL "")
+    set(CTKAPPLAUNCHER_APPLICATION_SUBDIR "${CTKAPPLAUNCHER_APPLICATION_INSTALL_SUBDIR}/")
+  endif()
+  set(CTKAPPLAUNCHER_APPLICATION_SUBDIR "<APPLAUNCHER_DIR>/${CTKAPPLAUNCHER_APPLICATION_SUBDIR}")
   
-  SET(CTKAPPLAUNCHER_EXTRA_APPLICATION_TO_LAUNCH)
-  IF(DEFINED CTKAPPLAUNCHER_EXTRA_APPLICATION_TO_LAUNCH_INSTALLED)
+  set(CTKAPPLAUNCHER_EXTRA_APPLICATION_TO_LAUNCH)
+  if(DEFINED CTKAPPLAUNCHER_EXTRA_APPLICATION_TO_LAUNCH_INSTALLED)
     ctkAppLauncherExtraAppToLaunchListToQtSettings(
       LIST ${CTKAPPLAUNCHER_EXTRA_APPLICATION_TO_LAUNCH_INSTALLED}
       OUTPUTVAR CTKAPPLAUNCHER_EXTRA_APPLICATION_TO_LAUNCH)
-  ENDIF()
+  endif()
 
-  SET(CTKAPPLAUNCHER_LIBRARY_PATHS)
+  set(CTKAPPLAUNCHER_LIBRARY_PATHS)
   ctkAppLauncherListToQtSettingsArray("${CTKAPPLAUNCHER_LIBRARY_PATHS_INSTALLED}" "path" CTKAPPLAUNCHER_LIBRARY_PATHS)
   
-  SET(CTKAPPLAUNCHER_PATHS)
+  set(CTKAPPLAUNCHER_PATHS)
   ctkAppLauncherListToQtSettingsArray("${CTKAPPLAUNCHER_PATHS_INSTALLED}" "path" CTKAPPLAUNCHER_PATHS)
   
-  SET(CTKAPPLAUNCHER_ENVVARS)
-  FOREACH(envvar ${CTKAPPLAUNCHER_ENVVARS_INSTALLED})
-    SET(CTKAPPLAUNCHER_ENVVARS "${CTKAPPLAUNCHER_ENVVARS}${envvar}\n")
-  ENDFOREACH()
+  set(CTKAPPLAUNCHER_ENVVARS)
+  foreach(envvar ${CTKAPPLAUNCHER_ENVVARS_INSTALLED})
+    set(CTKAPPLAUNCHER_ENVVARS "${CTKAPPLAUNCHER_ENVVARS}${envvar}\n")
+  endforeach()
   
   # Let's dump settings specific to install config into a file.
-  FILE(WRITE ${CMAKE_CURRENT_BINARY_DIR}/CTKAppLauncher-${CTKAPPLAUNCHER_TARGET_OUTPUT_NAME}-installtree-settings.cmake
-"SET(CTKAPPLAUNCHER_APPLICATION_SUBDIR \"${CTKAPPLAUNCHER_APPLICATION_SUBDIR}\")
-SET(CTKAPPLAUNCHER_SPLASH_IMAGE_SUBDIR \"${CTKAPPLAUNCHER_SPLASH_IMAGE_SUBDIR}\")
-SET(CTKAPPLAUNCHER_EXTRA_APPLICATION_TO_LAUNCH \"${CTKAPPLAUNCHER_EXTRA_APPLICATION_TO_LAUNCH}\")
-SET(CTKAPPLAUNCHER_LIBRARY_PATHS \"${CTKAPPLAUNCHER_LIBRARY_PATHS}\")
-SET(CTKAPPLAUNCHER_PATHS \"${CTKAPPLAUNCHER_PATHS}\")
-SET(CTKAPPLAUNCHER_ENVVARS \"${CTKAPPLAUNCHER_ENVVARS}\")
+  file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/CTKAppLauncher-${CTKAPPLAUNCHER_TARGET_OUTPUT_NAME}-installtree-settings.cmake
+"set(CTKAPPLAUNCHER_APPLICATION_SUBDIR \"${CTKAPPLAUNCHER_APPLICATION_SUBDIR}\")
+set(CTKAPPLAUNCHER_SPLASH_IMAGE_SUBDIR \"${CTKAPPLAUNCHER_SPLASH_IMAGE_SUBDIR}\")
+set(CTKAPPLAUNCHER_EXTRA_APPLICATION_TO_LAUNCH \"${CTKAPPLAUNCHER_EXTRA_APPLICATION_TO_LAUNCH}\")
+set(CTKAPPLAUNCHER_LIBRARY_PATHS \"${CTKAPPLAUNCHER_LIBRARY_PATHS}\")
+set(CTKAPPLAUNCHER_PATHS \"${CTKAPPLAUNCHER_PATHS}\")
+set(CTKAPPLAUNCHER_ENVVARS \"${CTKAPPLAUNCHER_ENVVARS}\")
 ")
   
   # Generate informational message ... 
-  SET(extra_message)
-  IF(NOT ${CTKAPPLAUNCHER_SPLASH_IMAGE_NAME} STREQUAL "")
-    SET(extra_message " [${CTKAPPLAUNCHER_SPLASH_IMAGE_NAME}]")
-  ENDIF()
-  SET(comment "Configuring application launcher: ${CTKAPPLAUNCHER_APPLICATION_NAME}${extra_message}")
+  set(extra_message)
+  if(NOT ${CTKAPPLAUNCHER_SPLASH_IMAGE_NAME} STREQUAL "")
+    set(extra_message " [${CTKAPPLAUNCHER_SPLASH_IMAGE_NAME}]")
+  endif()
+  set(comment "Configuring application launcher: ${CTKAPPLAUNCHER_APPLICATION_NAME}${extra_message}")
   
-  ADD_CUSTOM_COMMAND(
+  add_custom_command(
     DEPENDS
       ${CMAKE_CURRENT_LIST_FILE}
     OUTPUT
@@ -394,101 +394,101 @@ SET(CTKAPPLAUNCHER_ENVVARS \"${CTKAPPLAUNCHER_ENVVARS}\")
     COMMENT ${comment}
     )
     
-  ADD_CUSTOM_TARGET(${CTKAPPLAUNCHER_APPLICATION_NAME}ConfigureLauncher ALL
+  add_custom_target(${CTKAPPLAUNCHER_APPLICATION_NAME}ConfigureLauncher ALL
     DEPENDS
       ${CTKAPPLAUNCHER_DESTINATION_DIR}/${CTKAPPLAUNCHER_APPLICATION_NAME}LauncherSettings.ini
       ${CTKAPPLAUNCHER_DESTINATION_DIR}/${CTKAPPLAUNCHER_APPLICATION_NAME}LauncherSettingsToInstall.ini
     )
-  ADD_DEPENDENCIES(${CTKAPPLAUNCHER_APPLICATION_NAME}ConfigureLauncher ${CTKAPPLAUNCHER_TARGET})
+  add_dependencies(${CTKAPPLAUNCHER_APPLICATION_NAME}ConfigureLauncher ${CTKAPPLAUNCHER_TARGET})
   
-ENDMACRO()
+endmacro()
 
 #
 # Testing - cmake -D<TESTNAME>:BOOL=ON -P ctkAppLauncher.cmake
 #
-IF(TEST_ctkAppLauncherListToQtSettingsArrayTest)
-  FUNCTION(ctkAppLauncherListToQtSettingsArrayTest)
-    SET(input "/path/to/app1" "/path/to/app2" "/path/to/app3")
-    SET(itemname "path")
-    SET(output)
+if(TEST_ctkAppLauncherListToQtSettingsArrayTest)
+  function(ctkAppLauncherListToQtSettingsArrayTest)
+    set(input "/path/to/app1" "/path/to/app2" "/path/to/app3")
+    set(itemname "path")
+    set(output)
     ctkAppLauncherListToQtSettingsArray("${input}" ${itemname} output)
-    SET(expected_output "1\\\\path=/path/to/app1\n")
-    SET(expected_output "${expected_output}2\\\\path=/path/to/app2\n")
-    SET(expected_output "${expected_output}3\\\\path=/path/to/app3\n")
-    SET(expected_output "${expected_output}size=3")
-    IF(NOT "${output}" STREQUAL "${expected_output}")
-      MESSAGE(FATAL_ERROR "Problem with ctkAppLauncherListToQtSettingsArray()\n"
+    set(expected_output "1\\\\path=/path/to/app1\n")
+    set(expected_output "${expected_output}2\\\\path=/path/to/app2\n")
+    set(expected_output "${expected_output}3\\\\path=/path/to/app3\n")
+    set(expected_output "${expected_output}size=3")
+    if(NOT "${output}" STREQUAL "${expected_output}")
+      message(FATAL_ERROR "Problem with ctkAppLauncherListToQtSettingsArray()\n"
                           "output:${output}\n"
                           "expected_output:${expected_output}")
-    ENDIF()
-    MESSAGE("SUCCESS")
-  ENDFUNCTION()
+    endif()
+    message("SUCCESS")
+  endfunction()
   ctkAppLauncherListToQtSettingsArrayTest()
-ENDIF()
+endif()
 
-IF(TEST_ctkAppLauncherAppendExtraAppToLaunchToListTest)
-  FUNCTION(ctkAppLauncherAppendExtraAppToLaunchToListTest)
-    SET(properties)
-    ctkAppLauncherAppendExtraAppToLaunchToList(
+if(TEST_ctkAppLauncherAppendExtraAppToLaunchToListTest)
+  function(ctkAppLauncherAppendExtraAppToLaunchToListTest)
+    set(properties)
+    ctkAppLauncherAppendExtraAppToLaunchTolist(
       LONG_ARG helloworld
       HELP "Print hello world"
       PATH "/path/to/app"
       OUTPUTVAR properties
       )
-    ctkAppLauncherAppendExtraAppToLaunchToList(
+    ctkAppLauncherAppendExtraAppToLaunchTolist(
       LONG_ARG hellouniverse SHORT_ARG u
       HELP "Print hello universe"
       PATH "/path/to/app"
       ARGUMENTS "--universe"
       OUTPUTVAR properties
       )
-    SET(expected_properties
+    set(expected_properties
       "helloworld^^^^Print hello world^^/path/to/app^^"
       "hellouniverse^^u^^Print hello universe^^/path/to/app^^--universe")
-    IF(NOT "${properties}" STREQUAL "${expected_properties}")
-      MESSAGE(FATAL_ERROR "Problem with ctkAppLauncherAppendExtraAppToLaunchToList()\n"
+    if(NOT "${properties}" STREQUAL "${expected_properties}")
+      message(FATAL_ERROR "Problem with ctkAppLauncherAppendExtraAppToLaunchTolist()\n"
                           "properties:${properties}\n"
                           "expected_properties:${expected_properties}")
-    ENDIF()
-    MESSAGE("SUCCESS")
-  ENDFUNCTION()
+    endif()
+    message("SUCCESS")
+  endfunction()
   ctkAppLauncherAppendExtraAppToLaunchToListTest()
-ENDIF()
+endif()
 
-IF(TEST_ctkAppLauncherExtraAppToLaunchListToQtSettingsTest)
-  FUNCTION(ctkAppLauncherExtraAppToLaunchListToQtSettingsTest)
-    SET(properties)
-    ctkAppLauncherAppendExtraAppToLaunchToList(
+if(TEST_ctkAppLauncherExtraAppToLaunchListToQtSettingsTest)
+  function(ctkAppLauncherExtraAppToLaunchListToQtSettingsTest)
+    set(properties)
+    ctkAppLauncherAppendExtraAppToLaunchTolist(
       LONG_ARG helloworld
       HELP "Print hello world"
       PATH "/path/to/app"
       OUTPUTVAR properties
       )
-    ctkAppLauncherAppendExtraAppToLaunchToList(
+    ctkAppLauncherAppendExtraAppToLaunchTolist(
       LONG_ARG hellouniverse SHORT_ARG u
       HELP "Print hello universe"
       PATH "/path/to/app"
       ARGUMENTS "--universe"
       OUTPUTVAR properties
       )
-    SET(output)
+    set(output)
     ctkAppLauncherExtraAppToLaunchListToQtSettings(LIST ${properties} OUTPUTVAR output)
-    SET(expected_output "${expected_output}\n")
-    SET(expected_output "${expected_output}helloworld/shortArgument=\n")
-    SET(expected_output "${expected_output}helloworld/help=Print hello world\n")
-    SET(expected_output "${expected_output}helloworld/path=/path/to/app\n")
-    SET(expected_output "${expected_output}helloworld/arguments=\n")
-    SET(expected_output "${expected_output}\n")
-    SET(expected_output "${expected_output}hellouniverse/shortArgument=u\n")
-    SET(expected_output "${expected_output}hellouniverse/help=Print hello universe\n")
-    SET(expected_output "${expected_output}hellouniverse/path=/path/to/app\n")
-    SET(expected_output "${expected_output}hellouniverse/arguments=--universe\n")
-    IF(NOT "${output}" STREQUAL "${expected_output}")
-      MESSAGE(FATAL_ERROR "Problem with ctkAppLauncherExtraAppToLaunchListToQtSettings()\n"
+    set(expected_output "${expected_output}\n")
+    set(expected_output "${expected_output}helloworld/shortArgument=\n")
+    set(expected_output "${expected_output}helloworld/help=Print hello world\n")
+    set(expected_output "${expected_output}helloworld/path=/path/to/app\n")
+    set(expected_output "${expected_output}helloworld/arguments=\n")
+    set(expected_output "${expected_output}\n")
+    set(expected_output "${expected_output}hellouniverse/shortArgument=u\n")
+    set(expected_output "${expected_output}hellouniverse/help=Print hello universe\n")
+    set(expected_output "${expected_output}hellouniverse/path=/path/to/app\n")
+    set(expected_output "${expected_output}hellouniverse/arguments=--universe\n")
+    if(NOT "${output}" STREQUAL "${expected_output}")
+      message(FATAL_ERROR "Problem with ctkAppLauncherExtraAppToLaunchListToQtSettings()\n"
                           "output:${output}\n"
                           "expected_output:${expected_output}")
-    ENDIF()
-    MESSAGE("SUCCESS")
-  ENDFUNCTION()
+    endif()
+    message("SUCCESS")
+  endfunction()
   ctkAppLauncherExtraAppToLaunchListToQtSettingsTest()
-ENDIF()
+endif()

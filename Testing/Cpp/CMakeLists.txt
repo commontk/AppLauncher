@@ -25,43 +25,43 @@ configure_file(
 #
 # Helper macro
 #
-MACRO(APPLAUNCHER_ADD_CMAKESCRIPT_TEST testname script)
-  ADD_TEST(cmake_${testname} ${CMAKE_COMMAND}
+macro(applauncher_add_cmakescript_test testname script)
+  add_test(cmake_${testname} ${CMAKE_COMMAND}
     -DTEST_${testname}:BOOL=ON
     -P ${CTKAppLauncher_SOURCE_DIR}/CMake/${script}.cmake)
-  SET_TESTS_PROPERTIES(cmake_${testname} PROPERTIES
+  set_tests_properties(cmake_${testname} PROPERTIES
     LABELS ctkAppLauncher
     PASS_REGULAR_EXPRESSION "SUCCESS")
-ENDMACRO()
+endmacro()
 
 #
 # Add 'CMake script' Tests
 #
-APPLAUNCHER_ADD_CMAKESCRIPT_TEST(ctkAppLauncherListToQtSettingsArrayTest ctkAppLauncher)
-APPLAUNCHER_ADD_CMAKESCRIPT_TEST(ctkAppLauncherAppendExtraAppToLaunchToListTest ctkAppLauncher)
-APPLAUNCHER_ADD_CMAKESCRIPT_TEST(ctkAppLauncherExtraAppToLaunchListToQtSettingsTest ctkAppLauncher)
+applauncher_add_cmakescript_test(ctkAppLauncherListToQtSettingsArrayTest ctkAppLauncher)
+applauncher_add_cmakescript_test(ctkAppLauncherAppendExtraAppToLaunchToListTest ctkAppLauncher)
+applauncher_add_cmakescript_test(ctkAppLauncherExtraAppToLaunchListToQtSettingsTest ctkAppLauncher)
 
 #
 # Helper macro
 #
-MACRO(APPLAUNCHER_ADD_TEST testname depends)
-  ADD_TEST(${testname} ${CMAKE_COMMAND}
+macro(applauncher_add_test testname depends)
+  add_test(${testname} ${CMAKE_COMMAND}
     -DTEST_SOURCE_DIR:PATH=${CMAKE_CURRENT_SOURCE_DIR}
     -DTEST_BINARY_DIR:PATH=${CMAKE_CURRENT_BINARY_DIR}
     -P ${CMAKE_CURRENT_SOURCE_DIR}/${testname}.cmake)
-  IF(NOT ${depends} STREQUAL "NODEPENDS")
-    SET_TESTS_PROPERTIES(${testname} PROPERTIES DEPENDS ${depends})
-  ENDIF()
-  SET_PROPERTY(TEST ${testname} PROPERTY LABELS ctkAppLauncher)
-ENDMACRO()
+  if(NOT ${depends} STREQUAL "NODEPENDS")
+    set_tests_properties(${testname} PROPERTIES DEPENDS ${depends})
+  endif()
+  set_property(TEST ${testname} PROPERTY LABELS ctkAppLauncher)
+endmacro()
 
 #
 # Add Tests
 #
-APPLAUNCHER_ADD_TEST(App4TestConfigureStep NODEPENDS)
-APPLAUNCHER_ADD_TEST(App4TestBuildStep App4TestConfigureStep)
-APPLAUNCHER_ADD_TEST(AppLauncherTest1 App4TestBuildStep)
-APPLAUNCHER_ADD_TEST(AppLauncherTest2 AppLauncherTest1)
-APPLAUNCHER_ADD_TEST(AppLauncherTest3 AppLauncherTest2)
-APPLAUNCHER_ADD_TEST(AppLauncherTest4 AppLauncherTest3)
-APPLAUNCHER_ADD_TEST(AppLauncherTest5 AppLauncherTest4)
+applauncher_add_test(App4TestConfigureStep NODEPENDS)
+applauncher_add_test(App4TestBuildStep App4TestConfigureStep)
+applauncher_add_test(AppLauncherTest1 App4TestBuildStep)
+applauncher_add_test(AppLauncherTest2 AppLauncherTest1)
+applauncher_add_test(AppLauncherTest3 AppLauncherTest2)
+applauncher_add_test(AppLauncherTest4 AppLauncherTest3)
+applauncher_add_test(AppLauncherTest5 AppLauncherTest4)

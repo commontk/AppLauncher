@@ -1,17 +1,17 @@
-PROJECT(CTKAppLauncherBase)
+project(CTKAppLauncherBase)
 
 #
 # See <SOURCE>/CMake/ctkalMacroBuildLib.cmake for details
 #
 
-#SET(KIT_export_directive "CTK_APPLAUNCHER_BASE_EXPORT")
+#set(KIT_export_directive "CTK_APPLAUNCHER_BASE_EXPORT")
 
 # Additional directories to include
-SET(KIT_include_directories
+set(KIT_include_directories
   )
   
 # Source files
-SET(KIT_SRCS
+set(KIT_SRCS
   ctkAppLauncher.cpp
   ctkAppLauncher.h
   ctkAppLauncher_p.h
@@ -22,22 +22,22 @@ SET(KIT_SRCS
   )
 
 # Headers that should run through moc
-SET(KIT_MOC_SRCS
+set(KIT_MOC_SRCS
   ctkAppLauncher.h
   ctkAppLauncher_p.h
   )
 
 # UI files
-SET(KIT_UI_FORMS
+set(KIT_UI_FORMS
 )
 
 # Resources
-SET(KIT_resources
+set(KIT_resources
   Resources/CTKAppLauncherBase.qrc
   )
 
 # Target libraries
-SET(KIT_target_libraries
+set(KIT_target_libraries
   ${QT_LIBRARIES}
   )
 
@@ -55,7 +55,7 @@ ctkMacroBuildLib(
   )
 
 # Testing
-IF(BUILD_TESTING)
-  ADD_SUBDIRECTORY(Testing)
-ENDIF(BUILD_TESTING)
+if(BUILD_TESTING)
+  add_subdirectory(Testing)
+endif(BUILD_TESTING)
 

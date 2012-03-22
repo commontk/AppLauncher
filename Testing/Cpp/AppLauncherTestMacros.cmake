@@ -1,7 +1,7 @@
 
 # --------------------------------------------------------------------------
 # Helper macro
-FUNCTION(print_command_as_string command)
+function(print_command_as_string command)
   if(PRINT_COMMAND)
     set(command_as_string)
     foreach(elem ${command})
@@ -9,4 +9,4 @@ FUNCTION(print_command_as_string command)
     endforeach()
     message(STATUS "COMMAND:${command_as_string}")
   endif()
-ENDFUNCTION()
+endfunction()

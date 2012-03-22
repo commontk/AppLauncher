@@ -4,12 +4,12 @@ project(App4Test)
 
 # Disable warning C4996: [...] This function or variable may be unsafe. [...]
 # To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details
-IF(MSVC90)
+if(MSVC90)
   add_definitions(-D_CRT_SECURE_NO_WARNINGS)
-ENDIF()
+endif()
 
-SET(APP4TEST_LIBRARIES CACHE INTERNAL "App4Test libraries" FORCE)
-SET(APP4TEST_INCLUDE_DIRS CACHE INTERNAL "App4Test include dirs" FORCE)
+set(APP4TEST_LIBRARIES CACHE INTERNAL "App4Test libraries" FORCE)
+set(APP4TEST_INCLUDE_DIRS CACHE INTERNAL "App4Test include dirs" FORCE)
 
 # To configure main.cpp
 set(LIB_INCLUDES)
@@ -55,7 +55,7 @@ configure_file(
   @ONLY
   )
   
-INCLUDE_DIRECTORIES(
+include_directories(
   ${CMAKE_CURRENT_SOURCE_DIR}
   ${CMAKE_CURRENT_BINARY_DIR}
   ${APP4TEST_INCLUDE_DIRS}
@@ -66,7 +66,7 @@ add_executable(${PROJECT_NAME}
   ${CMAKE_CURRENT_BINARY_DIR}/Main.cpp
   )
 
-SET_TARGET_PROPERTIES(${PROJECT_NAME}  PROPERTIES
+set_target_properties(${PROJECT_NAME}  PROPERTIES
   SKIP_BUILD_RPATH ON
   RUNTIME_OUTPUT_DIRECTORY ${App4Test_BINARY_DIR}/bin
   )
