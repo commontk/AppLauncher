@@ -67,14 +67,14 @@ int main(int argc, char** argv)
     else if (argName == "--test-timeout")
       {
       int timeout = 3;
-      std::cout << "App4Test will exit in " << timeout 
+      std::cout << "App4Test will exit in " << timeout
                 << " seconds with error_code=" << timeout << std::endl;
       sleepMs(timeout * 1000);
-      
+
       // Generate filename
       std::string filename(argv[0]);
       filename += "-timeout.txt";
-      
+
       // Create file argv[0]-timeout.txt
       std::ofstream timeoutFile;
       timeoutFile.open (filename.c_str());
@@ -108,10 +108,15 @@ int main(int argc, char** argv)
       {
       std::cout << "Hello world !" << std::endl;
       }
+    else if (argName == "--exit-failure")
+      {
+      std::cout << "Exit failure !" << std::endl;
+      return EXIT_FAILURE;
+      }
     }
-  
+
   // Instanciate library objects
 @LIB_INSTANCIATES@
-  
+
   return EXIT_SUCCESS;
 }
