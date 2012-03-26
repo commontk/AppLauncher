@@ -75,6 +75,7 @@ int ctkAppLauncherTest1(int argc, char* argv[])
     << "  --launcher-no-splash           Hide launcher splash\n"
     << "  --launcher-timeout             Specify the time in second before the launcher kills "
        "the application. -1 means no timeout (default: -1)\n"
+    << "  --launcher-dump-environment    Launcher will print environment variables to be set, then exit\n"
     << "  --launcher-generate-template   Generate an example of setting file\n";
 
   helpText.clear();
