@@ -4,12 +4,10 @@ project(CTKAppLauncherBase)
 # See <SOURCE>/CMake/ctkalMacroBuildLib.cmake for details
 #
 
-#set(KIT_export_directive "CTK_APPLAUNCHER_BASE_EXPORT")
-
 # Additional directories to include
 set(KIT_include_directories
   )
-  
+
 # Source files
 set(KIT_SRCS
   ctkAppLauncher.cpp
@@ -43,7 +41,6 @@ set(KIT_target_libraries
 
 ctkMacroBuildLib(
   NAME ${PROJECT_NAME}
-  #EXPORT_DIRECTIVE ${KIT_export_directive}
   INCLUDE_DIRECTORIES ${KIT_include_directories}
   SRCS ${KIT_SRCS}
   MOC_SRCS ${KIT_MOC_SRCS}
@@ -57,5 +54,5 @@ ctkMacroBuildLib(
 # Testing
 if(BUILD_TESTING)
   add_subdirectory(Testing)
-endif(BUILD_TESTING)
+endif()
 
