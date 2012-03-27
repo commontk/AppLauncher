@@ -68,3 +68,71 @@ endif()
 if("${ev}" MATCHES "Widgets left.*")
   message(FATAL_ERROR "Test2 - error_variable [${ev}] shouldn't contain 'Widgets left'")
 endif()
+
+# --------------------------------------------------------------------------
+# Configure settings file
+set(other_library_path "/path/to/other/lib")
+set(path_1 "/home/john/app1")
+set(path_2 "/home/john/app2")
+set(env_var_name_1 "SOMETHING_NICE")
+set(env_var_value_1 "Chocolate")
+set(env_var_name_2 "SOMETHING_AWESOME")
+set(env_var_value_2 "Rock climbing !")
+file(WRITE "${launcher}LauncherSettings.ini" "
+[Application]
+path=${application}
+
+[LibraryPaths]
+1\\path=${library_path}
+2\\path=${other_library_path}
+size=2
+
+[Paths]
+1\\path=${path_1}
+2\\path=${path_2}
+size=2
+
+[EnvironmentVariables]
+${env_var_name_1}=${env_var_value_1}
+${env_var_name_2}=${env_var_value_2}
+
+")
+
+# --------------------------------------------------------------------------
+# Test3 - Check if flag --launcher-dump-environment works as expected
+set(command ${launcher_exe} --launcher-no-splash --launcher-dump-environment)
+execute_process(
+  COMMAND ${command}
+  WORKING_DIRECTORY ${launcher_binary_dir}
+  ERROR_VARIABLE ev
+  OUTPUT_VARIABLE ov
+  RESULT_VARIABLE rv
+  )
+
+print_command_as_string("${command}")
+
+if(rv)
+  message(FATAL_ERROR "Test3 - [${launcher_exe}] failed to start from "
+                      "directory [${launcher_binary_dir}]\n${ev}")
+endif()
+
+if(WIN32)
+  set(pathsep ";")
+  set(library_path_variable_name "PATH")
+elseif(APPLE)
+  set(pathsep ":")
+  set(library_path_variable_name "DYLD_LIBRARY_PATH")
+elseif(UNIX)
+  set(pathsep ":")
+  set(library_path_variable_name "LD_LIBRARY_PATH")
+endif()
+
+set(expected_ov "${library_path_variable_name}=${other_library_path}${pathsep}${library_path}${pathsep}
+PATH=${path_1}${pathsep}${path_2}${pathsep}
+${env_var_name_2}=${env_var_value_2}
+${env_var_name_1}=${env_var_value_1}\n")
+
+if(NOT "${ov}" STREQUAL "${expected_ov}")
+  message(FATAL_ERROR "Test3 - Problem with flag --launcher-dump-environment - expected_ov:${expected_ov} "
+                      "current_ov:${ov}")
+endif()
