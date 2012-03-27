@@ -1,6 +1,6 @@
 
 #
-# AppLauncherTest5
+# AppLauncherTest6
 #
 
 include(${TEST_SOURCE_DIR}/AppLauncherTestMacros.cmake)
@@ -42,8 +42,29 @@ endif()
 
 set(expected_msg "Exit failure !")
 string(REGEX MATCH ${expected_msg} current_msg ${ov})
-if ("${current_msg}" STREQUAL "")
+if("${current_msg}" STREQUAL "")
   message(FATAL_ERROR "Test1 - expected_msg:${expected_msg}, "
                       "current_msg:${ov}")
 endif()
 
+# --------------------------------------------------------------------------
+# Test2 - Make sure the launcher do not consider Qt reserved argument
+set(command ${launcher_exe} -widgetcount --launcher-no-splash)
+execute_process(
+  COMMAND ${command}
+  WORKING_DIRECTORY ${launcher_binary_dir}
+  ERROR_VARIABLE ev
+  OUTPUT_VARIABLE ov
+  RESULT_VARIABLE rv
+  )
+
+print_command_as_string("${command}")
+
+if(rv)
+  message(FATAL_ERROR "Test2 - [${launcher_exe}] failed to start from "
+                      "directory [${launcher_binary_dir}]\n${ev}")
+endif()
+
+if("${ev}" MATCHES "Widgets left.*")
+  message(FATAL_ERROR "Test2 - error_variable [${ev}] shouldn't contain 'Widgets left'")
+endif()
