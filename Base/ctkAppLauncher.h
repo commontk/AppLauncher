@@ -34,6 +34,12 @@ public:
   
   /// Initialize
   bool initialize();
+
+  /// Set/Get list of arguments that will be passed to the program to launch.
+  /// By default, \a arguments associated with the \a application are used.
+  /// \sa ctkAppLauncher(), QCoreApplication::arguments()
+  QStringList arguments()const;
+  void setArguments(const QStringList& args);
   
   /// Parse arguments
   /// Return ProcessArgumentsStatus::ExitWithError in case of parse error 

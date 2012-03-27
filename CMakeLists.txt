@@ -83,6 +83,7 @@ set(CTK_BASE_INCLUDE_DIRS CACHE INTERNAL "CTK includes" FORCE)
 # CMake function(s) and macro(s)
 #
 include(ctkMacroBuildLib)
+include(ctkMacroGenerateMocs)
 include(ctkMacroParseArguments)
 
 #-----------------------------------------------------------------------------
@@ -207,6 +208,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS_INIT} ${COVERAGE_CXX_FLAGS} ${ADDITIONAL_
 # Qt
 #
 find_package(Qt4 4.6 REQUIRED)
+set(QT_USE_QTTEST ${BUILD_TESTING})
 include(${QT_USE_FILE})
 
 #-----------------------------------------------------------------------------

@@ -369,6 +369,7 @@ ctkAppLauncher::ctkAppLauncher(const QCoreApplication& application, QObject* par
 {
   this->Internal = new ctkAppLauncherInternal();
   this->Internal->Application = application.instance();
+  this->Internal->Arguments = application.instance()->arguments();
 }
 
 // --------------------------------------------------------------------------
@@ -441,6 +442,18 @@ bool ctkAppLauncher::initialize()
 }
 
 // --------------------------------------------------------------------------
+QStringList ctkAppLauncher::arguments()const
+{
+  return this->Internal->Arguments;
+}
+
+// --------------------------------------------------------------------------
+void ctkAppLauncher::setArguments(const QStringList& args)
+{
+  this->Internal->Arguments = args;
+}
+
+// --------------------------------------------------------------------------
 int ctkAppLauncher::processArguments()
 {  
   if (!this->Internal->Initialized)
@@ -450,7 +463,7 @@ int ctkAppLauncher::processArguments()
 
   bool ok = false;
   this->Internal->ParsedArgs =
-      this->Internal->Parser.parseArguments(this->Internal->Application->arguments(), &ok);
+      this->Internal->Parser.parseArguments(this->Internal->Arguments, &ok);
   if (!ok)
     {
     std::cerr << "Error\n  " 

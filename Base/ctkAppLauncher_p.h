@@ -71,6 +71,7 @@ public:
   int         LauncherSplashScreenHideDelayMs;
 
   /// Variable used internally
+  QStringList                     Arguments;
   QProcess                        Process;
   ctkCommandLineParser            Parser;
   QHash<QString, QVariant>        ParsedArgs;
