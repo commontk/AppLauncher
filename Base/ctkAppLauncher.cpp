@@ -263,12 +263,8 @@ QString ctkAppLauncherInternal::expandValue(const QString& value)
 }
 
 // --------------------------------------------------------------------------
-void ctkAppLauncherInternal::runProcess()
+void ctkAppLauncherInternal::buildEnvironment(QProcessEnvironment &env)
 {
-  this->Process.setProcessChannelMode(QProcess::ForwardedChannels);
-
-  QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
-
   // LD_LIBRARY_PATH (linux), DYLD_LIBRARY_PATH (mac), PATH (win) ...
   QString libPathVarName = this->LibraryPathVariableName;
 
@@ -296,6 +292,16 @@ void ctkAppLauncherInternal::runProcess()
     this->reportInfo(QString("Setting env. variable [%1]:%2").arg(key).arg(value));
     env.insert(key, this->expandValue(value));
     }
+}
+
+// --------------------------------------------------------------------------
+void ctkAppLauncherInternal::runProcess()
+{
+  this->Process.setProcessChannelMode(QProcess::ForwardedChannels);
+
+  QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
+
+  this->buildEnvironment(env);
 
   this->Process.setProcessEnvironment(env);
 
@@ -378,6 +384,21 @@ ctkAppLauncher::~ctkAppLauncher()
 }
 
 // --------------------------------------------------------------------------
+void ctkAppLauncher::displayEnvironment(std::ostream &output)
+{
+  if (this->Internal->LauncherName.isEmpty())
+    {
+    return;
+    }
+  QProcessEnvironment env;
+  this->Internal->buildEnvironment(env);
+  foreach (const QString& envArg, env.toStringList())
+    {
+    output << qPrintable(envArg) << std::endl;
+    }
+}
+
+// --------------------------------------------------------------------------
 void ctkAppLauncher::displayHelp(std::ostream &output)
 {
   if (this->Internal->LauncherName.isEmpty())
@@ -431,6 +452,8 @@ bool ctkAppLauncher::initialize()
                      "-1 means no timeout", QVariant(-1));
   parser.setExactMatchRegularExpression("launcher-timeout",
                                         "(-1)|([0-9]+)", "-1 or a positive integer is expected.");
+  parser.addArgument("launcher-dump-environment", "", QVariant::Bool,
+                     "Launcher will print environment variables to be set, then exit");
   parser.addArgument("launcher-generate-template", "", QVariant::Bool,
                      "Generate an example of setting file");
 
@@ -484,6 +507,12 @@ int ctkAppLauncher::processArguments()
     {
     this->displayHelp();
     return Self::ExitWithSuccess;
+    }
+
+  if (this->Internal->ParsedArgs.value("launcher-dump-environment").toBool())
+    {
+      this->displayEnvironment();
+      return Self::ExitWithSuccess;
     }
 
   QStringList unparsedArgs = this->Internal->Parser.unparsedArguments();

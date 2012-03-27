@@ -29,6 +29,9 @@ public:
     Continue
     };
 
+  /// Display environment variables on standard output
+  void displayEnvironment(std::ostream &output = std::cout);
+
   /// Display help string on standard output
   void displayHelp(std::ostream &output = std::cout);
 
