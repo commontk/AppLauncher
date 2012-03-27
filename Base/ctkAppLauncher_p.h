@@ -29,6 +29,7 @@ public:
   /// Display status on Standard Output
   void reportInfo(const QString& msg);
 
+  void buildEnvironment(QProcessEnvironment&);
   bool processApplicationToLaunchArgument();
   bool processExtraApplicationToLaunchArgument(const QStringList& unparsedArgs);
   bool processSplashPathArgument();
