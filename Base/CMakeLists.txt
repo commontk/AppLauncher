@@ -10,6 +10,8 @@ set(KIT_include_directories
 
 # Source files
 set(KIT_SRCS
+  ctkAppArguments.cpp
+  ctkAppArguments.h
   ctkAppLauncher.cpp
   ctkAppLauncher.h
   ctkAppLauncher_p.h

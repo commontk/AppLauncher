@@ -2,6 +2,7 @@ set(KIT ${PROJECT_NAME})
 
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 set(KIT_TEST_SRCS
+  ctkAppArgumentsTest.cpp
   ctkAppLauncherTest1.cpp
   ctkCommandLineParserTest1.cpp
   )
@@ -10,6 +11,7 @@ create_test_sourcelist(Tests ${KIT}CppTests.cpp
   )
 
 QT4_GENERATE_MOCS(
+  ctkAppArgumentsTest.cpp
   ctkAppLauncherTest1.cpp
   )
 
@@ -31,5 +33,6 @@ endmacro( SIMPLE_TEST  )
 # Add Tests
 #
 
+SIMPLE_TEST( ctkAppArgumentsTest )
 SIMPLE_TEST( ctkAppLauncherTest1 )
 SIMPLE_TEST( ctkCommandLineParserTest1 )
