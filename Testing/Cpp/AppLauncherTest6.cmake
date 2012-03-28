@@ -116,16 +116,6 @@ if(rv)
                       "directory [${launcher_binary_dir}]\n${ev}")
 endif()
 
-if(WIN32)
-  set(pathsep ";")
-  set(library_path_variable_name "PATH")
-elseif(APPLE)
-  set(pathsep ":")
-  set(library_path_variable_name "DYLD_LIBRARY_PATH")
-elseif(UNIX)
-  set(pathsep ":")
-  set(library_path_variable_name "LD_LIBRARY_PATH")
-endif()
 
 set(expected_ov "${library_path_variable_name}=${other_library_path}${pathsep}${library_path}${pathsep}
 PATH=${path_1}${pathsep}${path_2}${pathsep}
