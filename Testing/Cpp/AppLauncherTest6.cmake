@@ -131,6 +131,11 @@ set(expected_ov "${library_path_variable_name}=${other_library_path}${pathsep}${
 PATH=${path_1}${pathsep}${path_2}${pathsep}
 ${env_var_name_2}=${env_var_value_2}
 ${env_var_name_1}=${env_var_value_1}\n")
+if(WIN32)
+  set(expected_ov "PATH=${path_1}${pathsep}${path_2}${pathsep}${other_library_path}${pathsep}${library_path}${pathsep}
+${env_var_name_2}=${env_var_value_2}
+${env_var_name_1}=${env_var_value_1}\n")
+endif()
 
 if(NOT "${ov}" STREQUAL "${expected_ov}")
   message(FATAL_ERROR "Test3 - Problem with flag --launcher-dump-environment - expected_ov:${expected_ov} "
