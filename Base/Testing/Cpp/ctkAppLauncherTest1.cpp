@@ -65,15 +65,16 @@ void ctkAppLauncherTest1er::testDisplayHelp_data()
            "Usage\n"
            "  CTKAppLauncherBaseCppTests [options]\n\n"
            "Options\n"
-           "  --launcher-help                Display help\n"
-           "  --launcher-verbose             Verbose mode\n"
-           "  --launch                       Specify the application to launch\n"
-           "  --launcher-detach              Launcher will NOT wait for the application to finish\n"
-           "  --launcher-no-splash           Hide launcher splash\n"
-           "  --launcher-timeout             Specify the time in second before the launcher kills "
+           "  --launcher-help                  Display help\n"
+           "  --launcher-verbose               Verbose mode\n"
+           "  --launch                         Specify the application to launch\n"
+           "  --launcher-detach                Launcher will NOT wait for the application to finish\n"
+           "  --launcher-no-splash             Hide launcher splash\n"
+           "  --launcher-timeout               Specify the time in second before the launcher kills "
            "the application. -1 means no timeout (default: -1)\n"
-           "  --launcher-dump-environment    Launcher will print environment variables to be set, then exit\n"
-           "  --launcher-generate-template   Generate an example of setting file\n");
+           "  --launcher-dump-environment      Launcher will print environment variables to be set, then exit\n"
+           "  --launcher-additional-settings   Additional settings file to consider\n"
+           "  --launcher-generate-template     Generate an example of setting file\n");
 }
 
 // ----------------------------------------------------------------------------

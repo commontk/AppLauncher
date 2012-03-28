@@ -9,6 +9,17 @@ set(launcher_binary_dir "@LAUNCHER_BINARY_DIR@")
 set(app4test_binary_dir "@APP4TEST_BINARY_DIR@")
 set(app4test_build_type "@APP4TEST_BUILD_TYPE@")
 
+if(WIN32)
+  set(pathsep ";")
+  set(library_path_variable_name "PATH")
+elseif(APPLE)
+  set(pathsep ":")
+  set(library_path_variable_name "DYLD_LIBRARY_PATH")
+elseif(UNIX)
+  set(pathsep ":")
+  set(library_path_variable_name "LD_LIBRARY_PATH")
+endif()
+
 # --------------------------------------------------------------------------
 # Sanity checks
 
@@ -58,6 +69,7 @@ endif()
 # Remove settings file if any
 
 execute_process(COMMAND ${CMAKE_COMMAND} -E remove -f ${launcher}LauncherSettings.ini)
+execute_process(COMMAND ${CMAKE_COMMAND} -E remove -f ${launcher}AdditionalLauncherSettings.ini)
 
 # --------------------------------------------------------------------------
 # Set application variable
