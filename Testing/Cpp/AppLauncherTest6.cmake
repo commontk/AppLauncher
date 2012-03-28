@@ -116,17 +116,24 @@ if(rv)
                       "directory [${launcher_binary_dir}]\n${ev}")
 endif()
 
-set(expected_ov "${library_path_variable_name}=${library_path}${pathsep}${other_library_path}${pathsep}
-PATH=${path_1}${pathsep}${path_2}${pathsep}
-${env_var_name_2}=${env_var_value_2}
-${env_var_name_1}=${env_var_value_1}\n")
+set(expected_ov_lines
+  "${library_path_variable_name}=${library_path}${pathsep}${other_library_path}${pathsep}"
+  "PATH=${path_1}${pathsep}${path_2}${pathsep}"
+  "${env_var_name_2}=${env_var_value_2}\n"
+  "${env_var_name_1}=${env_var_value_1}\n"
+  )
 if(WIN32)
-  set(expected_ov "PATH=${path_1}${pathsep}${path_2}${pathsep}${library_path}${pathsep}${other_library_path}${pathsep}
-${env_var_name_2}=${env_var_value_2}
-${env_var_name_1}=${env_var_value_1}\n")
+  set(expected_ov_lines
+    "PATH=${path_1}${pathsep}${path_2}${pathsep}${library_path}${pathsep}${other_library_path}${pathsep}"
+    "${env_var_name_2}=${env_var_value_2}\n"
+    "${env_var_name_1}=${env_var_value_1}\n"
+    )
 endif()
 
-if(NOT "${ov}" STREQUAL "${expected_ov}")
-  message(FATAL_ERROR "Test3 - Problem with flag --launcher-dump-environment - expected_ov:${expected_ov} "
-                      "current_ov:${ov}")
-endif()
+foreach(expected_ov_line ${expected_ov_lines})
+  string(FIND "${ov}" ${expected_ov_line} pos)
+  if(${pos} STREQUAL -1)
+    message(FATAL_ERROR "Test3 - Problem with flag --launcher-dump-environment - expected_ov_line:${expected_ov_line} "
+                        "not found in current_ov:${ov}")
+  endif()
+endforeach()
