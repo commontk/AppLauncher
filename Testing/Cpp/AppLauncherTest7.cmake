@@ -84,22 +84,28 @@ if(rv)
                       "directory [${launcher_binary_dir}]\n${ev}")
 endif()
 
-set(expected_ov "${additional_env_var_name_2}=${additional_env_var_value_2}
-${additional_env_var_name_1}=${additional_env_var_value_1}
-${library_path_variable_name}=${additional_library_path}${pathsep}${regular_library_path_1}${pathsep}${regular_library_path_2}${pathsep}
-PATH=${additional_path_1}${pathsep}${additional_path_2}${pathsep}${regular_path_1}${pathsep}${regular_path_2}${pathsep}
-${regular_env_var_name_2}=${regular_env_var_value_2}
-${regular_env_var_name_1}=${regular_env_var_value_1}\n")
+set(expected_ov_lines
+  "${additional_env_var_name_2}=${additional_env_var_value_2}"
+  "${additional_env_var_name_1}=${additional_env_var_value_1}"
+  "${library_path_variable_name}=${additional_library_path}${pathsep}${regular_library_path_1}${pathsep}${regular_library_path_2}${pathsep}"
+  "PATH=${additional_path_1}${pathsep}${additional_path_2}${pathsep}${regular_path_1}${pathsep}${regular_path_2}${pathsep}"
+  "${regular_env_var_name_2}=${regular_env_var_value_2}\n"
+  "${regular_env_var_name_1}=${regular_env_var_value_1}\n"
+  )
 if(WIN32)
-  set(expected_ov "${additional_env_var_name_2}=${additional_env_var_value_2}
-${additional_env_var_name_1}=${additional_env_var_value_1}
-PATH=${additional_path_1}${pathsep}${additional_path_2}${pathsep}${regular_path_1}${pathsep}${regular_path_2}${pathsep}${additional_library_path}${pathsep}${regular_library_path_1}${pathsep}${regular_library_path_2}${pathsep}
-${regular_env_var_name_2}=${regular_env_var_value_2}
-${regular_env_var_name_1}=${regular_env_var_value_1}\n")
+  set(expected_ov_lines
+    "${additional_env_var_name_2}=${additional_env_var_value_2}"
+    "${additional_env_var_name_1}=${additional_env_var_value_1}"
+    "PATH=${additional_path_1}${pathsep}${additional_path_2}${pathsep}${regular_path_1}${pathsep}${regular_path_2}${pathsep}${additional_library_path}${pathsep}${regular_library_path_1}${pathsep}${regular_library_path_2}${pathsep}"
+    "${regular_env_var_name_2}=${regular_env_var_value_2}\n"
+    "${regular_env_var_name_1}=${regular_env_var_value_1}\n"
+    )
 endif()
 
-if(NOT "${ov}" STREQUAL "${expected_ov}")
-  message(FATAL_ERROR "Test3 - Problem with flag --launcher-additional-settings - expected_ov:${expected_ov} "
-                      "current_ov:${ov}")
-endif()
-
+foreach(expected_ov_line ${expected_ov_lines})
+  string(FIND "${ov}" ${expected_ov_line} pos)
+  if(${pos} STREQUAL -1)
+    message(FATAL_ERROR "Test3 - Problem with flag --launcher-additional-settings - expected_ov_line:${expected_ov_line} "
+                        "not found in current_ov:${ov}")
+  endif()
+endforeach()
