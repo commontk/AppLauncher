@@ -69,6 +69,7 @@ endif()
 # Remove settings file if any
 
 execute_process(COMMAND ${CMAKE_COMMAND} -E remove -f ${launcher}LauncherSettings.ini)
+execute_process(COMMAND ${CMAKE_COMMAND} -E remove -f ${launcher}AdditionalLauncherSettings.ini)
 
 # --------------------------------------------------------------------------
 # Set application variable

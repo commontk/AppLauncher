@@ -22,6 +22,7 @@ class ctkAppLauncherInternal : public QObject
 public:
   ctkAppLauncherInternal();
   ~ctkAppLauncherInternal(){}
+  typedef ctkAppLauncherInternal Self;
 
   /// Display error on Standard Error
   void reportError(const QString& msg);
@@ -29,11 +30,21 @@ public:
   /// Display status on Standard Output
   void reportInfo(const QString& msg);
 
+  enum SettingsType
+    {
+    RegularSettings = 0,
+    AdditionalSettings
+    //AlternativeSettings
+    };
+
+  bool readSettings(const QString& fileName, int settingsType);
+
   void buildEnvironment(QProcessEnvironment&);
   bool processApplicationToLaunchArgument();
   bool processExtraApplicationToLaunchArgument(const QStringList& unparsedArgs);
   bool processSplashPathArgument();
   bool processScreenHideDelayMsArgument();
+  bool processAdditionalSettingsArgument();
 
   bool extractLauncherNameAndDir(const QString& applicationFilePath);
 

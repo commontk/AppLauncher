@@ -59,6 +59,9 @@ public:
   bool readSettings(const QString& fileName);
   bool writeSettings(const QString& outputFilePath);
 
+  /// Read additional settings
+  bool readAdditonalSettings(const QString& fileName);
+
   /// Set/Get list of library paths
   const QStringList& libraryPaths()const;
   void setLibraryPaths(const QStringList& listOfLibraryPaths);
