@@ -50,15 +50,15 @@ set(force_build FALSE)
 
 # Set model options
 set(model "")
-if (SCRIPT_MODE STREQUAL "experimental")
+if(SCRIPT_MODE STREQUAL "experimental")
   set(empty_binary_directory FALSE)
   set(force_build TRUE)
   set(model Experimental)
-elseif (SCRIPT_MODE STREQUAL "continuous")
+elseif(SCRIPT_MODE STREQUAL "continuous")
   set(empty_binary_directory TRUE)
   set(force_build FALSE)
   set(model Continuous)
-elseif (SCRIPT_MODE STREQUAL "nightly")
+elseif(SCRIPT_MODE STREQUAL "nightly")
   set(empty_binary_directory TRUE)
   set(force_build TRUE)
   set(model Nightly)
@@ -102,18 +102,18 @@ DOCUMENTATION_ARCHIVES_OUTPUT_DIRECTORY:PATH=${DOCUMENTATION_ARCHIVES_OUTPUT_DIR
 ${ADDITIONNAL_CMAKECACHE_OPTION}
 ")
   endif()
-  
-  if (res GREATER 0 OR force_build)
-    
+
+  if(res GREATER 0 OR force_build)
+
     ctest_submit(PARTS Update)
-    
+
     message("----------- [ Configure ${CTEST_PROJECT_NAME} ] -----------")
-    
+
     set(label ctkAppLauncher)
-    
+
     set_property(GLOBAL PROPERTY SubProject ${label})
     set_property(GLOBAL PROPERTY Label ${label})
-     
+
     ctest_configure(BUILD "${CTEST_BINARY_DIRECTORY}")
     ctest_read_custom_files("${CTEST_BINARY_DIRECTORY}")
     ctest_submit(PARTS Configure)
@@ -124,33 +124,33 @@ ${ADDITIONNAL_CMAKECACHE_OPTION}
     message("----------- [ Build ${CTEST_PROJECT_NAME} ] -----------")
     ctest_build(BUILD "${CTEST_BINARY_DIRECTORY}" APPEND)
     ctest_submit(PARTS Build)
-    
+
     message("----------- [ Test ${CTEST_PROJECT_NAME} ] -----------")
     ctest_test(
-      BUILD "${CTEST_BINARY_DIRECTORY}" 
+      BUILD "${CTEST_BINARY_DIRECTORY}"
       INCLUDE_LABEL ${label}
       PARALLEL_LEVEL 8
       EXCLUDE ${TEST_TO_EXCLUDE_REGEX})
     # runs only tests that have a LABELS property matching "${label}"
     ctest_submit(PARTS Test)
-    
-    # Global coverage ... 
-    if (WITH_COVERAGE AND CTEST_COVERAGE_COMMAND)
+
+    # Global coverage ...
+    if(WITH_COVERAGE AND CTEST_COVERAGE_COMMAND)
       message("----------- [ Global coverage ] -----------")
       ctest_coverage(BUILD "${CTEST_BINARY_DIRECTORY}")
       ctest_submit(PARTS Coverage)
-    endif ()
-    
+    endif()
+
     # Global dynamic analysis ...
-    if (WITH_MEMCHECK AND CTEST_MEMORYCHECK_COMMAND)
+    if(WITH_MEMCHECK AND CTEST_MEMORYCHECK_COMMAND)
         message("----------- [ Global memcheck ] -----------")
         ctest_memcheck(BUILD "${CTEST_BINARY_DIRECTORY}")
         ctest_submit(PARTS MemCheck)
-      endif ()
-    
+      endif()
+
     # Note should be at the end
     ctest_submit(PARTS Notes)
-  
+
   endif()
 endmacro()
 

@@ -37,14 +37,14 @@ execute_process(
 
 print_command_as_string("${command}")
 
-if (rv)
+if(rv)
   message(FATAL_ERROR "Test1 - [${launcher_exe}] failed to start using '--helloworld' option from "
                       "directory [${launcher_binary_dir}]\n${ev}")
 endif()
 
 set(expected_msg "Hello world !")
 string(REGEX MATCH ${expected_msg} current_msg ${ov})
-if ("${current_msg}" STREQUAL "")
+if("${current_msg}" STREQUAL "")
   message(FATAL_ERROR "Test1 - expected_msg:${expected_msg}, "
                       "current_msg:${ov}")
 endif()
@@ -62,14 +62,14 @@ execute_process(
 
 print_command_as_string("${command}")
 
-if (rv)
+if(rv)
   message(FATAL_ERROR "Test2 - [${launcher_exe}] failed to start using '-hw' option from "
                       "directory [${launcher_binary_dir}]\n${ev}")
 endif()
 
 set(expected_msg "Hello world !")
 string(REGEX MATCH ${expected_msg} current_msg ${ov})
-if ("${current_msg}" STREQUAL "")
+if("${current_msg}" STREQUAL "")
   message(FATAL_ERROR "Test2 - expected_msg:${expected_msg}, "
                       "current_msg:${ov}")
 endif()
@@ -101,14 +101,14 @@ execute_process(
 
 print_command_as_string("${command}")
 
-if (rv)
+if(rv)
   message(FATAL_ERROR "Test3 - [${launcher_exe}] failed to start using '--helloworld' and 'print-hello-world' options from "
                       "directory [${launcher_binary_dir}]\n${ev}")
 endif()
 
 set(expected_msg "Hello world !")
 string(REGEX MATCH ${expected_msg} current_msg ${ov})
-if ("${current_msg}" STREQUAL "")
+if("${current_msg}" STREQUAL "")
   message(FATAL_ERROR "Test3 - expected_msg:${expected_msg}, "
                       "current_msg:${ov}")
 endif()

@@ -7,7 +7,7 @@ include(${TEST_BINARY_DIR}/AppLauncherTestPrerequisites.cmake)
 
 # --------------------------------------------------------------------------
 # Attempt to start launcher from its directory
-# Since there is no setting file and no parameter are given to the launcher, 
+# Since there is no setting file and no parameter are given to the launcher,
 # we expect it to fail with the following message:
 set(expected_error_msg "error: Application does NOT exists []
 error: --launch argument has NOT been specified
@@ -41,7 +41,7 @@ size=1
 # Attempt to start launcher from its directory
 # Since no application to launch has been specified - An error message is expected ...
 execute_process(
-  COMMAND ${launcher_exe} --launcher-no-splash --launch 
+  COMMAND ${launcher_exe} --launcher-no-splash --launch
   WORKING_DIRECTORY ${launcher_dir}
   ERROR_VARIABLE ev
   OUTPUT_QUIET
@@ -50,7 +50,7 @@ execute_process(
   )
 
 set(expected_error_msg "Error\n  Argument --launch has 0 value(s) associated whereas exacly 1 are expected.")
-if (NOT ${ev} STREQUAL ${expected_error_msg})
+if(NOT ${ev} STREQUAL ${expected_error_msg})
   message(FATAL_ERROR "Test2 - \nexpected_error_msg[${expected_error_msg}]\ncurrent[${ev}]")
 endif()
 
@@ -72,7 +72,7 @@ endif()
 
 set(expected_msg "currentWorkingDirectory=${launcher_dir}")
 string(REGEX MATCH ${expected_msg} current_msg ${ov})
-if (NOT "${expected_msg}" STREQUAL "${current_msg}")
+if(NOT "${expected_msg}" STREQUAL "${current_msg}")
   message(FATAL_ERROR "Test3 - Working directory associated with ${application_name} is incorrect ! "
                       "ExpectedWorkingDirectory:${launcher_dir}\n${ov}")
 endif()
@@ -86,14 +86,14 @@ execute_process(
   OUTPUT_VARIABLE ov
   RESULT_VARIABLE rv
   )
-if (rv)
+if(rv)
   message(FATAL_ERROR "Test4 - [${launcher_exe}] failed to start application [${application}] from "
                       "directory [${launcher_binary_dir}]\n${ev}")
 endif()
 
 set(expected_msg "currentWorkingDirectory=${launcher_working_dir}")
 string(REGEX MATCH ${expected_msg} current_msg ${ov})
-if (NOT "${expected_msg}" STREQUAL "${current_msg}")
+if(NOT "${expected_msg}" STREQUAL "${current_msg}")
   message(FATAL_ERROR "Test4 - Working directory associated with ${application_name} is incorrect ! "
                       "ExpectedWorkingDirectory:${launcher_working_dir}\n${ov}")
 endif()
@@ -108,14 +108,14 @@ execute_process(
   OUTPUT_VARIABLE ov
   RESULT_VARIABLE rv
   )
-if (rv)
+if(rv)
   message(FATAL_ERROR "Test5 - [${launcher_exe}] failed to start application [${application}] from "
                       "directory [${launcher_binary_dir}]\n${ev}")
 endif()
 
 set(expected_msg "currentWorkingDirectory=${launcher_working_dir}")
 string(REGEX MATCH ${expected_msg} current_msg ${ov})
-if (NOT "${expected_msg}" STREQUAL "${current_msg}")
+if(NOT "${expected_msg}" STREQUAL "${current_msg}")
   message(FATAL_ERROR "Test5 - Working directory associated with ${application_name} is incorrect ! "
                       "ExpectedWorkingDirectory:${launcher_working_dir}\n${ov}")
 endif()
