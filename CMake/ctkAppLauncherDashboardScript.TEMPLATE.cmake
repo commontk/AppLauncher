@@ -4,8 +4,8 @@
 # GPU: NA
 #
 
-# Note: The specific version and processor type of this machine should be reported in the 
-# header above. Indeed, this file will be send to the dashboard as a NOTE file. 
+# Note: The specific version and processor type of this machine should be reported in the
+# header above. Indeed, this file will be send to the dashboard as a NOTE file.
 
 cmake_minimum_required(VERSION 2.8)
 
@@ -16,7 +16,7 @@ cmake_minimum_required(VERSION 2.8)
 #
 # Dashboard properties
 #
-set(MY_OPERATING_SYSTEM "Linux") # Windows, Linux, Darwin... 
+set(MY_OPERATING_SYSTEM "Linux") # Windows, Linux, Darwin...
 set(MY_COMPILER "g++4.4.3")
 set(MY_QT_VERSION "4.6.2")
 set(QT_QMAKE_EXECUTABLE "$ENV{HOME}/Projects/qtsdk-2010.02/qt-static/bin/qmake")
@@ -34,17 +34,17 @@ set(WITH_COVERAGE FALSE)
 set(WITH_DOCUMENTATION FALSE)
 #set(DOCUMENTATION_ARCHIVES_OUTPUT_DIRECTORY ) # for example: $ENV{HOME}/Projects/Doxygen
 set(CTEST_BUILD_CONFIGURATION "Release")
-set(CTEST_TEST_TIMEOUT 500)
+set(CTEST_TEST_TIMEOUT 20)
 set(CTEST_BUILD_FLAGS "-j4") # Use multiple CPU cores to build
 
-# experimental: 
+# experimental:
 #     - run_ctest() macro will be called *ONE* time
 #     - binary directory will *NOT* be cleaned
-# continuous: 
-#     - run_ctest() macro will be called EVERY 5 minutes ... 
+# continuous:
+#     - run_ctest() macro will be called EVERY 5 minutes ...
 #     - binary directory will *NOT* be cleaned
 #     - configure/build will be executed *ONLY* if the repository has been updated
-# nightly: 
+# nightly:
 #     - run_ctest() macro will be called *ONE* time
 #     - binary directory *WILL BE* cleaned
 set(SCRIPT_MODE "experimental") # "experimental", "continuous", "nightly"
@@ -94,21 +94,21 @@ message("script mode: ${SCRIPT_MODE}")
 message("coverage: ${WITH_COVERAGE}, memcheck: ${WITH_MEMCHECK}")
 
 #
-# Convenient macro allowing to download a file
+# Convenient function allowing to download a file
 #
-macro(downloadFile url dest)
+function(download_file url dest)
   file(DOWNLOAD ${url} ${dest} STATUS status)
   list(GET status 0 error_code)
   list(GET status 1 error_msg)
   if(error_code)
     message(FATAL_ERROR "error: Failed to download ${url} - ${error_msg}")
   endif()
-endmacro()
+endfunction()
 
 #
-# Download and include dashboard driver script 
+# Download and include dashboard driver script
 #
 set(url http://github.com/commontk/AppLauncher/raw/master/CMake/ctkAppLauncherDashboardDriverScript.cmake)
 set(dest ${CTEST_SCRIPT_DIRECTORY}/${CTEST_SCRIPT_NAME}.driver)
-downloadfile(${url} ${dest})
+download_file(${url} ${dest})
 include(${dest})

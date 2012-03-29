@@ -65,6 +65,8 @@ elseif(SCRIPT_MODE STREQUAL "nightly")
 else()
   message(FATAL_ERROR "Unknown script mode: '${SCRIPT_MODE}'. Script mode should be either 'experimental', 'continuous' or 'nightly'")
 endif()
+set(track ${model})
+set(track ${CTEST_TRACK_PREFIX}${track}${CTEST_TRACK_SUFFIX})
 
 set(CTEST_USE_LAUNCHERS 1)
 
@@ -79,12 +81,32 @@ endif()
 
 set(CTEST_UPDATE_COMMAND "${CTEST_GIT_COMMAND}")
 
+# Macro allowing to set a variable to its default value only if not already defined
+macro(setIfNotDefined var defaultvalue)
+  if(NOT DEFINED ${var})
+    set(${var} "${defaultvalue}")
+  endif()
+endmacro()
+
+# The following variable can be used while testing the driver scripts
+setIfNotDefined(run_ctest_submit TRUE)
+setIfNotDefined(run_ctest_with_update TRUE)
+setIfNotDefined(run_ctest_with_configure TRUE)
+setIfNotDefined(run_ctest_with_build TRUE)
+setIfNotDefined(run_ctest_with_test TRUE)
+setIfNotDefined(run_ctest_with_coverage TRUE)
+setIfNotDefined(run_ctest_with_memcheck TRUE)
+setIfNotDefined(run_ctest_with_notes TRUE)
+
 #
 # run_ctest macro
 #
 macro(run_ctest)
-  ctest_start(${model})
-  ctest_update(SOURCE "${CTEST_SOURCE_DIRECTORY}" RETURN_VALUE res)
+  ctest_start(${model} TRACK ${track})
+
+  if(run_ctest_with_update)
+    ctest_update(SOURCE "${CTEST_SOURCE_DIRECTORY}" RETURN_VALUE res)
+  endif()
 
   # force a build if this is the first run and the build dir is empty
   if(NOT EXISTS "${CTEST_BINARY_DIRECTORY}/CMakeCache.txt")
@@ -105,51 +127,85 @@ ${ADDITIONNAL_CMAKECACHE_OPTION}
 
   if(res GREATER 0 OR force_build)
 
-    ctest_submit(PARTS Update)
-
-    message("----------- [ Configure ${CTEST_PROJECT_NAME} ] -----------")
-
-    set(label ctkAppLauncher)
-
-    set_property(GLOBAL PROPERTY SubProject ${label})
-    set_property(GLOBAL PROPERTY Label ${label})
-
-    ctest_configure(BUILD "${CTEST_BINARY_DIRECTORY}")
-    ctest_read_custom_files("${CTEST_BINARY_DIRECTORY}")
-    ctest_submit(PARTS Configure)
-    # Note that the Project.xml file has already been uploaded by some other CTK dashboard
-    #ctest_submit(FILES "${CTEST_BINARY_DIRECTORY}/Project.xml")
-
-    # Build top level
-    message("----------- [ Build ${CTEST_PROJECT_NAME} ] -----------")
-    ctest_build(BUILD "${CTEST_BINARY_DIRECTORY}" APPEND)
-    ctest_submit(PARTS Build)
-
-    message("----------- [ Test ${CTEST_PROJECT_NAME} ] -----------")
-    ctest_test(
-      BUILD "${CTEST_BINARY_DIRECTORY}"
-      INCLUDE_LABEL ${label}
-      PARALLEL_LEVEL 8
-      EXCLUDE ${TEST_TO_EXCLUDE_REGEX})
-    # runs only tests that have a LABELS property matching "${label}"
-    ctest_submit(PARTS Test)
-
-    # Global coverage ...
-    if(WITH_COVERAGE AND CTEST_COVERAGE_COMMAND)
-      message("----------- [ Global coverage ] -----------")
-      ctest_coverage(BUILD "${CTEST_BINARY_DIRECTORY}")
-      ctest_submit(PARTS Coverage)
+    if(run_ctest_with_update AND run_ctest_submit)
+      ctest_submit(PARTS Update)
     endif()
 
+    #-----------------------------------------------------------------------------
+    # Configure
+    #-----------------------------------------------------------------------------
+    if(run_ctest_with_configure)
+      message("----------- [ Configure ${CTEST_PROJECT_NAME} ] -----------")
+
+      set(label ctkAppLauncher)
+
+      set_property(GLOBAL PROPERTY SubProject ${label})
+      set_property(GLOBAL PROPERTY Label ${label})
+
+      ctest_configure(BUILD "${CTEST_BINARY_DIRECTORY}")
+      ctest_read_custom_files("${CTEST_BINARY_DIRECTORY}")
+      if(run_ctest_submit)
+        ctest_submit(PARTS Configure)
+      endif()
+    endif()
+
+    #-----------------------------------------------------------------------------
+    # Build top level
+    #-----------------------------------------------------------------------------
+    set(build_errors)
+    if(run_ctest_with_build)
+      message("----------- [ Build ${CTEST_PROJECT_NAME} ] -----------")
+      ctest_build(BUILD "${CTEST_BINARY_DIRECTORY}" NUMBER_ERRORS build_errors APPEND)
+      if(run_ctest_submit)
+        ctest_submit(PARTS Build)
+      endif()
+    endif()
+
+    #-----------------------------------------------------------------------------
+    # Test
+    #-----------------------------------------------------------------------------
+    if(run_ctest_with_test)
+      message("----------- [ Test ${CTEST_PROJECT_NAME} ] -----------")
+      ctest_test(
+        BUILD "${CTEST_BINARY_DIRECTORY}"
+        INCLUDE_LABEL ${label}
+        PARALLEL_LEVEL 8
+        EXCLUDE ${TEST_TO_EXCLUDE_REGEX})
+      # runs only tests that have a LABELS property matching "${label}"
+      if(run_ctest_submit)
+        ctest_submit(PARTS Test)
+      endif()
+    endif()
+
+    #-----------------------------------------------------------------------------
+    # Global coverage ...
+    #-----------------------------------------------------------------------------
+    if(WITH_COVERAGE AND CTEST_COVERAGE_COMMAND AND run_ctest_with_coverage)
+      message("----------- [ Global coverage ] -----------")
+      ctest_coverage(BUILD "${CTEST_BINARY_DIRECTORY}")
+      if(run_ctest_submit)
+        ctest_submit(PARTS Coverage)
+      endif()
+    endif()
+
+    #-----------------------------------------------------------------------------
     # Global dynamic analysis ...
-    if(WITH_MEMCHECK AND CTEST_MEMORYCHECK_COMMAND)
-        message("----------- [ Global memcheck ] -----------")
-        ctest_memcheck(BUILD "${CTEST_BINARY_DIRECTORY}")
+    #-----------------------------------------------------------------------------
+    if(WITH_MEMCHECK AND CTEST_MEMORYCHECK_COMMAND AND run_ctest_with_memcheck)
+      message("----------- [ Global memcheck ] -----------")
+      ctest_memcheck(BUILD "${CTEST_BINARY_DIRECTORY}")
+      if(run_ctest_submit)
         ctest_submit(PARTS MemCheck)
       endif()
+    endif()
 
+
+    #-----------------------------------------------------------------------------
     # Note should be at the end
-    ctest_submit(PARTS Notes)
+    #-----------------------------------------------------------------------------
+    if(run_ctest_with_notes AND run_ctest_submit)
+      ctest_submit(PARTS Notes)
+    endif()
 
   endif()
 endmacro()
