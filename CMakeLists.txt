@@ -91,10 +91,8 @@ include(ctkMacroParseArguments)
 #
 option(BUILD_TESTING "Test the project" ON)
 if(BUILD_TESTING)
-  enable_testing()
   include(CTest)
   set(CPP_TEST_PATH ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
-  mark_as_advanced(TCL_TCLSH DART_ROOT)
 
   # Setup file for setting custom ctest vars
   configure_file(
