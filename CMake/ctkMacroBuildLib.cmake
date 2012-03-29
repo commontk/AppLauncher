@@ -44,11 +44,10 @@ macro(ctkMacroBuildLib)
   if(prefix STREQUAL "")
     message(SEND_ERROR "prefix should NOT be empty !")
   endif()
-  ctkMacroParseArguments(${prefix}
-    "NAME;EXPORT_DIRECTIVE;SRCS;MOC_SRCS;UI_FORMS;INCLUDE_DIRECTORIES;TARGET_LIBRARIES;RESOURCES;LIBRARY_TYPE;LABEL"
-    ""
-    ${ARGN}
-    )
+  set(options)
+  set(oneValueArgs NAME EXPORT_DIRECTIVE LIBRARY_TYPE LABEL)
+  set(multiValueArgs SRCS MOC_SRCS UI_FORMS INCLUDE_DIRECTORIES TARGET_LIBRARIES RESOURCES)
+  cmake_parse_arguments(${prefix} "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
   # Sanity checks
   if(NOT DEFINED ${prefix}_NAME)

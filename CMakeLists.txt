@@ -95,7 +95,6 @@ set(CTK_BASE_INCLUDE_DIRS CACHE INTERNAL "CTK includes" FORCE)
 #
 include(ctkMacroBuildLib)
 include(ctkMacroGenerateMocs)
-include(ctkMacroParseArguments)
 
 #-----------------------------------------------------------------------------
 # Testing
