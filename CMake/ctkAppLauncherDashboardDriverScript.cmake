@@ -34,11 +34,31 @@ if(WITH_DOCUMENTATION)
   list(APPEND expected_variables DOCUMENTATION_ARCHIVES_OUTPUT_DIRECTORY)
 endif()
 
+if(NOT DEFINED MIDAS_API_URL)
+  set(MIDAS_API_URL "http://midas3.kitware.com/midas")
+endif()
+if(NOT DEFINED MIDAS_SERVER_EXPERIMENTAL_PACKAGES_FOLDERID)
+  set(MIDAS_SERVER_EXPERIMENTAL_PACKAGES_FOLDERID 1227)
+endif()
+if(NOT DEFINED MIDAS_SERVER_NIGHTLY_PACKAGES_FOLDERID)
+  set(MIDAS_SERVER_NIGHTLY_PACKAGES_FOLDERID 1228)
+endif()
+if(NOT DEFINED MIDAS_SERVER_CONTINOUS_PACKAGES_FOLDERID)
+  set(MIDAS_SERVER_CONTINOUS_PACKAGES_FOLDERID 1229)
+endif()
+
 foreach(var ${expected_variables})
   if(NOT DEFINED ${var})
     message(FATAL_ERROR "Variable ${var} should be defined in top-level script !")
   endif()
 endforeach()
+
+# Make sure command 'ctest_upload' is available if WITH_PACKAGES is True
+if(WITH_PACKAGES)
+  if(NOT COMMAND ctest_upload)
+    message(FATAL_ERROR "Failed to enable option WITH_PACKAGES ! CMake ${CMAKE_VERSION} doesn't support 'ctest_upload' command.")
+  endif()
+endif()
 
 set(git_repository http://github.com/commontk/AppLauncher.git)
 
@@ -65,7 +85,11 @@ elseif(SCRIPT_MODE STREQUAL "nightly")
 else()
   message(FATAL_ERROR "Unknown script mode: '${SCRIPT_MODE}'. Script mode should be either 'experimental', 'continuous' or 'nightly'")
 endif()
+string(TOUPPER ${model} model_uc)
 set(track ${model})
+if(WITH_PACKAGES)
+  set(track "${track}-Packages")
+endif()
 set(track ${CTEST_TRACK_PREFIX}${track}${CTEST_TRACK_SUFFIX})
 
 set(CTEST_USE_LAUNCHERS 1)
@@ -96,6 +120,8 @@ setIfNotDefined(run_ctest_with_build TRUE)
 setIfNotDefined(run_ctest_with_test TRUE)
 setIfNotDefined(run_ctest_with_coverage TRUE)
 setIfNotDefined(run_ctest_with_memcheck TRUE)
+setIfNotDefined(run_ctest_with_packages TRUE)
+setIfNotDefined(run_ctest_with_upload TRUE)
 setIfNotDefined(run_ctest_with_notes TRUE)
 
 #
@@ -199,6 +225,81 @@ ${ADDITIONNAL_CMAKECACHE_OPTION}
       endif()
     endif()
 
+    #-----------------------------------------------------------------------------
+    # Create packages / installers ...
+    #-----------------------------------------------------------------------------
+    if(WITH_PACKAGES AND (run_ctest_with_packages OR run_ctest_with_upload))
+      message("----------- [ WITH_PACKAGES and UPLOAD ] -----------")
+
+      if(build_errors GREATER "0")
+        message("Build Errors Detected: ${build_errors}. Aborting package generation")
+      else()
+
+        # Update CMake module path so that our custom macros/functions can be included.
+        set(CMAKE_MODULE_PATH ${CTEST_SOURCE_DIRECTORY}/CMake ${CMAKE_MODULE_PATH})
+
+        # Include locally available module(s)
+        include(MIDASAPICore)
+
+        # Download and include CTestPackage
+        set(url http://viewvc.slicer.org/viewvc.cgi/Slicer4/trunk/CMake/CTestPackage.cmake?revision=19739&view=co)
+        set(dest ${CTEST_BINARY_DIRECTORY}/CTestPackage.cmake)
+        download_file(${url} ${dest})
+        include(${dest})
+
+        # Download and include MIDASCTestUploadURL
+        set(url http://viewvc.slicer.org/viewvc.cgi/Slicer4/trunk/CMake/MIDASCTestUploadURL.cmake?revision=19739&view=co)
+        set(dest ${CTEST_BINARY_DIRECTORY}/MIDASCTestUploadURL.cmake)
+        download_file(${url} ${dest})
+        include(${dest})
+
+        set(packages)
+        if(run_ctest_with_packages)
+          message("Packaging ...")
+          ctest_package(
+            BINARY_DIR ${CTEST_BINARY_DIRECTORY}
+            CONFIG ${CTEST_BUILD_CONFIGURATION}
+            RETURN_VAR packages)
+        else()
+          set(packages ${CMAKE_CURRENT_LIST_FILE})
+        endif()
+
+        if(run_ctest_with_upload)
+          message("Uploading ...")
+          foreach(p ${packages})
+            get_filename_component(package_name "${p}" NAME)
+            set(midas_upload_status "fail")
+            if(DEFINED MIDAS_API_URL
+               AND DEFINED MIDAS_API_EMAIL
+               AND DEFINED MIDAS_API_KEY)
+              message("Uploading [${package_name}] on [${MIDAS_API_URL}]")
+              midas_api_item_upload(
+                API_URL ${MIDAS_API_URL}
+                API_EMAIL ${MIDAS_API_EMAIL}
+                API_KEY ${MIDAS_API_KEY}
+                FOLDERID ${MIDAS_SERVER_${model_uc}_PACKAGES_FOLDERID}
+                ITEM_FILEPATH ${p}
+                RESULT_VARNAME midas_upload_status
+                )
+              if(midas_upload_status STREQUAL "ok")
+                message("Uploading URL on CDash")
+                set(MIDAS_PACKAGE_URL ${MIDAS_API_URL})
+                midas_ctest_upload_url(${p}) # on success, upload a link to CDash
+              endif()
+            endif()
+            if(NOT midas_upload_status STREQUAL "ok")
+              message("        => Failed to upload item package ! See [${CMAKE_CURRENT_BINARY_DIR}/midas.*_response.txt] for more details.\n")
+              message("Uploading [${package_name}] on CDash")
+              ctest_upload(FILES ${p})
+            endif()
+            if(run_ctest_submit)
+              ctest_submit(PARTS Upload)
+            endif()
+          endforeach()
+        endif()
+
+      endif()
+    endif()
 
     #-----------------------------------------------------------------------------
     # Note should be at the end
