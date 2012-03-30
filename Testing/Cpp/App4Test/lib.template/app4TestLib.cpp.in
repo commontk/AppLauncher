@@ -6,7 +6,7 @@
 #include <cstdio>
 #include <ctime>
 
-namespace
+namespace app4TestLib
 {
 // See http://www.cplusplus.com/reference/clibrary/ctime/clock/
 void wait(double seconds)
@@ -21,7 +21,7 @@ void wait(double seconds)
 app4TestLib@LIBSUFFIX@::app4TestLib@LIBSUFFIX@()
 {
   std::cout<<"Instanciate " << "app4TestLib@LIBSUFFIX@" << std::endl;
-  wait(0.02);
+  app4TestLib::wait(0.02);
 }
 
 // --------------------------------------------------------------------------
