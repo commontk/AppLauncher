@@ -109,7 +109,7 @@ endfunction()
 #
 # Download and include dashboard driver script
 #
-set(url http://github.com/commontk/AppLauncher/raw/master/CMake/ctkAppLauncherDashboardDriverScript.cmake)
+set(url http://www.commontk.org/images/6/6c/CtkAppLauncherDashboardDriverScript.cmake.txt)
 set(dest ${CTEST_SCRIPT_DIRECTORY}/${CTEST_SCRIPT_NAME}.driver)
 download_file(${url} ${dest})
 include(${dest})
