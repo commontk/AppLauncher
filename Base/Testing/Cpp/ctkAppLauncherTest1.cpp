@@ -111,15 +111,5 @@ void ctkAppLauncherTest1er::testSetArguments_data()
 }
 
 // ----------------------------------------------------------------------------
-int ctkAppLauncherTest1(int argc, char *argv[])
-{
-#ifdef QT_MAC_USE_COCOA
-  // See http://doc.trolltech.com/4.7/qt.html#ApplicationAttribute-enum
-  // Setting the application to be a plugin will avoid the loading of qt_menu.nib files
-  QCoreApplication::setAttribute(Qt::AA_MacPluginApplication, true);
-#endif
-  QApplication app(argc, argv);
-  ctkAppLauncherTest1er tc;
-  return QTest::qExec(&tc, argc, argv);
-}
+CTK_TEST_MAIN(ctkAppLauncherTest1)
 #include "moc_ctkAppLauncherTest1.cpp"

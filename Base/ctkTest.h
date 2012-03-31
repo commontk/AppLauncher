@@ -31,9 +31,20 @@ int TestObject(int argc, char *argv[]) \
 #ifdef QT_GUI_LIB
 
 //-----------------------------------------------------------------------------
+#ifdef QT_MAC_USE_COCOA
+// See http://doc.trolltech.com/4.7/qt.html#ApplicationAttribute-enum
+// Setting the application to be a plugin will avoid the loading of qt_menu.nib files
+#define CTK_TEST_SKIP_NIB_MENU_LOADER \
+   QCoreApplication::setAttribute(Qt::AA_MacPluginApplication, true);
+#else
+#define CTK_TEST_SKIP_NIB_MENU_LOADER
+#endif
+
+//-----------------------------------------------------------------------------
 #define CTK_TEST_MAIN(TestObject) \
   int TestObject(int argc, char *argv[]) \
   { \
+    CTK_TEST_SKIP_NIB_MENU_LOADER \
     QApplication app(argc, argv); \
     TestObject##er tc; \
     return QTest::qExec(&tc, argc, argv); \
