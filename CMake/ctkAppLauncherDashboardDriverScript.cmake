@@ -91,7 +91,10 @@ if(WITH_PACKAGES)
 endif()
 set(track ${CTEST_TRACK_PREFIX}${track}${CTEST_TRACK_SUFFIX})
 
-set(CTEST_USE_LAUNCHERS 1)
+set(CTEST_USE_LAUNCHERS 0)
+if(CTEST_CMAKE_GENERATOR MATCHES ".*Makefiles.*")
+  set(CTEST_USE_LAUNCHERS 1)
+endif()
 
 if(empty_binary_directory)
   message("Directory ${CTEST_BINARY_DIRECTORY} cleaned !")
