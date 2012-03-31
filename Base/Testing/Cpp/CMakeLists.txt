@@ -19,7 +19,7 @@ add_executable(${KIT}CppTests ${Tests})
 target_link_libraries(${KIT}CppTests ${KIT} ${CTK_BASE_LIBRARIES})
 
 if(QT_MAC_USE_COCOA)
-  target_link_libraries(${KIT}CppTests "-framework cocoa")
+  target_link_libraries(${KIT}CppTests "-framework cocoa -framework IOKit")
 endif()
 
 set(label ctkAppLauncher)
