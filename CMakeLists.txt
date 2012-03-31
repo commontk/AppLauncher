@@ -215,6 +215,12 @@ endif()
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS_INIT} ${cflags} ${COVERAGE_C_FLAGS} ${ADDITIONAL_C_FLAGS}" CACHE STRING "CMake C Flags" FORCE)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS_INIT} ${cflags} ${COVERAGE_CXX_FLAGS} ${ADDITIONAL_CXX_FLAGS}" CACHE STRING "CMake CXX Flags" FORCE)
 
+# This is a cross-platform project so we cannot use the MS _s API.
+if(MSVC)
+  add_definitions(
+    -D_CRT_SECURE_NO_WARNINGS
+    )
+endif()
 
 #-----------------------------------------------------------------------------
 # Qt
