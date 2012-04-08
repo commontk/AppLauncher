@@ -248,26 +248,38 @@ include_directories(
   ${CTK_BASE_INCLUDE_DIRS}
   )
 
-# Add excutable
-add_executable(${PROJECT_NAME}
-  Main.cpp
-  )
-
+#
+# Launcher *WITH* console IO support
+#
+add_executable(${PROJECT_NAME} Main.cpp)
 target_link_libraries(${PROJECT_NAME} ${CTK_BASE_LIBRARIES})
-
 if(QT_MAC_USE_COCOA)
   target_link_libraries(${PROJECT_NAME} "-framework cocoa")
 endif()
-
-# Set labels associated with the target.
 set_target_properties(${PROJECT_NAME} PROPERTIES LABELS ctkAppLauncher)
+
+set(targets_to_install ${PROJECT_NAME})
+
+if(WIN32)
+  #
+  # Launcher *WITHOUT* console IO support
+  #
+  add_executable(${PROJECT_NAME}W WIN32 Main.cpp)
+  target_link_libraries(${PROJECT_NAME}W ${CTK_BASE_LIBRARIES})
+  set_target_properties(${PROJECT_NAME}W PROPERTIES
+    LABELS ctkAppLauncher
+    COMPILE_DEFINITIONS CTKAPPLAUNCHER_WITHOUT_CONSOLE_IO_SUPPORT
+    )
+
+  list(APPEND targets_to_install ${PROJECT_NAME}W)
+endif()
 
 if(BUILD_TESTING)
   add_subdirectory(Testing)
 endif()
 
 # Install rules
-install(TARGETS ${PROJECT_NAME}
+install(TARGETS ${targets_to_install}
   RUNTIME DESTINATION ${CTK_INSTALL_BIN_DIR} COMPONENT Runtime
   LIBRARY DESTINATION ${CTK_INSTALL_LIB_DIR} COMPONENT Runtime
   ARCHIVE DESTINATION ${CTK_INSTALL_LIB_DIR} COMPONENT Development)

@@ -383,6 +383,15 @@ public:
     */
   void setStrictModeEnabled(bool strictMode);
 
+  /**
+   * Convert windows-style arguments given as a command-line string
+   * into more traditional argc/argv arguments.
+   *
+   * @note argv[0] will be assigned the executable name using the ::GetModuleFileName function.
+   */
+  static void convertWindowsCommandLineToUnixArguments(
+    const char *cmd_line, int *argc, char ***argv);
+
 private:
   class ctkInternal;
   ctkInternal * Internal;

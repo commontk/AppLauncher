@@ -5,13 +5,21 @@
 #include <QTimer>
 #include <QDebug>
 
+// CTK includes
+#include "ctkAppArguments.h"
+#include "ctkAppLauncher.h"
+#include "ctkCommandLineParser.h"
+
+// Windows includes
+#ifdef Q_OS_WIN32
+# include <windows.h>
+#endif
+
 // STD includes
 #include <cstdlib>
 
-#include "ctkAppArguments.h"
-#include "ctkAppLauncher.h"
-
-int main(int argc, char** argv)
+// --------------------------------------------------------------------------
+int appLauncherMain(int argc, char** argv)
 {
   #ifdef QT_MAC_USE_COCOA
   // See http://doc.trolltech.com/4.7/qt.html#ApplicationAttribute-enum
@@ -72,3 +80,36 @@ int main(int argc, char** argv)
 
   return app.exec();
 }
+
+// --------------------------------------------------------------------------
+#ifndef CTKAPPLAUNCHER_WITHOUT_CONSOLE_IO_SUPPORT
+int main(int argc, char *argv[])
+{
+  return appLauncherMain(argc, argv);
+}
+#elif defined Q_OS_WIN32
+int __stdcall WinMain(HINSTANCE hInstance,
+                      HINSTANCE hPrevInstance,
+                      LPSTR lpCmdLine, int nShowCmd)
+{
+  Q_UNUSED(hInstance);
+  Q_UNUSED(hPrevInstance);
+  Q_UNUSED(nShowCmd);
+
+  int argc;
+  char **argv;
+  ctkCommandLineParser::convertWindowsCommandLineToUnixArguments(lpCmdLine, &argc, &argv);
+
+  int ret = appLauncherMain(argc, argv);
+
+  for (int i = 0; i < argc; ++i)
+    {
+    delete [] argv[i];
+    }
+  delete [] argv;
+
+  return ret;
+}
+#else
+# error CTKAPPLAUNCHER_WITHOUT_CONSOLE_IO_SUPPORT is only supported on WIN32 !
+#endif
