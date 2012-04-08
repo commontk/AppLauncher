@@ -57,7 +57,7 @@ void ctkChar2DArray::setValues(const QStringList& list)
   for(int index = 0; index < d->List.count(); ++index)
     {
     QString item = d->List.at(index);
-    d->Values[index] = new char[item.size()];
+    d->Values[index] = new char[item.size() + 1];
     qstrcpy(d->Values[index], item.toLatin1().data());
     }
 }

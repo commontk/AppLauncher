@@ -293,7 +293,7 @@ bool ctkAppLauncherInternal::readSettings(const QString& fileName, int settingsT
   QString settingsTypeDesc;
   if(settingsType == Self::AdditionalSettings)
     {
-    settingsTypeDesc = QLatin1String(" additonal");
+    settingsTypeDesc = QLatin1String(" additional");
     }
 
   // Check if settings file exists
