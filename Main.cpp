@@ -10,13 +10,13 @@
 #include "ctkAppLauncher.h"
 #include "ctkCommandLineParser.h"
 
+// STD includes
+#include <cstdlib>
+
 // Windows includes
 #ifdef Q_OS_WIN32
 # include <windows.h>
 #endif
-
-// STD includes
-#include <cstdlib>
 
 // --------------------------------------------------------------------------
 int appLauncherMain(int argc, char** argv)
