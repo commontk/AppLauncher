@@ -5,19 +5,20 @@
 #include <QTimer>
 #include <QDebug>
 
+// CTK includes
+#include "ctkAppArguments.h"
 #include "ctkAppLauncher.h"
 #include "ctkCommandLineParser.h"
+
+// Windows includes
+#ifdef Q_OS_WIN32
+# include <windows.h>
+#endif
 
 // STD includes
 #include <cstdlib>
 
-#include "ctkAppArguments.h"
-#include "ctkAppLauncher.h"
-
-#if defined (_WIN32)
-#include <windows.h>
-#endif
-
+// --------------------------------------------------------------------------
 int appLauncherMain(int argc, char** argv)
 {
   #ifdef QT_MAC_USE_COCOA
@@ -80,7 +81,13 @@ int appLauncherMain(int argc, char** argv)
   return app.exec();
 }
 
-#if defined (_WIN32)
+// --------------------------------------------------------------------------
+#ifndef CTKAPPLAUNCHER_WITHOUT_CONSOLE_IO_SUPPORT
+int main(int argc, char *argv[])
+{
+  return appLauncherMain(argc, argv);
+}
+#elif defined Q_OS_WIN32
 int __stdcall WinMain(HINSTANCE hInstance,
                       HINSTANCE hPrevInstance,
                       LPSTR lpCmdLine, int nShowCmd)
@@ -91,12 +98,11 @@ int __stdcall WinMain(HINSTANCE hInstance,
 
   int argc;
   char **argv;
-  ctkCommandLineParser::convertWindowsCommandLineToUnixArguments(
-    lpCmdLine, &argc, &argv);
+  ctkCommandLineParser::convertWindowsCommandLineToUnixArguments(lpCmdLine, &argc, &argv);
 
   int ret = appLauncherMain(argc, argv);
 
-  for (int i = 0; i < argc; i++)
+  for (int i = 0; i < argc; ++i)
     {
     delete [] argv[i];
     }
@@ -105,8 +111,5 @@ int __stdcall WinMain(HINSTANCE hInstance,
   return ret;
 }
 #else
-int main(int argc, char *argv[])
-{
-  return appLauncherMain(argc, argv);
-}
+# error CTKAPPLAUNCHER_WITHOUT_CONSOLE_IO_SUPPORT is only supported on WIN32 !
 #endif
