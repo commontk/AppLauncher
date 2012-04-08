@@ -69,6 +69,12 @@ if(CTKAppLauncher_VERSION_SOURCE)
 endif()
 message(STATUS "CTKAppLauncher version: ${CTKAppLauncher_VERSION}")
 
+
+configure_file(
+  CMake/ctkAppLauncherVersionConfig.h.in
+  ${CMAKE_CURRENT_BINARY_DIR}/ctkAppLauncherVersionConfig.h
+  )
+
 #-----------------------------------------------------------------------------
 # Install directories, used for install rules.
 #
@@ -237,14 +243,16 @@ set(CTK_BASE_LIBRARIES ${CTK_BASE_LIBRARIES} ${QT_LIBRARIES} CACHE INTERNAL "CTK
 #-----------------------------------------------------------------------------
 # Build ctkAppLauncherBase and associated tests
 #
+include_directories(
+  ${CMAKE_CURRENT_SOURCE_DIR}
+  ${CMAKE_CURRENT_BINARY_DIR}
+  )
 add_subdirectory(Base)
 
 #-----------------------------------------------------------------------------
 # Build executable
 #
 include_directories(
-  ${CMAKE_CURRENT_SOURCE_DIR}
-  ${CMAKE_CURRENT_BINARY_DIR}
   ${CTK_BASE_INCLUDE_DIRS}
   )
 

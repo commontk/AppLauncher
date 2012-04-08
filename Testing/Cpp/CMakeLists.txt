@@ -1,6 +1,7 @@
 
 set(LAUNCHER_BINARY_DIR ${CTKAppLauncher_BINARY_DIR})
 set(LAUNCHER_NAME ${PROJECT_NAME})
+set(LAUNCHER_VERSION ${CTKAppLauncher_VERSION})
 
 set(APP4TEST_CMAKE_GENERATOR "${CMAKE_GENERATOR}")
 set(APP4TEST_BUILD_TYPE "Release")
@@ -67,3 +68,4 @@ applauncher_add_test(AppLauncherTest4 AppLauncherTest3)
 applauncher_add_test(AppLauncherTest5 AppLauncherTest4)
 applauncher_add_test(AppLauncherTest6 AppLauncherTest5)
 applauncher_add_test(AppLauncherTest7 AppLauncherTest6)
+applauncher_add_test(AppLauncherTest8 AppLauncherTest7)

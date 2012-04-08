@@ -1,0 +1,12 @@
+
+
+#ifndef __ctkAppLauncherVersionConfigure_h
+#define __ctkAppLauncherVersionConfigure_h
+
+#define CTKAppLauncher_MAJOR_VERSION @CTKAppLauncher_MAJOR_VERSION@
+#define CTKAppLauncher_MINOR_VERSION @CTKAppLauncher_MINOR_VERSION@
+#define CTKAppLauncher_BUILD_VERSION @CTKAppLauncher_BUILD_VERSION@
+#define CTKAppLauncher_VERSION "@CTKAppLauncher_VERSION@"
+
+#endif
+

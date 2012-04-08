@@ -4,6 +4,7 @@ set(CMAKE_BUILD_TYPE "@CMAKE_BUILD_TYPE@")
 set(CMAKE_EXECUTABLE_SUFFIX "@CMAKE_EXECUTABLE_SUFFIX@")
 
 set(launcher_name "@LAUNCHER_NAME@")
+set(launcher_version "@LAUNCHER_VERSION@")
 set(launcher_binary_dir "@LAUNCHER_BINARY_DIR@")
 
 set(app4test_binary_dir "@APP4TEST_BINARY_DIR@")
