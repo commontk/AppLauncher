@@ -263,36 +263,26 @@ function(midas_api_submit_request url api_method json_item varname)
 endfunction()
 
 function(midas_api_file_size filepath varname)
-  # Download required FileInformation module
-  find_package(Git REQUIRED)
-  set(download_script ${CMAKE_CURRENT_BINARY_DIR}/download-fileinformation.cmake)
-  set(git_repo git://github.com/sakra/FileInformation.git)
-  set(git_tag 23fb28d7)
-  set(src_name FileInformation)
-  file(REMOVE_RECURSE ${CMAKE_CURRENT_BINARY_DIR}/${src_name})
-  execute_process(
-    COMMAND ${GIT_EXECUTABLE} clone ${git_repo} ${src_name}
-    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-    RESULT_VARIABLE error_code OUTPUT_QUIET ERROR_QUIET
-    )
-  if(error_code)
-    message(FATAL_ERROR "Failed to clone repository: '${git_repo}'")
-  endif()
-  execute_process(
-    COMMAND ${GIT_EXECUTABLE} checkout ${git_tag}
-    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${src_name}
-    RESULT_VARIABLE error_code OUTPUT_QUIET ERROR_QUIET
-    )
-  if(error_code)
-    message(FATAL_ERROR "Failed to checkout tag: '${git_tag}'")
-  endif()
-  include(${CMAKE_CURRENT_BINARY_DIR}/${src_name}/Module/FileInformation.cmake)
 
-  file(SIZE ${filepath} size)
+  set(_expected_chunk_size 1048576) # 1 Mb
 
-  file(REMOVE_RECURSE ${CMAKE_CURRENT_BINARY_DIR}/${src_name})
+  function(_read_chunk _file _offset varname)
+    file(READ ${_file} _buffer OFFSET ${_offset} LIMIT ${_expected_chunk_size} HEX)
+    string(LENGTH "${_buffer}" _current_chunk_size)
+    math(EXPR _current_chunk_size "${_current_chunk_size} / 2")
+    set(${varname} ${_current_chunk_size} PARENT_SCOPE)
+  endfunction()
 
-  set(${varname} ${size} PARENT_SCOPE)
+  set(_offset 0)
+  _read_chunk(${filepath} ${_offset} _current_chunk_size)
+  set(_offset ${_current_chunk_size})
+
+  while(_current_chunk_size EQUAL ${_expected_chunk_size})
+    _read_chunk(${filepath} ${_offset} _current_chunk_size)
+    math(EXPR _offset "${_offset} + ${_current_chunk_size}")
+  endwhile()
+
+  set(${varname} ${_offset} PARENT_SCOPE)
 endfunction()
 
 
@@ -489,6 +479,34 @@ endfunction()
 list(APPEND ALL_TESTS midas_api_item_upload_test)
 if(TEST_midas_api_item_upload_test)
   midas_api_item_upload_test()
+endif()
+
+
+#
+# cmake -DTEST_midas_api_file_size_test:BOOL=ON -P MIDASAPICore.cmake
+#
+function(midas_api_file_size_test)
+
+  set(expected_file_size  2621440) # 2.5Mb
+  string(RANDOM LENGTH ${expected_file_size} _file_content)
+
+  set(filepath ${CMAKE_CURRENT_BINARY_DIR}/midas_api_file_size_test.txt)
+  file(WRITE ${filepath} "${_file_content}")
+
+  midas_api_file_size(${filepath} file_size)
+  if(NOT "${file_size}" STREQUAL "${expected_file_size}")
+    message(FATAL_ERROR "Problem with midas_api_file_size()\n"
+                        "file_size:${file_size}\n"
+                        "expected_file_size:${expected_file_size}")
+  endif()
+
+  file(REMOVE "${filepath}")
+
+  message("SUCCESS - file_size: ${file_size} bytes.")
+endfunction()
+list(APPEND ALL_TESTS midas_api_file_size_test)
+if(TEST_midas_api_file_size_test)
+  midas_api_file_size_test()
 endif()
 
 

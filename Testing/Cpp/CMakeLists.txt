@@ -41,6 +41,7 @@ endmacro()
 applauncher_add_cmakescript_test(ctkAppLauncherListToQtSettingsArrayTest ctkAppLauncher)
 applauncher_add_cmakescript_test(ctkAppLauncherAppendExtraAppToLaunchToListTest ctkAppLauncher)
 applauncher_add_cmakescript_test(ctkAppLauncherExtraAppToLaunchListToQtSettingsTest ctkAppLauncher)
+applauncher_add_cmakescript_test(midas_api_file_size_test MIDASAPICore)
 
 #
 # Helper macro
