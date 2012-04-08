@@ -35,6 +35,9 @@ public:
   /// Display help string on standard output
   void displayHelp(std::ostream &output = std::cout);
 
+  /// Display version information string on standard output
+  void displayVersion(std::ostream &output = std::cout);
+
   /// Initialize
   bool initialize();
 

@@ -66,6 +66,7 @@ void ctkAppLauncherTest1er::testDisplayHelp_data()
            "  CTKAppLauncherBaseCppTests [options]\n\n"
            "Options\n"
            "  --launcher-help                  Display help\n"
+           "  --launcher-version               Show launcher version information\n"
            "  --launcher-verbose               Verbose mode\n"
            "  --launch                         Specify the application to launch\n"
            "  --launcher-detach                Launcher will NOT wait for the application to finish\n"

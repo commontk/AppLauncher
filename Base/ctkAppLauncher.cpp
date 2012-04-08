@@ -10,6 +10,7 @@
 // CTK includes
 #include "ctkAppLauncher.h"
 #include "ctkAppLauncher_p.h"
+#include "ctkAppLauncherVersionConfig.h"
 #include "ctkSettingsHelper.h"
 
 // STD includes
@@ -550,6 +551,16 @@ void ctkAppLauncher::displayHelp(std::ostream &output)
 }
 
 // --------------------------------------------------------------------------
+void ctkAppLauncher::displayVersion(std::ostream &output)
+{
+  if (this->Internal->LauncherName.isEmpty())
+    {
+    return;
+    }
+  output << qPrintable(this->Internal->LauncherName) << " launcher version "CTKAppLauncher_VERSION << "\n";
+}
+
+// --------------------------------------------------------------------------
 bool ctkAppLauncher::initialize()
 {
   if (this->Internal->Initialized)
@@ -568,6 +579,7 @@ bool ctkAppLauncher::initialize()
   parser.setArgumentPrefix("--", "-");
 
   parser.addArgument("launcher-help","", QVariant::Bool, "Display help");
+  parser.addArgument("launcher-version","", QVariant::Bool, "Show launcher version information");
   parser.addArgument("launcher-verbose", "", QVariant::Bool, "Verbose mode");
   parser.addArgument("launch", "", QVariant::String, "Specify the application to launch",
                      QVariant(this->Internal->DefaultApplicationToLaunch), true /*ignoreRest*/);
@@ -635,6 +647,12 @@ int ctkAppLauncher::processArguments()
   if (this->Internal->ParsedArgs.value("launcher-help").toBool())
     {
     this->displayHelp();
+    return Self::ExitWithSuccess;
+    }
+
+  if (this->Internal->ParsedArgs.value("launcher-version").toBool())
+    {
+    this->displayVersion();
     return Self::ExitWithSuccess;
     }
 
