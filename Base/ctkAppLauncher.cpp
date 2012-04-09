@@ -372,7 +372,9 @@ bool ctkAppLauncherInternal::readSettings(const QString& fileName, int settingsT
   QHash<QString, QString> mapOfEnvVars = ctk::readKeyValuePairs(settings, "EnvironmentVariables");
   foreach(const QString& envVarName, mapOfEnvVars.keys())
     {
-    this->MapOfEnvVars.insert(envVarName, mapOfEnvVars.value(envVarName));
+    QString envVarValue = mapOfEnvVars.value(envVarName);
+    envVarValue.replace(QString("<env:%1>").arg(envVarName), this->MapOfEnvVars.value(envVarName));
+    this->MapOfEnvVars.insert(envVarName, envVarValue);
     }
 
   return true;
@@ -913,11 +915,6 @@ void ctkAppLauncher::startLauncher()
   QString settingFileName = this->findSettingFile();
 
   this->Internal->ValidSettingsFile = this->readSettings(settingFileName);
-//  if (!this->readSettings(settingFileName))
-//    {
-//    this->Internal->Application->exit(EXIT_FAILURE);
-//    return;
-//    }
 
   int status = this->processArguments();
   if (status == ctkAppLauncher::ExitWithError)

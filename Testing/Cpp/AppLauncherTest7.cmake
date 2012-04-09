@@ -16,6 +16,10 @@ set(regular_env_var_name_1 "SOMETHING_NICE")
 set(regular_env_var_value_1 "Chocolate")
 set(regular_env_var_name_2 "SOMETHING_AWESOME")
 set(regular_env_var_value_2 "Rock climbing !")
+set(common_env_var_name "SOMETHING_COMMON")
+set(common_env_var_value_1 "Snow")
+set(common_env_var2_name "ANOTHER_THING_COMMON")
+set(common_env_var2_value_1 "Rocks")
 file(WRITE "${launcher}LauncherSettings.ini" "
 [Application]
 path=${application}
@@ -33,7 +37,8 @@ size=2
 [EnvironmentVariables]
 ${regular_env_var_name_1}=${regular_env_var_value_1}
 ${regular_env_var_name_2}=${regular_env_var_value_2}
-
+${common_env_var_name}=${common_env_var_value_1}
+${common_env_var2_name}=${common_env_var2_value_1}
 ")
 
 # --------------------------------------------------------------------------
@@ -46,6 +51,8 @@ set(additional_env_var_name_1 "ADD_SOMETHING_NICE")
 set(additional_env_var_value_1 "Chocolate :)")
 set(additional_env_var_name_2 "ADD_SOMETHING_AWESOME")
 set(additional_env_var_value_2 "Rock climbing ! :)")
+set(common_env_var_value_2 "Sun")
+set(common_env_var2_value_2 "Trees")
 file(WRITE ${additional_settings_path} "
 [LibraryPaths]
 1\\path=${additional_library_path}
@@ -59,6 +66,8 @@ size=2
 [EnvironmentVariables]
 ${additional_env_var_name_1}=${additional_env_var_value_1}
 ${additional_env_var_name_2}=${additional_env_var_value_2}
+${common_env_var_name}=<env:${common_env_var_name}>:${common_env_var_value_2}
+${common_env_var2_name}=${common_env_var2_value_2}:<env:${common_env_var2_name}>
 
 ")
 
@@ -91,6 +100,8 @@ set(expected_ov_lines
   "PATH=${additional_path_1}${pathsep}${additional_path_2}${pathsep}${regular_path_1}${pathsep}${regular_path_2}${pathsep}"
   "${regular_env_var_name_2}=${regular_env_var_value_2}\n"
   "${regular_env_var_name_1}=${regular_env_var_value_1}\n"
+  "${common_env_var_name}=${common_env_var_value_1}:${common_env_var_value_2}\n"
+  "${common_env_var2_name}=${common_env_var2_value_2}:${common_env_var2_value_1}\n"
   )
 if(WIN32)
   set(expected_ov_lines
@@ -99,6 +110,8 @@ if(WIN32)
     "PATH=${additional_path_1}${pathsep}${additional_path_2}${pathsep}${regular_path_1}${pathsep}${regular_path_2}${pathsep}${additional_library_path}${pathsep}${regular_library_path_1}${pathsep}${regular_library_path_2}${pathsep}"
     "${regular_env_var_name_2}=${regular_env_var_value_2}\n"
     "${regular_env_var_name_1}=${regular_env_var_value_1}\n"
+    "${common_env_var_name}=${common_env_var_value_1}:${common_env_var_value_2}\n"
+    "${common_env_var2_name}=${common_env_var2_value_2}:${common_env_var2_value_1}\n"
     )
 endif()
 
