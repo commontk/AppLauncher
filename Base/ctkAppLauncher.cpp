@@ -320,23 +320,43 @@ bool ctkAppLauncherInternal::readSettings(const QString& fileName, int settingsT
     }
 
   // Read default launcher image path
-  this->DefaultLauncherSplashImagePath =
-    settings.value("launcherSplashImagePath", ":Images/ctk-splash.png").toString();
-  this->DefaultLauncherSplashScreenHideDelayMs =
-    settings.value("launcherSplashScreenHideDelayMs", 0).toInt();
+  QString splashImagePath = settings.value("launcherSplashImagePath", ":Images/ctk-splash.png").toString();
+  if (!splashImagePath.isEmpty())
+    {
+    this->DefaultLauncherSplashImagePath = splashImagePath;
+    }
+
+  int splashScreenHideDelayMs = settings.value("launcherSplashScreenHideDelayMs", 0).toInt();
+  if (splashScreenHideDelayMs != 0)
+    {
+    this->DefaultLauncherSplashScreenHideDelayMs = splashScreenHideDelayMs;
+    }
+
 
   // Read default application to launch
   QHash<QString, QString> applicationGroup = ctk::readKeyValuePairs(settings, "Application");
-  this->DefaultApplicationToLaunch = applicationGroup["path"];
-  this->DefaultApplicationToLaunchArguments = applicationGroup["arguments"];
+  if (applicationGroup.contains("path"))
+    {
+    this->DefaultApplicationToLaunch = applicationGroup["path"];
+    }
+  if (applicationGroup.contains("arguments"))
+    {
+    this->DefaultApplicationToLaunchArguments = applicationGroup["arguments"];
+    }
 
   // Read additional launcher arguments
-  this->LauncherAdditionalHelpShortArgument =
-      settings.value("additionalLauncherHelpShortArgument").toString();
-  this->LauncherAdditionalHelpLongArgument =
-      settings.value("additionalLauncherHelpLongArgument").toString();
-  this->LauncherAdditionalNoSplashArguments =
-      settings.value("additionalLauncherNoSplashArguments").toStringList();
+  QString helpShortArgument = settings.value("additionalLauncherHelpShortArgument").toString();
+  if (!helpShortArgument.isEmpty())
+    {
+    this->LauncherAdditionalHelpShortArgument = helpShortArgument;
+    }
+  QString helpLongArgument = settings.value("additionalLauncherHelpLongArgument").toString();
+  if (!helpLongArgument.isEmpty())
+    {
+    this->LauncherAdditionalHelpLongArgument = helpLongArgument;
+    }
+  this->LauncherAdditionalNoSplashArguments.append(
+        settings.value("additionalLauncherNoSplashArguments").toStringList());
 
   // Read list of 'extra application to launch'
   settings.beginGroup("ExtraApplicationToLaunch");
