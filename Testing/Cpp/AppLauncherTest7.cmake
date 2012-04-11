@@ -73,11 +73,12 @@ ${common_env_var2_name}=${common_env_var2_value_2}:<env:${common_env_var2_name}>
 
 # --------------------------------------------------------------------------
 # Debug flags - Set to True to display the command as string
-set(PRINT_COMMAND 0)
+set(PRINT_COMMAND 1)
 
 # --------------------------------------------------------------------------
 # Test1 - Check if flag --launcher-additional-settings works as expected
-set(command ${launcher_exe} --launcher-no-splash --launcher-dump-environment --launcher-additional-settings ${additional_settings_path})
+
+set(command ${launcher_exe} --launcher-no-splash --launcher-additional-settings ${additional_settings_path})
 execute_process(
   COMMAND ${command}
   WORKING_DIRECTORY ${launcher_binary_dir}
@@ -90,6 +91,24 @@ print_command_as_string("${command}")
 
 if(rv)
   message(FATAL_ERROR "Test1 - [${launcher_exe}] failed to start from "
+                      "directory [${launcher_binary_dir}]\n${ev}")
+endif()
+
+# --------------------------------------------------------------------------
+# Test2 - Check if flag --launcher-additional-settings works as expected
+set(command ${launcher_exe} --launcher-no-splash --launcher-dump-environment --launcher-additional-settings ${additional_settings_path})
+execute_process(
+  COMMAND ${command}
+  WORKING_DIRECTORY ${launcher_binary_dir}
+  ERROR_VARIABLE ev
+  OUTPUT_VARIABLE ov
+  RESULT_VARIABLE rv
+  )
+
+print_command_as_string("${command}")
+
+if(rv)
+  message(FATAL_ERROR "Test2 - [${launcher_exe}] failed to start from "
                       "directory [${launcher_binary_dir}]\n${ev}")
 endif()
 
@@ -122,3 +141,4 @@ foreach(expected_ov_line ${expected_ov_lines})
                         "not found in current_ov:${ov}")
   endif()
 endforeach()
+
