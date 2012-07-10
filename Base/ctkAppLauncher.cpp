@@ -27,6 +27,7 @@ ctkAppLauncherInternal::ctkAppLauncherInternal()
   this->Initialized = false;
   this->DetachApplicationToLaunch = false;
   this->LauncherSplashScreenHideDelayMs = -1;
+  this->LauncherNoSplashScreen = false;
   this->DefaultLauncherSplashImagePath = ":Images/ctk-splash.png";
   this->DefaultLauncherSplashScreenHideDelayMs = 0;
   this->LauncherSettingSubDirs << "." << "bin" << "lib";
@@ -73,11 +74,12 @@ bool ctkAppLauncherInternal::processSplashPathArgument()
   this->LauncherSplashImagePath = this->expandValue(this->LauncherSplashImagePath);
   this->reportInfo(QString("LauncherSplashImagePath [%1]").arg(this->LauncherSplashImagePath));
 
-  // Make sure the splash image exists
-  if (!QFile::exists(this->LauncherSplashImagePath))
+  // Make sure the splash image exists if a splashscreen is used
+  if (!QFile::exists(this->LauncherSplashImagePath)
+      && !this->disableSplash() )
     {
     this->reportError(
-      QString("SplashImage do NOT exists [%1]").arg(this->LauncherSplashImagePath));
+      QString("SplashImage does NOT exist [%1]").arg(this->LauncherSplashImagePath));
     return false;
     }
   return true;
@@ -231,8 +233,10 @@ bool ctkAppLauncherInternal::disableSplash() const
       break;
       }
     }
-  if (this->ParsedArgs.value("launcher-no-splash").toBool() || hasNoSplashArgument
-      || !this->ExtraApplicationToLaunch.isEmpty())
+  if (this->ParsedArgs.value("launcher-no-splash").toBool()
+      || hasNoSplashArgument
+      || !this->ExtraApplicationToLaunch.isEmpty()
+      || this->LauncherNoSplashScreen)
     {
     return true;
     }
@@ -332,6 +336,8 @@ bool ctkAppLauncherInternal::readSettings(const QString& fileName, int settingsT
     this->DefaultLauncherSplashScreenHideDelayMs = splashScreenHideDelayMs;
     }
 
+  bool noSplashScreen = settings.value("launcherNoSplashScreen", false).toBool();
+  this->LauncherNoSplashScreen = noSplashScreen;
 
   // Read default application to launch
   QHash<QString, QString> applicationGroup = ctk::readKeyValuePairs(settings, "Application");
@@ -774,6 +780,7 @@ bool ctkAppLauncher::writeSettings(const QString& outputFilePath)
 
   settings.setValue("launcherSplashImagePath", this->Internal->LauncherSplashImagePath);
   settings.setValue("launcherSplashScreenHideDelayMs", this->Internal->LauncherSplashScreenHideDelayMs);
+  settings.setValue("launcherNoSplashScreen", this->Internal->LauncherNoSplashScreen);
   settings.setValue("additionalLauncherHelpShortArgument", this->Internal->LauncherAdditionalHelpShortArgument);
   settings.setValue("additionalLauncherHelpLongArgument", this->Internal->LauncherAdditionalHelpLongArgument);
   settings.setValue("additionalLauncherNoSplashArguments", this->Internal->LauncherAdditionalNoSplashArguments);
