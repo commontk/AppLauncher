@@ -65,6 +65,15 @@ void ctkAppLauncherInternal::reportInfo(const QString& msg)
 }
 
 // --------------------------------------------------------------------------
+void ctkAppLauncherInternal::exit(int exitCode)
+{
+  if (this->Application)
+    {
+    this->Application->exit(exitCode);
+    }
+}
+
+// --------------------------------------------------------------------------
 bool ctkAppLauncherInternal::processSplashPathArgument()
 {
   if (this->LauncherSplashImagePath.isEmpty())
@@ -486,7 +495,7 @@ void ctkAppLauncherInternal::runProcess()
     {
     this->Process.startDetached(
       this->ApplicationToLaunch, this->ApplicationToLaunchArguments);
-    this->Application->quit();
+    this->exit(EXIT_SUCCESS);
     }
 }
 
@@ -501,14 +510,14 @@ void ctkAppLauncherInternal::applicationFinished(int exitCode, QProcess::ExitSta
 {
   if (exitStatus == QProcess::NormalExit)
     {
-    this->Application->exit(exitCode);
+    this->exit(exitCode);
     }
   else if (exitStatus == QProcess::CrashExit)
     {
     this->reportError(
       QString("[%1] exit abnormally - Report the problem.").
         arg(this->ApplicationToLaunch));
-    this->Application->exit(EXIT_FAILURE);
+    this->exit(EXIT_FAILURE);
     }
 }
 
@@ -523,12 +532,18 @@ void ctkAppLauncherInternal::applicationStarted()
 // ctkAppLauncher methods
 
 // --------------------------------------------------------------------------
-ctkAppLauncher::ctkAppLauncher(const QCoreApplication& application, QObject* parentObject):
-  Superclass(parentObject)
+ctkAppLauncher::ctkAppLauncher(const QCoreApplication& application, QObject* parentObject)
+  : Superclass(parentObject)
 {
   this->Internal = new ctkAppLauncherInternal();
-  this->Internal->Application = application.instance();
-  this->Internal->Arguments = application.instance()->arguments();
+  this->setApplication(application);
+}
+
+// --------------------------------------------------------------------------
+ctkAppLauncher::ctkAppLauncher(QObject* parentObject)
+  : Superclass(parentObject)
+{
+  this->Internal = new ctkAppLauncherInternal();
 }
 
 // --------------------------------------------------------------------------
@@ -589,16 +604,18 @@ void ctkAppLauncher::displayVersion(std::ostream &output)
 }
 
 // --------------------------------------------------------------------------
-bool ctkAppLauncher::initialize()
+bool ctkAppLauncher::initialize(QString launcherFilePath)
 {
   if (this->Internal->Initialized)
     {
-    this->Internal->reportError("AppLauncher already initialized !");
     return true;
     }
 
-  if (!this->Internal->extractLauncherNameAndDir(
-    this->Internal->Application->applicationFilePath()))
+  if (launcherFilePath.isEmpty() && this->Internal->Application)
+    {
+    launcherFilePath = this->Internal->Application->applicationFilePath();
+    }
+  if (!this->Internal->extractLauncherNameAndDir(launcherFilePath))
     {
     return false;
     }
@@ -630,6 +647,16 @@ bool ctkAppLauncher::initialize()
 
   this->Internal->Initialized = true;
   return true;
+}
+
+// --------------------------------------------------------------------------
+void ctkAppLauncher::setApplication(const QCoreApplication& app)
+{
+  this->Internal->Application = app.instance();
+  if (this->Internal->Application)
+    {
+    this->setArguments(this->Internal->Application->arguments());
+    }
 }
 
 // --------------------------------------------------------------------------
@@ -865,6 +892,12 @@ int ctkAppLauncher::splashScreenHideDelayMs()const
 }
 
 // --------------------------------------------------------------------------
+bool ctkAppLauncher::disableSplash() const
+{
+  return this->Internal->disableSplash();
+}
+
+// --------------------------------------------------------------------------
 bool ctkAppLauncher::verbose()const
 {
   return this->Internal->verbose();
@@ -878,12 +911,14 @@ void ctkAppLauncher::startApplication()
     return;
     }
 
-  this->Internal->SplashPixmap.load(this->splashImagePath());
-  this->Internal->SplashScreen =
-      QSharedPointer<QSplashScreen>(new QSplashScreen(this->Internal->SplashPixmap, Qt::WindowStaysOnTopHint));
+  this->Internal->reportInfo(
+    QString("DisableSplash [%1]").arg(this->Internal->disableSplash()));
   if (!this->Internal->disableSplash())
     {
-    this->Internal->reportInfo(QString("DisableSplash [%1]").arg(this->Internal->disableSplash()));
+    this->Internal->SplashPixmap.reset(
+      new QPixmap(this->splashImagePath()));
+    this->Internal->SplashScreen = QSharedPointer<QSplashScreen>(
+      new QSplashScreen(*this->Internal->SplashPixmap.data(), Qt::WindowStaysOnTopHint));
     this->Internal->SplashScreen->show();
     }
 
@@ -931,12 +966,12 @@ void ctkAppLauncher::generateTemplate()
 }
 
 // --------------------------------------------------------------------------
-void ctkAppLauncher::startLauncher()
+bool ctkAppLauncher::configure()
 {
   if (!this->initialize())
     {
-    this->Internal->Application->exit(EXIT_FAILURE);
-    return;
+    this->Internal->exit(EXIT_FAILURE);
+    return false;
     }
 
   QString settingFileName = this->findSettingFile();
@@ -950,13 +985,13 @@ void ctkAppLauncher::startLauncher()
       {
       this->Internal->reportError(this->Internal->invalidSettingsMessage());
       }
-    this->Internal->Application->exit(EXIT_FAILURE);
-    return;
+    this->Internal->exit(EXIT_FAILURE);
+    return false;
     }
   else if (status == ctkAppLauncher::ExitWithSuccess)
     {
-    this->Internal->Application->exit(EXIT_SUCCESS);
-    return;
+    this->Internal->exit(EXIT_SUCCESS);
+    return false;
     }
 
   // Append 'unparsed arguments' to list of arguments that will be used to start the application.
@@ -973,6 +1008,16 @@ void ctkAppLauncher::startLauncher()
     }
 
   this->Internal->ApplicationToLaunchArguments.append(unparsedArguments);
+  return true;
+}
 
+// --------------------------------------------------------------------------
+void ctkAppLauncher::startLauncher()
+{
+  bool res = this->configure();
+  if (!res)
+    {
+    return;
+    }
   this->startApplication();
 }

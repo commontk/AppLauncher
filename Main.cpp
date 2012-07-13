@@ -1,9 +1,11 @@
 
 // Qt includes
 #include <QApplication>
+#include <QDebug>
+#include <QDir>
+#include <QFileInfo>
 #include <QStringList>
 #include <QTimer>
-#include <QDebug>
 
 // CTK includes
 #include "ctkAppArguments.h"
@@ -67,18 +69,44 @@ int appLauncherMain(int argc, char** argv)
 #endif
         );
 
-  QApplication app(appArguments.argumentCount(ctkAppArguments::ARG_REGULAR_LIST),
-                   appArguments.argumentValues(ctkAppArguments::ARG_REGULAR_LIST));
-
+  QFileInfo launcherFile(QDir::current(), QString(argv[0]));
   // Initialize resources in static libs
   Q_INIT_RESOURCE(CTKAppLauncherBase);
 
-  ctkAppLauncher appLauncher(app);
-  appLauncher.setArguments(appArguments.arguments());
+  QScopedPointer<ctkAppLauncher> appLauncher(new ctkAppLauncher);
+  appLauncher->setArguments(appArguments.arguments());
+  bool exec = appLauncher->initialize(launcherFile.absoluteFilePath());
+  exec = appLauncher->configure() && exec;
 
-  QTimer::singleShot(0, &appLauncher, SLOT(startLauncher()));
+  if (!exec)
+    {
+    return EXIT_SUCCESS;
+    }
 
-  return app.exec();
+  QScopedPointer<QCoreApplication> app;
+  if (appLauncher->disableSplash())
+    {
+    app.reset(new QCoreApplication(
+                appArguments.argumentCount(ctkAppArguments::ARG_REGULAR_LIST),
+                appArguments.argumentValues(ctkAppArguments::ARG_REGULAR_LIST)));
+    }
+  else
+    {
+    app.reset(new QApplication(
+                appArguments.argumentCount(ctkAppArguments::ARG_REGULAR_LIST),
+                appArguments.argumentValues(ctkAppArguments::ARG_REGULAR_LIST)));
+    }
+  appLauncher->setApplication(*app.data());
+
+  QTimer::singleShot(0, appLauncher.data(), SLOT(startLauncher()));
+
+  int res = app->exec();
+
+  // Delete application launcher appLauncher before the application app so that
+  // graphical items such as pixmaps, widgets, etc can be released.
+  appLauncher.reset();
+
+  return res;
 }
 
 // --------------------------------------------------------------------------

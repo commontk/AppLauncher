@@ -2,6 +2,9 @@
 # AppLauncherTestNoSplashScreen
 #
 
+# Disable DISPLAY environment variable to test if the following works when
+# no graphical context can be instantiated (e.g. use QCoreApplication instead
+# of QApplication)
 set(ENV{DISPLAY})
 
 include(${TEST_SOURCE_DIR}/AppLauncherTestMacros.cmake)
@@ -29,7 +32,7 @@ execute_process(
   )
 
 # --------------------------------------------------------------------------
-# Test1 - Check if flag --launcher-version works as expected
+# TestNoSplashScreen - Check if launcher can work in no DISPLAY environment
 set(command ${launcher_exe} --launcher-no-splash )
 execute_process(
   COMMAND ${command}
@@ -42,6 +45,7 @@ execute_process(
 print_command_as_string("${command}")
 
 if(rv)
-  message(FATAL_ERROR "TestNoSplashScreen - failed to start launcher "
-    "with no splash screen if no DISPLAY\n${ev}")
+  message(FATAL_ERROR "TestNoSplashScreen - Failed to start launcher "
+    "using `--launcher-no-splash`. Launcher is expected to run even if DISPLAY "
+    "environment variable is unset.\n${ev}")
 endif()
