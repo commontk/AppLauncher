@@ -20,6 +20,7 @@ public:
   typedef ctkAppLauncher Self;
   typedef QObject Superclass;
   ctkAppLauncher(const QCoreApplication& application, QObject* parentObject = 0);
+  ctkAppLauncher(QObject* parentObject = 0);
   ~ctkAppLauncher();
 
   enum ProcessArgumentsStatus
@@ -38,12 +39,29 @@ public:
   /// Display version information string on standard output
   void displayVersion(std::ostream &output = std::cout);
 
-  /// Initialize
-  bool initialize();
+  /// Initialize launcher by extracting associated name and directory, and
+  /// configuring the command line parser.
+  /// \a launcherFilePath is the path of the launcher used to extract its
+  /// name and directory. If empty, the application file path is used instead.
+  /// Return false if it fails to initialize the arguments.
+  /// \sa setArguments(), configure()
+  bool initialize(QString launcherFilePath = QString());
+
+  /// Read command line arguments to configure launcher behavior.
+  /// Configure the AppLauncher by first initializing the arguments (see
+  /// initialize()) and then read settings from ini file and parse arguments
+  /// arguments from command line.
+  /// Return true if the application must be launched, false otherwise.
+  /// \sa initialize(), setArguments(), startLauncher()
+  bool configure();
+
+  /// Set the launcher application and its arguments
+  /// \sa setArguments()
+  void setApplication(const QCoreApplication& app);
 
   /// Set/Get list of arguments that will be passed to the program to launch.
   /// By default, \a arguments associated with the \a application are used.
-  /// \sa ctkAppLauncher(), QCoreApplication::arguments()
+  /// \sa ctkAppLauncher(), QCoreApplication::arguments(), setApplication()
   QStringList arguments()const;
   void setArguments(const QStringList& args);
 
@@ -83,9 +101,14 @@ public:
   /// Return the associated splash screen image path
   QString splashImagePath()const;
 
-  /// \brief Return the delay in ms before the launcher hide the splashscreen.
+  /// \brief Return the delay in ms before the launcher hides the splashscreen.
   /// The delay is applied after the application finishes to start.
   int splashScreenHideDelayMs()const;
+
+  /// \brief Return true if the splash-screen should not be visible when
+  /// starting the launched application, false otherwise.
+  /// false by default.
+  bool disableSplash()const;
 
   /// Get verbose flag
   /// If True, print to standard output information associated with the parameters
