@@ -30,6 +30,10 @@ public:
   /// Display status on Standard Output
   void reportInfo(const QString& msg);
 
+  /// Exit the application if the application has been set.
+  /// \sa ctkAppLauncher::setApplication
+  void exit(int exitCode);
+
   enum SettingsType
     {
     RegularSettings = 0,
@@ -81,6 +85,7 @@ public:
   QStringList ApplicationToLaunchArguments;
   QString     LauncherSplashImagePath;
   int         LauncherSplashScreenHideDelayMs;
+  bool        LauncherNoSplashScreen;
 
   /// Variable used internally
   QStringList                     Arguments;
@@ -91,6 +96,7 @@ public:
   QString                         DefaultApplicationToLaunch;
   QString                         DefaultLauncherSplashImagePath;
   int                             DefaultLauncherSplashScreenHideDelayMs;
+  bool                            DefaultLauncherNoSplashScreen;
   QString                         DefaultApplicationToLaunchArguments;
   QString                         LauncherName;
   QString                         LauncherDir;
@@ -108,7 +114,7 @@ public:
   QString                         PathSep;
   QString                         LibraryPathVariableName;
   QSharedPointer<QSplashScreen>   SplashScreen;
-  QPixmap                         SplashPixmap;
+  QScopedPointer<QPixmap>         SplashPixmap;
 
   /// Extra 'application to launch'
   QString                                          ExtraApplicationToLaunchLongArgument;
