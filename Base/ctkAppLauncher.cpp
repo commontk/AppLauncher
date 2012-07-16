@@ -985,7 +985,7 @@ bool ctkAppLauncher::configure()
       {
       this->Internal->reportError(this->Internal->invalidSettingsMessage());
       }
-    this->displayHelp();
+    this->displayHelp(std::cerr);
     this->Internal->exit(EXIT_FAILURE);
     return false;
     }
