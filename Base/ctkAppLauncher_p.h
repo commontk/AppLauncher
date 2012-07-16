@@ -63,11 +63,13 @@ public:
 
   QString invalidSettingsMessage()const;
   bool verbose()const;
+  QString splashImagePath()const;
   bool disableSplash()const;
 
 public slots:
 
-  /// Called 50ms after the splashscreen is shown and the eventloop flushed
+  /// Called just after the splashscreen is shown
+  /// \sa QTimer::singleShot()
   void runProcess();
 
   /// Terminate the started process
