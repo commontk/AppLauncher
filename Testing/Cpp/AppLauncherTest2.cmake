@@ -67,7 +67,7 @@ endif()
 
 # --------------------------------------------------------------------------
 # Attempt to start launcher from its directory
-set(command ${launcher} --launcher-no-splash --launch ${application} --print-current-working-directory)
+set(command ${launcher_exe} --launcher-no-splash --launch ${application} --print-current-working-directory)
 execute_process(
   COMMAND ${command}
   WORKING_DIRECTORY ${launcher_dir}
