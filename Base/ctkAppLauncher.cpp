@@ -686,7 +686,6 @@ int ctkAppLauncher::processArguments()
     {
     std::cerr << "Error\n  "
               << qPrintable(this->Internal->Parser.errorString()) << "\n" << std::endl;
-    this->displayHelp();
     return Self::ExitWithError;
     }
 
@@ -985,7 +984,7 @@ bool ctkAppLauncher::configure()
       {
       this->Internal->reportError(this->Internal->invalidSettingsMessage());
       }
-    this->displayHelp();
+    this->displayHelp(std::cerr);
     this->Internal->exit(EXIT_FAILURE);
     return false;
     }

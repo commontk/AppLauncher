@@ -18,7 +18,8 @@ error: --launch argument has NOT been specified
 error: Launcher setting file [${launcher_name}LauncherSettings.ini] does NOT exist in any of these directories:
 ${launcher_dir}/.
 ${launcher_dir}/bin
-${launcher_dir}/lib")
+${launcher_dir}/lib
+${expected_help_text}")
 
 set(command ${launcher_exe} --launcher-no-splash)
 execute_process(
@@ -59,7 +60,7 @@ execute_process(
 
 print_command_as_string("${command}")
 
-set(expected_error_msg "Error\n  Argument --launch has 0 value(s) associated whereas exacly 1 are expected.")
+set(expected_error_msg "Error\n  Argument --launch has 0 value(s) associated whereas exacly 1 are expected.\n${expected_help_text}")
 if(NOT ${ev} STREQUAL ${expected_error_msg})
   message(FATAL_ERROR "Test2 - \nexpected_error_msg[${expected_error_msg}]\ncurrent[${ev}]")
 endif()
