@@ -29,7 +29,7 @@ ctkAppLauncherInternal::ctkAppLauncherInternal()
   this->LauncherSplashScreenHideDelayMs = -1;
   this->LauncherNoSplashScreen = false;
   this->DefaultLauncherSplashImagePath = ":Images/ctk-splash.png";
-  this->DefaultLauncherSplashScreenHideDelayMs = 0;
+  this->DefaultLauncherSplashScreenHideDelayMs = 800;
   this->LauncherSettingSubDirs << "." << "bin" << "lib";
   this->ValidSettingsFile = false;
 
@@ -227,6 +227,17 @@ QString ctkAppLauncherInternal::invalidSettingsMessage() const
 bool ctkAppLauncherInternal::verbose() const
 {
   return this->ParsedArgs.value("launcher-verbose").toBool();
+}
+
+// --------------------------------------------------------------------------
+QString ctkAppLauncherInternal::splashImagePath()const
+{
+  if (!this->Initialized)
+    {
+    return this->DefaultLauncherSplashImagePath;
+    }
+
+  return this->LauncherSplashImagePath;
 }
 
 // --------------------------------------------------------------------------
@@ -524,8 +535,18 @@ void ctkAppLauncherInternal::applicationFinished(int exitCode, QProcess::ExitSta
 // --------------------------------------------------------------------------
 void ctkAppLauncherInternal::applicationStarted()
 {
-  QTimer::singleShot(this->LauncherSplashScreenHideDelayMs,
-                     this->SplashScreen.data(), SLOT(hide()));
+  this->reportInfo(
+    QString("DisableSplash [%1]").arg(this->disableSplash()));
+  if(!this->disableSplash())
+    {
+    this->SplashPixmap.reset(
+      new QPixmap(this->splashImagePath()));
+    this->SplashScreen = QSharedPointer<QSplashScreen>(
+      new QSplashScreen(*this->SplashPixmap.data(), Qt::WindowStaysOnTopHint));
+    this->SplashScreen->show();
+    QTimer::singleShot(this->LauncherSplashScreenHideDelayMs,
+                       this->SplashScreen.data(), SLOT(hide()));
+    }
 }
 
 // --------------------------------------------------------------------------
@@ -871,12 +892,7 @@ QString ctkAppLauncher::applicationToLaunch()const
 // --------------------------------------------------------------------------
 QString ctkAppLauncher::splashImagePath()const
 {
-  if (!this->Internal->Initialized)
-    {
-    return this->Internal->DefaultLauncherSplashImagePath;
-    }
-
-  return this->Internal->LauncherSplashImagePath;
+  return this->Internal->splashImagePath();
 }
 
 // --------------------------------------------------------------------------
@@ -909,19 +925,7 @@ void ctkAppLauncher::startApplication()
     {
     return;
     }
-
-  this->Internal->reportInfo(
-    QString("DisableSplash [%1]").arg(this->Internal->disableSplash()));
-  if (!this->Internal->disableSplash())
-    {
-    this->Internal->SplashPixmap.reset(
-      new QPixmap(this->splashImagePath()));
-    this->Internal->SplashScreen = QSharedPointer<QSplashScreen>(
-      new QSplashScreen(*this->Internal->SplashPixmap.data(), Qt::WindowStaysOnTopHint));
-    this->Internal->SplashScreen->show();
-    }
-
-  QTimer::singleShot(50, this->Internal, SLOT(runProcess()));
+  QTimer::singleShot(0, this->Internal, SLOT(runProcess()));
 }
 
 // --------------------------------------------------------------------------
