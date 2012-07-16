@@ -30,10 +30,11 @@ execute_process(
 
 print_command_as_string("${command}")
 
-set(expected_error_msg "error: Application does NOT exists []")
+set(expected_error_msg "error: Application does NOT exists []${expected_help_text}")
 if(NOT "${ev}" STREQUAL "${expected_error_msg}")
-  message(FATAL_ERROR "Test1 - expected_error_msg:${expected_error_msg}, "
-                      "current_error_msg:${ev}")
+  message(FATAL_ERROR "Test1"
+                      "\n  expected_error_msg:${expected_error_msg}"
+                      "\n  current_error_msg:${ev}")
 endif()
 
 # --------------------------------------------------------------------------
@@ -63,10 +64,11 @@ execute_process(
 
 print_command_as_string("${command}")
 
-set(expected_error_msg "error: Application does NOT exists [this-app-do-not-exist]")
+set(expected_error_msg "error: Application does NOT exists [this-app-do-not-exist]${expected_help_text}")
 if(NOT "${ev}" STREQUAL "${expected_error_msg}")
-  message(FATAL_ERROR "Test2 - expected_error_msg:${expected_error_msg}, "
-                      "current_error_msg:${ev}")
+  message(FATAL_ERROR "Test2"
+                      "\n  expected_error_msg:${expected_error_msg}"
+                      "\n  current_error_msg:${ev}")
 endif()
 
 # --------------------------------------------------------------------------
