@@ -686,7 +686,6 @@ int ctkAppLauncher::processArguments()
     {
     std::cerr << "Error\n  "
               << qPrintable(this->Internal->Parser.errorString()) << "\n" << std::endl;
-    this->displayHelp();
     return Self::ExitWithError;
     }
 
