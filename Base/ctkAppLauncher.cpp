@@ -742,6 +742,11 @@ int ctkAppLauncher::processArguments()
       return Self::ExitWithSuccess;
     }
 
+  this->Internal->DetachApplicationToLaunch =
+      this->Internal->ParsedArgs.value("launcher-detach").toBool();
+  this->Internal->reportInfo(
+      QString("DetachApplicationToLaunch [%1]").arg(this->Internal->DetachApplicationToLaunch));
+
   QStringList unparsedArgs = this->Internal->Parser.unparsedArguments();
   if (unparsedArgs.contains(this->Internal->LauncherAdditionalHelpShortArgument) ||
       unparsedArgs.contains(this->Internal->LauncherAdditionalHelpLongArgument))
