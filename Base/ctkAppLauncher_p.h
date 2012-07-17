@@ -66,6 +66,8 @@ public:
   QString splashImagePath()const;
   bool disableSplash()const;
 
+  QString searchPaths(const QString& programName, const QStringList& extensions);
+
 public slots:
 
   /// Called just after the splashscreen is shown
