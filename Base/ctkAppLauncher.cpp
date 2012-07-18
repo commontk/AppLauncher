@@ -1,5 +1,6 @@
 
 //Qt includes
+#include <QDir>
 #include <QFile>
 #include <QFileInfo>
 #include <QProcessEnvironment>
@@ -144,6 +145,27 @@ bool ctkAppLauncherInternal::processApplicationToLaunchArgument()
 
   this->ApplicationToLaunch = this->expandValue(this->ApplicationToLaunch);
 
+  if (!this->ApplicationToLaunch.isEmpty())
+    {
+    QFileInfo applicationToLaunchInfo(this->ApplicationToLaunch);
+    if (applicationToLaunchInfo.isRelative())
+      {
+      QString path = applicationToLaunchInfo.path() + "/" + applicationToLaunchInfo.baseName();
+      QString extension = applicationToLaunchInfo.completeSuffix();
+#ifdef Q_OS_WIN32
+      if (extension.isEmpty())
+        {
+        extension = "exe";
+        }
+#endif
+      QString resolvedApplicationToLaunch = this->searchPaths(path, QStringList() << extension);
+      if (!resolvedApplicationToLaunch.isEmpty())
+        {
+        this->ApplicationToLaunch = resolvedApplicationToLaunch;
+        }
+      }
+    }
+
   this->reportInfo(QString("ApplicationToLaunch [%1]").arg(this->ApplicationToLaunch));
 
   // Make sure the program to launch exists
@@ -261,6 +283,33 @@ bool ctkAppLauncherInternal::disableSplash() const
     return true;
     }
   return false;
+}
+
+// --------------------------------------------------------------------------
+QString ctkAppLauncherInternal::searchPaths(const QString& executableName, const QStringList& extensions)
+{
+  QProcessEnvironment environment = QProcessEnvironment::systemEnvironment();
+  QStringList paths = environment.value("PATH").split(this->PathSep);
+  paths = this->ListOfPaths + paths;
+  foreach(const QString& path, paths)
+    {
+    foreach(const QString& extension, extensions)
+      {
+      QString executableNameWithExt = executableName;
+      if (!extension.isEmpty())
+        {
+        executableNameWithExt.append("." + extension);
+        }
+      QDir pathAsDir(path);
+      QString executablePath = pathAsDir.filePath(executableNameWithExt);
+      this->reportInfo(QString("Checking if [%1] exists in [%2]").arg(executableNameWithExt).arg(path));
+      if (QFile::exists(executablePath))
+        {
+        return executablePath;
+        }
+      }
+    }
+  return QString();
 }
 
 // --------------------------------------------------------------------------
