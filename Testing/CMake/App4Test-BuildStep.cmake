@@ -2,10 +2,6 @@
 include(${TEST_SOURCE_DIR}/AppLauncherTestMacros.cmake)
 include(${TEST_BINARY_DIR}/App4TestStepPrerequisites.cmake)
 
-#
-# Build App4Test
-#
-
 # --------------------------------------------------------------------------
 # Debug flags - Set to True to display the command as string
 set(PRINT_COMMAND 0)
