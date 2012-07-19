@@ -1,8 +1,4 @@
 
-#
-# AppLauncherTest6
-#
-
 include(${TEST_SOURCE_DIR}/AppLauncherTestMacros.cmake)
 include(${TEST_BINARY_DIR}/AppLauncherTestPrerequisites.cmake)
 
@@ -76,7 +72,7 @@ ${common_env_var2_name}=${common_env_var2_value_2}:<env:${common_env_var2_name}>
 set(PRINT_COMMAND 1)
 
 # --------------------------------------------------------------------------
-# Test1 - Check if flag --launcher-additional-settings works as expected
+# Check if flag --launcher-additional-settings works as expected
 
 set(command ${launcher_exe} --launcher-no-splash --launcher-additional-settings ${additional_settings_path})
 execute_process(
@@ -90,12 +86,12 @@ execute_process(
 print_command_as_string("${command}")
 
 if(rv)
-  message(FATAL_ERROR "Test1 - [${launcher_exe}] failed to start from "
+  message(FATAL_ERROR "[${launcher_exe}] failed to start from "
                       "directory [${launcher_binary_dir}]\n${ev}")
 endif()
 
 # --------------------------------------------------------------------------
-# Test2 - Check if flag --launcher-additional-settings works as expected
+# Check if flag --launcher-additional-settings works as expected
 set(command ${launcher_exe} --launcher-no-splash --launcher-dump-environment --launcher-additional-settings ${additional_settings_path})
 execute_process(
   COMMAND ${command}
@@ -108,7 +104,7 @@ execute_process(
 print_command_as_string("${command}")
 
 if(rv)
-  message(FATAL_ERROR "Test2 - [${launcher_exe}] failed to start from "
+  message(FATAL_ERROR "[${launcher_exe}] failed to start from "
                       "directory [${launcher_binary_dir}]\n${ev}")
 endif()
 
@@ -137,7 +133,7 @@ endif()
 foreach(expected_ov_line ${expected_ov_lines})
   string(FIND "${ov}" ${expected_ov_line} pos)
   if(${pos} STREQUAL -1)
-    message(FATAL_ERROR "Test3 - Problem with flag --launcher-additional-settings - expected_ov_line:${expected_ov_line} "
+    message(FATAL_ERROR "Problem with flag --launcher-additional-settings - expected_ov_line:${expected_ov_line} "
                         "not found in current_ov:${ov}")
   endif()
 endforeach()

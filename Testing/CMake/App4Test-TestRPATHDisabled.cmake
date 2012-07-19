@@ -1,8 +1,4 @@
 
-#
-# AppLauncherTest2
-#
-
 include(${TEST_BINARY_DIR}/AppLauncherTestPrerequisites.cmake)
 
 # --------------------------------------------------------------------------

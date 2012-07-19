@@ -2,10 +2,6 @@
 include(${TEST_SOURCE_DIR}/AppLauncherTestMacros.cmake)
 include(${TEST_BINARY_DIR}/App4TestStepPrerequisites.cmake)
 
-#
-# Configure App4Test
-#
-
 # --------------------------------------------------------------------------
 # Note: app4test_binary_dir is NOT suppose to exist. Let's check if the parent directory is valid
 get_filename_component(app4test_binary_parent_dir ${app4test_binary_dir}/../ ABSOLUTE)
