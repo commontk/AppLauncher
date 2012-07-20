@@ -43,14 +43,19 @@ if(rv)
                       "directory [${launcher_binary_dir}]\n${ev}")
 endif()
 
+set(stringified_ov)
+list_to_string("${ov}" stringified_ov)
+
 set(pathsep ":")
 if(WIN32)
-  set(pathsep ";")
+  set(pathsep "\;")
 endif()
 set(expected_msg "PATH=/home/john/app1${pathsep}/home/john/app2")
-string(REGEX MATCH ${expected_msg} current_msg ${ov})
+string(REGEX MATCH ${expected_msg} current_msg ${stringified_ov})
 if("${current_msg}" STREQUAL "")
   message(FATAL_ERROR "Failed to pass PATH variable from ${launcher_name} "
-                      "to ${application_name}.\n${ov}")
+                      "to ${application_name}.\n"
+                      "  expected_msg:${expected_msg}\n"
+                      "  current_msg:${ov}")
 endif()
 
