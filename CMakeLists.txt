@@ -99,6 +99,8 @@ set(CTK_BASE_INCLUDE_DIRS CACHE INTERNAL "CTK includes" FORCE)
 #-----------------------------------------------------------------------------
 # CMake function(s) and macro(s)
 #
+include(ctkFunctionCheckCompilerFlags)
+include(ctkFunctionGetCompilerVisibilityFlags)
 include(ctkMacroBuildLib)
 include(ctkMacroGenerateMocs)
 
@@ -212,6 +214,11 @@ if(WITH_COVERAGE)
 endif()
 
 #-----------------------------------------------------------------------------
+# Set symbol visibility Flags
+#
+ctkFunctionGetCompilerVisibilityFlags(VISIBILITY_CXX_FLAGS)
+
+#-----------------------------------------------------------------------------
 # Set C/CXX Flags
 #
 set(cflags)
@@ -219,7 +226,7 @@ if(CMAKE_COMPILER_IS_GNUCXX)
   set(cflags "-Wall -Wextra -Wpointer-arith -Winvalid-pch -Wcast-align -Wwrite-strings -D_FORTIFY_SOURCE=2")
 endif()
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS_INIT} ${cflags} ${COVERAGE_C_FLAGS} ${ADDITIONAL_C_FLAGS}" CACHE STRING "CMake C Flags" FORCE)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS_INIT} ${cflags} ${COVERAGE_CXX_FLAGS} ${ADDITIONAL_CXX_FLAGS}" CACHE STRING "CMake CXX Flags" FORCE)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS_INIT} ${cflags} ${COVERAGE_CXX_FLAGS} ${VISIBILITY_CXX_FLAGS} ${ADDITIONAL_CXX_FLAGS}" CACHE STRING "CMake CXX Flags" FORCE)
 
 # This is a cross-platform project so we cannot use the MS _s API.
 if(MSVC)
