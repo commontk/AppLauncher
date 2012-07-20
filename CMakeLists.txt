@@ -101,7 +101,6 @@ set(CTK_BASE_INCLUDE_DIRS CACHE INTERNAL "CTK includes" FORCE)
 #
 include(ctkFunctionCheckCompilerFlags)
 include(ctkFunctionGetCompilerVisibilityFlags)
-include(ctkFunctionGetGccVersion)
 include(ctkMacroBuildLib)
 include(ctkMacroGenerateMocs)
 

@@ -24,7 +24,7 @@
 #! variable given by RESULT_VAR.
 #!
 #! If supported, the flags -fvisibility=hidden and -fvisibility-inlines-hidden
-#! will be added. This applies to gcc >= 4.5 and Clang.
+#! will be added. This applies to gcc and Clang.
 #!
 #! Usage:
 #!   ctkFunctionGetCompilerVisibilityFlags(RESULT_VAR)
@@ -51,7 +51,7 @@ function(ctkFunctionGetCompilerVisibilityFlags RESULT_VAR)
   if(CMAKE_COMPILER_IS_GNUCXX)
   
     set(use_visibility_flags 1)
-    ctkFunctionGetGccVersion(${CMAKE_CXX_COMPILER} GCC_VERSION)
+    #ctkFunctionGetGccVersion(${CMAKE_CXX_COMPILER} GCC_VERSION)
   
     # MinGW does not export all symbols automatically, so no need to set flags.
     #
@@ -63,8 +63,12 @@ function(ctkFunctionGetCompilerVisibilityFlags RESULT_VAR)
     # directives for the third-party headers between "#pragma visibility push/pop"
     # statements, it is generally safer to just use default visibility with
     # gcc < 4.5.
+    #
+    # While it made sens for CTK version of this macro to set the visibitlity flags
+    # only for gcc >= 4.5, in the case of the launcher, the flags will be systematically
+    # if they are supported.
     
-    if(${GCC_VERSION} VERSION_LESS "4.5" OR MINGW)
+    if(MINGW)
       set(use_visibility_flags 0)
     endif()
     
@@ -78,4 +82,3 @@ function(ctkFunctionGetCompilerVisibilityFlags RESULT_VAR)
   endif()
   
 endfunction()
-
