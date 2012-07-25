@@ -32,10 +32,12 @@ if(rv)
                       "directory [${launcher_binary_dir}]\n${ev}")
 endif()
 
-set(expected_msg "Argument passed:--foo myarg --list item1 item2 item3 --verbose")
+set(expected_msg "Argument count: 8 - Argument passed:--foo myarg --list item1 item2 item3 --verbose")
 string(REGEX MATCH ${expected_msg} current_msg ${ov})
 if(NOT "${expected_msg}" STREQUAL "${current_msg}")
   message(FATAL_ERROR "Failed to pass parameters from ${launcher_name} "
-                      "to ${application_name}.")
+                      "to ${application_name}.\n"
+                      "  expected_msg:${expected_msg}\n"
+                      "    output_msg:${ov}")
 endif()
 
