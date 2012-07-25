@@ -96,6 +96,10 @@ int appLauncherMain(int argc, char** argv)
                 appArguments.argumentCount(ctkAppArguments::ARG_REGULAR_LIST),
                 appArguments.argumentValues(ctkAppArguments::ARG_REGULAR_LIST)));
     }
+
+  appLauncher.reset(new ctkAppLauncher);
+  appLauncher->setArguments(appArguments.arguments());
+  appLauncher->initialize(launcherFile.absoluteFilePath());
   appLauncher->setApplication(*app.data());
 
   QTimer::singleShot(0, appLauncher.data(), SLOT(startLauncher()));

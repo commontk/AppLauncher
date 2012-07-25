@@ -57,7 +57,7 @@ int main(int argc, char** argv)
     std::string argName(argv[1]);
     if (argName == "--foo")
       {
-      std::cout << "Argument passed:" << argName;
+      std::cout << "Argument count: " << argc << " - Argument passed:" << argName;
       for(int i=2; i < argc; i++)
         {
         std::cout << " " << argv[i];
