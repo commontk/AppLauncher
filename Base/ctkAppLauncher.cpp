@@ -293,6 +293,7 @@ QString ctkAppLauncherInternal::searchPaths(const QString& executableName, const
   paths = this->ListOfPaths + paths;
   foreach(const QString& path, paths)
     {
+    QString expandedPath = this->expandValue(path);
     foreach(const QString& extension, extensions)
       {
       QString executableNameWithExt = executableName;
@@ -300,9 +301,9 @@ QString ctkAppLauncherInternal::searchPaths(const QString& executableName, const
         {
         executableNameWithExt.append("." + extension);
         }
-      QDir pathAsDir(path);
+      QDir pathAsDir(expandedPath);
       QString executablePath = pathAsDir.filePath(executableNameWithExt);
-      this->reportInfo(QString("Checking if [%1] exists in [%2]").arg(executableNameWithExt).arg(path));
+      this->reportInfo(QString("Checking if [%1] exists in [%2]").arg(executableNameWithExt).arg(expandedPath));
       if (QFile::exists(executablePath))
         {
         return executablePath;
