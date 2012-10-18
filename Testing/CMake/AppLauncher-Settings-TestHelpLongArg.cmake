@@ -5,6 +5,12 @@ include(${TEST_BINARY_DIR}/AppLauncherTestPrerequisites.cmake)
 # --------------------------------------------------------------------------
 # Configure settings file
 file(WRITE "${launcher}LauncherSettings.ini" "
+[General]
+additionalLauncherHelpLongArgument=--long-help
+
+[Application]
+path=${application}
+
 [LibraryPaths]
 1\\path=${library_path}
 size=1
@@ -16,7 +22,7 @@ set(PRINT_COMMAND 0)
 
 # --------------------------------------------------------------------------
 # Check if flag --launcher-help works as expected
-set(command ${launcher_exe} --launcher-help --launch ${application})
+set(command ${launcher_exe} --long-help)
 execute_process(
   COMMAND ${command}
   WORKING_DIRECTORY ${launcher_binary_dir}
@@ -32,7 +38,8 @@ if(rv)
                       "directory [${launcher_binary_dir}]\n${ev}")
 endif()
 
-set(expected_msg "Usage
+set(expected_msg "This is the long help
+Usage
   CTKAppLauncher [options]
 
 Options

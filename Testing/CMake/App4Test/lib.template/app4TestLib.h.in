@@ -6,7 +6,7 @@
 class app4TestLib@LIBSUFFIX@_EXPORT app4TestLib@LIBSUFFIX@
 {
 public:
-  app4TestLib@LIBSUFFIX@();
+  app4TestLib@LIBSUFFIX@(bool verbose);
   virtual ~app4TestLib@LIBSUFFIX@();
 };
 

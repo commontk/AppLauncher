@@ -42,7 +42,7 @@ foreach(LIBSUFFIX RANGE 1 30)
     @ONLY
     )
   set(LIB_INCLUDES "${LIB_INCLUDES}\#include \"app4TestLib${LIBSUFFIX}.h\"\n")
-  set(LIB_INSTANCIATES "${LIB_INSTANCIATES}  new app4TestLib${LIBSUFFIX}();\n")
+  set(LIB_INSTANCIATES "${LIB_INSTANCIATES}  new app4TestLib${LIBSUFFIX}(verboseLibInstantiation);\n")
   
   add_subdirectory(
     ${CMAKE_CURRENT_BINARY_DIR}/${lib_subdir} 

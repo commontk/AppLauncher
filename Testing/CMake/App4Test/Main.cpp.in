@@ -52,6 +52,8 @@ int main(int argc, char** argv)
 {
   //std::cout << "Hello World !" << std::endl;
 
+  bool verboseLibInstantiation = true;
+
   if (argc > 1)
     {
     std::string argName(argv[1]);
@@ -112,6 +114,16 @@ int main(int argc, char** argv)
       {
       std::cout << "Exit failure !" << std::endl;
       return EXIT_FAILURE;
+      }
+    else if (argName == "--long-help")
+      {
+      verboseLibInstantiation = false;
+      std::cout << "This is the long help" << std::endl;
+      }
+    else if (argName == "-sh")
+      {
+      verboseLibInstantiation = false;
+      std::cout << "This is the short help" << std::endl;
       }
     }
 
