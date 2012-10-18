@@ -24,6 +24,7 @@
 // --------------------------------------------------------------------------
 ctkAppLauncherInternal::ctkAppLauncherInternal()
 {
+  this->LauncherStarting = false;
   this->Application = 0;
   this->Initialized = false;
   this->DetachApplicationToLaunch = false;
@@ -760,14 +761,17 @@ int ctkAppLauncher::processArguments()
     return Self::ExitWithError;
     }
 
-  this->Internal->reportInfo(
-      QString("LauncherDir [%1]").arg(this->Internal->LauncherDir));
+  if (this->Internal->LauncherStarting)
+    {
+    this->Internal->reportInfo(
+        QString("LauncherDir [%1]").arg(this->Internal->LauncherDir));
 
-  this->Internal->reportInfo(
-      QString("LauncherName [%1]").arg(this->Internal->LauncherName));
+    this->Internal->reportInfo(
+        QString("LauncherName [%1]").arg(this->Internal->LauncherName));
 
-  this->Internal->reportInfo(
-      QString("SettingsFileName [%1]").arg(this->findSettingFile()));
+    this->Internal->reportInfo(
+        QString("SettingsFileName [%1]").arg(this->findSettingFile()));
+    }
 
   if (this->Internal->ParsedArgs.value("launcher-help").toBool())
     {
@@ -794,14 +798,20 @@ int ctkAppLauncher::processArguments()
 
   this->Internal->DetachApplicationToLaunch =
       this->Internal->ParsedArgs.value("launcher-detach").toBool();
-  this->Internal->reportInfo(
-      QString("DetachApplicationToLaunch [%1]").arg(this->Internal->DetachApplicationToLaunch));
+  if (this->Internal->LauncherStarting)
+    {
+    this->Internal->reportInfo(
+        QString("DetachApplicationToLaunch [%1]").arg(this->Internal->DetachApplicationToLaunch));
+    }
 
   QStringList unparsedArgs = this->Internal->Parser.unparsedArguments();
   if (unparsedArgs.contains(this->Internal->LauncherAdditionalHelpShortArgument) ||
       unparsedArgs.contains(this->Internal->LauncherAdditionalHelpLongArgument))
     {
-    this->displayHelp();
+    if (this->Internal->LauncherStarting)
+      {
+      this->displayHelp();
+      }
     }
 
   if (this->Internal->ParsedArgs.value("launcher-generate-template").toBool())
@@ -1073,6 +1083,7 @@ bool ctkAppLauncher::configure()
 // --------------------------------------------------------------------------
 void ctkAppLauncher::startLauncher()
 {
+  this->Internal->LauncherStarting = true;
   bool res = this->configure();
   if (!res)
     {

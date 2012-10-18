@@ -92,6 +92,7 @@ public:
   bool        LauncherNoSplashScreen;
 
   /// Variable used internally
+  bool                            LauncherStarting;
   QStringList                     Arguments;
   QProcess                        Process;
   ctkCommandLineParser            Parser;
