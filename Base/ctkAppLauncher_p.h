@@ -68,6 +68,8 @@ public:
 
   QString searchPaths(const QString& programName, const QStringList& extensions);
 
+  QString trimArgumentPrefix(const QString& argument) const;
+
 public slots:
 
   /// Called just after the splashscreen is shown
@@ -96,6 +98,8 @@ public:
   QStringList                     Arguments;
   QProcess                        Process;
   ctkCommandLineParser            Parser;
+  QString                         ShortArgPrefix;
+  QString                         LongArgPrefix;
   QHash<QString, QVariant>        ParsedArgs;
   QString                         ParseError;
   QString                         DefaultApplicationToLaunch;
