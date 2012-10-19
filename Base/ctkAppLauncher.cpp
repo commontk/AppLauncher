@@ -34,6 +34,8 @@ ctkAppLauncherInternal::ctkAppLauncherInternal()
   this->DefaultLauncherSplashScreenHideDelayMs = 800;
   this->LauncherSettingSubDirs << "." << "bin" << "lib";
   this->ValidSettingsFile = false;
+  this->LongArgPrefix = "--";
+  this->ShortArgPrefix = "-";
 
 #if defined(WIN32) || defined(_WIN32)
   this->PathSep = ";";
@@ -266,11 +268,13 @@ QString ctkAppLauncherInternal::splashImagePath()const
 // --------------------------------------------------------------------------
 bool ctkAppLauncherInternal::disableSplash() const
 {
-  QStringList unparsedArgs = this->Parser.unparsedArguments();
   bool hasNoSplashArgument = false;
   foreach(const QString& arg, this->LauncherAdditionalNoSplashArguments)
     {
-    if (unparsedArgs.contains(arg))
+
+    if (this->Parser.unparsedArguments().contains(arg) ||
+        this->ParsedArgs.contains(this->trimArgumentPrefix(arg))
+        )
       {
       hasNoSplashArgument = true;
       break;
@@ -312,6 +316,21 @@ QString ctkAppLauncherInternal::searchPaths(const QString& executableName, const
       }
     }
   return QString();
+}
+
+// --------------------------------------------------------------------------
+QString ctkAppLauncherInternal::trimArgumentPrefix(const QString& argument) const
+{
+  QString trimmedArgument = argument;
+  if (trimmedArgument.startsWith(this->LongArgPrefix))
+    {
+    trimmedArgument.remove(0, this->LongArgPrefix.length());
+    }
+  else if (trimmedArgument.startsWith(this->ShortArgPrefix))
+    {
+    trimmedArgument.remove(0, this->ShortArgPrefix.length());
+    }
+  return trimmedArgument;
 }
 
 // --------------------------------------------------------------------------
@@ -693,7 +712,7 @@ bool ctkAppLauncher::initialize(QString launcherFilePath)
     }
 
   ctkCommandLineParser & parser = this->Internal->Parser;
-  parser.setArgumentPrefix("--", "-");
+  parser.setArgumentPrefix(this->Internal->LongArgPrefix, this->Internal->ShortArgPrefix);
 
   parser.addArgument("launcher-help","", QVariant::Bool, "Display help");
   parser.addArgument("launcher-version","", QVariant::Bool, "Show launcher version information");
