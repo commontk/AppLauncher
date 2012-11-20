@@ -835,8 +835,8 @@ int ctkAppLauncher::processArguments()
 
   if (this->Internal->ParsedArgs.value("launcher-generate-template").toBool())
     {
-    this->generateTemplate();
-    return Self::ExitWithSuccess;
+    bool success = this->generateTemplate();
+    return success ? Self::ExitWithSuccess : Self::ExitWithError;
     }
 
   if (!this->Internal->processSplashPathArgument())
@@ -1013,7 +1013,7 @@ void ctkAppLauncher::startApplication()
 }
 
 // --------------------------------------------------------------------------
-void ctkAppLauncher::generateTemplate()
+bool ctkAppLauncher::generateTemplate()
 {
   this->Internal->ListOfPaths.clear();
   this->Internal->ListOfPaths << "/home/john/app1"
@@ -1049,16 +1049,16 @@ void ctkAppLauncher::generateTemplate()
     arg(this->Internal->LauncherDir).
     arg(this->Internal->LauncherName);
 
-  this->writeSettings(outputFile);
+  return this->writeSettings(outputFile);
 }
 
 // --------------------------------------------------------------------------
-bool ctkAppLauncher::configure()
+int ctkAppLauncher::configure()
 {
   if (!this->initialize())
     {
     this->Internal->exit(EXIT_FAILURE);
-    return false;
+    return ctkAppLauncher::ExitWithError;
     }
 
   QString settingFileName = this->findSettingFile();
@@ -1074,12 +1074,12 @@ bool ctkAppLauncher::configure()
       }
     this->displayHelp(std::cerr);
     this->Internal->exit(EXIT_FAILURE);
-    return false;
+    return status;
     }
   else if (status == ctkAppLauncher::ExitWithSuccess)
     {
     this->Internal->exit(EXIT_SUCCESS);
-    return false;
+    return status;
     }
 
   // Append 'unparsed arguments' to list of arguments that will be used to start the application.
@@ -1096,15 +1096,15 @@ bool ctkAppLauncher::configure()
     }
 
   this->Internal->ApplicationToLaunchArguments.append(unparsedArguments);
-  return true;
+  return status;
 }
 
 // --------------------------------------------------------------------------
 void ctkAppLauncher::startLauncher()
 {
   this->Internal->LauncherStarting = true;
-  bool res = this->configure();
-  if (!res)
+  int res = this->configure();
+  if (res != Self::Continue)
     {
     return;
     }

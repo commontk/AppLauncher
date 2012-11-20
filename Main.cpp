@@ -75,12 +75,14 @@ int appLauncherMain(int argc, char** argv)
 
   QScopedPointer<ctkAppLauncher> appLauncher(new ctkAppLauncher);
   appLauncher->setArguments(appArguments.arguments());
-  bool exec = appLauncher->initialize(launcherFile.absoluteFilePath());
-  exec = appLauncher->configure() && exec;
-
-  if (!exec)
+  if (!appLauncher->initialize(launcherFile.absoluteFilePath()))
     {
-    return EXIT_SUCCESS;
+    return EXIT_FAILURE;
+    }
+  int status = appLauncher->configure();
+  if (status != ctkAppLauncher::Continue)
+    {
+    return status == ctkAppLauncher::ExitWithSuccess ? EXIT_SUCCESS : EXIT_FAILURE;
     }
 
   QScopedPointer<QCoreApplication> app;

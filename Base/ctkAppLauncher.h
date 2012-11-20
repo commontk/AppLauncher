@@ -51,9 +51,10 @@ public:
   /// Configure the AppLauncher by first initializing the arguments (see
   /// initialize()) and then read settings from ini file and parse arguments
   /// arguments from command line.
-  /// Return true if the application must be launched, false otherwise.
+  /// Return ProcessArgumentsStatus::Continue if the application must be launched,
+  /// or either ProcessArgumentsStatus::ExitWithError or ProcessArgumentsStatus::ExitWithSuccess otherwise.
   /// \sa initialize(), setArguments(), startLauncher()
-  bool configure();
+  int configure();
 
   /// Set the launcher application and its arguments
   /// \sa setArguments()
@@ -115,7 +116,7 @@ public:
   /// passed to the launcher, launcher settings, etc ...
   bool verbose()const;
 
-  void generateTemplate();
+  bool generateTemplate();
 
 public slots:
 

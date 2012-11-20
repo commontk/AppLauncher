@@ -30,6 +30,11 @@ print_command_as_string("${command}")
 
 if(NOT ${ev} STREQUAL ${expected_error_msg})
   message(FATAL_ERROR "Since ${launcher_name} was started without any setting file or "
-                      " parameter, it should have failed to start.")
+                      " parameter, it should have failed to start printing the expected "
+                      " error message.")
 endif()
 
+if(NOT ${rv} EQUAL 1)
+  message(FATAL_ERROR "Since ${launcher_name} was started without any setting file or "
+                      " parameter, it should have failed to start with exit code of 1")
+endif()
