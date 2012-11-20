@@ -23,12 +23,6 @@ size=1
 set(PRINT_COMMAND 0)
 
 # --------------------------------------------------------------------------
-# Delete settings file if it exists
-execute_process(
-  COMMAND ${CMAKE_COMMAND} -E remove -f ${launcher}LauncherSettings.ini
-  )
-
-# --------------------------------------------------------------------------
 # TestNoSplashScreen - Check if launcher can work in no DISPLAY environment
 set(command ${launcher_exe} --launcher-no-splash )
 execute_process(
