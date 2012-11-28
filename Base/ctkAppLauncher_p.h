@@ -34,11 +34,19 @@ public:
   /// \sa ctkAppLauncher::setApplication
   void exit(int exitCode);
 
+  /// Return additional settings directory associated with the \a ApplicationOrganization
+  /// read from the main settings.
+  /// The location of the additional settings directory is expected to match the following
+  /// path: path/to/settings/<OrganisationName|DomainName>/
+  QString additionalSettingsDir()const;
+
+  QString findUserAdditionalSettings()const;
+
   enum SettingsType
     {
     RegularSettings = 0,
-    AdditionalSettings
-    //AlternativeSettings
+    AdditionalSettings,
+    UserAdditionalSettings
     };
 
   bool readSettings(const QString& fileName, int settingsType);
@@ -49,6 +57,9 @@ public:
   bool processSplashPathArgument();
   bool processScreenHideDelayMsArgument();
   bool processAdditionalSettingsArgument();
+
+  /// \sa ctkAppLauncher::findUserAdditionalSettings()
+  bool processUserAdditionalSettings();
 
   bool extractLauncherNameAndDir(const QString& applicationFilePath);
 
@@ -111,6 +122,11 @@ public:
   QString                         LauncherDir;
   QStringList                     LauncherSettingSubDirs;
   bool                            ValidSettingsFile;
+  QString                         OrganizationName;
+  QString                         OrganizationDomain;
+  QString                         ApplicationName;
+  QString                         ApplicationRevision;
+  QString                         UserAdditionalSettingsFileBaseName;
   QString                         LauncherAdditionalHelpShortArgument;
   QString                         LauncherAdditionalHelpLongArgument;
   QStringList                     LauncherAdditionalNoSplashArguments;
