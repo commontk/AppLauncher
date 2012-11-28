@@ -24,6 +24,7 @@
 // --------------------------------------------------------------------------
 ctkAppLauncherInternal::ctkAppLauncherInternal()
 {
+  QSettings::setDefaultFormat(QSettings::IniFormat);
   this->LauncherStarting = false;
   this->Application = 0;
   this->Initialized = false;
@@ -78,6 +79,34 @@ void ctkAppLauncherInternal::exit(int exitCode)
 }
 
 // --------------------------------------------------------------------------
+QString ctkAppLauncherInternal::additionalSettingsDir()const
+{
+  QFileInfo fileInfo(QSettings().fileName());
+  return fileInfo.path();
+}
+
+// --------------------------------------------------------------------------
+QString ctkAppLauncherInternal::findUserAdditionalSettings()const
+{
+  QString prefix = QFileInfo(QSettings().fileName()).completeBaseName();
+  QString suffix;
+  if (!this->ApplicationRevision.isEmpty())
+    {
+    suffix = "-" + this->ApplicationRevision;
+    }
+  QString fileName =
+      QDir(this->additionalSettingsDir()).filePath(QString("%1%2%3.ini").
+                                                   arg(prefix).
+                                                   arg(this->UserAdditionalSettingsFileBaseName).
+                                                   arg(suffix));
+  if (QFile::exists(fileName))
+    {
+    return fileName;
+    }
+  return QString();
+}
+
+// --------------------------------------------------------------------------
 bool ctkAppLauncherInternal::processSplashPathArgument()
 {
   if (this->LauncherSplashImagePath.isEmpty())
@@ -125,9 +154,23 @@ bool ctkAppLauncherInternal::processAdditionalSettingsArgument()
     return false;
     }
 
-  this->readSettings(additionalSettings, Self::AdditionalSettings);
+  return this->readSettings(additionalSettings, Self::AdditionalSettings);
+}
 
-  return true;
+// --------------------------------------------------------------------------
+bool ctkAppLauncherInternal::processUserAdditionalSettings()
+{
+  if (this->ParsedArgs.value("launcher-ignore-user-additional-settings").toBool())
+    {
+    return true;
+    }
+
+  QString additionalSettings = this->findUserAdditionalSettings();
+  if(additionalSettings.isEmpty())
+    {
+    return true;
+    }
+  return this->readSettings(additionalSettings, Self::UserAdditionalSettings);
 }
 
 // --------------------------------------------------------------------------
@@ -390,6 +433,10 @@ bool ctkAppLauncherInternal::readSettings(const QString& fileName, int settingsT
     {
     settingsTypeDesc = QLatin1String(" additional");
     }
+  if(settingsType == Self::UserAdditionalSettings)
+    {
+    settingsTypeDesc = QLatin1String(" user additional");
+    }
 
   // Check if settings file exists
   if (!QFile::exists(fileName))
@@ -429,6 +476,9 @@ bool ctkAppLauncherInternal::readSettings(const QString& fileName, int settingsT
   bool noSplashScreen = settings.value("launcherNoSplashScreen", false).toBool();
   this->LauncherNoSplashScreen = noSplashScreen;
 
+  this->UserAdditionalSettingsFileBaseName =
+      settings.value("userAdditionalSettingsFileBaseName", "AdditionalLauncherSettings").toString();
+
   // Read default application to launch
   QHash<QString, QString> applicationGroup = ctk::readKeyValuePairs(settings, "Application");
   if (applicationGroup.contains("path"))
@@ -438,6 +488,27 @@ bool ctkAppLauncherInternal::readSettings(const QString& fileName, int settingsT
   if (applicationGroup.contains("arguments"))
     {
     this->DefaultApplicationToLaunchArguments = applicationGroup["arguments"];
+    }
+  if(settingsType == Self::RegularSettings)
+    {
+    // Read revision, organization and application names
+    this->OrganizationName = applicationGroup["organizationName"];
+    this->OrganizationDomain = applicationGroup["organizationDomain"];
+    this->ApplicationName = applicationGroup["name"];
+    this->ApplicationRevision = applicationGroup["revision"];
+
+    if (!this->OrganizationName.isEmpty())
+      {
+      qApp->setOrganizationName(this->OrganizationName);
+      }
+    if (!this->OrganizationDomain.isEmpty())
+      {
+      qApp->setOrganizationDomain(this->OrganizationDomain);
+      }
+    if (!this->ApplicationName.isEmpty())
+      {
+      qApp->setApplicationName(this->ApplicationName);
+      }
     }
 
   // Read additional launcher arguments
@@ -731,6 +802,8 @@ bool ctkAppLauncher::initialize(QString launcherFilePath)
                      "Launcher will print environment variables to be set, then exit");
   parser.addArgument("launcher-additional-settings", "", QVariant::String,
                      "Additional settings file to consider");
+  parser.addArgument("launcher-ignore-user-additional-settings", "", QVariant::Bool,
+                     "Ignore additional user settings");
   parser.addArgument("launcher-generate-template", "", QVariant::Bool,
                      "Generate an example of setting file");
 
@@ -780,7 +853,13 @@ int ctkAppLauncher::processArguments()
     return Self::ExitWithError;
     }
 
-  if (this->Internal->LauncherStarting)
+  bool reportInfo = this->Internal->LauncherStarting
+      || this->Internal->ParsedArgs.value("launcher-help").toBool()
+      || this->Internal->ParsedArgs.value("launcher-version").toBool()
+      || this->Internal->ParsedArgs.value("launcher-dump-environment").toBool()
+      || this->Internal->ParsedArgs.value("launcher-generate-template").toBool();
+
+  if (reportInfo)
     {
     this->Internal->reportInfo(
         QString("LauncherDir [%1]").arg(this->Internal->LauncherDir));
@@ -789,7 +868,25 @@ int ctkAppLauncher::processArguments()
         QString("LauncherName [%1]").arg(this->Internal->LauncherName));
 
     this->Internal->reportInfo(
-        QString("SettingsFileName [%1]").arg(this->findSettingFile()));
+        QString("OrganizationDomain [%1]").arg(this->Internal->OrganizationDomain));
+
+    this->Internal->reportInfo(
+        QString("OrganizationName [%1]").arg(this->Internal->OrganizationName));
+
+    this->Internal->reportInfo(
+        QString("ApplicationName [%1]").arg(this->Internal->ApplicationName));
+
+    this->Internal->reportInfo(
+        QString("ApplicationRevision [%1]").arg(this->Internal->ApplicationRevision));
+
+    this->Internal->reportInfo(
+        QString("SettingsFileName [%1]").arg(this->findSettingsFile()));
+
+    this->Internal->reportInfo(
+        QString("AdditionalSettingsDir [%1]").arg(this->Internal->additionalSettingsDir()));
+
+    this->Internal->reportInfo(
+        QString("AdditionalSettingsFileName [%1]").arg(this->findUserAdditionalSettings()));
     }
 
   if (this->Internal->ParsedArgs.value("launcher-help").toBool())
@@ -802,6 +899,11 @@ int ctkAppLauncher::processArguments()
     {
     this->displayVersion();
     return Self::ExitWithSuccess;
+    }
+
+  if (!this->Internal->processUserAdditionalSettings())
+    {
+    return Self::ExitWithError;
     }
 
   if (!this->Internal->processAdditionalSettingsArgument())
@@ -863,7 +965,7 @@ int ctkAppLauncher::processArguments()
 }
 
 // --------------------------------------------------------------------------
-QString ctkAppLauncher::findSettingFile()const
+QString ctkAppLauncher::findSettingsFile()const
 {
   if (!this->Internal->Initialized)
     {
@@ -881,6 +983,12 @@ QString ctkAppLauncher::findSettingFile()const
       }
     }
   return QString();
+}
+
+// --------------------------------------------------------------------------
+QString ctkAppLauncher::findUserAdditionalSettings()const
+{
+  return this->Internal->findUserAdditionalSettings();
 }
 
 // --------------------------------------------------------------------------
@@ -935,12 +1043,6 @@ bool ctkAppLauncher::writeSettings(const QString& outputFilePath)
   ctk::writeKeyValuePairs(settings, this->Internal->MapOfEnvVars, "EnvironmentVariables");
 
   return true;
-}
-
-// --------------------------------------------------------------------------
-bool ctkAppLauncher::readAdditonalSettings(const QString& fileName)
-{
-  return this->Internal->readSettings(fileName, ctkAppLauncherInternal::AdditionalSettings);
 }
 
 // --------------------------------------------------------------------------
@@ -1061,7 +1163,7 @@ int ctkAppLauncher::configure()
     return ctkAppLauncher::ExitWithError;
     }
 
-  QString settingFileName = this->findSettingFile();
+  QString settingFileName = this->findSettingsFile();
 
   this->Internal->ValidSettingsFile = this->readSettings(settingFileName);
 
