@@ -36,16 +36,17 @@ set(expected_msg "Usage
   CTKAppLauncher [options]
 
 Options
-  --launcher-help                  Display help
-  --launcher-version               Show launcher version information
-  --launcher-verbose               Verbose mode
-  --launch                         Specify the application to launch
-  --launcher-detach                Launcher will NOT wait for the application to finish
-  --launcher-no-splash             Hide launcher splash
-  --launcher-timeout               Specify the time in second before the launcher kills the application. -1 means no timeout (default: -1)
-  --launcher-dump-environment      Launcher will print environment variables to be set, then exit
-  --launcher-additional-settings   Additional settings file to consider
-  --launcher-generate-template     Generate an example of setting file
+  --launcher-help                              Display help
+  --launcher-version                           Show launcher version information
+  --launcher-verbose                           Verbose mode
+  --launch                                     Specify the application to launch
+  --launcher-detach                            Launcher will NOT wait for the application to finish
+  --launcher-no-splash                         Hide launcher splash
+  --launcher-timeout                           Specify the time in second before the launcher kills the application. -1 means no timeout (default: -1)
+  --launcher-dump-environment                  Launcher will print environment variables to be set, then exit
+  --launcher-additional-settings               Additional settings file to consider
+  --launcher-ignore-user-additional-settings   Ignore additional user settings
+  --launcher-generate-template                 Generate an example of setting file
 ")
 
 if(NOT ${expected_msg} STREQUAL ${ov})
