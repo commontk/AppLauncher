@@ -6,7 +6,7 @@ include(${TEST_BINARY_DIR}/AppLauncherTestPrerequisites.cmake)
 # Debug flags - Set to True to display the command as string
 set(PRINT_COMMAND 0)
 
-set(sys_env_var_name "CTKAPPLAUNCHER_TEST_ENV_EXPRESSION")
+set(sys_env_var_name "CTKAPPLAUNCHER_TEST_ENV_EXPRESSION_NOTFOUND")
 set(sys_env_var_value "Powder as in snow")
 set(regular_env_var_name_1 "SOMETHING_NICE")
 set(regular_env_var_value_1 "Chocolate")
@@ -15,7 +15,7 @@ set(regular_env_var_value_2 "Rock climbing !")
 set(regular_env_var_name_3 "SOMETHING_GREAT")
 set(regular_env_var_value_3 "<env:${sys_env_var_name}>")
 
-set(ENV{${sys_env_var_name}} ${sys_env_var_value})
+unset(ENV{${sys_env_var_name}})
 
 # --------------------------------------------------------------------------
 # Configure settings file
@@ -59,9 +59,9 @@ set(expected_regular_env_var_value_1 "${regular_env_var_value_1}")
 set(expected_regular_env_var_name_2 "${regular_env_var_name_2}")
 set(expected_regular_env_var_value_2 "${regular_env_var_value_2}")
 set(expected_regular_env_var_name_3 "${regular_env_var_name_3}")
-set(expected_regular_env_var_value_3 "${sys_env_var_value}")
+set(expected_regular_env_var_value_3 "<env-NOTFOUND:${sys_env_var_name}>")
 
-set(expected_msg "${expected_regular_env_var_name_1}=${expected_regular_env_var_value_1}\n${expected_regular_env_var_name_2}=${expected_regular_env_var_value_2}\n${expected_regular_env_var_name_3}=${expected_regular_env_var_value_3}")
+set(expected_msg "${expected_regular_env_var_name_1}=${expected_regular_env_var_value_1}\n${expected_regular_env_var_name_2}=${expected_regular_env_var_value_2}\n${expected_regular_env_var_name_3}=${expected_env_var_value_3}")
 string(REGEX MATCH ${expected_msg} current_msg ${ov})
 if(NOT "${expected_msg}" STREQUAL "${current_msg}")
   message(FATAL_ERROR "Failed to pass environment variable from ${launcher_name} "

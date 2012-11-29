@@ -69,6 +69,7 @@ public:
   ///  <li>&lt;APPLAUNCHER_DIR&gt; -> LauncherDir</li>
   ///  <li>&lt;APPLAUNCHER_NAME&gt; -> LauncherName</li>
   ///  <li>&lt;PATHSEP&gt; -> PathSep</li>
+  ///  <li>&lt;env:VARNAME&gt; -> If any, expand to corresponding system environment variable</li>
   /// </ul>
   QString expandValue(const QString& value);
 
@@ -140,6 +141,7 @@ public:
   QString                         LibraryPathVariableName;
   QSharedPointer<QSplashScreen>   SplashScreen;
   QScopedPointer<QPixmap>         SplashPixmap;
+  QProcessEnvironment             SystemEnvironment;
 
   /// Extra 'application to launch'
   QString                                          ExtraApplicationToLaunchLongArgument;
