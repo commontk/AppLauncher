@@ -101,6 +101,8 @@ int main(int argc, char** argv)
       std::cout << "SOMETHING_NICE=" << (env1 ? env1 : "NULL") << std::endl;
       char * env2 = getenv("SOMETHING_AWESOME");
       std::cout << "SOMETHING_AWESOME=" << (env2 ? env2 : "NULL") << std::endl;
+      char * env3 = getenv("SOMETHING_GREAT");
+      std::cout << "SOMETHING_GREAT=" << (env3 ? env3 : "NULL") << std::endl;
       }
     else if (argName == "--print-current-working-directory")
       {

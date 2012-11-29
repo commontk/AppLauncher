@@ -1,12 +1,13 @@
 
 //Qt includes
+#include <QApplication>
+#include <QDebug>
 #include <QDir>
 #include <QFile>
 #include <QFileInfo>
 #include <QProcessEnvironment>
-#include <QDebug>
+#include <QRegExp>
 #include <QTimer>
-#include <QApplication>
 
 // CTK includes
 #include "ctkAppLauncher.h"
@@ -37,6 +38,7 @@ ctkAppLauncherInternal::ctkAppLauncherInternal()
   this->ValidSettingsFile = false;
   this->LongArgPrefix = "--";
   this->ShortArgPrefix = "-";
+  this->SystemEnvironment = QProcessEnvironment::systemEnvironment();
 
 #if defined(WIN32) || defined(_WIN32)
   this->PathSep = ";";
@@ -336,8 +338,7 @@ bool ctkAppLauncherInternal::disableSplash() const
 // --------------------------------------------------------------------------
 QString ctkAppLauncherInternal::searchPaths(const QString& executableName, const QStringList& extensions)
 {
-  QProcessEnvironment environment = QProcessEnvironment::systemEnvironment();
-  QStringList paths = environment.value("PATH").split(this->PathSep);
+  QStringList paths = this->SystemEnvironment.value("PATH").split(this->PathSep);
   paths = this->ListOfPaths + paths;
   foreach(const QString& path, paths)
     {
@@ -416,6 +417,21 @@ QString ctkAppLauncherInternal::expandValue(const QString& value)
   foreach(const QString& key, keyValueMap.keys())
     {
     updatedValue.replace(key, keyValueMap.value(key), Qt::CaseInsensitive);
+    }
+  // Consider environment expression
+  QRegExp regex("\\<env\\:([a-zA-Z0-9\\-\\_]+)\\>");
+  int pos = 0;
+  while ((pos = regex.indexIn(value, pos)) != -1)
+    {
+    pos += regex.matchedLength();
+    Q_ASSERT(regex.captureCount() == 1);
+    QString envVarName = regex.cap(1);
+    QString envVarValue = QString("<env-NOTFOUND:%1>").arg(envVarName);
+    if (this->SystemEnvironment.contains(envVarName))
+      {
+      envVarValue = this->SystemEnvironment.value(envVarName);
+      }
+    updatedValue.replace(QString("<env:%1>").arg(envVarName), envVarValue, Qt::CaseInsensitive);
     }
   return updatedValue;
 }
@@ -582,9 +598,9 @@ void ctkAppLauncherInternal::buildEnvironment(QProcessEnvironment &env)
     it.toBack() ;
     while(it.hasPrevious())
       {
-      QString path = it.previous();
+      QString path = this->expandValue(it.previous());
       this->reportInfo(QString("Setting library path [%1]").arg(path));
-      env.insert(libPathVarName, this->expandValue(path) + this->PathSep + env.value(libPathVarName));
+      env.insert(libPathVarName, path + this->PathSep + env.value(libPathVarName));
       }
   }
 
@@ -594,18 +610,18 @@ void ctkAppLauncherInternal::buildEnvironment(QProcessEnvironment &env)
     it.toBack() ;
     while(it.hasPrevious())
       {
-      QString path = it.previous();
+      QString path = this->expandValue(it.previous());
       this->reportInfo(QString("Setting path [%1]").arg(path));
-      env.insert("PATH", this->expandValue(path) + this->PathSep + env.value("PATH"));
+      env.insert("PATH", path + this->PathSep + env.value("PATH"));
       }
   }
 
   // Set additional environment variables
   foreach(const QString& key, this->MapOfEnvVars.keys())
     {
-    QString value = this->MapOfEnvVars[key];
+    QString value = this->expandValue(this->MapOfEnvVars[key]);
     this->reportInfo(QString("Setting env. variable [%1]:%2").arg(key).arg(value));
-    env.insert(key, this->expandValue(value));
+    env.insert(key, value);
     }
 }
 
@@ -614,7 +630,7 @@ void ctkAppLauncherInternal::runProcess()
 {
   this->Process.setProcessChannelMode(QProcess::ForwardedChannels);
 
-  QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
+  QProcessEnvironment env = this->SystemEnvironment;
 
   this->buildEnvironment(env);
 
