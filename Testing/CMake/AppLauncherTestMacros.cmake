@@ -24,7 +24,7 @@ endfunction()
 
 # Extract application settings value
 function(extract_application_settings_value settings_name settings_value_varname)
-  set(command ${launcher_exe} --launcher-no-splash --launcher-verbose --launcher-help)
+  set(command ${launcher_exe} --launcher-no-splash --launcher-verbose --launcher-dump-environment ${ARGN})
   execute_process(
     COMMAND ${command}
     WORKING_DIRECTORY ${launcher_binary_dir}

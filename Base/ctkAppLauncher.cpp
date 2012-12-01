@@ -461,23 +461,20 @@ bool ctkAppLauncherInternal::readSettings(const QString& fileName, int settingsT
     }
 
   // Read default launcher image path
-  QString splashImagePath = settings.value("launcherSplashImagePath", ":Images/ctk-splash.png").toString();
-  if (!splashImagePath.isEmpty())
+  QVariant splashImagePathVariant = settings.value("launcherSplashImagePath");
+  if (splashImagePathVariant.isValid() && !splashImagePathVariant.toString().isEmpty())
     {
-    this->DefaultLauncherSplashImagePath = splashImagePath;
+    this->DefaultLauncherSplashImagePath = splashImagePathVariant.toString();
     }
 
-  int splashScreenHideDelayMs = settings.value("launcherSplashScreenHideDelayMs", 0).toInt();
-  if (splashScreenHideDelayMs != 0)
+  QVariant splashScreenHideDelayMsVariant = settings.value("launcherSplashScreenHideDelayMs");
+  if (splashScreenHideDelayMsVariant.isValid() && splashScreenHideDelayMsVariant.toInt() != 0)
     {
-    this->DefaultLauncherSplashScreenHideDelayMs = splashScreenHideDelayMs;
+    this->DefaultLauncherSplashScreenHideDelayMs = splashScreenHideDelayMsVariant.toInt();
     }
 
   bool noSplashScreen = settings.value("launcherNoSplashScreen", false).toBool();
   this->LauncherNoSplashScreen = noSplashScreen;
-
-  this->UserAdditionalSettingsFileBaseName =
-      settings.value("userAdditionalSettingsFileBaseName", "AdditionalLauncherSettings").toString();
 
   // Read default application to launch
   QHash<QString, QString> applicationGroup = ctk::readKeyValuePairs(settings, "Application");
@@ -491,6 +488,9 @@ bool ctkAppLauncherInternal::readSettings(const QString& fileName, int settingsT
     }
   if(settingsType == Self::RegularSettings)
     {
+    this->UserAdditionalSettingsFileBaseName =
+        settings.value("userAdditionalSettingsFileBaseName", "AdditionalLauncherSettings").toString();
+
     // Read revision, organization and application names
     this->OrganizationName = applicationGroup["organizationName"];
     this->OrganizationDomain = applicationGroup["organizationDomain"];
@@ -887,6 +887,18 @@ int ctkAppLauncher::processArguments()
 
     this->Internal->reportInfo(
         QString("AdditionalSettingsFileName [%1]").arg(this->findUserAdditionalSettings()));
+
+    this->Internal->reportInfo(
+        QString("UserAdditionalSettingsFileBaseName [%1]").arg(this->Internal->UserAdditionalSettingsFileBaseName));
+
+    this->Internal->reportInfo(
+        QString("AdditionalLauncherHelpShortArgument [%1]").arg(this->Internal->LauncherAdditionalHelpShortArgument));
+
+    this->Internal->reportInfo(
+        QString("AdditionalLauncherHelpLongArgument [%1]").arg(this->Internal->LauncherAdditionalHelpLongArgument));
+
+    this->Internal->reportInfo(
+        QString("AdditionalLauncherNoSplashArguments [%1]").arg(this->Internal->LauncherAdditionalNoSplashArguments.join(",")));
     }
 
   if (this->Internal->ParsedArgs.value("launcher-help").toBool())
@@ -909,12 +921,6 @@ int ctkAppLauncher::processArguments()
   if (!this->Internal->processAdditionalSettingsArgument())
     {
     return Self::ExitWithError;
-    }
-
-  if (this->Internal->ParsedArgs.value("launcher-dump-environment").toBool())
-    {
-      this->displayEnvironment();
-      return Self::ExitWithSuccess;
     }
 
   this->Internal->DetachApplicationToLaunch =
@@ -959,6 +965,12 @@ int ctkAppLauncher::processArguments()
   if (!this->Internal->processApplicationToLaunchArgument())
     {
     return Self::ExitWithError;
+    }
+
+  if (this->Internal->ParsedArgs.value("launcher-dump-environment").toBool())
+    {
+    this->displayEnvironment();
+    return Self::ExitWithSuccess;
     }
 
   return Self::Continue;
