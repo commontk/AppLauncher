@@ -55,13 +55,13 @@ ctkAppLauncherInternal::ctkAppLauncherInternal()
 }
 
 // --------------------------------------------------------------------------
-void ctkAppLauncherInternal::reportError(const QString& msg)
+void ctkAppLauncherInternal::reportError(const QString& msg) const
 {
   std::cerr << "error: " << qPrintable(msg) << std::endl;
 }
 
 // --------------------------------------------------------------------------
-void ctkAppLauncherInternal::reportInfo(const QString& msg)
+void ctkAppLauncherInternal::reportInfo(const QString& msg) const
 {
   if (this->verbose())
     {

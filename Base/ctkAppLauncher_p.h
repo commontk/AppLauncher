@@ -25,10 +25,10 @@ public:
   typedef ctkAppLauncherInternal Self;
 
   /// Display error on Standard Error
-  void reportError(const QString& msg);
+  void reportError(const QString& msg)const;
 
   /// Display status on Standard Output
-  void reportInfo(const QString& msg);
+  void reportInfo(const QString& msg)const;
 
   /// Exit the application if the application has been set.
   /// \sa ctkAppLauncher::setApplication
