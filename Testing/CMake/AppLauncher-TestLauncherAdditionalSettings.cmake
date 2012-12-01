@@ -48,7 +48,7 @@ ${common_env_var2_name}=${common_env_var2_value_1}
 
 # --------------------------------------------------------------------------
 # Debug flags - Set to True to display the command as string
-set(PRINT_COMMAND 1)
+set(PRINT_COMMAND 0)
 
 # --------------------------------------------------------------------------
 # Extract application settings directory
