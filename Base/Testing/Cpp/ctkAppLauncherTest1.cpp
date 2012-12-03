@@ -78,6 +78,8 @@ void ctkAppLauncherTest1er::testDisplayHelp_data()
            "variables to be set, then exit\n"
            "  --launcher-additional-settings               Additional settings file to consider\n"
            "  --launcher-ignore-user-additional-settings   Ignore additional user settings\n"
+           "  --launcher-generate-exec-wrapper-script      Generate executable wrapper script "
+           "allowing to set the environment\n"
            "  --launcher-generate-template                 Generate an example of setting file\n");
 }
 

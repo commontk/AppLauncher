@@ -129,4 +129,5 @@ Options
   --launcher-dump-environment                  Launcher will print environment variables to be set, then exit
   --launcher-additional-settings               Additional settings file to consider
   --launcher-ignore-user-additional-settings   Ignore additional user settings
+  --launcher-generate-exec-wrapper-script      Generate executable wrapper script allowing to set the environment
   --launcher-generate-template                 Generate an example of setting file")
