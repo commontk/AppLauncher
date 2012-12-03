@@ -17,7 +17,7 @@ set(env_var_name_2 "SOMETHING_AWESOME")
 set(env_var_value_2 "Rock climbing !")
 file(WRITE "${launcher}LauncherSettings.ini" "
 [Application]
-path=${application}
+path=
 
 [LibraryPaths]
 1\\path=${library_path}
