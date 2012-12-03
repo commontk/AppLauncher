@@ -33,6 +33,8 @@ public:
   /// Display environment variables on standard output
   void displayEnvironment(std::ostream &output = std::cout);
 
+  bool generateExecWrapperScript();
+
   /// Display help string on standard output
   void displayHelp(std::ostream &output = std::cout);
 

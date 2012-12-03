@@ -28,7 +28,7 @@ public:
   void reportError(const QString& msg)const;
 
   /// Display status on Standard Output
-  void reportInfo(const QString& msg)const;
+  void reportInfo(const QString& msg, bool force = false)const;
 
   /// Exit the application if the application has been set.
   /// \sa ctkAppLauncher::setApplication

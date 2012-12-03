@@ -7,6 +7,7 @@
 #include <QFileInfo>
 #include <QProcessEnvironment>
 #include <QRegExp>
+#include <QTemporaryFile>
 #include <QTimer>
 
 // CTK includes
@@ -63,9 +64,9 @@ void ctkAppLauncherInternal::reportError(const QString& msg) const
 }
 
 // --------------------------------------------------------------------------
-void ctkAppLauncherInternal::reportInfo(const QString& msg) const
+void ctkAppLauncherInternal::reportInfo(const QString& msg, bool force) const
 {
-  if (this->verbose())
+  if (this->verbose() || force)
     {
     std::cout << "info: " << qPrintable(msg) << std::endl;
     }
@@ -745,6 +746,77 @@ void ctkAppLauncher::displayEnvironment(std::ostream &output)
     {
     output << qPrintable(envArg) << std::endl;
     }
+  if(envAsList.isEmpty())
+    {
+    output << "(No environment to display)" << std::endl;
+    }
+}
+
+// --------------------------------------------------------------------------
+bool ctkAppLauncher::generateExecWrapperScript()
+{
+  if (this->Internal->LauncherName.isEmpty())
+    {
+    return false;
+    }
+  QProcessEnvironment env;
+  env.insert("PATH", "$PATH");
+  env.insert(this->Internal->LibraryPathVariableName, "$" + this->Internal->LibraryPathVariableName);
+
+  this->Internal->buildEnvironment(env);
+  QStringList envAsList = env.toStringList();
+  envAsList.sort();
+
+  QStringList output;
+
+#ifdef Q_OS_LINUX
+  output << "#! /usr/bin/env bash\n";
+  QString scriptComment("#");
+  QString exportCmd("declare -x");
+  QString scriptExtension("sh");
+#elif Q_OS_WIN32
+  QString scriptComment("::");
+  QString exportCmd("@set");
+  QString scriptExtension("bat");
+#endif
+
+  output << QString("%1 This script has been generated using %2 launcher %3\n").
+            arg(scriptComment).
+            arg(this->Internal->LauncherName).
+            arg(CTKAppLauncher_VERSION);
+
+  output << QString("%1 WARNING Usage of --launcher-generate-exec-wrapper-script is experimental and not tested.").
+            arg(scriptComment);
+  output << QString("%1 WARNING Community contribution are welcome. See https://github.com/commontk/AppLauncher/issues/36\n").
+            arg(scriptComment);
+
+  foreach(const QString& env, envAsList)
+    {
+    output << QString("%1 \"%2\"").arg(exportCmd).arg(env);
+    }
+
+#ifdef Q_OS_LINUX
+  output << "if [ \"$#\" -gt \"0\" ]";
+  output << "then";
+  output << "  exec \"$@\"";
+  output << "fi";
+#endif
+
+  QTemporaryFile launcherScript(QDir::temp().filePath("Slicer-XXXXXX.%1").arg(scriptExtension));
+  launcherScript.setAutoRemove(false);
+  if (!launcherScript.open())
+    {
+    this->Internal->reportError("Failed to generate executable wrapper script.");
+    return false;
+    }
+  QTextStream out(&launcherScript);
+  out << output.join("\n");
+
+  this->Internal->reportInfo(
+        QString("Launcher script generated [%1]").arg(launcherScript.fileName()),
+        /* force= */ true);
+
+  return true;
 }
 
 // --------------------------------------------------------------------------
@@ -820,6 +892,8 @@ bool ctkAppLauncher::initialize(QString launcherFilePath)
                      "Additional settings file to consider");
   parser.addArgument("launcher-ignore-user-additional-settings", "", QVariant::Bool,
                      "Ignore additional user settings");
+  parser.addArgument("launcher-generate-exec-wrapper-script", "", QVariant::Bool,
+                     "Generate executable wrapper script allowing to set the environment");
   parser.addArgument("launcher-generate-template", "", QVariant::Bool,
                      "Generate an example of setting file");
 
@@ -873,7 +947,8 @@ int ctkAppLauncher::processArguments()
       || this->Internal->ParsedArgs.value("launcher-help").toBool()
       || this->Internal->ParsedArgs.value("launcher-version").toBool()
       || this->Internal->ParsedArgs.value("launcher-dump-environment").toBool()
-      || this->Internal->ParsedArgs.value("launcher-generate-template").toBool();
+      || this->Internal->ParsedArgs.value("launcher-generate-template").toBool()
+      || this->Internal->ParsedArgs.value("launcher-generate-exec-wrapper-script").toBool();
 
   if (reportInfo)
     {
@@ -976,6 +1051,12 @@ int ctkAppLauncher::processArguments()
   if (!this->Internal->processExtraApplicationToLaunchArgument(unparsedArgs))
     {
     return Self::ExitWithError;
+    }
+
+  if (this->Internal->ParsedArgs.value("launcher-generate-exec-wrapper-script").toBool())
+    {
+    bool success = this->generateExecWrapperScript();
+    return success ? Self::ExitWithSuccess : Self::ExitWithError;
     }
 
   if (this->Internal->ParsedArgs.value("launcher-dump-environment").toBool())
