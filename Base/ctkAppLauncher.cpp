@@ -978,15 +978,15 @@ int ctkAppLauncher::processArguments()
     return Self::ExitWithError;
     }
 
-  if (!this->Internal->processApplicationToLaunchArgument())
-    {
-    return Self::ExitWithError;
-    }
-
   if (this->Internal->ParsedArgs.value("launcher-dump-environment").toBool())
     {
     this->displayEnvironment();
     return Self::ExitWithSuccess;
+    }
+
+  if (!this->Internal->processApplicationToLaunchArgument())
+    {
+    return Self::ExitWithError;
     }
 
   return Self::Continue;
