@@ -774,7 +774,7 @@ bool ctkAppLauncher::generateExecWrapperScript()
   QString scriptComment("#");
   QString exportCmd("declare -x");
   QString scriptExtension("sh");
-#elif Q_OS_WIN32
+#elif defined(Q_OS_WIN32)
   QString scriptComment("::");
   QString exportCmd("@set");
   QString scriptExtension("bat");
