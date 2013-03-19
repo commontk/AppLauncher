@@ -769,7 +769,7 @@ bool ctkAppLauncher::generateExecWrapperScript()
 
   QStringList output;
 
-#if defined(Q_OS_LINUX) || defined(Q_OS_MAC)
+#if defined(Q_OS_LINUX) || defined(Q_OS_MAC) || defined(Q_OS_SOLARIS)
   output << "#! /usr/bin/env bash\n";
   QString scriptComment("#");
   QString exportCmd("declare -x");

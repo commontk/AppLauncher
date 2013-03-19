@@ -24,8 +24,8 @@ protected:
   QScopedPointer<ctkChar2DArrayPrivate> d_ptr;
 
 private:
-  Q_DECLARE_PRIVATE(ctkChar2DArray);
-  Q_DISABLE_COPY(ctkChar2DArray);
+  Q_DECLARE_PRIVATE(ctkChar2DArray)
+  Q_DISABLE_COPY(ctkChar2DArray)
 };
 
 // --------------------------------------------------------------------------
@@ -82,8 +82,8 @@ protected:
   QScopedPointer<ctkAppArgumentsPrivate> d_ptr;
 
 private:
-  Q_DECLARE_PRIVATE(ctkAppArguments);
-  Q_DISABLE_COPY(ctkAppArguments);
+  Q_DECLARE_PRIVATE(ctkAppArguments)
+  Q_DISABLE_COPY(ctkAppArguments)
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(ctkAppArguments::ArgToFilterOptions);
