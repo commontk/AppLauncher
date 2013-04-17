@@ -329,7 +329,8 @@ bool ctkAppLauncherInternal::disableSplash() const
   if (this->ParsedArgs.value("launcher-no-splash").toBool()
       || hasNoSplashArgument
       || !this->ExtraApplicationToLaunch.isEmpty()
-      || this->LauncherNoSplashScreen)
+      || this->LauncherNoSplashScreen
+      || !this->ParsedArgs.value("launch").toString().isEmpty())
     {
     return true;
     }
