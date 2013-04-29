@@ -862,6 +862,11 @@ bool ctkAppLauncher::initialize(QString launcherFilePath)
     return true;
     }
 
+  // Set verbose flags now so that call to "reportInfo" in "initialize" method properly
+  // display information.
+  this->Internal->ParsedArgs.insert(
+        "launcher-verbose", QVariant(this->Internal->Arguments.contains("--launcher-verbose")));
+
   if (launcherFilePath.isEmpty() && this->Internal->Application)
     {
     launcherFilePath = this->Internal->Application->applicationFilePath();
