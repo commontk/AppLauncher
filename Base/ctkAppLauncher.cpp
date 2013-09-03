@@ -354,10 +354,16 @@ QString ctkAppLauncherInternal::searchPaths(const QString& executableName, const
         }
       QDir pathAsDir(expandedPath);
       QString executablePath = pathAsDir.filePath(executableNameWithExt);
-      this->reportInfo(QString("Checking if [%1] exists in [%2]").arg(executableNameWithExt).arg(expandedPath));
+      QString msg = QString("Checking if [%1] exists in [%2]").arg(executableNameWithExt).arg(expandedPath);
+      this->reportInfo(msg);
       if (QFile::exists(executablePath))
         {
+        this->reportInfo(msg + " - Found");
         return executablePath;
+        }
+      else
+        {
+        this->reportInfo(msg + " - Not found");
         }
       }
     }
@@ -383,6 +389,28 @@ QString ctkAppLauncherInternal::trimArgumentPrefix(const QString& argument) cons
 bool ctkAppLauncherInternal::extractLauncherNameAndDir(const QString& applicationFilePath)
 {
   QFileInfo fileInfo(applicationFilePath);
+
+  // In case a symlink to the launcher is available from the PATH, resolve its location.
+  if (!fileInfo.exists())
+    {
+    QStringList paths = this->SystemEnvironment.value("PATH").split(this->PathSep);
+    foreach(const QString& path, paths)
+      {
+      QString executablePath = QDir(path).filePath(fileInfo.fileName());
+      QString msg = QString("Checking if [%1] exists in [%2]").arg(fileInfo.fileName()).arg(path);
+      this->reportInfo(msg);
+      if (QFile::exists(executablePath))
+        {
+        this->reportInfo(msg + " - Found");
+        fileInfo = QFileInfo(executablePath);
+        break;
+        }
+      else
+        {
+        this->reportInfo(msg + " - Not found");
+        }
+      }
+    }
 
   // Follow symlink if it applies
   if (fileInfo.isSymLink())
@@ -861,6 +889,11 @@ bool ctkAppLauncher::initialize(QString launcherFilePath)
     {
     return true;
     }
+
+  // Set verbose flags now so that call to "reportInfo" in "initialize" method properly
+  // display information.
+  this->Internal->ParsedArgs.insert(
+        "launcher-verbose", QVariant(this->Internal->Arguments.contains("--launcher-verbose")));
 
   if (launcherFilePath.isEmpty() && this->Internal->Application)
     {
