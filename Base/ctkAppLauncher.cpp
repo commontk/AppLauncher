@@ -630,7 +630,14 @@ void ctkAppLauncherInternal::buildEnvironment(QProcessEnvironment &env)
       {
       QString path = this->expandValue(it.previous());
       this->reportInfo(QString("Setting library path [%1]").arg(path));
-      env.insert(libPathVarName, path + this->PathSep + env.value(libPathVarName));
+      if (env.contains(libPathVarName))
+        {
+        env.insert(libPathVarName, path + this->PathSep + env.value(libPathVarName));
+        }
+      else
+        {
+        env.insert(libPathVarName, path);
+        }
       }
   }
 
@@ -642,7 +649,14 @@ void ctkAppLauncherInternal::buildEnvironment(QProcessEnvironment &env)
       {
       QString path = this->expandValue(it.previous());
       this->reportInfo(QString("Setting path [%1]").arg(path));
-      env.insert("PATH", path + this->PathSep + env.value("PATH"));
+      if (env.contains("PATH"))
+        {
+        env.insert("PATH", path + this->PathSep + env.value("PATH"));
+        }
+      else
+        {
+        env.insert("PATH", path);
+        }
       }
   }
 

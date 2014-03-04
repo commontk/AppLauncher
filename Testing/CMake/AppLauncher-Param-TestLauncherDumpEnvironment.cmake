@@ -54,14 +54,14 @@ if(rv)
 endif()
 
 set(expected_ov_lines
-  "${library_path_variable_name}=${library_path}${pathsep}${other_library_path}${pathsep}"
-  "PATH=${path_1}${pathsep}${path_2}${pathsep}"
+  "${library_path_variable_name}=${library_path}${pathsep}${other_library_path}"
+  "PATH=${path_1}${pathsep}${path_2}"
   "${env_var_name_2}=${env_var_value_2}\n"
   "${env_var_name_1}=${env_var_value_1}\n"
   )
 if(WIN32)
   set(expected_ov_lines
-    "PATH=${path_1}${pathsep}${path_2}${pathsep}${library_path}${pathsep}${other_library_path}${pathsep}"
+    "PATH=${path_1}${pathsep}${path_2}${pathsep}${library_path}${pathsep}${other_library_path}"
     "${env_var_name_2}=${env_var_value_2}\n"
     "${env_var_name_1}=${env_var_value_1}\n"
     )
