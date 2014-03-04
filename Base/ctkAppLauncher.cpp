@@ -41,20 +41,20 @@ ctkAppLauncherInternal::ctkAppLauncherInternal()
   this->ShortArgPrefix = "-";
   this->SystemEnvironment = QProcessEnvironment::systemEnvironment();
 
-#if defined(WIN32) || defined(_WIN32)
+#if defined(Q_OS_WIN32)
   this->PathSep = ";";
   this->LibraryPathVariableName = "PATH";
-#endif
-#ifdef __APPLE__
+#else
   this->PathSep = ":";
+# if defined(Q_OS_MAC)
   this->LibraryPathVariableName = "DYLD_LIBRARY_PATH";
-#endif
-#ifdef __linux__
-  this->PathSep = ":";
+# elif defined(Q_OS_LINUX)
   this->LibraryPathVariableName = "LD_LIBRARY_PATH";
+# else
+  // TODO support solaris?
+#  error CTK launcher is not supported on this platform
+# endif
 #endif
-//#if defined(sun) || defined(__sun)
-//#endif
 }
 
 // --------------------------------------------------------------------------
@@ -812,15 +812,15 @@ bool ctkAppLauncher::generateExecWrapperScript()
 
   QStringList output;
 
-#if defined(Q_OS_LINUX) || defined(Q_OS_MAC) || defined(Q_OS_SOLARIS)
+#ifdef Q_OS_WIN32
+  QString scriptComment("::");
+  QString exportCmd("@set");
+  QString scriptExtension("bat");
+#else
   output << "#! /usr/bin/env bash\n";
   QString scriptComment("#");
   QString exportCmd("declare -x");
   QString scriptExtension("sh");
-#elif defined(Q_OS_WIN32)
-  QString scriptComment("::");
-  QString exportCmd("@set");
-  QString scriptExtension("bat");
 #endif
 
   output << QString("%1 This script has been generated using %2 launcher %3\n").
@@ -838,7 +838,7 @@ bool ctkAppLauncher::generateExecWrapperScript()
     output << QString("%1 \"%2\"").arg(exportCmd).arg(env);
     }
 
-#ifdef Q_OS_LINUX
+#ifndef Q_OS_WIN32
   output << "if [ \"$#\" -gt \"0\" ]";
   output << "then";
   output << "  exec \"$@\"";
