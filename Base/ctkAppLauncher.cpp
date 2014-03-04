@@ -582,24 +582,10 @@ bool ctkAppLauncherInternal::readSettings(const QString& fileName, int settingsT
   settings.endGroup();
 
   // Read PATHs
-  {
-    QStringListIterator it(ctk::readArrayValues(settings, "Paths", "path"));
-    it.toBack() ;
-    while(it.hasPrevious())
-      {
-      this->ListOfPaths.prepend(it.previous());
-      }
-  }
+  this->ListOfPaths = ctk::readArrayValues(settings, "Paths", "path") + this->ListOfPaths;
 
   // Read LibraryPaths
-  {
-    QStringListIterator it(ctk::readArrayValues(settings, "LibraryPaths", "path"));
-    it.toBack() ;
-    while(it.hasPrevious())
-      {
-      this->ListOfLibraryPaths.prepend(it.previous());
-      }
-  }
+  this->ListOfLibraryPaths = ctk::readArrayValues(settings, "LibraryPaths", "path") + this->ListOfLibraryPaths;
 
   // Read additional environment variables
   QHash<QString, QString> mapOfEnvVars = ctk::readKeyValuePairs(settings, "EnvironmentVariables");
