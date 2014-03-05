@@ -133,6 +133,7 @@ public:
   QStringList                     LauncherAdditionalNoSplashArguments;
   QStringList                     ListOfPaths;
   QStringList                     ListOfLibraryPaths;
+  QSet<QString>                   AdditionalPathVariables;
   QHash<QString, QString>         MapOfEnvVars;
   QCoreApplication*               Application;
   bool                            Initialized;
