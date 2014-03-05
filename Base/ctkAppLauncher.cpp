@@ -808,7 +808,7 @@ void ctkAppLauncher::generateEnvironmentScript(QTextStream &output, bool posix)
   QSet<QString> appendVars = this->Internal->AdditionalPathVariables;
   appendVars << "PATH" << this->Internal->LibraryPathVariableName;
 
-  static const char* const exportFormatPosix = "declare -x %1";
+  static const char* const exportFormatPosix = "declare -x %1;";
   static const char* const appendFormatPosix = "${%1:+%2$%1}";
 #ifdef Q_OS_WIN32
   static const char* const exportFormatWinCmd = "@set %1";
