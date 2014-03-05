@@ -800,7 +800,7 @@ bool ctkAppLauncher::generateExecWrapperScript()
   const QString scriptComment("#");
   const QString scriptExtension("sh");
   const QString exportFormat("declare -x \"%1=%2\"");
-  const QString exportAppendFormat("declare -x \"%1=%2%3$%1\"");
+  const QString exportAppendFormat("declare -x \"%1=%2${%1:+%3$%1}\"");
 #endif
 
   output << QString("%1 This script has been generated using %2 launcher %3\n").
