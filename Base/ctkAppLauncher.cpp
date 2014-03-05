@@ -615,6 +615,26 @@ bool ctkAppLauncherInternal::readSettings(const QString& fileName, int settingsT
 }
 
 // --------------------------------------------------------------------------
+QString ctkAppLauncherInternal::shellQuote(bool posix, QString text, const QString& trailing)
+{
+#ifdef Q_OS_WIN32
+  if (!posix)
+    {
+    static QRegExp reSpecialCharacters("([\"^])");
+    text.replace(reSpecialCharacters, "^\\1");
+    text.replace("\n", "^\n\n");
+    return text + trailing;
+    }
+#else
+  Q_UNUSED(posix)
+#endif
+
+  static QRegExp reSpecialCharacters("([`$\"!\\\\])");
+  text.replace(reSpecialCharacters, "\\\\1");
+  return QString("\"%1%2\"").arg(text, trailing);
+}
+
+// --------------------------------------------------------------------------
 void ctkAppLauncherInternal::buildEnvironment(QProcessEnvironment &env)
 {
   this->reportInfo(QString("<APPLAUNCHER_DIR> -> [%1]").arg(this->LauncherDir));
@@ -788,22 +808,30 @@ void ctkAppLauncher::generateEnvironmentScript(QTextStream &output, bool posix)
   QSet<QString> appendVars = this->Internal->AdditionalPathVariables;
   appendVars << "PATH" << this->Internal->LibraryPathVariableName;
 
-  const char* const exportFormatPosix = "declare -x \"%1=%2\"";
-  const char* const exportAppendFormatPosix = "declare -x \"%1=%2${%1:+%3$%1}\"";
+  const char* const exportFormatPosix = "declare -x %1";
+  const char* const appendFormatPosix = "${%1:+%2$%1}";
 #ifdef Q_OS_WIN32
-  const char* const exportFormatWinCmd = "@set \"%1=%2\"";
-  const char* const exportAppendFormatWinCmd = "@set \"%1=%2%3%%1%\"";
+  const char* const exportFormatWinCmd = "@set %1";
+  const char* const appendFormatWinCmd = "%2%%1%";
   const QString exportFormat(posix ? exportFormatPosix : exportFormatWinCmd);
-  const QString exportAppendFormat(posix ? exportAppendFormatPosix : exportAppendFormatWinCmd);
+  const QString appendFormat(posix ? appendFormatPosix : appendFormatWinCmd);
 #else
   const QString exportFormat(exportFormatPosix);
-  const QString exportAppendFormat(exportAppendFormatPosix);
+  const QString appendFormat(appendFormatPosix);
 #endif
 
   foreach(const QString& key, envKeys)
     {
-    const QString& format = (appendVars.contains(key) ? exportAppendFormat : exportFormat);
-    output << format.arg(key, env.value(key), this->Internal->PathSep) << '\n';
+    const QString pair = QString("%1=%2").arg(key, env.value(key));
+    if (appendVars.contains(key))
+      {
+      const QString trailing = appendFormat.arg(key, this->Internal->PathSep);
+      output << exportFormat.arg(this->Internal->shellQuote(posix, pair, trailing)) << '\n';
+      }
+    else
+      {
+      output << exportFormat.arg(this->Internal->shellQuote(posix, pair)) << '\n';
+      }
     }
 }
 
