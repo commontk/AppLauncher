@@ -76,6 +76,8 @@ void ctkAppLauncherTest1er::testDisplayHelp_data()
            "launcher kills the application. -1 means no timeout (default: -1)\n"
            "  --launcher-dump-environment                  Launcher will print environment "
            "variables to be set, then exit\n"
+           "  --launcher-show-set-environment-commands     Launcher will print commands suitable "
+           "for setting the parent environment (i.e. using 'eval' in a POSIX shell), then exit\n"
            "  --launcher-additional-settings               Additional settings file to consider\n"
            "  --launcher-ignore-user-additional-settings   Ignore additional user settings\n"
            "  --launcher-generate-exec-wrapper-script      Generate executable wrapper script "
