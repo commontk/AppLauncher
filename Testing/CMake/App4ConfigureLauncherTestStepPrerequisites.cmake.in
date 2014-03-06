@@ -1,0 +1,15 @@
+
+set(app4configurelaunchertest_source_dir "@APP4CONFIGURELAUNCHERTEST_SOURCE_DIR@")
+set(app4configurelaunchertest_binary_dir "@APP4CONFIGURELAUNCHERTEST_BINARY_DIR@")
+set(app4configurelaunchertest_build_type "@APP4CONFIGURELAUNCHERTEST_BUILD_TYPE@")
+set(app4configurelaunchertest_cmake_generator "@APP4CONFIGURELAUNCHERTEST_CMAKE_GENERATOR@")
+
+set(ctkapplauncher_dir "@LAUNCHER_BINARY_DIR@")
+
+# --------------------------------------------------------------------------
+# Sanity checks
+
+if(NOT EXISTS ${app4configurelaunchertest_source_dir})
+  message(FATAL_ERROR "Make sure variable APP4CONFIGURELAUNCHERTEST_SOURCE_DIR is set to a valid directory. "
+                      "APP4CONFIGURELAUNCHERTEST_SOURCE_DIR [${app4configurelaunchertest_source_dir}]")
+endif()
