@@ -8,6 +8,11 @@ set(APP4TEST_BUILD_TYPE "Release")
 set(APP4TEST_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/App4Test)
 set(APP4TEST_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/App4Test-build)
 
+set(APP4CONFIGURELAUNCHERTEST_CMAKE_GENERATOR "${CMAKE_GENERATOR}")
+set(APP4CONFIGURELAUNCHERTEST_BUILD_TYPE "Release")
+set(APP4CONFIGURELAUNCHERTEST_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/App4ConfigureLauncherTest)
+set(APP4CONFIGURELAUNCHERTEST_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/App4ConfigureLauncherTest-build)
+
 #
 # Configure Test Prerequisites
 #
@@ -20,6 +25,12 @@ configure_file(
 configure_file(
   ${CMAKE_CURRENT_SOURCE_DIR}/App4TestStepPrerequisites.cmake.in
   ${CMAKE_CURRENT_BINARY_DIR}/App4TestStepPrerequisites.cmake
+  @ONLY
+  )
+
+configure_file(
+  ${CMAKE_CURRENT_SOURCE_DIR}/App4ConfigureLauncherTestStepPrerequisites.cmake.in
+  ${CMAKE_CURRENT_BINARY_DIR}/App4ConfigureLauncherTestStepPrerequisites.cmake
   @ONLY
   )
 
@@ -109,3 +120,6 @@ if(UNIX)
   applauncher_add_test(AppLauncher-TestSymbolicLink)
   applauncher_add_test(AppLauncher-TestSymbolicLinkInPATH)
 endif()
+
+applauncher_add_test(App4ConfigureLauncherTest-ConfigureStep)
+applauncher_add_test(App4ConfigureLauncherTest-BuildStep)
