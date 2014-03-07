@@ -29,6 +29,12 @@ configure_file(
   )
 
 configure_file(
+  ${CMAKE_CURRENT_SOURCE_DIR}/ConfiguredAppLauncherTestPrerequisites.cmake.in
+  ${CMAKE_CURRENT_BINARY_DIR}/ConfiguredAppLauncherTestPrerequisites.cmake
+  @ONLY
+  )
+
+configure_file(
   ${CMAKE_CURRENT_SOURCE_DIR}/App4ConfigureLauncherTestStepPrerequisites.cmake.in
   ${CMAKE_CURRENT_BINARY_DIR}/App4ConfigureLauncherTestStepPrerequisites.cmake
   @ONLY
@@ -123,3 +129,6 @@ endif()
 
 applauncher_add_test(App4ConfigureLauncherTest-ConfigureStep)
 applauncher_add_test(App4ConfigureLauncherTest-BuildStep)
+
+applauncher_add_test(ConfiguredAppLauncher-ConfigurationContents)
+applauncher_add_test(ConfiguredAppLauncher-LauncherExecutable)
