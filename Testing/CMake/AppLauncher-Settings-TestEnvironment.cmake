@@ -6,6 +6,12 @@ include(${TEST_BINARY_DIR}/AppLauncherTestPrerequisites.cmake)
 # Debug flags - Set to True to display the command as string
 set(PRINT_COMMAND 0)
 
+if(WIN32)
+  set(pathsep ";")
+else()
+  set(pathsep ":")
+endif()
+
 set(sys_env_var_name "CTKAPPLAUNCHER_TEST_ENV_EXPRESSION")
 set(sys_env_var_value "Powder as in snow")
 set(regular_env_var_name_1 "SOMETHING_NICE")
@@ -14,6 +20,8 @@ set(regular_env_var_name_2 "SOMETHING_AWESOME")
 set(regular_env_var_value_2 "Rock climbing !")
 set(regular_env_var_name_3 "SOMETHING_GREAT")
 set(regular_env_var_value_3 "<env:${sys_env_var_name}>")
+set(regular_env_var_name_4 "SOME_PATH")
+set(regular_env_var_value_4 "/farm/cow${pathsep}/farm/pig")
 
 set(ENV{${sys_env_var_name}} ${sys_env_var_value})
 
@@ -21,6 +29,7 @@ set(ENV{${sys_env_var_name}} ${sys_env_var_value})
 # Configure settings file
 file(WRITE "${launcher}LauncherSettings.ini" "
 [General]
+additionalPathVariables=SOME_PATH
 
 [Application]
 path=${application}
@@ -34,6 +43,11 @@ size=1
 ${regular_env_var_name_1}=${regular_env_var_value_1}
 ${regular_env_var_name_2}=${regular_env_var_value_2}
 ${regular_env_var_name_3}=${regular_env_var_value_3}
+
+[SOME_PATH]
+1\\path=/farm/cow
+2\\path=/farm/pig
+size=2
 ")
 
 # --------------------------------------------------------------------------
@@ -60,11 +74,17 @@ set(expected_regular_env_var_name_2 "${regular_env_var_name_2}")
 set(expected_regular_env_var_value_2 "${regular_env_var_value_2}")
 set(expected_regular_env_var_name_3 "${regular_env_var_name_3}")
 set(expected_regular_env_var_value_3 "${sys_env_var_value}")
+set(expected_regular_env_var_name_4 "${regular_env_var_name_4}")
+set(expected_regular_env_var_value_4 "${regular_env_var_value_4}")
 
-set(expected_msg "${expected_regular_env_var_name_1}=${expected_regular_env_var_value_1}\n${expected_regular_env_var_name_2}=${expected_regular_env_var_value_2}\n${expected_regular_env_var_name_3}=${expected_regular_env_var_value_3}")
+set(expected_msg "
+${expected_regular_env_var_name_1}=${expected_regular_env_var_value_1}
+${expected_regular_env_var_name_2}=${expected_regular_env_var_value_2}
+${expected_regular_env_var_name_3}=${expected_regular_env_var_value_3}
+${expected_regular_env_var_name_4}=${expected_regular_env_var_value_4}
+")
 string(REGEX MATCH ${expected_msg} current_msg ${ov})
 if(NOT "${expected_msg}" STREQUAL "${current_msg}")
   message(FATAL_ERROR "Failed to pass environment variable from ${launcher_name} "
                       "to ${application_name}.\n${ov}")
 endif()
-
