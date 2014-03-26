@@ -293,6 +293,28 @@ if(BUILD_TESTING)
   add_subdirectory(Testing)
 endif()
 
+# Copy CMake scripts to build directory
+set(srcDistributables)
+macro(ctkCopyDistributable FILE DESTINATION)
+  add_custom_command(
+    OUTPUT ${DESTINATION}/${FILE}
+    DEPENDS ${${PROJECT_NAME}_SOURCE_DIR}/${FILE}
+    COMMAND ${CMAKE_COMMAND} -E make_directory ${DESTINATION}
+    COMMAND ${CMAKE_COMMAND} -E copy
+      ${${PROJECT_NAME}_SOURCE_DIR}/${FILE}
+      ${DESTINATION}/${FILE}
+    WORKING_DIRECTORY
+      ${${PROJECT_NAME}_SOURCE_DIR}
+    COMMENT "Copying ${FILE} to build directory"
+    )
+  list(APPEND srcDistributables ${DESTINATION}/${FILE})
+endmacro()
+
+ctkCopyDistributable(CMake/ctkAppLauncher.cmake ${${PROJECT_NAME}_BINARY_DIR})
+ctkCopyDistributable(CMake/ctkAppLauncher-configure.cmake ${${PROJECT_NAME}_BINARY_DIR})
+ctkCopyDistributable(CTKAppLauncherSettings.ini.in ${${PROJECT_NAME}_BINARY_DIR}/bin)
+add_custom_target(copyDistributables ALL DEPENDS ${srcDistributables})
+
 # Install rules
 install(TARGETS ${targets_to_install}
   RUNTIME DESTINATION ${CTK_INSTALL_BIN_DIR} COMPONENT Runtime
