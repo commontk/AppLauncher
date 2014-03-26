@@ -600,14 +600,17 @@ bool ctkAppLauncherInternal::readSettings(const QString& fileName, int settingsT
   this->AdditionalPathVariables = settings.value("additionalPathVariables").toStringList().toSet();
   foreach(const QString& envVarName, this->AdditionalPathVariables)
     {
-    QStringList paths = ctk::readArrayValues(settings, envVarName, "path");
-    if (!paths.empty())
+    if (!envVarName.isEmpty())
       {
-      if (this->MapOfEnvVars.contains(envVarName))
+      QStringList paths = ctk::readArrayValues(settings, envVarName, "path");
+      if (!paths.empty())
         {
-        paths.append(this->MapOfEnvVars[envVarName]);
+        if (this->MapOfEnvVars.contains(envVarName))
+          {
+          paths.append(this->MapOfEnvVars[envVarName]);
+          }
+        this->MapOfEnvVars.insert(envVarName, paths.join(this->PathSep));
         }
-      this->MapOfEnvVars.insert(envVarName, paths.join(this->PathSep));
       }
     }
 
