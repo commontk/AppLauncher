@@ -4,6 +4,7 @@ launcherSplashScreenHideDelayMs=
 additionalLauncherHelpShortArgument=-h
 additionalLauncherHelpLongArgument=--help
 additionalLauncherNoSplashArguments=--no-splash
+additionalPathVariables=
 
 
 [Application]
