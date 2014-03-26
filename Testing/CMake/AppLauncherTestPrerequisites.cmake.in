@@ -127,6 +127,7 @@ Options
   --launcher-no-splash                         Hide launcher splash
   --launcher-timeout                           Specify the time in second before the launcher kills the application. -1 means no timeout (default: -1)
   --launcher-dump-environment                  Launcher will print environment variables to be set, then exit
+  --launcher-show-set-environment-commands     Launcher will print commands suitable for setting the parent environment (i.e. using 'eval' in a POSIX shell), then exit
   --launcher-additional-settings               Additional settings file to consider
   --launcher-ignore-user-additional-settings   Ignore additional user settings
   --launcher-generate-exec-wrapper-script      Generate executable wrapper script allowing to set the environment

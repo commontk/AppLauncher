@@ -63,6 +63,16 @@ public:
 
   bool extractLauncherNameAndDir(const QString& applicationFilePath);
 
+  /// \brief Quote string to preserve value when seen by the default shell.
+  ///
+  /// This adds quotes and applies escaping the \p text so that the value may
+  /// be safely parsed by the default shell (i.e. cmd on Windows if \p posix is
+  /// \c false, sh otherwise) without being subject to additional expansion,
+  /// substitution, etc. The additional text \p trailing is added inside of the
+  /// escapes, but is \em not otherwise escaped; this is intended to be used to
+  /// build prepend expressions to environment variables, like \c FOO=...:$FOO.
+  static QString shellQuote(bool posix, QString text, const QString& trailing = QString());
+
   /// \brief Expand setting \a value
   /// The following string will be updated:
   /// <ul>
@@ -133,6 +143,7 @@ public:
   QStringList                     LauncherAdditionalNoSplashArguments;
   QStringList                     ListOfPaths;
   QStringList                     ListOfLibraryPaths;
+  QSet<QString>                   AdditionalPathVariables;
   QHash<QString, QString>         MapOfEnvVars;
   QCoreApplication*               Application;
   bool                            Initialized;

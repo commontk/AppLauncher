@@ -41,20 +41,20 @@ ctkAppLauncherInternal::ctkAppLauncherInternal()
   this->ShortArgPrefix = "-";
   this->SystemEnvironment = QProcessEnvironment::systemEnvironment();
 
-#if defined(WIN32) || defined(_WIN32)
+#if defined(Q_OS_WIN32)
   this->PathSep = ";";
   this->LibraryPathVariableName = "PATH";
-#endif
-#ifdef __APPLE__
+#else
   this->PathSep = ":";
+# if defined(Q_OS_MAC)
   this->LibraryPathVariableName = "DYLD_LIBRARY_PATH";
-#endif
-#ifdef __linux__
-  this->PathSep = ":";
+# elif defined(Q_OS_LINUX)
   this->LibraryPathVariableName = "LD_LIBRARY_PATH";
+# else
+  // TODO support solaris?
+#  error CTK launcher is not supported on this platform
+# endif
 #endif
-//#if defined(sun) || defined(__sun)
-//#endif
 }
 
 // --------------------------------------------------------------------------
@@ -582,24 +582,10 @@ bool ctkAppLauncherInternal::readSettings(const QString& fileName, int settingsT
   settings.endGroup();
 
   // Read PATHs
-  {
-    QStringListIterator it(ctk::readArrayValues(settings, "Paths", "path"));
-    it.toBack() ;
-    while(it.hasPrevious())
-      {
-      this->ListOfPaths.prepend(it.previous());
-      }
-  }
+  this->ListOfPaths = ctk::readArrayValues(settings, "Paths", "path") + this->ListOfPaths;
 
   // Read LibraryPaths
-  {
-    QStringListIterator it(ctk::readArrayValues(settings, "LibraryPaths", "path"));
-    it.toBack() ;
-    while(it.hasPrevious())
-      {
-      this->ListOfLibraryPaths.prepend(it.previous());
-      }
-  }
+  this->ListOfLibraryPaths = ctk::readArrayValues(settings, "LibraryPaths", "path") + this->ListOfLibraryPaths;
 
   // Read additional environment variables
   QHash<QString, QString> mapOfEnvVars = ctk::readKeyValuePairs(settings, "EnvironmentVariables");
@@ -610,47 +596,74 @@ bool ctkAppLauncherInternal::readSettings(const QString& fileName, int settingsT
     this->MapOfEnvVars.insert(envVarName, envVarValue);
     }
 
+  // Read additional path environment variables
+  this->AdditionalPathVariables = settings.value("additionalPathVariables").toStringList().toSet();
+  foreach(const QString& envVarName, this->AdditionalPathVariables)
+    {
+    if (!envVarName.isEmpty())
+      {
+      QStringList paths = ctk::readArrayValues(settings, envVarName, "path");
+      if (!paths.empty())
+        {
+        if (this->MapOfEnvVars.contains(envVarName))
+          {
+          paths.append(this->MapOfEnvVars[envVarName]);
+          }
+        this->MapOfEnvVars.insert(envVarName, paths.join(this->PathSep));
+        }
+      }
+    }
+
   return true;
+}
+
+// --------------------------------------------------------------------------
+QString ctkAppLauncherInternal::shellQuote(bool posix, QString text, const QString& trailing)
+{
+#ifdef Q_OS_WIN32
+  if (!posix)
+    {
+    static QRegExp reSpecialCharacters("([\"^])");
+    text.replace(reSpecialCharacters, "^\\1");
+    text.replace("\n", "^\n\n");
+    return text + trailing;
+    }
+#else
+  Q_UNUSED(posix)
+#endif
+
+  static QRegExp reSpecialCharacters("([`$\"!\\\\])");
+  text.replace(reSpecialCharacters, "\\\\1");
+  return QString("\"%1%2\"").arg(text, trailing);
 }
 
 // --------------------------------------------------------------------------
 void ctkAppLauncherInternal::buildEnvironment(QProcessEnvironment &env)
 {
-  // LD_LIBRARY_PATH (linux), DYLD_LIBRARY_PATH (mac), PATH (win) ...
-  QString libPathVarName = this->LibraryPathVariableName;
-
   this->reportInfo(QString("<APPLAUNCHER_DIR> -> [%1]").arg(this->LauncherDir));
 
+  QHash<QString, QString> newVars = this->MapOfEnvVars;
 
-  // Set library paths
-  {
-    QStringListIterator it(this->ListOfLibraryPaths);
-    it.toBack() ;
-    while(it.hasPrevious())
-      {
-      QString path = this->expandValue(it.previous());
-      this->reportInfo(QString("Setting library path [%1]").arg(path));
-      env.insert(libPathVarName, path + this->PathSep + env.value(libPathVarName));
-      }
-  }
+  QSet<QString> appendVars = this->AdditionalPathVariables;
+  appendVars << "PATH" << this->LibraryPathVariableName;
 
-  // Update Path - First path of the list will be the first on the PATH
-  {
-    QStringListIterator it(this->ListOfPaths);
-    it.toBack() ;
-    while(it.hasPrevious())
-      {
-      QString path = this->expandValue(it.previous());
-      this->reportInfo(QString("Setting path [%1]").arg(path));
-      env.insert("PATH", path + this->PathSep + env.value("PATH"));
-      }
-  }
+  // Add library path and PATH to map
+#ifdef Q_OS_WIN32
+  newVars["PATH"] = (this->ListOfPaths + this->ListOfLibraryPaths).join(this->PathSep);
+#else
+  newVars[this->LibraryPathVariableName] = this->ListOfLibraryPaths.join(this->PathSep);
+  newVars["PATH"] = this->ListOfPaths.join(this->PathSep);
+#endif
 
-  // Set additional environment variables
-  foreach(const QString& key, this->MapOfEnvVars.keys())
+  // Set environment variables
+  foreach(const QString& key, newVars.keys())
     {
-    QString value = this->expandValue(this->MapOfEnvVars[key]);
-    this->reportInfo(QString("Setting env. variable [%1]:%2").arg(key).arg(value));
+    QString value = this->expandValue(newVars[key]);
+    if (appendVars.contains(key) && env.contains(key))
+      {
+      value = QString("%1%2%3").arg(value, this->PathSep, env.value(key));
+      }
+    this->reportInfo(QString("Setting env. variable [%1]:%2").arg(key, value));
     env.insert(key, value);
     }
 }
@@ -782,53 +795,63 @@ void ctkAppLauncher::displayEnvironment(std::ostream &output)
 }
 
 // --------------------------------------------------------------------------
+void ctkAppLauncher::generateEnvironmentScript(QTextStream &output, bool posix)
+{
+  if (this->Internal->LauncherName.isEmpty())
+    {
+    return;
+    }
+
+  QProcessEnvironment env;
+
+  this->Internal->buildEnvironment(env);
+  QStringList envKeys = env.keys();
+  envKeys.sort();
+
+  QSet<QString> appendVars = this->Internal->AdditionalPathVariables;
+  appendVars << "PATH" << this->Internal->LibraryPathVariableName;
+
+  static const char* const exportFormatPosix = "declare -x %1;";
+  static const char* const appendFormatPosix = "${%1:+%2$%1}";
+#ifdef Q_OS_WIN32
+  static const char* const exportFormatWinCmd = "@set %1";
+  static const char* const appendFormatWinCmd = "%2%%1%";
+  const QString exportFormat(posix ? exportFormatPosix : exportFormatWinCmd);
+  const QString appendFormat(posix ? appendFormatPosix : appendFormatWinCmd);
+#else
+  const QString exportFormat(exportFormatPosix);
+  const QString appendFormat(appendFormatPosix);
+#endif
+
+  foreach(const QString& key, envKeys)
+    {
+    const QString pair = QString("%1=%2").arg(key, env.value(key));
+    if (appendVars.contains(key))
+      {
+      const QString trailing = appendFormat.arg(key, this->Internal->PathSep);
+      output << exportFormat.arg(this->Internal->shellQuote(posix, pair, trailing)) << '\n';
+      }
+    else
+      {
+      output << exportFormat.arg(this->Internal->shellQuote(posix, pair)) << '\n';
+      }
+    }
+}
+
+// --------------------------------------------------------------------------
 bool ctkAppLauncher::generateExecWrapperScript()
 {
   if (this->Internal->LauncherName.isEmpty())
     {
     return false;
     }
-  QProcessEnvironment env;
-  env.insert("PATH", "$PATH");
-  env.insert(this->Internal->LibraryPathVariableName, "$" + this->Internal->LibraryPathVariableName);
 
-  this->Internal->buildEnvironment(env);
-  QStringList envAsList = env.toStringList();
-  envAsList.sort();
-
-  QStringList output;
-
-#if defined(Q_OS_LINUX) || defined(Q_OS_MAC) || defined(Q_OS_SOLARIS)
-  output << "#! /usr/bin/env bash\n";
-  QString scriptComment("#");
-  QString exportCmd("declare -x");
-  QString scriptExtension("sh");
-#elif defined(Q_OS_WIN32)
-  QString scriptComment("::");
-  QString exportCmd("@set");
-  QString scriptExtension("bat");
-#endif
-
-  output << QString("%1 This script has been generated using %2 launcher %3\n").
-            arg(scriptComment).
-            arg(this->Internal->LauncherName).
-            arg(CTKAppLauncher_VERSION);
-
-  output << QString("%1 WARNING Usage of --launcher-generate-exec-wrapper-script is experimental and not tested.").
-            arg(scriptComment);
-  output << QString("%1 WARNING Community contribution are welcome. See https://github.com/commontk/AppLauncher/issues/36\n").
-            arg(scriptComment);
-
-  foreach(const QString& env, envAsList)
-    {
-    output << QString("%1 \"%2\"").arg(exportCmd).arg(env);
-    }
-
-#ifdef Q_OS_LINUX
-  output << "if [ \"$#\" -gt \"0\" ]";
-  output << "then";
-  output << "  exec \"$@\"";
-  output << "fi";
+#ifdef Q_OS_WIN32
+  const QString scriptComment("::");
+  const QString scriptExtension("bat");
+#else
+  const QString scriptComment("#");
+  const QString scriptExtension("sh");
 #endif
 
   QTemporaryFile launcherScript(QDir::temp().filePath("Slicer-XXXXXX.%1").arg(scriptExtension));
@@ -839,7 +862,23 @@ bool ctkAppLauncher::generateExecWrapperScript()
     return false;
     }
   QTextStream out(&launcherScript);
-  out << output.join("\n");
+
+#ifndef Q_OS_WIN32
+  out << "#!/usr/bin/env bash\n\n";
+#endif
+
+  out << scriptComment << " This script has been generated using "
+      << this->Internal->LauncherName << " launcher " << CTKAppLauncher_VERSION << '\n'
+      << '\n'
+      << scriptComment << " WARNING Usage of --launcher-generate-exec-wrapper-script is experimental and not tested.\n"
+      << scriptComment << " WARNING Community contribution are welcome. See https://github.com/commontk/AppLauncher/issues/36\n"
+      << '\n';
+
+  this->generateEnvironmentScript(out);
+
+#ifndef Q_OS_WIN32
+  out << "\n[ \"$#\" -gt \"0\" ] && exec \"$@\"\n";
+#endif
 
   this->Internal->reportInfo(
         QString("Launcher script generated [%1]").arg(launcherScript.fileName()),
@@ -922,6 +961,9 @@ bool ctkAppLauncher::initialize(QString launcherFilePath)
                                         "(-1)|([0-9]+)", "-1 or a positive integer is expected.");
   parser.addArgument("launcher-dump-environment", "", QVariant::Bool,
                      "Launcher will print environment variables to be set, then exit");
+  parser.addArgument("launcher-show-set-environment-commands", "", QVariant::Bool,
+                     "Launcher will print commands suitable for setting the parent environment "
+                     "(i.e. using 'eval' in a POSIX shell), then exit");
   parser.addArgument("launcher-additional-settings", "", QVariant::String,
                      "Additional settings file to consider");
   parser.addArgument("launcher-ignore-user-additional-settings", "", QVariant::Bool,
@@ -981,6 +1023,7 @@ int ctkAppLauncher::processArguments()
       || this->Internal->ParsedArgs.value("launcher-help").toBool()
       || this->Internal->ParsedArgs.value("launcher-version").toBool()
       || this->Internal->ParsedArgs.value("launcher-dump-environment").toBool()
+      || this->Internal->ParsedArgs.value("launcher-show-set-environment-commands").toBool()
       || this->Internal->ParsedArgs.value("launcher-generate-template").toBool()
       || this->Internal->ParsedArgs.value("launcher-generate-exec-wrapper-script").toBool();
 
@@ -1085,6 +1128,13 @@ int ctkAppLauncher::processArguments()
   if (!this->Internal->processExtraApplicationToLaunchArgument(unparsedArgs))
     {
     return Self::ExitWithError;
+    }
+
+  if (this->Internal->ParsedArgs.value("launcher-show-set-environment-commands").toBool())
+    {
+    QTextStream out(stdout);
+    this->generateEnvironmentScript(out, true);
+    return Self::ExitWithSuccess;
     }
 
   if (this->Internal->ParsedArgs.value("launcher-generate-exec-wrapper-script").toBool())
