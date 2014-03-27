@@ -39,12 +39,6 @@ file(WRITE ${settings_file}_updated.cmake ${tmp_var})
 
 include(${settings_file}_updated.cmake)
 
-# Copy launcher executable into the build tree
-execute_process(COMMAND ${CMAKE_COMMAND} -E copy_if_different 
-  ${CTKAPPLAUNCHER_EXECUTABLE} 
-  ${CTKAPPLAUNCHER_DESTINATION_DIR}/${CTKAPPLAUNCHER_APPLICATION_NAME}${CMAKE_EXECUTABLE_SUFFIX})
-
-
 
 #-----------------------------------------------------------------------------
 # Settings specific to the build tree.
