@@ -65,9 +65,10 @@ applauncher_add_cmakescript_test(midas_api_file_size_test MIDASAPICore)
 #
 set(_previous_applauncher_test "NODEPENDS")
 macro(applauncher_add_test testname)
-  add_test(${testname} ${CMAKE_COMMAND}
+  add_test(NAME ${testname} COMMAND ${CMAKE_COMMAND}
     -DTEST_SOURCE_DIR:PATH=${CMAKE_CURRENT_SOURCE_DIR}
     -DTEST_BINARY_DIR:PATH=${CMAKE_CURRENT_BINARY_DIR}
+    -DTEST_CONFIGURATION:STRING=$<CONFIGURATION>
     -P ${CMAKE_CURRENT_SOURCE_DIR}/${testname}.cmake)
   if(NOT ${_previous_applauncher_test} STREQUAL "NODEPENDS")
     set_tests_properties(${testname} PROPERTIES DEPENDS ${_previous_applauncher_test})

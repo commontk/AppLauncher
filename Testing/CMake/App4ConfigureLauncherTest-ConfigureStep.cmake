@@ -35,6 +35,7 @@ set(PRINT_COMMAND 0)
 set(command ${CMAKE_COMMAND}
   -DCMAKE_BUILD_TYPE:STRING=${app4configurelaunchertest_build_type}
   -DCTKAPPLAUNCHER_DIR:PATH=${ctkapplauncher_dir}
+  -DCTKAPPLAUNCHER_BUILD_CONFIGURATIONS:STRING=${TEST_CONFIGURATION}
   -G ${app4configurelaunchertest_cmake_generator}
   ${app4configurelaunchertest_source_dir}
   )
