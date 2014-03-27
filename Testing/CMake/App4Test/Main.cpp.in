@@ -97,12 +97,15 @@ int main(int argc, char** argv)
       }
     else if (argName == "--check-env")
       {
+      std::cout << std::endl;
       char * env1 = getenv("SOMETHING_NICE");
       std::cout << "SOMETHING_NICE=" << (env1 ? env1 : "NULL") << std::endl;
       char * env2 = getenv("SOMETHING_AWESOME");
       std::cout << "SOMETHING_AWESOME=" << (env2 ? env2 : "NULL") << std::endl;
       char * env3 = getenv("SOMETHING_GREAT");
       std::cout << "SOMETHING_GREAT=" << (env3 ? env3 : "NULL") << std::endl;
+      char * env4 = getenv("SOME_PATH");
+      std::cout << "SOME_PATH=" << (env4 ? env4 : "NULL") << std::endl;
       }
     else if (argName == "--print-current-working-directory")
       {

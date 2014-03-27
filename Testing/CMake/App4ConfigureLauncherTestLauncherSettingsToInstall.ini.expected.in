@@ -4,6 +4,7 @@ launcherSplashScreenHideDelayMs=
 additionalLauncherHelpShortArgument=-h
 additionalLauncherHelpLongArgument=--help
 additionalLauncherNoSplashArguments=--no-splash
+additionalPathVariables=PYTHONPATH,QT_PLUGIN_PATH
 
 
 [Application]
@@ -30,3 +31,11 @@ size=2
 BAR=ASSOCIATION
 
 
+
+[PYTHONPATH]
+1\path=<APPLAUNCHER_DIR>/lib/python/site-packages
+size=1
+
+[QT_PLUGIN_PATH]
+1\path=<APPLAUNCHER_DIR>/libexec/qt
+size=1

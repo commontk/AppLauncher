@@ -32,7 +32,7 @@ if(rv)
                       "directory [${launcher_binary_dir}]\n${ev}")
 endif()
 
-set(regex "info: Setting library path.*info: Starting.*")
+set(regex "Setting env. variable \\[LD_LIBRARY_PATH\\].*info: Starting.*")
 string(REGEX MATCH ${regex} current_msg ${ov})
 if("${current_msg}" STREQUAL "")
   message(FATAL_ERROR "Problem with flag --launcher-verbose")

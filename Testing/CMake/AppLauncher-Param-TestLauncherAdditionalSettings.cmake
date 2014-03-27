@@ -111,8 +111,8 @@ endif()
 set(expected_ov_lines
   "${additional_env_var_name_2}=${additional_env_var_value_2}"
   "${additional_env_var_name_1}=${additional_env_var_value_1}"
-  "${library_path_variable_name}=${additional_library_path}${pathsep}${regular_library_path_1}${pathsep}${regular_library_path_2}${pathsep}"
-  "PATH=${additional_path_1}${pathsep}${additional_path_2}${pathsep}${regular_path_1}${pathsep}${regular_path_2}${pathsep}"
+  "${library_path_variable_name}=${additional_library_path}${pathsep}${regular_library_path_1}${pathsep}${regular_library_path_2}"
+  "PATH=${additional_path_1}${pathsep}${additional_path_2}${pathsep}${regular_path_1}${pathsep}${regular_path_2}"
   "${regular_env_var_name_2}=${regular_env_var_value_2}\n"
   "${regular_env_var_name_1}=${regular_env_var_value_1}\n"
   "${common_env_var_name}=${common_env_var_value_1}:${common_env_var_value_2}\n"
@@ -122,7 +122,7 @@ if(WIN32)
   set(expected_ov_lines
     "${additional_env_var_name_2}=${additional_env_var_value_2}"
     "${additional_env_var_name_1}=${additional_env_var_value_1}"
-    "PATH=${additional_path_1}${pathsep}${additional_path_2}${pathsep}${regular_path_1}${pathsep}${regular_path_2}${pathsep}${additional_library_path}${pathsep}${regular_library_path_1}${pathsep}${regular_library_path_2}${pathsep}"
+    "PATH=${additional_path_1}${pathsep}${additional_path_2}${pathsep}${regular_path_1}${pathsep}${regular_path_2}${pathsep}${additional_library_path}${pathsep}${regular_library_path_1}${pathsep}${regular_library_path_2}"
     "${regular_env_var_name_2}=${regular_env_var_value_2}\n"
     "${regular_env_var_name_1}=${regular_env_var_value_1}\n"
     "${common_env_var_name}=${common_env_var_value_1}:${common_env_var_value_2}\n"

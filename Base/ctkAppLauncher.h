@@ -2,6 +2,7 @@
 #define __ctkAppLauncher_h
 
 // Qt includes
+#include <QTextStream>
 #include <QString>
 #include <QStringList>
 #include <QSettings>
@@ -32,6 +33,8 @@ public:
 
   /// Display environment variables on standard output
   void displayEnvironment(std::ostream &output = std::cout);
+
+  void generateEnvironmentScript(QTextStream &output, bool posix = false);
 
   bool generateExecWrapperScript();
 
