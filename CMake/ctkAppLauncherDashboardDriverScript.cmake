@@ -59,7 +59,7 @@ if(WITH_PACKAGES)
   endif()
 endif()
 
-set(git_repository http://github.com/commontk/AppLauncher.git)
+set(git_repository git://github.com/commontk/AppLauncher.git)
 
 # Should binary directory be cleaned?
 set(empty_binary_directory FALSE)
