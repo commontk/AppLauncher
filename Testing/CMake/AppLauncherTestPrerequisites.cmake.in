@@ -39,7 +39,7 @@ endif()
 
 set(launcher_dir ${launcher_binary_dir}/bin)
 set(launcher_build_type "@CMAKE_BUILD_TYPE@")
-if(WIN32)
+if(CMAKE_CONFIGURATION_TYPES)
   foreach (type ${CMAKE_CONFIGURATION_TYPES})
     if(EXISTS ${launcher_dir}/${type}/${launcher_name}${CMAKE_EXECUTABLE_SUFFIX})
       set(launcher_build_type ${type})
@@ -54,7 +54,7 @@ endif()
 # --------------------------------------------------------------------------
 # Set launcher variable
 
-if(WIN32)
+if(CMAKE_CONFIGURATION_TYPES)
   set(launcher_dir ${launcher_dir}/${launcher_build_type})
 endif()
 set(launcher ${launcher_dir}/${launcher_name})
@@ -76,7 +76,7 @@ execute_process(COMMAND ${CMAKE_COMMAND} -E remove -f ${launcher}AdditionalLaunc
 # Set application variable
 
 set(application_dir "${app4test_binary_dir}/bin")
-if(WIN32)
+if(CMAKE_CONFIGURATION_TYPES)
   set(application_dir ${application_dir}/${app4test_build_type})
 endif()
 set(application_name App4Test)
@@ -94,7 +94,7 @@ endif()
 # Sanity check
 
 set(library_path ${app4test_binary_dir}/libs)
-if(WIN32)
+if(CMAKE_CONFIGURATION_TYPES)
   set(library_path ${library_path}/${app4test_build_type})
 endif()
 if (NOT EXISTS ${library_path})

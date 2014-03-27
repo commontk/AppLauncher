@@ -8,7 +8,7 @@ additionalPathVariables=PYTHONPATH,QT_PLUGIN_PATH
 
 
 [Application]
-path=<APPLAUNCHER_DIR>/bin/./App4ConfigureLauncherTest-real
+path=<APPLAUNCHER_DIR>/bin/@launcher_build_subdir@/App4ConfigureLauncherTest-real@CMAKE_EXECUTABLE_SUFFIX@
 arguments=
 name=App4ConfigureLauncherTest
 revision=0.1
