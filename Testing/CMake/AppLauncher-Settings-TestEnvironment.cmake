@@ -83,8 +83,7 @@ ${expected_regular_env_var_name_2}=${expected_regular_env_var_value_2}
 ${expected_regular_env_var_name_3}=${expected_regular_env_var_value_3}
 ${expected_regular_env_var_name_4}=${expected_regular_env_var_value_4}
 ")
-string(REPLACE "\r" "" expected_msg ${expected_msg})
-string(REGEX MATCH ${expected_msg} current_msg ${ov})
+string(REGEX MATCH "${expected_msg}" current_msg "${ov}")
 if(NOT "${expected_msg}" STREQUAL "${current_msg}")
   message(FATAL_ERROR "Failed to pass environment variable from ${launcher_name} "
                       "to ${application_name}.\n${ov}")
