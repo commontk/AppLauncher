@@ -7,6 +7,7 @@
 
 # The following variable are expected to be define in the top-level script:
 set(expected_variables
+  MY_BITNESS
   ADDITIONNAL_CMAKECACHE_OPTION
   CTEST_NOTES_FILES
   CTEST_SITE
@@ -32,18 +33,18 @@ set(expected_variables
 if(WITH_DOCUMENTATION)
   list(APPEND expected_variables DOCUMENTATION_ARCHIVES_OUTPUT_DIRECTORY)
 endif()
+if(WITH_PACKAGES)
+  list(APPEND expected_variables MIDAS_PACKAGES_CREDENTIAL_FILE)
+endif()
 
-if(NOT DEFINED MIDAS_API_URL)
-  set(MIDAS_API_URL "http://midas3.kitware.com/midas")
+if(NOT DEFINED MIDAS_PACKAGES_URL)
+  set(MIDAS_PACKAGES_URL "http://packages.kitware.com")
 endif()
-if(NOT DEFINED MIDAS_SERVER_EXPERIMENTAL_PACKAGES_FOLDERID)
-  set(MIDAS_SERVER_EXPERIMENTAL_PACKAGES_FOLDERID 1227)
+if(NOT DEFINED MIDAS_PACKAGES_FOLDER_ID)
+  set(MIDAS_PACKAGES_FOLDER_ID 65)
 endif()
-if(NOT DEFINED MIDAS_SERVER_NIGHTLY_PACKAGES_FOLDERID)
-  set(MIDAS_SERVER_NIGHTLY_PACKAGES_FOLDERID 1228)
-endif()
-if(NOT DEFINED MIDAS_SERVER_CONTINUOUS_PACKAGES_FOLDERID)
-  set(MIDAS_SERVER_CONTINUOUS_PACKAGES_FOLDERID 1229)
+if(NOT DEFINED MIDAS_PACKAGES_APPLICATION_ID)
+  set(MIDAS_PACKAGES_APPLICATION_ID 10)
 endif()
 
 foreach(var ${expected_variables})
@@ -233,15 +234,21 @@ ${ADDITIONNAL_CMAKECACHE_OPTION}
     if(WITH_PACKAGES AND (run_ctest_with_packages OR run_ctest_with_upload))
       message("----------- [ WITH_PACKAGES and UPLOAD ] -----------")
 
+      include(${MIDAS_PACKAGES_CREDENTIAL_FILE})
+
+      if("${MIDAS_PACKAGES_API_EMAIL}" STREQUAL "")
+        message(FATAL_ERROR "Failed to upload package - MIDAS_PACKAGES_API_EMAIL variable not set !")
+      endif()
+      if("${MIDAS_PACKAGES_API_KEY}" STREQUAL "")
+        message(FATAL_ERROR "Failed to upload package - MIDAS_PACKAGES_API_KEY variable not set !")
+      endif()
+
       if(build_errors GREATER "0")
         message("Build Errors Detected: ${build_errors}. Aborting package generation")
       else()
 
         # Update CMake module path so that our custom macros/functions can be included.
         set(CMAKE_MODULE_PATH ${CTEST_SOURCE_DIRECTORY}/CMake ${CMAKE_MODULE_PATH})
-
-        # Include locally available module(s)
-        include(MIDASAPICore)
 
         # Download and include CTestPackage
         set(url http://viewvc.slicer.org/viewvc.cgi/Slicer4/trunk/CMake/CTestPackage.cmake?revision=19739&view=co)
@@ -252,6 +259,12 @@ ${ADDITIONNAL_CMAKECACHE_OPTION}
         # Download and include MIDASCTestUploadURL
         set(url http://viewvc.slicer.org/viewvc.cgi/Slicer4/trunk/CMake/MIDASCTestUploadURL.cmake?revision=19739&view=co)
         set(dest ${CTEST_BINARY_DIRECTORY}/MIDASCTestUploadURL.cmake)
+        download_file(${url} ${dest})
+        include(${dest})
+
+        # Download and include MidasAPI
+        set(url ${MIDAS_PACKAGES_URL}/api/rest?method=midas.packages.script.download)
+        set(dest ${CMAKE_CURRENT_LIST_DIR}/MidasAPI.cmake)
         download_file(${url} ${dest})
         include(${dest})
 
@@ -266,32 +279,53 @@ ${ADDITIONNAL_CMAKECACHE_OPTION}
           set(packages ${CMAKE_CURRENT_LIST_FILE})
         endif()
 
+        if(WIN32)
+          set(PACKAGE_OS "Windows")
+        elseif(APPLE)
+          set(PACKAGE_OS "MacOSX")
+        elseif(UNIX)
+          set(PACKAGE_OS "Linux")
+        endif()
+
+        set(PACKAGE_BITNESS "${MY_BITNESS}-bit")
+
         if(run_ctest_with_upload)
           message("Uploading ...")
           foreach(p ${packages})
-            get_filename_component(package_name "${p}" NAME)
-            set(midas_upload_status "fail")
-            if(DEFINED MIDAS_API_URL
-               AND DEFINED MIDAS_API_EMAIL
-               AND DEFINED MIDAS_API_KEY)
-              message("Uploading [${package_name}] on [${MIDAS_API_URL}]")
-              midas_api_item_upload(
-                API_URL ${MIDAS_API_URL}
-                API_EMAIL ${MIDAS_API_EMAIL}
-                API_KEY ${MIDAS_API_KEY}
-                FOLDERID ${MIDAS_SERVER_${model_uc}_PACKAGES_FOLDERID}
-                ITEM_FILEPATH ${p}
-                RESULT_VARNAME midas_upload_status
-                )
-              if(midas_upload_status STREQUAL "ok")
-                message("Uploading URL on CDash")
-                set(MIDAS_PACKAGE_URL ${MIDAS_API_URL})
-                midas_ctest_upload_url(${p}) # on success, upload a link to CDash
-              endif()
+            get_filename_component(PACKAGE_NAME "${p}" NAME)
+
+            set(_version_regex "0.[0-9].[0-9][0-9]?")
+            set(_os_regex "-(win|linux|macosx|Darwin|Windows|Linux)")
+            string(REGEX MATCH ${_version_regex} PACKAGE_VERSION ${PACKAGE_NAME})
+            set(PACKAGE_RELEASE "")
+            if(PACKAGE_NAME MATCHES ${_version_regex}${_os_regex})
+              set(PACKAGE_RELEASE ${PACKAGE_VERSION})
+            endif()
+
+            message("Uploading [${PACKAGE_NAME}] on [${MIDAS_PACKAGES_URL}]")
+            midas_api_package_upload(
+              API_URL ${MIDAS_PACKAGES_URL}
+              API_EMAIL ${MIDAS_PACKAGES_API_EMAIL}
+              API_KEY ${MIDAS_PACKAGES_API_KEY}
+              FILE ${p}
+              NAME ${PACKAGE_NAME}
+              FOLDER_ID ${MIDAS_PACKAGES_FOLDER_ID}
+              APPLICATION_ID ${MIDAS_PACKAGES_APPLICATION_ID}
+              OS ${PACKAGE_OS}
+              ARCH ${PACKAGE_BITNESS}
+              PACKAGE_TYPE "TGZ Archive"
+              SUBMISSION_TYPE ${model}
+              RELEASE ${PACKAGE_RELEASE}
+              RESULT_VARNAME midas_upload_status
+              )
+            if(midas_upload_status STREQUAL "ok")
+              message("Uploading URL on CDash")
+              set(MIDAS_PACKAGE_URL ${MIDAS_PACKAGES_URL})
+              midas_ctest_upload_url(${p}) # on success, upload a link to CDash
             endif()
             if(NOT midas_upload_status STREQUAL "ok")
               message("        => Failed to upload item package ! See [${CMAKE_CURRENT_BINARY_DIR}/midas.*_response.txt] for more details.\n")
-              message("Uploading [${package_name}] on CDash")
+              message("Uploading [${PACKAGE_NAME}] on CDash")
               ctest_upload(FILES ${p})
             endif()
             if(run_ctest_submit)

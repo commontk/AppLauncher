@@ -18,6 +18,7 @@ cmake_minimum_required(VERSION 2.8)
 #
 set(MY_OPERATING_SYSTEM "Linux") # Windows, Linux, Darwin...
 set(MY_COMPILER "g++4.4.3")
+set(MY_BITNESS 64)
 set(MY_QT_VERSION "4.6.2")
 set(QT_QMAKE_EXECUTABLE "$ENV{HOME}/Projects/qtsdk-2010.02/qt-static/bin/qmake")
 set(CTEST_SITE "karakoram.kitware") # for example: mymachine.kitware, mymachine.dkfz, ...
@@ -34,6 +35,7 @@ set(WITH_COVERAGE FALSE)
 set(WITH_DOCUMENTATION FALSE)
 #set(DOCUMENTATION_ARCHIVES_OUTPUT_DIRECTORY ) # for example: $ENV{HOME}/Projects/Doxygen
 set(WITH_PACKAGES FALSE)
+#set(MIDAS_PACKAGES_CREDENTIAL_FILE "/path/to/CTKAppLauncher-MidasPackagesCredential.cmake")
 set(CTEST_BUILD_CONFIGURATION "Release")
 set(CTEST_TEST_TIMEOUT 20)
 set(CTEST_BUILD_FLAGS "-j4") # Use multiple CPU cores to build
