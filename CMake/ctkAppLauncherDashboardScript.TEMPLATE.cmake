@@ -35,7 +35,7 @@ set(WITH_COVERAGE FALSE)
 set(WITH_DOCUMENTATION FALSE)
 #set(DOCUMENTATION_ARCHIVES_OUTPUT_DIRECTORY ) # for example: $ENV{HOME}/Projects/Doxygen
 set(WITH_PACKAGES FALSE)
-#set(MIDAS_PACKAGES_CREDENTIAL_FILE "/path/to/CTKAppLauncher-MidasPackagesCredential.cmake")
+#set(MIDAS_PACKAGES_CREDENTIAL_FILE "/path/to/Kitware-MidasPackagesCredential.cmake")
 set(CTEST_BUILD_CONFIGURATION "Release")
 set(CTEST_TEST_TIMEOUT 20)
 set(CTEST_BUILD_FLAGS "-j4") # Use multiple CPU cores to build
