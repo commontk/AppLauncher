@@ -59,9 +59,9 @@ set(CTEST_SOURCE_DIRECTORY "${CTEST_DASHBOARD_ROOT}/CTKAppLauncher")
 set(CTEST_BINARY_DIRECTORY "${CTEST_DASHBOARD_ROOT}/CTKAppLauncher-build-${CTEST_BUILD_CONFIGURATION}-${SCRIPT_MODE}")
 
 #
-# Additionnal CMakeCache options
+# Additional CMakeCache options
 #
-set(ADDITIONNAL_CMAKECACHE_OPTION "
+set(ADDITIONAL_CMAKECACHE_OPTION "
 ")
 
 # List of test that should be explicitly disabled on this machine
