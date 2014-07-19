@@ -51,7 +51,7 @@ set(PRINT_COMMAND 0)
 # Extract application settings directory
 
 extract_application_settings_value("AdditionalSettingsDir" additional_settings_dir)
-set(additional_settings_path "${additional_settings_dir}/${application_name}AdditionalLauncherSettings.ini")
+set(additional_settings_path "${additional_settings_dir}/${application_name}.ini")
 
 # --------------------------------------------------------------------------
 # Configure user additional settings file
