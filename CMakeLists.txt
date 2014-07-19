@@ -48,8 +48,8 @@ endforeach()
 #
 set(CTKAppLauncher_MAJOR_VERSION 0)
 set(CTKAppLauncher_MINOR_VERSION 1)
-set(CTKAppLauncher_BUILD_VERSION 12)
-set(CTKAppLauncher_VERSION_IS_RELEASE 0)
+set(CTKAppLauncher_BUILD_VERSION 13)
+set(CTKAppLauncher_VERSION_IS_RELEASE 1)
 #set(CTKAppLauncher_VERSION_RC 1)
 
 if(CTKAppLauncher_VERSION_IS_RELEASE)
