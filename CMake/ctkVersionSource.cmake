@@ -1,7 +1,7 @@
 # Adapted from: CMake/Utilites/CMakeVersionSource.cmake
 
 # Try to identify the current development source version.
-set(CTKAppLauncher_VERSION_SOURCE "")
+set(CTKAppLauncher_VERSION_SOURCE "unknown")
 if(NOT EXISTS ${CMAKE_SOURCE_DIR}/.git/HEAD)
   message(FATAL_ERROR "error: ${CMAKE_SOURCE_DIR} is NOT a git repository. ")
 endif()
@@ -30,5 +30,7 @@ if(GIT_EXECUTABLE)
       set(CTKAppLauncher_VERSION_SOURCE "${CTKAppLauncher_VERSION_SOURCE}-dirty")
     endif()
   endif()
+else()
+  message(WARNING "GIT_EXECUTABLE not found. CTKAppLauncher_VERSION_SOURCE default to 'unknown'.")
 endif()
 
