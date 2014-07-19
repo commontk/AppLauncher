@@ -16,7 +16,7 @@ QT4_GENERATE_MOCS(
   )
 
 add_executable(${KIT}CppTests ${Tests})
-target_link_libraries(${KIT}CppTests ${KIT} ${CTK_BASE_LIBRARIES})
+target_link_libraries(${KIT}CppTests ${KIT} CTKAppLauncherBase)
 
 if(QT_MAC_USE_COCOA)
   target_link_libraries(${KIT}CppTests "-framework cocoa -framework IOKit")

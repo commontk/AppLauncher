@@ -91,12 +91,6 @@ set(CMAKE_MODULE_PATH
   ${CMAKE_MODULE_PATH})
 
 #-----------------------------------------------------------------------------
-# Clear CTK_BASE_INCLUDE_DIRS and CTK_BASE_LIBRARIES
-#
-set(CTK_BASE_LIBRARIES CACHE INTERNAL "CTK base libraries" FORCE)
-set(CTK_BASE_INCLUDE_DIRS CACHE INTERNAL "CTK includes" FORCE)
-
-#-----------------------------------------------------------------------------
 # CMake function(s) and macro(s)
 #
 include(ctkFunctionCheckCompilerFlags)
@@ -243,11 +237,6 @@ set(QT_USE_QTTEST ${BUILD_TESTING})
 include(${QT_USE_FILE})
 
 #-----------------------------------------------------------------------------
-# Update CTK_BASE_LIBRARIES with QT libraries
-#
-set(CTK_BASE_LIBRARIES ${CTK_BASE_LIBRARIES} ${QT_LIBRARIES} CACHE INTERNAL "CTK base libraries" FORCE)
-
-#-----------------------------------------------------------------------------
 # Build ctkAppLauncherBase and associated tests
 #
 include_directories(
@@ -260,14 +249,14 @@ add_subdirectory(Base)
 # Build executable
 #
 include_directories(
-  ${CTK_BASE_INCLUDE_DIRS}
+  ${CTKAppLauncherBase_INCLUDE_DIRS}
   )
 
 #
 # Launcher *WITH* console IO support
 #
 add_executable(${PROJECT_NAME} Main.cpp)
-target_link_libraries(${PROJECT_NAME} ${CTK_BASE_LIBRARIES})
+target_link_libraries(${PROJECT_NAME} CTKAppLauncherBase)
 if(QT_MAC_USE_COCOA)
   target_link_libraries(${PROJECT_NAME} "-framework cocoa")
 endif()
@@ -280,7 +269,7 @@ if(WIN32)
   # Launcher *WITHOUT* console IO support
   #
   add_executable(${PROJECT_NAME}W WIN32 Main.cpp)
-  target_link_libraries(${PROJECT_NAME}W ${CTK_BASE_LIBRARIES})
+  target_link_libraries(${PROJECT_NAME}W CTKAppLauncherBase)
   set_target_properties(${PROJECT_NAME}W PROPERTIES
     LABELS ctkAppLauncher
     COMPILE_DEFINITIONS CTKAPPLAUNCHER_WITHOUT_CONSOLE_IO_SUPPORT

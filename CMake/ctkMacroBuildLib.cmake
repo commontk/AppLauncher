@@ -30,13 +30,10 @@
 #
 # If you want to re-use this macro outside of CTK, the line referring to the following items
 # may need to be updated to match your project:
-#    - CTK_BASE_INCLUDE_DIRS
 #    - ${CTK_SOURCE_DIR}/Libs/CTKExport.h.in
 #    - CTK_LIBRARY_PROPERTIES
 #    - CTK_INSTALL_BIN_DIR
 #    - CTK_INSTALL_LIB_DIR
-#    - CTK_BASE_LIBRARIES
-#    - CTK_LIBRARIES
 #
 
 macro(ctkMacroBuildLib)
@@ -70,16 +67,16 @@ macro(ctkMacroBuildLib)
 
   # --------------------------------------------------------------------------
   # Include dirs
-  set(my_includes
-    ${CTK_BASE_INCLUDE_DIRS}
+  set(${PROJECT_NAME}_INCLUDE_DIRS
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_CURRENT_BINARY_DIR}
-    # with CMake >2.9, use QT4_MAKE_OUTPUT_FILE instead ?
-    ${CMAKE_CURRENT_BINARY_DIR}/Resources/UI
+    CACHE STRING "${PROJECT_NAME} source and binary include directories" FORCE
+    )
+
+  include_directories(
+    ${${PROJECT_NAME}_INCLUDE_DIRS}
     ${${prefix}_INCLUDE_DIRECTORIES}
     )
-  set(CTK_BASE_INCLUDE_DIRS ${my_includes} CACHE INTERNAL "CTK includes" FORCE)
-  include_directories(${CTK_BASE_INCLUDE_DIRS})
 
   if(${prefix}_LIBRARY_TYPE STREQUAL "SHARED")
     set(MY_LIBRARY_EXPORT_DIRECTIVE ${${prefix}_EXPORT_DIRECTIVE})
@@ -144,12 +141,6 @@ macro(ctkMacroBuildLib)
     ${${prefix}_TARGET_LIBRARIES}
     )
   target_link_libraries(${lib_name} ${my_libs})
-
-  # Update CTK_BASE_LIBRARIES
-  if(DEFINED CTK_LIBRARIES)
-    set(CTK_LIBRARIES ${CTK_LIBRARIES} ${lib_name} CACHE INTERNAL "CTK libraries" FORCE)
-  endif()
-  set(CTK_BASE_LIBRARIES ${my_libs} ${lib_name} CACHE INTERNAL "CTK base libraries" FORCE)
 
   # Install headers
   #file(GLOB headers "${CMAKE_CURRENT_SOURCE_DIR}/*.h")
