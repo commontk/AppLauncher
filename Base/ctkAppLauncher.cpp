@@ -535,7 +535,7 @@ bool ctkAppLauncherInternal::readSettings(const QString& fileName, int settingsT
   if(settingsType == Self::RegularSettings)
     {
     this->UserAdditionalSettingsFileBaseName =
-        settings.value("userAdditionalSettingsFileBaseName", "AdditionalLauncherSettings").toString();
+        settings.value("userAdditionalSettingsFileBaseName", "").toString();
 
     // Read revision, organization and application names
     this->OrganizationName = applicationGroup["organizationName"];

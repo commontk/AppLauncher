@@ -29,7 +29,7 @@ extract_application_settings_value("AdditionalSettingsDir" additional_settings_d
 
 # --------------------------------------------------------------------------
 # Create user additional settings
-set(expected_additional_settings_path "${additional_settings_dir}/${application_name}AdditionalLauncherSettings-${application_revision}.ini")
+set(expected_additional_settings_path "${additional_settings_dir}/${application_name}-${application_revision}.ini")
 file(WRITE ${expected_additional_settings_path} "")
 
 # Ask the launcher if it could located the file
