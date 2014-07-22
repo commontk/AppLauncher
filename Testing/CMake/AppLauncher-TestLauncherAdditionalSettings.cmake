@@ -16,12 +16,18 @@ set(regular_env_var_name_1 "SOMETHING_NICE")
 set(regular_env_var_value_1 "Chocolate")
 set(regular_env_var_name_2 "SOMETHING_AWESOME")
 set(regular_env_var_value_2 "Rock climbing !")
+set(regular_pathenv_var_name_1 "SOME_PATH")
+set(regular_pathenv_var_value_1_1 "/farm/cow")
+set(regular_pathenv_var_value_1_2 "/farm/pig")
+set(regular_pathenv_var_value_1 "${regular_pathenv_var_value_1_1}${pathsep}${regular_pathenv_var_value_1_2}")
 set(common_env_var_name "SOMETHING_COMMON")
 set(common_env_var_value_1 "Snow")
 set(common_env_var2_name "ANOTHER_THING_COMMON")
 set(common_env_var2_value_1 "Rocks")
 
 file(WRITE "${launcher}LauncherSettings.ini" "
+[General]
+additionalPathVariables=${regular_pathenv_var_name_1}
 
 [Application]
 path=${application}
@@ -45,6 +51,12 @@ ${regular_env_var_name_1}=${regular_env_var_value_1}
 ${regular_env_var_name_2}=${regular_env_var_value_2}
 ${common_env_var_name}=${common_env_var_value_1}
 ${common_env_var2_name}=${common_env_var2_value_1}
+
+[${regular_pathenv_var_name_1}]
+1\\path=${regular_pathenv_var_value_1_1}
+2\\path=${regular_pathenv_var_value_1_2}
+size=2
+
 ")
 
 # --------------------------------------------------------------------------
@@ -189,6 +201,7 @@ set(expected_ov_lines
   "PATH=${additional_path_1}${pathsep}${additional_path_2}${pathsep}${expected_additional_path_3}${pathsep}${user_additional_path_1}${pathsep}${user_additional_path_2}${pathsep}${expected_user_additional_path_3}${pathsep}${regular_path_1}${pathsep}${regular_path_2}"
   "${regular_env_var_name_2}=${regular_env_var_value_2}\n"
   "${regular_env_var_name_1}=${regular_env_var_value_1}\n"
+  "${regular_pathenv_var_name_1}=${regular_pathenv_var_value_1}\n"
   "${common_env_var_name}=${common_env_var_value_1}:${common_env_var_value_2}:${common_env_var_value_3}\n"
   "${common_env_var2_name}=${common_env_var2_value_3}:${common_env_var2_value_2}:${common_env_var2_value_1}\n"
   )
@@ -203,6 +216,7 @@ if(WIN32)
     "PATH=${additional_path_1}${pathsep}${additional_path_2}${pathsep}${expected_additional_path_3}${pathsep}${user_additional_path_1}${pathsep}${user_additional_path_2}${pathsep}${expected_user_additional_path_3}${pathsep}${regular_path_1}${pathsep}${regular_path_2}${pathsep}${additional_library_path}${pathsep}${user_additional_library_path}${pathsep}${regular_library_path_1}${pathsep}${regular_library_path_2}"
     "${regular_env_var_name_2}=${regular_env_var_value_2}\n"
     "${regular_env_var_name_1}=${regular_env_var_value_1}\n"
+    "${regular_pathenv_var_name_1}=${regular_pathenv_var_value_1}\n"
     "${common_env_var_name}=${common_env_var_value_1}:${common_env_var_value_2}:${common_env_var_value_3}\n"
     "${common_env_var2_name}=${common_env_var2_value_3}:${common_env_var2_value_2}:${common_env_var2_value_1}\n"
     )

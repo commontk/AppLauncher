@@ -23,7 +23,6 @@ set(regular_env_var_value_3 "<env:${sys_env_var_name}>")
 set(regular_pathenv_var_name_1 "SOME_PATH")
 set(regular_pathenv_var_value_1_1 "/farm/cow")
 set(regular_pathenv_var_value_1_2 "/farm/pig")
-set(regular_pathenv_var_value_1 "${regular_pathenv_var_value_1_1}${pathsep}${regular_pathenv_var_value_1_2}")
 
 set(ENV{${sys_env_var_name}} ${sys_env_var_value})
 
@@ -77,7 +76,7 @@ set(expected_regular_env_var_value_2 "${regular_env_var_value_2}")
 set(expected_regular_env_var_name_3 "${regular_env_var_name_3}")
 set(expected_regular_env_var_value_3 "${sys_env_var_value}")
 set(expected_regular_pathenv_var_name_1 "${regular_pathenv_var_name_1}")
-set(expected_regular_pathenv_var_value_1 "${regular_pathenv_var_value_1}")
+set(expected_regular_pathenv_var_value_1 "${regular_pathenv_var_value_1_1}${pathsep}${regular_pathenv_var_value_1_2}")
 
 set(expected_msg "
 ${expected_regular_env_var_name_1}=${expected_regular_env_var_value_1}
