@@ -20,8 +20,10 @@ set(regular_env_var_name_2 "SOMETHING_AWESOME")
 set(regular_env_var_value_2 "Rock climbing !")
 set(regular_env_var_name_3 "SOMETHING_GREAT")
 set(regular_env_var_value_3 "<env:${sys_env_var_name}>")
-set(regular_env_var_name_4 "SOME_PATH")
-set(regular_env_var_value_4 "/farm/cow${pathsep}/farm/pig")
+set(regular_pathenv_var_name_1 "SOME_PATH")
+set(regular_pathenv_var_value_1_1 "/farm/cow")
+set(regular_pathenv_var_value_1_2 "/farm/pig")
+set(regular_pathenv_var_value_1 "${regular_pathenv_var_value_1_1}${pathsep}${regular_pathenv_var_value_1_2}")
 
 set(ENV{${sys_env_var_name}} ${sys_env_var_value})
 
@@ -29,7 +31,7 @@ set(ENV{${sys_env_var_name}} ${sys_env_var_value})
 # Configure settings file
 file(WRITE "${launcher}LauncherSettings.ini" "
 [General]
-additionalPathVariables=SOME_PATH
+additionalPathVariables=${regular_pathenv_var_name_1}
 
 [Application]
 path=${application}
@@ -44,9 +46,9 @@ ${regular_env_var_name_1}=${regular_env_var_value_1}
 ${regular_env_var_name_2}=${regular_env_var_value_2}
 ${regular_env_var_name_3}=${regular_env_var_value_3}
 
-[SOME_PATH]
-1\\path=/farm/cow
-2\\path=/farm/pig
+[${regular_pathenv_var_name_1}]
+1\\path=${regular_pathenv_var_value_1_1}
+2\\path=${regular_pathenv_var_value_1_2}
 size=2
 ")
 
@@ -74,14 +76,14 @@ set(expected_regular_env_var_name_2 "${regular_env_var_name_2}")
 set(expected_regular_env_var_value_2 "${regular_env_var_value_2}")
 set(expected_regular_env_var_name_3 "${regular_env_var_name_3}")
 set(expected_regular_env_var_value_3 "${sys_env_var_value}")
-set(expected_regular_env_var_name_4 "${regular_env_var_name_4}")
-set(expected_regular_env_var_value_4 "${regular_env_var_value_4}")
+set(expected_regular_pathenv_var_name_1 "${regular_pathenv_var_name_1}")
+set(expected_regular_pathenv_var_value_1 "${regular_pathenv_var_value_1}")
 
 set(expected_msg "
 ${expected_regular_env_var_name_1}=${expected_regular_env_var_value_1}
 ${expected_regular_env_var_name_2}=${expected_regular_env_var_value_2}
 ${expected_regular_env_var_name_3}=${expected_regular_env_var_value_3}
-${expected_regular_env_var_name_4}=${expected_regular_env_var_value_4}
+${expected_regular_pathenv_var_name_1}=${expected_regular_pathenv_var_value_1}
 ")
 string(REGEX MATCH "${expected_msg}" current_msg "${ov}")
 if(NOT "${expected_msg}" STREQUAL "${current_msg}")
