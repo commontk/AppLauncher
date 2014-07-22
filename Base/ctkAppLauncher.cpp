@@ -597,7 +597,7 @@ bool ctkAppLauncherInternal::readSettings(const QString& fileName, int settingsT
     }
 
   // Read additional path environment variables
-  this->AdditionalPathVariables = settings.value("additionalPathVariables").toStringList().toSet();
+  this->AdditionalPathVariables.unite(settings.value("additionalPathVariables").toStringList().toSet());
   foreach(const QString& envVarName, this->AdditionalPathVariables)
     {
     if (!envVarName.isEmpty())
