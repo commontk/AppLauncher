@@ -65,6 +65,8 @@ RUN wget http://packages.kitware.com/download/item/6175/qt-everywhere-opensource
   find . -name '*.o' -delete
 
 RUN git clone https://github.com/commontk/AppLauncher.git
+VOLUME /usr/src/AppLauncher
+
 RUN mkdir /usr/src/AppLauncher-build
 WORKDIR /usr/src/AppLauncher-build
 RUN cmake \
@@ -74,3 +76,4 @@ RUN cmake \
       /usr/src/AppLauncher && \
   make -j$(grep -c processor /proc/cpuinfo) && \
   make package
+VOLUME /usr/src/AppLauncher-build
