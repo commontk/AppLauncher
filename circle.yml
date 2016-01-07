@@ -1,0 +1,25 @@
+machine:
+  services:
+    - docker
+
+dependencies:
+  override:
+    - docker info
+    - docker pull commontk/applauncher
+    - docker pull commontk/applauncher-test
+
+test:
+  override:
+    - docker build -t commontk/applauncher ~/AppLauncher/
+    - docker build -t commontk/applauncher-test ~/AppLauncher/Testing/Docker/
+    - mkdir ~/AppLauncher-build && docker run --name applauncher -v ~/AppLauncher:/usr/src/AppLauncher:ro -v ~/AppLauncher-build:/usr/src/AppLauncher-build:rw commontk/applauncher build-package.sh
+    - cp ~/AppLauncher-build/CTKAppLauncher-*.tar.gz ~/ && gunzip ~/CTKAppLauncher-*.tar.gz && mv ~/CTKAppLauncher-*.tar $CIRCLE_ARTIFACTS/CTKAppLauncher-linux-amd64.tar.gz
+    - docker run --name applauncher-test --volumes-from applauncher commontk/applauncher-test; docker cp applauncher-test:/var/log/supervisor/graphical-app-launcher.log - | tar xO; [ "$(docker cp applauncher-test:/tmp/graphical-app.return_code - | tar xO)" = 0 ]
+
+deployment:
+  hub:
+    branch: master
+    commands:
+      - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
+      - docker push commontk/applauncher
+      - docker push commontk/applauncher-test

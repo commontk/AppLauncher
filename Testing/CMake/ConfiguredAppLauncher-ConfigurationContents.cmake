@@ -4,8 +4,10 @@ include(${TEST_BINARY_DIR}/ConfiguredAppLauncherTestPrerequisites.cmake)
 # Helper function
 function(compare_files ACTUAL EXPECTED)
   file(READ ${ACTUAL} actual)
+  string(STRIP "${actual}" actual)
   file(READ ${EXPECTED} expected)
   string(CONFIGURE "${expected}" expected @ONLY)
+  string(STRIP "${expected}" expected)
   if(NOT "${actual}" STREQUAL "${expected}")
     message(FATAL_ERROR "Content validation of '${ACTUAL}' failed:
 

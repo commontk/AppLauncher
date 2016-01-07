@@ -1,6 +1,8 @@
 CTKAppLauncher
 ==============
 
+[![Circle CI](https://circleci.com/gh/commontk/AppLauncher.svg?style=svg)](https://circleci.com/gh/commontk/AppLauncher)
+
 Overview
 --------
 
