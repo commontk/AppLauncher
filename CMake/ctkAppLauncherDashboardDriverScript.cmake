@@ -167,11 +167,6 @@ ${ADDITIONAL_CMAKECACHE_OPTION}
     if(run_ctest_with_configure)
       message("----------- [ Configure ${CTEST_PROJECT_NAME} ] -----------")
 
-      set(label ctkAppLauncher)
-
-      set_property(GLOBAL PROPERTY SubProject ${label})
-      set_property(GLOBAL PROPERTY Label ${label})
-
       ctest_configure(BUILD "${CTEST_BINARY_DIRECTORY}")
       ctest_read_custom_files("${CTEST_BINARY_DIRECTORY}")
       if(run_ctest_submit)
@@ -198,10 +193,8 @@ ${ADDITIONAL_CMAKECACHE_OPTION}
       message("----------- [ Test ${CTEST_PROJECT_NAME} ] -----------")
       ctest_test(
         BUILD "${CTEST_BINARY_DIRECTORY}"
-        INCLUDE_LABEL ${label}
         PARALLEL_LEVEL 8
         EXCLUDE ${TEST_TO_EXCLUDE_REGEX})
-      # runs only tests that have a LABELS property matching "${label}"
       if(run_ctest_submit)
         ctest_submit(PARTS Test)
       endif()
