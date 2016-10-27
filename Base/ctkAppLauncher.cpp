@@ -157,6 +157,10 @@ bool ctkAppLauncherInternal::processAdditionalSettingsArgument()
     return false;
     }
 
+  // pass this setting through to launchee for additional handling, if needed
+  this->ApplicationToLaunchArguments << QString("--launcher-additional-settings");
+  this->ApplicationToLaunchArguments << this->ParsedArgs.value("launcher-additional-settings").toString();
+
   return this->readSettings(additionalSettings, Self::AdditionalSettings);
 }
 
