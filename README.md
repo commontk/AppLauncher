@@ -20,7 +20,7 @@ Once you've made your great commits:
 1. [Fork][fk] AppLauncher
 2. Create a topic branch - `git checkout -b my_branch`
 3. Push to your branch - `git push origin my_branch`
-4. Create an [Issue][is] with a link to your branch
+4. Create a [Pull Request][pr] or an [Issue][is] with a link to your branch
 5. That's it!
 
 
@@ -48,3 +48,4 @@ limitations under the License.
 
 [fk]: http://help.github.com/forking/
 [is]: http://github.com/commontk/AppLauncher/issues
+[pr]: https://github.com/commontk/AppLauncher/pulls
