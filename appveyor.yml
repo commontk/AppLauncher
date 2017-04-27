@@ -13,6 +13,8 @@ os:
 environment:
   PYTHON_DIR: "C:\\Python27-x64"
   PATH: "%PYTHON_DIR%;%PYTHON_DIR%\\Scripts;%PATH%"
+  GITHUB_TOKEN:
+    secure: 0D2ZkBwNKDnj7j9VNRaJlFCzmAYEHb3N+rzJdm+R4FDNh2P9HTqJ4NAtKm+9fXjw
 
 install:
   # Downloads and extract Qt static build
@@ -41,4 +43,12 @@ test_script:
   # Run tests
   - ps: |
         ctest -C Release -j4
+  # Upload package as prerelease
+  - ps: |
+      pip install scikit-ci-addons==0.14.0
+      ci_addons publish_github_release commontk/applauncher `
+        --exit-success-if-missing-token                     `
+        --prerelease-packages CTKAppLauncher-*.zip          `
+        --prerelease-packages-clear-pattern "*"             `              `
+        --prerelease-packages-keep-pattern "*<COMMIT_SHORT_SHA>*"
 
