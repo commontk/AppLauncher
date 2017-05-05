@@ -1,0 +1,54 @@
+
+branches:
+ only:
+ - master
+skip_tags: true
+
+shallow_clone: false
+
+version: 0.0.{build}
+os:
+  - Visual Studio 2013
+
+environment:
+  PYTHON_DIR: "C:\\Python27-x64"
+  PATH: "%PYTHON_DIR%;%PYTHON_DIR%\\Scripts;%PATH%"
+  GITHUB_TOKEN:
+    secure: 0D2ZkBwNKDnj7j9VNRaJlFCzmAYEHb3N+rzJdm+R4FDNh2P9HTqJ4NAtKm+9fXjw
+
+install:
+  # Downloads and extract Qt static build
+  - mkdir C:\D\Support
+  - ps: |
+        $client = new-object System.Net.WebClient;
+        $client.DownloadFile("https://github.com/jcfr/qt-static-build/releases/download/4.8.6-vs2008/qt-static-release-i386-4.8.6.zip", "C:\D\Support\qt-static-release-i386-4.8.6.zip")
+        7z x C:\D\Support\qt-static-release-i386-4.8.6.zip -oC:\D\Support\
+
+build_script:
+  - ps: |
+        mkdir build
+        cd build
+  # Configure
+  - ps: |
+        cmake                               `
+          -G "Visual Studio 9 2008"         `
+          -DBUILD_TESTING:BOOL=ON           `
+          -DQT_QMAKE_EXECUTABLE:FILEPATH=C:\D\Support\qt-static-release-i386-4.8.6\bin\qmake.exe `
+          ..
+  # Build and package
+  - ps: |
+        cmake --build . --config Release --target PACKAGE
+
+test_script:
+  # Run tests
+  - ps: |
+        ctest -C Release -j4
+  # Upload package as prerelease
+  - ps: |
+      pip install scikit-ci-addons==0.14.0
+      ci_addons publish_github_release commontk/applauncher `
+        --exit-success-if-missing-token                     `
+        --prerelease-packages CTKAppLauncher-*.zip          `
+        --prerelease-packages-clear-pattern "*"             `              `
+        --prerelease-packages-keep-pattern "*<COMMIT_SHORT_SHA>*"
+

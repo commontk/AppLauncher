@@ -3,6 +3,8 @@ machine:
     - echo 'DOCKER_OPTS="-s btrfs -e lxc -D --userland-proxy=false"' | sudo tee -a /etc/default/docker
     - sudo curl -L -o /usr/bin/docker 'https://s3-external-1.amazonaws.com/circle-downloads/docker-1.9.0-circleci-cp-workaround'
     - sudo chmod 0755 /usr/bin/docker
+  python:
+    version: 2.7.11
   services:
     - docker
 
@@ -17,8 +19,16 @@ test:
     - docker build -t commontk/applauncher ~/AppLauncher/
     - docker build -t commontk/applauncher-test ~/AppLauncher/Testing/Docker/
     - mkdir ~/AppLauncher-build && docker run --name applauncher -v ~/AppLauncher:/usr/src/AppLauncher:ro -v ~/AppLauncher-build:/usr/src/AppLauncher-build:rw commontk/applauncher build-package.sh
-    - cp ~/AppLauncher-build/CTKAppLauncher-*.tar.gz ~/ && gunzip ~/CTKAppLauncher-*.tar.gz && mv ~/CTKAppLauncher-*.tar $CIRCLE_ARTIFACTS/CTKAppLauncher-linux-amd64.tar.gz
+    #- cp ~/AppLauncher-build/CTKAppLauncher-*.tar.gz ~/ && gunzip ~/CTKAppLauncher-*.tar.gz && mv ~/CTKAppLauncher-*.tar $CIRCLE_ARTIFACTS/CTKAppLauncher-linux-amd64.tar.gz
     - docker run --name applauncher-test --volumes-from applauncher commontk/applauncher-test; docker cp applauncher-test:/var/log/supervisor/graphical-app-launcher.log - | tar xO; [ "$(docker cp applauncher-test:/tmp/graphical-app.return_code - | tar xO)" = 0 ]
+    # Upload package as prerelease
+    - |
+      pip install scikit-ci-addons==0.14.0
+      ci_addons publish_github_release commontk/applauncher \
+        --exit-success-if-missing-token                     \
+        --prerelease-packages ~/AppLauncher-build/CTKAppLauncher-*.tar.gz \
+        --prerelease-packages-clear-pattern "*"                           \
+        --prerelease-packages-keep-pattern "*<COMMIT_SHORT_SHA>*"
 
 deployment:
   hub:
