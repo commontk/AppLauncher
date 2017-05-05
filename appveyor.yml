@@ -15,6 +15,8 @@ environment:
   PATH: "%PYTHON_DIR%;%PYTHON_DIR%\\Scripts;%PATH%"
   GITHUB_TOKEN:
     secure: 0D2ZkBwNKDnj7j9VNRaJlFCzmAYEHb3N+rzJdm+R4FDNh2P9HTqJ4NAtKm+9fXjw
+  APPVEYOR_API_TOKEN:
+    secure: U5fSDWJH39dwzLUfl7RZ0FwF+q7pK5tbAU8WGxO/1hc=
 
 install:
   # Downloads and extract Qt static build
