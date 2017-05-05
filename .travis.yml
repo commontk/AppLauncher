@@ -1,0 +1,56 @@
+branches:
+ only:
+ - master
+
+sudo: true
+
+language: c++
+os:
+- osx
+
+env:
+  global:
+  - secure: "hsLaLewTuzBbghctH4bDfpzGPwdGlzfW0BS0zBbRRuEeqC9I4HrpSvxfj8YuBbuVvqzqXuGODrOx07mvwec3KyIS8NvXwqYufBoxlbpFH9MTmyEFZdDoqyx0TKborl4m2iVotUzQXls6jnFuK0kcFMArKdnhipKPKmn6xnS8mNA="
+
+compiler:
+- clang
+
+cache:
+  directories:
+  - $HOME/downloads
+
+before_script:
+# Downloads and extract Qt static build
+- |
+  set -e
+  pushd $HOME/downloads
+  curl -L -O https://github.com/jcfr/qt-static-build/releases/download/4.7.4-macosx-10.6-g%2B%2B/qt-everywhere-opensource-static-build-4.7.4.tar.gz
+  tar -xzvf qt-everywhere-opensource-static-build-4.7.4.tar.gz
+  sudo mkdir -p /Users/kitware/Dashboards/Support/
+  sudo mv qt-everywhere-opensource-static-build-4.7.4 /Users/kitware/Dashboards/Support/
+  popd
+# Use scikit-ci-addons to
+# * streamline installation of CMake
+# * install package required to automatically create or update GitHub releases
+- |
+  pip install scikit-ci-addons==0.14.0
+  ci_addons travis/install_cmake 3.8.0
+script:
+- |
+  mkdir build
+  cd build
+  cmake \
+    -DQT_QMAKE_EXECUTABLE:FILEPATH=/Users/kitware/Dashboards/Support/qt-everywhere-opensource-static-build-4.7.4/bin/qmake \
+    -DCMAKE_BUILD_TYPE:STRING=Release \
+    -DCMAKE_OSX_DEPLOYMENT_TARGET:STRING=10.6 \
+    -DCMAKE_OSX_ARCHITECTURES:STRING=x86_64 \
+    ../
+- make -j4 && make package
+
+deploy:
+  - provider: script
+    script: ci_addons publish_github_release commontk/applauncher --exit-success-if-missing-token --prerelease-packages CTKAppLauncher-*.tar.gz --prerelease-packages-clear-pattern "*" --prerelease-packages-keep-pattern "*<COMMIT_SHORT_SHA>*"
+    skip_cleanup: true
+    on:
+      repo: commontk/AppLauncher
+      branch: master
