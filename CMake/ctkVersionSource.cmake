@@ -9,7 +9,7 @@ find_program(GIT_EXECUTABLE NAMES git git.cmd)
 mark_as_advanced(GIT_EXECUTABLE)
 if(GIT_EXECUTABLE)
   execute_process(
-    COMMAND ${GIT_EXECUTABLE} rev-parse --verify -q --short=4 HEAD
+    COMMAND ${GIT_EXECUTABLE} rev-parse --verify -q --short=7 HEAD
     OUTPUT_VARIABLE head
     OUTPUT_STRIP_TRAILING_WHITESPACE
     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
