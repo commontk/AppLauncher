@@ -50,8 +50,8 @@ test_script:
       pip install scikit-ci-addons==0.15.0
       ci_addons publish_github_release commontk/applauncher       `
         --exit-success-if-missing-token                           `
-        --prerelease-packages CTKAppLauncher-*.zip                `
+        --prerelease-packages CTKAppLauncher-*.tar.gz                `
         --prerelease-packages-clear-pattern "*win*"               `              `
         --prerelease-packages-keep-pattern "*<COMMIT_SHORT_SHA>*" `
-        --release-packages CTKAppLauncher-*.zip
+        --release-packages CTKAppLauncher-*.tar.gz
 
