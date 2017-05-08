@@ -1108,10 +1108,16 @@ int ctkAppLauncher::processArguments()
     }
 
   QStringList unparsedArgs = this->Internal->Parser.unparsedArguments();
+
+  if (!this->Internal->processExtraApplicationToLaunchArgument(unparsedArgs))
+    {
+    return Self::ExitWithError;
+    }
+
   if (unparsedArgs.contains(this->Internal->LauncherAdditionalHelpShortArgument) ||
       unparsedArgs.contains(this->Internal->LauncherAdditionalHelpLongArgument))
     {
-    if (this->Internal->LauncherStarting)
+    if (this->Internal->LauncherStarting && this->Internal->ExtraApplicationToLaunch.isEmpty())
       {
       this->displayHelp();
       }
@@ -1129,11 +1135,6 @@ int ctkAppLauncher::processArguments()
     }
 
   if (!this->Internal->processScreenHideDelayMsArgument())
-    {
-    return Self::ExitWithError;
-    }
-
-  if (!this->Internal->processExtraApplicationToLaunchArgument(unparsedArgs))
     {
     return Self::ExitWithError;
     }

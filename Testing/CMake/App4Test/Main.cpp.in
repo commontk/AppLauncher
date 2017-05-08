@@ -131,6 +131,10 @@ int main(int argc, char** argv)
       std::cout << "This is the short help" << std::endl;
       }
     }
+  else if (argc == 1)
+    {
+    std::cout << "No argument provided" << std::endl;
+    }
 
   // Instanciate library objects
 @LIB_INSTANCIATES@
