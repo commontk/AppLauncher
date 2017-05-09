@@ -5,7 +5,7 @@ set(CMAKE_EXECUTABLE_SUFFIX "@CMAKE_EXECUTABLE_SUFFIX@")
 
 set(launcher_name "@LAUNCHER_NAME@")
 set(launcher_version "@LAUNCHER_VERSION@")
-set(launcher_binary_dir "@LAUNCHER_BINARY_DIR@")
+set(launcher_binary_dir "@LAUNCHER_DIR@")
 
 set(app4test_binary_dir "@APP4TEST_BINARY_DIR@")
 set(app4test_build_type "@APP4TEST_BUILD_TYPE@")
@@ -25,8 +25,8 @@ endif()
 # Sanity checks
 
 if(NOT EXISTS ${launcher_binary_dir})
-  message(FATAL_ERROR "Make sure variable CTKAppLauncher_BINARY_DIR is set to a valid directory. "
-                      "CTKAppLauncher_BINARY_DIR [${launcher_binary_dir}]")
+  message(FATAL_ERROR "Make sure variable LAUNCHER_DIR is set to a valid directory. "
+                      "LAUNCHER_DIR [${launcher_binary_dir}]")
 endif()
 
 if(NOT EXISTS ${app4test_binary_dir})

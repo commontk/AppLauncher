@@ -9,7 +9,7 @@ set(app4configurelaunchertest_binary_dir "@APP4CONFIGURELAUNCHERTEST_BINARY_DIR@
 # Attempt to guess launcher build type
 
 set(ctkapplauncher_name CTKAppLauncher${CMAKE_EXECUTABLE_SUFFIX})
-set(ctkapplauncher_dir "@LAUNCHER_BINARY_DIR@")
+set(ctkapplauncher_dir "@LAUNCHER_DIR@")
 if(CMAKE_CONFIGURATION_TYPES)
   foreach (type ${CMAKE_CONFIGURATION_TYPES})
     set(name ${type}/CTKAppLauncher${CMAKE_EXECUTABLE_SUFFIX})

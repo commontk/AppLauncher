@@ -4,7 +4,7 @@ set(app4configurelaunchertest_binary_dir "@APP4CONFIGURELAUNCHERTEST_BINARY_DIR@
 set(app4configurelaunchertest_build_type "@APP4CONFIGURELAUNCHERTEST_BUILD_TYPE@")
 set(app4configurelaunchertest_cmake_generator "@APP4CONFIGURELAUNCHERTEST_CMAKE_GENERATOR@")
 
-set(ctkapplauncher_dir "@LAUNCHER_BINARY_DIR@")
+set(ctkapplauncher_dir "@LAUNCHER_DIR@")
 
 # --------------------------------------------------------------------------
 # Sanity checks
