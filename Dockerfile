@@ -1,4 +1,4 @@
-FROM thewtex/centos-build:v1.0.0
+FROM thewtex/centos-build:latest
 MAINTAINER CommonTK Community <ctk-developers@commontk.org>
 # Build and package the CTK AppLauncher
 
