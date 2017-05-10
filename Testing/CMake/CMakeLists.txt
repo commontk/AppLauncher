@@ -31,6 +31,12 @@ configure_file(
   )
 
 configure_file(
+  ${CMAKE_CURRENT_SOURCE_DIR}/App4TestStepChecks.cmake
+  ${CMAKE_CURRENT_BINARY_DIR}/App4TestStepChecks.cmake
+  COPYONLY
+  )
+
+configure_file(
   ${CMAKE_CURRENT_SOURCE_DIR}/ConfiguredAppLauncherTestPrerequisites.cmake.in
   ${CMAKE_CURRENT_BINARY_DIR}/ConfiguredAppLauncherTestPrerequisites.cmake
   @ONLY

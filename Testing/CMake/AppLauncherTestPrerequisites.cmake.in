@@ -7,9 +7,6 @@ set(launcher_name "@LAUNCHER_NAME@")
 set(launcher_version "@LAUNCHER_VERSION@")
 set(launcher_binary_dir "@LAUNCHER_DIR@")
 
-set(app4test_binary_dir "@APP4TEST_BINARY_DIR@")
-set(app4test_build_type "@APP4TEST_BUILD_TYPE@")
-
 if(WIN32)
   set(pathsep ";")
   set(library_path_variable_name "PATH")
@@ -22,16 +19,14 @@ elseif(UNIX)
 endif()
 
 # --------------------------------------------------------------------------
-# Sanity checks
+include(${CMAKE_CURRENT_LIST_DIR}/App4TestStepPrerequisites.cmake)
+include(${CMAKE_CURRENT_LIST_DIR}/App4TestStepChecks.cmake)
 
+# --------------------------------------------------------------------------
+# Sanity checks
 if(NOT EXISTS ${launcher_binary_dir})
   message(FATAL_ERROR "Make sure variable LAUNCHER_DIR is set to a valid directory. "
                       "LAUNCHER_DIR [${launcher_binary_dir}]")
-endif()
-
-if(NOT EXISTS ${app4test_binary_dir})
-  message(FATAL_ERROR "Make sure variable APP4TEST_BINARY_DIR is set to a valid directory. "
-                      "APP4TEST_BINARY_DIR [${app4test_binary_dir}]")
 endif()
 
 # --------------------------------------------------------------------------
@@ -47,8 +42,8 @@ if(CMAKE_CONFIGURATION_TYPES)
   endforeach()
 endif()
 
-if(${app4test_build_type} STREQUAL "")
-  message(FATAL_ERROR "'app4test_build_type' shouldn't be empty !")
+if(${launcher_build_type} STREQUAL "")
+  message(FATAL_ERROR "'launcher_build_type' shouldn't be empty !")
 endif()
 
 # --------------------------------------------------------------------------
@@ -72,34 +67,6 @@ endif()
 execute_process(COMMAND ${CMAKE_COMMAND} -E remove -f ${launcher}LauncherSettings.ini)
 execute_process(COMMAND ${CMAKE_COMMAND} -E remove -f ${launcher}AdditionalLauncherSettings.ini)
 
-# --------------------------------------------------------------------------
-# Set application variable
-
-set(application_dir "${app4test_binary_dir}/bin")
-if(CMAKE_CONFIGURATION_TYPES)
-  set(application_dir ${application_dir}/${app4test_build_type})
-endif()
-set(application_name App4Test)
-
-set(application ${application_dir}/${application_name}${CMAKE_EXECUTABLE_SUFFIX})
-
-# --------------------------------------------------------------------------
-# Check if application exists
-
-if (NOT EXISTS ${application})
-  message(FATAL_ERROR "Application ${application} doesn't exists !")
-endif()
-
-# --------------------------------------------------------------------------
-# Sanity check
-
-set(library_path ${app4test_binary_dir}/libs)
-if(CMAKE_CONFIGURATION_TYPES)
-  set(library_path ${library_path}/${app4test_build_type})
-endif()
-if (NOT EXISTS ${library_path})
-  message(FATAL_ERROR "Library path [${library_path}] doesn't exist")
-endif()
 
 # --------------------------------------------------------------------------
 set(expected_help_text "

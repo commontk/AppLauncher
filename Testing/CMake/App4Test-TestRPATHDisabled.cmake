@@ -1,6 +1,7 @@
 
 include(${TEST_SOURCE_DIR}/AppLauncherTestMacros.cmake)
-include(${TEST_BINARY_DIR}/AppLauncherTestPrerequisites.cmake)
+include(${TEST_BINARY_DIR}/App4TestStepPrerequisites.cmake)
+include(${TEST_BINARY_DIR}/App4TestStepChecks.cmake)
 
 # --------------------------------------------------------------------------
 # Debug flags - Set to True to display the command as string
