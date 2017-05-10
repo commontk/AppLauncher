@@ -1,6 +1,9 @@
 if(NOT DEFINED LAUNCHER_DIR)
   message(FATAL_ERROR "LAUNCHER_DIR is not defined")
 endif()
+if(NOT ("${TEST_TREE_TYPE}" STREQUAL "BuildTree" OR "${TEST_TREE_TYPE}" STREQUAL "InstallTree"))
+  message(FATAL_ERROR "TEST_TREE_TYPE is expected to be either 'BuildTree' or 'InstallTree'")
+endif()
 
 set(LAUNCHER_NAME ${PROJECT_NAME})
 set(LAUNCHER_VERSION ${CTKAppLauncher_VERSION})
@@ -61,35 +64,49 @@ macro(applauncher_add_cmakescript_test testname script)
 endmacro()
 
 #
-# Add 'CMake script' Tests
+# Add 'CMake script' Tests - Since these tests are independent of the TEST_TREE_TYPE, include them once.
 #
-applauncher_add_cmakescript_test(ctkAppLauncherListToQtSettingsArrayTest ctkAppLauncher)
-applauncher_add_cmakescript_test(ctkAppLauncherAppendExtraAppToLaunchToListTest ctkAppLauncher)
-applauncher_add_cmakescript_test(ctkAppLauncherExtraAppToLaunchListToQtSettingsTest ctkAppLauncher)
+if(TEST_TREE_TYPE STREQUAL "BuildTree")
+  applauncher_add_cmakescript_test(ctkAppLauncherListToQtSettingsArrayTest ctkAppLauncher)
+  applauncher_add_cmakescript_test(ctkAppLauncherAppendExtraAppToLaunchToListTest ctkAppLauncher)
+  applauncher_add_cmakescript_test(ctkAppLauncherExtraAppToLaunchListToQtSettingsTest ctkAppLauncher)
+endif()
 
 #
 # Helper macro
 #
 set(_previous_applauncher_test "NODEPENDS")
-macro(applauncher_add_test testname)
+function(applauncher_add_test testname)
+  set(testscript ${testname})
+  set(testname "${TEST_TREE_TYPE}_${testname}")
   add_test(NAME ${testname} COMMAND ${CMAKE_COMMAND}
     -DTEST_SOURCE_DIR:PATH=${CMAKE_CURRENT_SOURCE_DIR}
     -DTEST_BINARY_DIR:PATH=${CMAKE_CURRENT_BINARY_DIR}
-    -DTEST_CONFIGURATION:STRING=$<CONFIGURATION>
-    -P ${CMAKE_CURRENT_SOURCE_DIR}/${testname}.cmake)
+    -DTEST_CONFIGURATION:STRING=$<CONFIG>
+    ${ARGN}
+    -P ${CMAKE_CURRENT_SOURCE_DIR}/${testscript}.cmake)
   if(NOT ${_previous_applauncher_test} STREQUAL "NODEPENDS")
     set_tests_properties(${testname} PROPERTIES DEPENDS ${_previous_applauncher_test})
   endif()
-  set(_previous_applauncher_test ${testname})
+  set(_previous_applauncher_test ${testname} PARENT_SCOPE)
   set_property(TEST ${testname} PROPERTY LABELS ctkAppLauncher)
-endmacro()
+endfunction()
 
 #
 # Add Tests
 #
+
 applauncher_add_test(App4Test-ConfigureStep)
 applauncher_add_test(App4Test-BuildStep)
 applauncher_add_test(App4Test-TestRPATHDisabled)
+
+if(TEST_TREE_TYPE STREQUAL "InstallTree")
+  applauncher_add_test(
+    AppLauncher-Install
+    -DLAUNCHER_BUILD_DIR:PATH=${LAUNCHER_BUILD_DIR}
+    -DLAUNCHER_INSTALL_DIR:PATH=${LAUNCHER_INSTALL_DIR}
+    )
+endif()
 
 applauncher_add_test(AppLauncher-Param-TestLauncherAdditionalSettings)
 applauncher_add_test(AppLauncher-Param-TestLauncherDetach)

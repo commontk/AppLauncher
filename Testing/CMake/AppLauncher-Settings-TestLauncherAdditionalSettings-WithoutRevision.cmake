@@ -4,8 +4,8 @@ include(${TEST_BINARY_DIR}/AppLauncherTestPrerequisites.cmake)
 
 # --------------------------------------------------------------------------
 # Configure settings file
-set(organization_domain "www.commontk.org")
-set(organization_name "Common ToolKit")
+set(organization_domain "www.commontk-${TEST_TREE_TYPE}.org")
+set(organization_name "Common ToolKit ${TEST_TREE_TYPE}")
 set(application_name "AppLauncher")
 set(regular_library_path_1 ${library_path})
 set(regular_library_path_2 "/path/to/regular/libtwo")

@@ -4,9 +4,18 @@ include(${TEST_BINARY_DIR}/AppLauncherTestPrerequisites.cmake)
 
 set(intdir ".")
 set(reldir "")
-if(NOT "${CMAKE_CONFIGURATION_TYPES}" STREQUAL "")
-  set(intdir ${app4test_build_type})
+
+if(TEST_TREE_TYPE STREQUAL "BuildTree")
+  set(reldir "Testing/")
+  if(NOT "${CMAKE_CONFIGURATION_TYPES}" STREQUAL "")
+    set(intdir ${app4test_build_type})
+    set(reldir "../${reldir}/")
+  endif()
+else()
   set(reldir "../")
+  if(NOT "${CMAKE_CONFIGURATION_TYPES}" STREQUAL "")
+    set(intdir ${app4test_build_type})
+  endif()
 endif()
 
 # --------------------------------------------------------------------------
@@ -14,7 +23,7 @@ endif()
 file(WRITE "${launcher}LauncherSettings.ini" "
 
 [Paths]
-1\\path=<APPLAUNCHER_DIR>/../${reldir}Testing/CMake/App4Test-build/bin/${intdir}
+1\\path=<APPLAUNCHER_DIR>/../${reldir}CMake-${TEST_TREE_TYPE}/App4Test-build/bin/${intdir}
 size=1
 
 [LibraryPaths]
