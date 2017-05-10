@@ -231,6 +231,7 @@ endif()
 #-----------------------------------------------------------------------------
 # Qt
 #
+set(QT_USE_IMPORTED_TARGETS 1)
 find_package(Qt4 4.6 REQUIRED)
 set(QT_USE_QTTEST ${BUILD_TESTING})
 include(${QT_USE_FILE})
