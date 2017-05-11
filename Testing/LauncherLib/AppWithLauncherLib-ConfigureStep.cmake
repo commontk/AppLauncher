@@ -18,12 +18,29 @@ set(PRINT_COMMAND 0)
 
 # --------------------------------------------------------------------------
 # Configure AppWithLauncherLib
-set(command ${CMAKE_COMMAND}
+set(args
   -DCMAKE_BUILD_TYPE:STRING=${APPLIB_BUILD_TYPE}
   -DCTKAppLauncher_DIR:PATH=${CTKAppLauncher_DIR}
   -DQT_QMAKE_EXECUTABLE:FILEPATH=${QT_QMAKE_EXECUTABLE}
-  -G ${APPLIB_CMAKE_GENERATOR} ${APPLIB_SOURCE_DIR}
+  -DCMAKE_C_COMPILER:FILEPATH=${CMAKE_C_COMPILER}
+  -DCMAKE_CXX_COMPILER:FILEPATH=${CMAKE_CXX_COMPILER}
+  -G ${APPLIB_CMAKE_GENERATOR}
   )
+foreach(varname IN ITEMS
+    CMAKE_OSX_ARCHITECTURES
+    CMAKE_OSX_DEPLOYMENT_TARGET
+    CMAKE_OSX_SYSROOT
+    CMAKE_GENERATOR_PLATFORM
+    CMAKE_GENERATOR_TOOLSET
+    )
+  if(DEFINED ${varname})
+    list(APPEND args
+      -D${varname}:STRING=${${varname}}
+      )
+  endif()
+endforeach()
+
+set(command ${CMAKE_COMMAND} ${args} ${APPLIB_SOURCE_DIR})
 execute_process(
   COMMAND ${command}
   WORKING_DIRECTORY ${APPLIB_BINARY_DIR}

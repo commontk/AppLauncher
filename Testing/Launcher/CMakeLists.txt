@@ -75,7 +75,6 @@ endif()
 #
 # Helper function
 #
-set(_previous_applauncher_test "NODEPENDS")
 function(applauncher_add_test testname)
   set(testscript ${testname})
   set(testname "${TEST_TREE_TYPE}_${testname}")
@@ -85,20 +84,36 @@ function(applauncher_add_test testname)
     -DTEST_CONFIGURATION:STRING=$<CONFIG>
     ${ARGN}
     -P ${CMAKE_CURRENT_SOURCE_DIR}/${testscript}.cmake)
-  if(NOT ${_previous_applauncher_test} STREQUAL "NODEPENDS")
-    set_tests_properties(${testname} PROPERTIES DEPENDS ${_previous_applauncher_test})
+  # Current test depends on all previous tests
+  # This is required to support:
+  #  (1) running tests for BuildTree or InstallTree group in parallel
+  #  (2) always running test within one group serially
+  set_property(TEST "${testname}" PROPERTY RESOURCE_LOCK "${TEST_TREE_TYPE}-Launcher")
+  if(NOT "${required_test_deps}" STREQUAL "")
+     set_tests_properties(${testname} PROPERTIES DEPENDS "${required_test_deps}")
   endif()
-  set(_previous_applauncher_test ${testname} PARENT_SCOPE)
-  set_property(TEST ${testname} PROPERTY LABELS ctkAppLauncher)
-  set(testname ${testname} PARENT_SCOPE)
+  # Set labels
+  set_property(TEST ${testname} PROPERTY LABELS "ctkAppLauncher")
 endfunction()
 
 #
 # Add Tests
 #
 
+set(required_test_deps)
+
 applauncher_add_test(App4Test-ConfigureStep)
 applauncher_add_test(App4Test-BuildStep)
+set_property(
+  TEST "${TEST_TREE_TYPE}_App4Test-BuildStep"
+  APPEND PROPERTY DEPENDS "${TEST_TREE_TYPE}_App4Test-ConfigureStep"
+  )
+
+set(required_test_deps
+  ${TEST_TREE_TYPE}_App4Test-ConfigureStep
+  ${TEST_TREE_TYPE}_App4Test-BuildStep
+  )
+
 applauncher_add_test(App4Test-TestRPATHDisabled)
 
 if(TEST_TREE_TYPE STREQUAL "InstallTree")
@@ -108,8 +123,14 @@ if(TEST_TREE_TYPE STREQUAL "InstallTree")
     -DLAUNCHER_INSTALL_DIR:PATH=${LAUNCHER_INSTALL_DIR}
     -DCTKAppLauncherTest_INSTALL_LauncherLibrary:BOOL=0
     )
-  set_property(TEST ${testname} PROPERTY RESOURCE_LOCK "AppLauncherConfigure")
+  set_property(TEST "${TEST_TREE_TYPE}_AppLauncher-Install" APPEND PROPERTY RESOURCE_LOCK "AppLauncherConfigure")
+  set_property(TEST "${TEST_TREE_TYPE}_AppLauncher-Install" APPEND PROPERTY LABELS "CompilerRequired")
+
+  list(APPEND required_test_deps
+    ${TEST_TREE_TYPE}_AppLauncher-Install
+    )
 endif()
+
 
 applauncher_add_test(AppLauncher-Param-TestLauncherAdditionalSettings)
 applauncher_add_test(AppLauncher-Param-TestLauncherDetach)
@@ -158,6 +179,36 @@ endif()
 
 applauncher_add_test(App4ConfigureLauncherTest-ConfigureStep)
 applauncher_add_test(App4ConfigureLauncherTest-BuildStep)
-
+set_property(
+  TEST "${TEST_TREE_TYPE}_App4ConfigureLauncherTest-BuildStep"
+  APPEND PROPERTY DEPENDS "${TEST_TREE_TYPE}_App4ConfigureLauncherTest-ConfigureStep"
+  )
 applauncher_add_test(ConfiguredAppLauncher-ConfigurationContents)
+set_property(
+  TEST "${TEST_TREE_TYPE}_ConfiguredAppLauncher-ConfigurationContents"
+  APPEND PROPERTY DEPENDS "${TEST_TREE_TYPE}_App4ConfigureLauncherTest-BuildStep"
+  )
 applauncher_add_test(ConfiguredAppLauncher-LauncherExecutable)
+set_property(
+  TEST "${TEST_TREE_TYPE}_ConfiguredAppLauncher-LauncherExecutable"
+  APPEND PROPERTY DEPENDS "${TEST_TREE_TYPE}_ConfiguredAppLauncher-ConfigurationContents"
+  )
+
+foreach(test IN ITEMS
+    AppLauncher-Settings-TestHelpLongArg
+    AppLauncher-Settings-TestHelpShortArg
+    )
+  set_property(TEST "${TEST_TREE_TYPE}_${test}" APPEND PROPERTY LABELS "XDisplayRequired")
+endforeach()
+
+foreach(test IN ITEMS
+    App4Test-ConfigureStep
+    App4Test-BuildStep
+    App4Test-TestRPATHDisabled
+    App4ConfigureLauncherTest-ConfigureStep
+    App4ConfigureLauncherTest-BuildStep
+    ConfiguredAppLauncher-ConfigurationContents
+    ConfiguredAppLauncher-LauncherExecutable
+    )
+  set_property(TEST "${TEST_TREE_TYPE}_${test}" APPEND PROPERTY LABELS "CompilerRequired")
+endforeach()

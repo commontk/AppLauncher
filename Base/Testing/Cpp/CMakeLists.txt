@@ -41,8 +41,6 @@ endmacro()
 # Add Tests
 #
 
-
-
-add_simple_test(ctkAppArgumentsTest)
-add_simple_test(ctkAppLauncherTest1)
+add_simple_test(ctkAppArgumentsTest XDisplayRequired)
+add_simple_test(ctkAppLauncherTest1 XDisplayRequired)
 add_simple_test(ctkCommandLineParserTest1)
