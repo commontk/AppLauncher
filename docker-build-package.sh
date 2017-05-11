@@ -12,3 +12,4 @@ cmake \
     /usr/src/AppLauncher
 make -j$(grep -c processor /proc/cpuinfo)
 make package
+ctest -R 'AppWithLibLauncher|App4Test|InstallTree_AppLauncher-Install|App4ConfigureLauncherTest|ConfiguredAppLauncher' -V

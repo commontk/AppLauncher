@@ -21,4 +21,4 @@ RUN git clone git://cmake.org/cmake.git CMake && \
   make install && \
   cd .. && rm -rf CMake*
 
-ENV APP "sudo chown -R user.user /usr/src/AppLauncher-build && cd /usr/src/AppLauncher-build && ctest -V"
+ENV APP "sudo chown -R user.user /usr/src/AppLauncher-build && cd /usr/src/AppLauncher-build && ctest -E 'AppWithLibLauncher|App4Test|InstallTree_AppLauncher-Install|App4ConfigureLauncherTest|ConfiguredAppLauncher' -V"
