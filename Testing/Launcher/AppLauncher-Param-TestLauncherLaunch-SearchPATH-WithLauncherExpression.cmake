@@ -23,7 +23,7 @@ endif()
 file(WRITE "${launcher}LauncherSettings.ini" "
 
 [Paths]
-1\\path=<APPLAUNCHER_DIR>/../${reldir}CMake-${TEST_TREE_TYPE}/App4Test-build/bin/${intdir}
+1\\path=<APPLAUNCHER_DIR>/../${reldir}Launcher-${TEST_TREE_TYPE}/App4Test-build/bin/${intdir}
 size=1
 
 [LibraryPaths]

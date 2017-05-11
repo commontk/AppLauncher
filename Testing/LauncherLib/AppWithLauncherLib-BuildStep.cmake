@@ -1,5 +1,4 @@
-include(${TEST_SOURCE_DIR}/../CMake/AppLauncherTestMacros.cmake)
-#include(${TEST_BINARY_DIR}/AppWithLauncherLibStepPrerequisites.cmake)
+include(${TEST_SOURCE_DIR}/../Launcher/AppLauncherTestMacros.cmake)
 
 # --------------------------------------------------------------------------
 # Debug flags - Set to True to display the command as string

@@ -1,4 +1,4 @@
-include(${TEST_SOURCE_DIR}/../CMake/AppLauncherTestMacros.cmake)
+include(${TEST_SOURCE_DIR}/../Launcher/AppLauncherTestMacros.cmake)
 
 # --------------------------------------------------------------------------
 # Delete AppWithLauncherLib-build directory if it exists
