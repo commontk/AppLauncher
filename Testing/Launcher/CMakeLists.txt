@@ -52,16 +52,16 @@ configure_file(
   )
 
 #
-# Helper macro
+# Helper function
 #
-macro(applauncher_add_cmakescript_test testname script)
+function(applauncher_add_cmakescript_test testname script)
   add_test(cmake_${testname} ${CMAKE_COMMAND}
     -DTEST_${testname}:BOOL=ON
     -P ${CTKAppLauncher_SOURCE_DIR}/CMake/${script}.cmake)
   set_tests_properties(cmake_${testname} PROPERTIES
     LABELS ctkAppLauncher
     PASS_REGULAR_EXPRESSION "SUCCESS")
-endmacro()
+endfunction()
 
 #
 # Add 'CMake script' Tests - Since these tests are independent of the TEST_TREE_TYPE, include them once.
@@ -73,7 +73,7 @@ if(TEST_TREE_TYPE STREQUAL "BuildTree")
 endif()
 
 #
-# Helper macro
+# Helper function
 #
 set(_previous_applauncher_test "NODEPENDS")
 function(applauncher_add_test testname)

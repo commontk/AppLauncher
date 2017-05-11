@@ -32,15 +32,17 @@ endif()
 
 set(label ctkAppLauncher)
 
-macro( SIMPLE_TEST TESTNAME )
+macro(add_simple_test TESTNAME)
   add_test(NAME ${TESTNAME} COMMAND $<TARGET_FILE:${KIT}CppTests> ${TESTNAME} )
-  set_property(TEST ${TESTNAME} PROPERTY LABELS ${label})
-endmacro( SIMPLE_TEST  )
+  set_property(TEST ${TESTNAME} PROPERTY LABELS ${label} ${ARGN})
+endmacro()
 
 #
 # Add Tests
 #
 
-SIMPLE_TEST( ctkAppArgumentsTest )
-SIMPLE_TEST( ctkAppLauncherTest1 )
-SIMPLE_TEST( ctkCommandLineParserTest1 )
+
+
+add_simple_test(ctkAppArgumentsTest)
+add_simple_test(ctkAppLauncherTest1)
+add_simple_test(ctkCommandLineParserTest1)
