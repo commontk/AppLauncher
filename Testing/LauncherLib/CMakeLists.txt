@@ -44,18 +44,16 @@ if(TEST_TREE_TYPE STREQUAL "InstallTree")
   set(CTKAppLauncher_DIR ${LAUNCHER_DIR}/${CTK_INSTALL_CONFIG_DIR})
 endif()
 
-applauncher_add_test(
-  AppWithLauncherLib-ConfigureStep
+set(test_args
   -DAPPLIB_SOURCE_DIR:PATH=${APPLIB_SOURCE_DIR}
   -DAPPLIB_BINARY_DIR:PATH=${APPLIB_BINARY_DIR}
+  -DCMAKE_CONFIGURATION_TYPES:STRING=${CMAKE_CONFIGURATION_TYPES}
   -DAPPLIB_BUILD_TYPE:STRING=${APPLIB_BUILD_TYPE}
   -DAPPLIB_CMAKE_GENERATOR:STRING=${APPLIB_CMAKE_GENERATOR}
   -DCTKAppLauncher_DIR:PATH=${CTKAppLauncher_DIR}
   -DQT_QMAKE_EXECUTABLE:FILEPATH=${QT_QMAKE_EXECUTABLE}
   )
 
-applauncher_add_test(AppWithLauncherLib-BuildStep
-  -DAPPLIB_BINARY_DIR:PATH=${APPLIB_BINARY_DIR}
-  -DAPPLIB_BUILD_TYPE:STRING=${APPLIB_BUILD_TYPE}
-  -DAPPLIB_CMAKE_GENERATOR:STRING=${APPLIB_CMAKE_GENERATOR}
-  )
+applauncher_add_test(AppWithLauncherLib-ConfigureStep ${test_args})
+applauncher_add_test(AppWithLauncherLib-BuildStep ${test_args})
+applauncher_add_test(AppWithLauncherLib-RunStep ${test_args})
