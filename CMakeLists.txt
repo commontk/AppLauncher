@@ -96,7 +96,6 @@ set(CMAKE_MODULE_PATH
 include(ctkFunctionCheckCompilerFlags)
 include(ctkFunctionGetCompilerVisibilityFlags)
 include(ctkMacroBuildLib)
-include(ctkMacroGenerateMocs)
 
 #-----------------------------------------------------------------------------
 # Testing

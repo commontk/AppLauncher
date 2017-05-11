@@ -10,10 +10,15 @@ create_test_sourcelist(Tests ${KIT}CppTests.cpp
   ${KIT_TEST_SRCS}
   )
 
-QT4_GENERATE_MOCS(
-  ctkAppArgumentsTest.cpp
-  ctkAppLauncherTest1.cpp
-  )
+
+foreach(file IN ITEMS
+    ctkAppArgumentsTest.cpp
+    ctkAppLauncherTest1.cpp
+    )
+  set(moc_file moc_${file})
+  QT4_GENERATE_MOC(${file} ${moc_file})
+  macro_add_file_dependencies(${file} ${CMAKE_CURRENT_BINARY_DIR}/${moc_file})
+endforeach()
 
 add_executable(${KIT}CppTests ${Tests})
 target_link_libraries(${KIT}CppTests ${KIT} CTKAppLauncherBase)
