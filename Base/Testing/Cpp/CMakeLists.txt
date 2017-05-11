@@ -21,10 +21,13 @@ foreach(file IN ITEMS
 endforeach()
 
 add_executable(${KIT}CppTests ${Tests})
-target_link_libraries(${KIT}CppTests ${KIT} CTKAppLauncherBase)
+target_link_libraries(${KIT}CppTests PUBLIC
+  CTKAppLauncherBase
+  Qt4::QtTest
+  )
 
 if(QT_MAC_USE_COCOA)
-  target_link_libraries(${KIT}CppTests "-framework cocoa -framework IOKit")
+  target_link_libraries(${KIT}CppTests PRIVATE "-framework cocoa -framework IOKit")
 endif()
 
 set(label ctkAppLauncher)

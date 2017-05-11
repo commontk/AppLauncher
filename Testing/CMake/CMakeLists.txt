@@ -90,6 +90,7 @@ function(applauncher_add_test testname)
   endif()
   set(_previous_applauncher_test ${testname} PARENT_SCOPE)
   set_property(TEST ${testname} PROPERTY LABELS ctkAppLauncher)
+  set(testname ${testname} PARENT_SCOPE)
 endfunction()
 
 #
@@ -105,7 +106,9 @@ if(TEST_TREE_TYPE STREQUAL "InstallTree")
     AppLauncher-Install
     -DLAUNCHER_BUILD_DIR:PATH=${LAUNCHER_BUILD_DIR}
     -DLAUNCHER_INSTALL_DIR:PATH=${LAUNCHER_INSTALL_DIR}
+    -DCTKAppLauncherTest_INSTALL_LauncherLibrary:BOOL=0
     )
+  set_property(TEST ${testname} PROPERTY RESOURCE_LOCK "AppLauncherConfigure")
 endif()
 
 applauncher_add_test(AppLauncher-Param-TestLauncherAdditionalSettings)
