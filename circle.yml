@@ -13,15 +13,22 @@ machine:
 dependencies:
   override:
     - docker info
-    - docker pull commontk/applauncher
+    - docker pull commontk/qt-static:4.8.6-centos-5.5
     - docker pull commontk/applauncher-test
 
 test:
   override:
-    - docker build -t commontk/applauncher ~/AppLauncher/
     - docker build -t commontk/applauncher-test ~/AppLauncher/Testing/Docker/
-    - mkdir ~/AppLauncher-build && docker run --name applauncher -v ~/AppLauncher:/usr/src/AppLauncher:ro -v ~/AppLauncher-build:/usr/src/AppLauncher-build:rw commontk/applauncher build-package.sh
-    - docker run --name applauncher-test --volumes-from applauncher commontk/applauncher-test; docker cp applauncher-test:/var/log/supervisor/graphical-app-launcher.log - | tar xO; [ "$(docker cp applauncher-test:/tmp/graphical-app.return_code - | tar xO)" = 0 ]
+    - |
+      mkdir -p /tmp/AppLauncher-build && \
+      docker run --name applauncher \
+        -v ~/AppLauncher:/usr/src/AppLauncher:ro \
+        -v ~/AppLauncher-build:/usr/src/AppLauncher-build:rw \
+        commontk/qt-static:4.8.6-centos-5.5 /usr/src/AppLauncher/docker-build-package.sh
+    - |
+      docker run --name applauncher-test \
+        --volumes-from applauncher commontk/applauncher-test; \
+      docker cp applauncher-test:/var/log/supervisor/graphical-app-launcher.log - | tar xO; [ "$(docker cp applauncher-test:/tmp/graphical-app.return_code - | tar xO)" = 0 ]
     # Upload release and prerelease packages
     - |
       pip install scikit-ci-addons==0.15.0
@@ -37,5 +44,4 @@ deployment:
     branch: master
     commands:
       - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
-      - docker push commontk/applauncher
       - docker push commontk/applauncher-test
