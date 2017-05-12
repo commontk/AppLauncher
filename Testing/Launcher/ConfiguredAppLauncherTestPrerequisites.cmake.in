@@ -2,6 +2,8 @@ set(CMAKE_CONFIGURATION_TYPES "@CMAKE_CONFIGURATION_TYPES@")
 set(CMAKE_BUILD_TYPE "@CMAKE_BUILD_TYPE@")
 set(CMAKE_EXECUTABLE_SUFFIX "@CMAKE_EXECUTABLE_SUFFIX@")
 
+set(TEST_TREE_TYPE "@TEST_TREE_TYPE@")
+
 set(app4configurelaunchertest_source_dir "@APP4CONFIGURELAUNCHERTEST_SOURCE_DIR@")
 set(app4configurelaunchertest_binary_dir "@APP4CONFIGURELAUNCHERTEST_BINARY_DIR@")
 
@@ -9,8 +11,8 @@ set(app4configurelaunchertest_binary_dir "@APP4CONFIGURELAUNCHERTEST_BINARY_DIR@
 # Attempt to guess launcher build type
 
 set(ctkapplauncher_name CTKAppLauncher${CMAKE_EXECUTABLE_SUFFIX})
-set(ctkapplauncher_dir "@LAUNCHER_BINARY_DIR@")
-if(CMAKE_CONFIGURATION_TYPES)
+set(ctkapplauncher_dir "@LAUNCHER_DIR@")
+if(CMAKE_CONFIGURATION_TYPES AND TEST_TREE_TYPE STREQUAL "BuildTree")
   foreach (type ${CMAKE_CONFIGURATION_TYPES})
     set(name ${type}/CTKAppLauncher${CMAKE_EXECUTABLE_SUFFIX})
     if(EXISTS ${ctkapplauncher_dir}/bin/${name})

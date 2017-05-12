@@ -46,7 +46,8 @@ script:
     -DCMAKE_OSX_ARCHITECTURES:STRING=x86_64 \
     ../
 - make -j4 && make package
-
+# Exclude tests requiring X Display
+- ctest -LE XDisplayRequired -j2
 deploy:
   - provider: script
     script: ci_addons publish_github_release commontk/applauncher --prerelease-packages CTKAppLauncher-*.tar.gz --prerelease-packages-clear-pattern "*macosx*" --prerelease-packages-keep-pattern "*<COMMIT_SHORT_SHA>*"

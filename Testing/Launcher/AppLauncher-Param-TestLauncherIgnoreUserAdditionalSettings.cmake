@@ -2,8 +2,8 @@
 include(${TEST_SOURCE_DIR}/AppLauncherTestMacros.cmake)
 include(${TEST_BINARY_DIR}/AppLauncherTestPrerequisites.cmake)
 
-set(organization_domain "www.commontk.org")
-set(organization_name "Common ToolKit")
+set(organization_domain "www.commontk-${TEST_TREE_TYPE}.org")
+set(organization_name "Common ToolKit ${TEST_TREE_TYPE}")
 set(application_name "AppLauncher")
 set(application_revision "4810")
 

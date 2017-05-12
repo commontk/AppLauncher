@@ -18,11 +18,13 @@
 #
 ###########################################################################
 
-cmake_minimum_required(VERSION 2.8.6)
+cmake_minimum_required(VERSION 3.0)
 
 #-----------------------------------------------------------------------------
 project(CTKAppLauncher)
+
 #-----------------------------------------------------------------------------
+option(CTKAppLauncher_INSTALL_LauncherLibrary "Install CTKApplauncher launcher library" OFF)
 
 #-----------------------------------------------------------------------------
 # Set a default build type if none was specified
@@ -69,12 +71,6 @@ if(CTKAppLauncher_VERSION_SOURCE)
 endif()
 message(STATUS "CTKAppLauncher version: ${CTKAppLauncher_VERSION}")
 
-
-configure_file(
-  CMake/ctkAppLauncherVersionConfig.h.in
-  ${CMAKE_CURRENT_BINARY_DIR}/ctkAppLauncherVersionConfig.h
-  )
-
 #-----------------------------------------------------------------------------
 # Install directories, used for install rules.
 #
@@ -82,6 +78,13 @@ set(CTK_INSTALL_BIN_DIR "bin")
 set(CTK_INSTALL_LIB_DIR "lib")
 set(CTK_INSTALL_INCLUDE_DIR "include")
 set(CTK_INSTALL_DOC_DIR "doc")
+set(CTK_INSTALL_CONFIG_DIR "CMake")
+
+#-----------------------------------------------------------------------------
+# Global settings
+#
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
+set(CMAKE_INCLUDE_CURRENT_DIR_IN_INTERFACE ON)
 
 #-----------------------------------------------------------------------------
 # Update CMake module path
@@ -96,7 +99,6 @@ set(CMAKE_MODULE_PATH
 include(ctkFunctionCheckCompilerFlags)
 include(ctkFunctionGetCompilerVisibilityFlags)
 include(ctkMacroBuildLib)
-include(ctkMacroGenerateMocs)
 
 #-----------------------------------------------------------------------------
 # Testing
@@ -232,6 +234,7 @@ endif()
 #-----------------------------------------------------------------------------
 # Qt
 #
+set(QT_USE_IMPORTED_TARGETS 1)
 find_package(Qt4 4.6 REQUIRED)
 set(QT_USE_QTTEST ${BUILD_TESTING})
 include(${QT_USE_FILE})
@@ -239,37 +242,30 @@ include(${QT_USE_FILE})
 #-----------------------------------------------------------------------------
 # Build ctkAppLauncherBase and associated tests
 #
-include_directories(
-  ${CMAKE_CURRENT_SOURCE_DIR}
-  ${CMAKE_CURRENT_BINARY_DIR}
-  )
 add_subdirectory(Base)
 
 #-----------------------------------------------------------------------------
 # Build executable
 #
-include_directories(
-  ${CTKAppLauncherBase_INCLUDE_DIRS}
-  )
 
 #
 # Launcher *WITH* console IO support
 #
 add_executable(${PROJECT_NAME} Main.cpp)
-target_link_libraries(${PROJECT_NAME} CTKAppLauncherBase)
+target_link_libraries(${PROJECT_NAME} PUBLIC CTKAppLauncherBase)
 if(QT_MAC_USE_COCOA)
-  target_link_libraries(${PROJECT_NAME} "-framework cocoa")
+  target_link_libraries(${PROJECT_NAME} PRIVATE "-framework cocoa")
 endif()
 set_target_properties(${PROJECT_NAME} PROPERTIES LABELS ctkAppLauncher)
 
-set(targets_to_install ${PROJECT_NAME})
+list(APPEND targets_to_install ${PROJECT_NAME})
 
 if(WIN32)
   #
   # Launcher *WITHOUT* console IO support
   #
   add_executable(${PROJECT_NAME}W WIN32 Main.cpp)
-  target_link_libraries(${PROJECT_NAME}W CTKAppLauncherBase)
+  target_link_libraries(${PROJECT_NAME}W PUBLIC CTKAppLauncherBase)
   set_target_properties(${PROJECT_NAME}W PROPERTIES
     LABELS ctkAppLauncher
     COMPILE_DEFINITIONS CTKAPPLAUNCHER_WITHOUT_CONSOLE_IO_SUPPORT
@@ -318,6 +314,48 @@ install(FILES
 install(FILES
   CTKAppLauncherSettings.ini.in
   DESTINATION ${CTK_INSTALL_BIN_DIR} COMPONENT Development)
+
+# Configure 'CTKAppLauncherConfig.cmake' for a build tree
+include(CMakePackageConfigHelpers)
+set(CONFIG_DIR_CONFIG ${PROJECT_BINARY_DIR})
+set(launcher_config ${PROJECT_BINARY_DIR}/CTKAppLauncherConfig.cmake)
+configure_package_config_file(
+    CMake/CTKAppLauncherConfig.cmake.in
+    ${launcher_config}
+    INSTALL_DESTINATION ${PROJECT_BINARY_DIR}
+    PATH_VARS CONFIG_DIR_CONFIG
+    NO_CHECK_REQUIRED_COMPONENTS_MACRO
+)
+
+# Configure 'CTKAppLauncherConfig.cmake' for a install tree
+set(CONFIG_DIR_CONFIG ${CTK_INSTALL_CONFIG_DIR})
+set(launcher_install_config ${PROJECT_BINARY_DIR}/CMakeFiles/CTKAppLauncherConfig.cmake)
+configure_package_config_file(
+    CMake/CTKAppLauncherConfig.cmake.in
+    ${launcher_install_config}
+    INSTALL_DESTINATION ${CMAKE_INSTALL_PREFIX}/${CONFIG_DIR_CONFIG}
+    PATH_VARS CONFIG_DIR_CONFIG
+    NO_CHECK_REQUIRED_COMPONENTS_MACRO
+    )
+
+# Configure 'CTKAppLauncherTargets.cmake'
+get_property(CTKAppLauncher_TARGETS GLOBAL PROPERTY CTKAppLauncher_TARGETS)
+export(TARGETS ${CTKAppLauncher_TARGETS} APPEND FILE ${PROJECT_BINARY_DIR}/CTKAppLauncherTargets.cmake)
+
+# Install 'CTKAppLauncherConfig.cmake'
+install(
+  FILES ${launcher_install_config}
+  DESTINATION ${CTK_INSTALL_CONFIG_DIR} COMPONENT Development
+  )
+
+if(CTKAppLauncher_INSTALL_LauncherLibrary)
+  # Install 'CTKAppLauncherTargets.cmake'
+  install(EXPORT CTKAppLauncherTargets
+    FILE CTKAppLauncherTargets.cmake
+    DESTINATION ${CTK_INSTALL_CONFIG_DIR}
+    COMPONENT Development
+  )
+endif()
 
 # Setup CPack
 include(CTKAppLauncherCPack.cmake)

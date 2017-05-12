@@ -17,6 +17,7 @@ environment:
     secure: 0D2ZkBwNKDnj7j9VNRaJlFCzmAYEHb3N+rzJdm+R4FDNh2P9HTqJ4NAtKm+9fXjw
   APPVEYOR_API_TOKEN:
     secure: U5fSDWJH39dwzLUfl7RZ0FwF+q7pK5tbAU8WGxO/1hc=
+  BLOCK: "0"
 
 install:
   # Downloads and extract Qt static build
@@ -55,3 +56,7 @@ test_script:
         --prerelease-packages-keep-pattern "*<COMMIT_SHORT_SHA>*" `
         --release-packages CTKAppLauncher-*.tar.gz
 
+on_finish:
+  - pip install scikit-ci-addons
+  - ci_addons --install ../
+  - ps: ../appveyor/enable-worker-remote-access.ps1 -check_for_block
