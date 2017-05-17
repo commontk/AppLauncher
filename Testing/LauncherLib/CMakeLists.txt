@@ -32,7 +32,7 @@ function(applauncher_add_test testname)
 endfunction()
 
 
-set(CTKAppLauncher_DIR ${LAUNCHER_DIR})
+set(CTKAppLauncherLib_DIR ${LAUNCHER_DIR})
 
 if(TEST_TREE_TYPE STREQUAL "InstallTree")
   applauncher_add_test(
@@ -42,7 +42,7 @@ if(TEST_TREE_TYPE STREQUAL "InstallTree")
     )
   set_property(TEST "${TEST_TREE_TYPE}_AppWithLauncherLib-Install" PROPERTY RESOURCE_LOCK "AppLauncherConfigure")
 
-  set(CTKAppLauncher_DIR ${LAUNCHER_DIR}/${CTK_INSTALL_CONFIG_DIR})
+  set(CTKAppLauncherLib_DIR ${LAUNCHER_DIR}/${CTK_INSTALL_CONFIG_DIR})
 endif()
 
 set(test_args
@@ -51,7 +51,7 @@ set(test_args
   -DCMAKE_CONFIGURATION_TYPES:STRING=${CMAKE_CONFIGURATION_TYPES}
   -DAPPLIB_BUILD_TYPE:STRING=${APPLIB_BUILD_TYPE}
   -DAPPLIB_CMAKE_GENERATOR:STRING=${APPLIB_CMAKE_GENERATOR}
-  -DCTKAppLauncher_DIR:PATH=${CTKAppLauncher_DIR}
+  -DCTKAppLauncherLib_DIR:PATH=${CTKAppLauncherLib_DIR}
   -DQT_QMAKE_EXECUTABLE:FILEPATH=${QT_QMAKE_EXECUTABLE}
   -DCMAKE_C_COMPILER:FILEPATH=${CMAKE_C_COMPILER}
   -DCMAKE_CXX_COMPILER:FILEPATH=${CMAKE_CXX_COMPILER}

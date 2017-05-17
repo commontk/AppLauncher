@@ -63,9 +63,6 @@ if(CTKAppLauncher_INSTALL_DEVELOPMENT)
     )
 endif()
 
-# Export targets
-set_property(GLOBAL APPEND PROPERTY CTKAppLauncher_TARGETS ${PROJECT_NAME})
-
 # Testing
 if(BUILD_TESTING)
   add_subdirectory(Testing)

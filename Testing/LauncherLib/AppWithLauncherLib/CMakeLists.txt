@@ -10,10 +10,10 @@ endif()
 
 find_package(Qt4 COMPONENTS QtCore REQUIRED)
 
-find_package(CTKAppLauncher REQUIRED)
+find_package(CTKAppLauncherLib REQUIRED)
 
 add_executable(${PROJECT_NAME} main.cpp)
 target_link_libraries(${PROJECT_NAME} PUBLIC
-  ${CTKAppLauncher_LIBRARIES}
+  ${CTKAppLauncherLib_LIBRARIES}
   Qt4::QtCore
   )
