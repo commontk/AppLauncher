@@ -23,19 +23,6 @@
 #  <SOURCE>/CMake/ctkMacroParseArguments.cmake
 #
 
-#
-# See http://github.com/pieper/CTK/blob/master/CMake/ctkMacroBuildLib.cmake
-#
-
-#
-# If you want to re-use this macro outside of CTK, the line referring to the following items
-# may need to be updated to match your project:
-#    - ${CTK_SOURCE_DIR}/Libs/CTKExport.h.in
-#    - CTK_LIBRARY_PROPERTIES
-#    - CTK_INSTALL_BIN_DIR
-#    - CTK_INSTALL_LIB_DIR
-#
-
 macro(ctkMacroBuildLib)
   set(prefix ${PROJECT_NAME})
   if(prefix STREQUAL "")
@@ -43,7 +30,15 @@ macro(ctkMacroBuildLib)
   endif()
   set(options)
   set(oneValueArgs NAME EXPORT_DIRECTIVE LIBRARY_TYPE LABEL)
-  set(multiValueArgs SRCS MOC_SRCS UI_FORMS INCLUDE_DIRECTORIES TARGET_LIBRARIES RESOURCES)
+  set(multiValueArgs
+    SRCS
+    MOC_SRCS
+    UI_FORMS
+    INCLUDE_DIRECTORIES
+    INSTALL_INCLUDE_DIRECTORIES
+    TARGET_LIBRARIES
+    RESOURCES
+    )
   cmake_parse_arguments(${prefix} "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
   # Sanity checks
@@ -66,18 +61,7 @@ macro(ctkMacroBuildLib)
   set(lib_name ${${prefix}_NAME})
 
   # --------------------------------------------------------------------------
-  # Include dirs
-  set(${PROJECT_NAME}_INCLUDE_DIRS
-    ${CMAKE_CURRENT_SOURCE_DIR}
-    ${CMAKE_CURRENT_BINARY_DIR}
-    CACHE STRING "${PROJECT_NAME} source and binary include directories" FORCE
-    )
-
-  include_directories(
-    ${${PROJECT_NAME}_INCLUDE_DIRS}
-    ${${prefix}_INCLUDE_DIRECTORIES}
-    )
-
+  set(dynamicHeaders)
   if(${prefix}_LIBRARY_TYPE STREQUAL "SHARED")
     set(MY_LIBRARY_EXPORT_DIRECTIVE ${${prefix}_EXPORT_DIRECTIVE})
     set(MY_EXPORT_HEADER_PREFIX ${${prefix}_NAME})
@@ -130,8 +114,9 @@ macro(ctkMacroBuildLib)
   endif()
 
   # Install rules
-  if(CTK_BUILD_SHARED_LIBS)
+  if(CTK_BUILD_SHARED_LIBS OR CTKAppLauncher_INSTALL_LauncherLibrary)
     install(TARGETS ${lib_name}
+      EXPORT CTKAppLauncherTargets
       RUNTIME DESTINATION ${CTK_INSTALL_BIN_DIR} COMPONENT Runtime
       LIBRARY DESTINATION ${CTK_INSTALL_LIB_DIR} COMPONENT Runtime
       ARCHIVE DESTINATION ${CTK_INSTALL_LIB_DIR} COMPONENT Development)
@@ -140,14 +125,29 @@ macro(ctkMacroBuildLib)
   set(my_libs
     ${${prefix}_TARGET_LIBRARIES}
     )
-  target_link_libraries(${lib_name} ${my_libs})
+  target_link_libraries(${lib_name} PUBLIC
+    ${my_libs}
+    )
+  foreach(_include_dir IN LISTS ${prefix}_INCLUDE_DIRECTORIES)
+    target_include_directories(${lib_name} PUBLIC
+      $<BUILD_INTERFACE:${_include_dir}>
+      )
+  endforeach()
+  foreach(_include_dir IN LISTS ${prefix}_INSTALL_INCLUDE_DIRECTORIES)
+    target_include_directories(${lib_name} PUBLIC
+      $<INSTALL_INTERFACE:${_include_dir}>
+      )
+  endforeach()
 
   # Install headers
-  #file(GLOB headers "${CMAKE_CURRENT_SOURCE_DIR}/*.h")
-  #install(FILES
-  #  ${headers}
-  #  ${dynamicHeaders}
-  #  DESTINATION ${CTK_INSTALL_INCLUDE_DIR} COMPONENT Development
-  #  )
+  if(CTKAppLauncher_INSTALL_LauncherLibrary)
+    file(GLOB headers "${CMAKE_CURRENT_SOURCE_DIR}/*.h")
+    install(
+      FILES
+        ${headers}
+        ${dynamicHeaders}
+      DESTINATION ${CTK_INSTALL_INCLUDE_DIR} COMPONENT Development
+      )
+  endif()
 
 endmacro()

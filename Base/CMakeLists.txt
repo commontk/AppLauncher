@@ -4,6 +4,11 @@ project(CTKAppLauncherBase)
 # See <SOURCE>/CMake/ctkalMacroBuildLib.cmake for details
 #
 
+configure_file(
+  ${CTKAppLauncher_SOURCE_DIR}/CMake/ctkAppLauncherVersionConfig.h.in
+  ${CMAKE_CURRENT_BINARY_DIR}/ctkAppLauncherVersionConfig.h
+  )
+
 # Additional directories to include
 set(KIT_include_directories
   )
@@ -27,10 +32,6 @@ set(KIT_MOC_SRCS
   ctkAppLauncher_p.h
   )
 
-# UI files
-set(KIT_UI_FORMS
-)
-
 # Resources
 set(KIT_resources
   Resources/CTKAppLauncherBase.qrc
@@ -44,14 +45,26 @@ set(KIT_target_libraries
 ctkMacroBuildLib(
   NAME ${PROJECT_NAME}
   INCLUDE_DIRECTORIES ${KIT_include_directories}
+  INSTALL_INCLUDE_DIRECTORIES "${CTK_INSTALL_INCLUDE_DIR}"
   SRCS ${KIT_SRCS}
   MOC_SRCS ${KIT_MOC_SRCS}
-  UI_FORMS ${KIT_UI_FORMS}
   TARGET_LIBRARIES ${KIT_target_libraries}
   RESOURCES ${KIT_resources}
   LIBRARY_TYPE "STATIC"
   LABEL ctkAppLauncher
   )
+
+# Install rules
+if(CTKAppLauncher_INSTALL_DEVELOPMENT)
+  install(
+    FILES
+      ${CMAKE_CURRENT_BINARY_DIR}/ctkAppLauncherVersionConfig.h
+    DESTINATION ${CTK_INSTALL_INCLUDE_DIR} COMPONENT Development
+    )
+endif()
+
+# Export targets
+set_property(GLOBAL APPEND PROPERTY CTKAppLauncher_TARGETS ${PROJECT_NAME})
 
 # Testing
 if(BUILD_TESTING)

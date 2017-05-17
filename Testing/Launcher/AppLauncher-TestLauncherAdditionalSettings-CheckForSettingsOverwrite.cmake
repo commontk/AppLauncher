@@ -59,8 +59,8 @@ function(applauncher_test_launcher_overwrite_settings_test_case
   endforeach()
 
   # Configure settings file
-  set(organization_domain "www.commontk.org")
-  set(organization_name "Common ToolKit")
+  set(organization_domain "www.commontk-${TEST_TREE_TYPE}.org")
+  set(organization_name "Common ToolKit ${TEST_TREE_TYPE}")
   set(application_name "AppLauncher")
   set(application_revision "4810")
   set(launcherSplashScreenHideDelayMs "1")

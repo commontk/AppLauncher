@@ -1,4 +1,4 @@
-
+include(${TEST_SOURCE_DIR}/AppLauncherTestMacros.cmake)
 include(${TEST_BINARY_DIR}/AppLauncherTestPrerequisites.cmake)
 
 # --------------------------------------------------------------------------

@@ -4,9 +4,10 @@ include(${TEST_BINARY_DIR}/AppLauncherTestPrerequisites.cmake)
 
 # --------------------------------------------------------------------------
 # Configure settings file
-set(organization_domain "www.commontk.org")
-set(organization_name "Common ToolKit")
+set(organization_domain "www.commontk-${TEST_TREE_TYPE}.org")
+set(organization_name "Common ToolKit ${TEST_TREE_TYPE}")
 set(application_name "AppLauncher")
+set(application_revision "4810")
 set(regular_library_path_1 ${library_path})
 set(regular_library_path_2 "/path/to/regular/libtwo")
 set(regular_path_1 "/path/to/regular/stuff")
@@ -15,16 +16,24 @@ set(regular_env_var_name_1 "SOMETHING_NICE")
 set(regular_env_var_value_1 "Chocolate")
 set(regular_env_var_name_2 "SOMETHING_AWESOME")
 set(regular_env_var_value_2 "Rock climbing !")
+set(regular_pathenv_var_name_1 "SOME_PATH")
+set(regular_pathenv_var_value_1_1 "/farm/cow")
+set(regular_pathenv_var_value_1_2 "/farm/pig")
 set(common_env_var_name "SOMETHING_COMMON")
 set(common_env_var_value_1 "Snow")
 set(common_env_var2_name "ANOTHER_THING_COMMON")
 set(common_env_var2_value_1 "Rocks")
+
 file(WRITE "${launcher}LauncherSettings.ini" "
+[General]
+additionalPathVariables=${regular_pathenv_var_name_1}
+
 [Application]
 path=${application}
 organizationDomain=${organization_domain}
 organizationName=${organization_name}
 name=${application_name}
+revision=${application_revision}
 
 [LibraryPaths]
 1\\path=${regular_library_path_1}
@@ -41,6 +50,11 @@ ${regular_env_var_name_1}=${regular_env_var_value_1}
 ${regular_env_var_name_2}=${regular_env_var_value_2}
 ${common_env_var_name}=${common_env_var_value_1}
 ${common_env_var2_name}=${common_env_var2_value_1}
+
+[${regular_pathenv_var_name_1}]
+1\\path=${regular_pathenv_var_value_1_1}
+2\\path=${regular_pathenv_var_value_1_2}
+size=2
 ")
 
 # --------------------------------------------------------------------------
@@ -51,21 +65,29 @@ set(PRINT_COMMAND 0)
 # Extract application settings directory
 
 extract_application_settings_value("AdditionalSettingsDir" additional_settings_dir)
-set(additional_settings_path "${additional_settings_dir}/${application_name}.ini")
+set(additional_settings_path "${additional_settings_dir}/${application_name}-${application_revision}.ini")
 
 # --------------------------------------------------------------------------
 # Configure user additional settings file
-set(additional_library_path "/path/to/user-without-revision-additional/lib")
-set(additional_path_1 "/home/user-without-revision-additional/app1")
-set(additional_path_2 "/home/user-without-revision-additional/app2")
-set(additional_env_var_name_1 "USER_WITHOUT_REVISION_ADD_SOMETHING_NICE")
+set(additional_library_path "/path/to/user-additional/lib")
+set(additional_path_1 "/home/user-additional/app1")
+set(additional_path_2 "/home/user-additional/app2")
+set(additional_env_var_name_1 "USER_ADD_SOMETHING_NICE")
 set(additional_env_var_value_1 "Chocolate :)")
-set(additional_env_var_name_2 "USER_WITHOUT_REVISION_ADD_SOMETHING_AWESOME")
+set(additional_env_var_name_2 "USER_ADD_SOMETHING_AWESOME")
 set(additional_env_var_value_2 "Rock climbing ! :)")
+set(additional_pathenv_var_value_1_1 "/farm/donkey")
+set(additional_pathenv_var_value_1_2 "/farm/chicken")
+set(additional_pathenv_var_name_2 "USER_ADD_SOME_PATH")
+set(additional_pathenv_var_value_2_1 "/user-additional-farm/cow")
+set(additional_pathenv_var_value_2_2 "/user-additional-farm/pig")
 set(common_env_var_value_2 "Sun")
 set(common_env_var2_value_2 "Trees")
 
 file(WRITE ${additional_settings_path} "
+[General]
+additionalPathVariables=${additional_pathenv_var_name_2}
+
 [LibraryPaths]
 1\\path=${additional_library_path}
 size=1
@@ -80,6 +102,16 @@ ${additional_env_var_name_1}=${additional_env_var_value_1}
 ${additional_env_var_name_2}=${additional_env_var_value_2}
 ${common_env_var_name}=<env:${common_env_var_name}>:${common_env_var_value_2}
 ${common_env_var2_name}=${common_env_var2_value_2}:<env:${common_env_var2_name}>
+
+[${regular_pathenv_var_name_1}]
+1\\path=${additional_pathenv_var_value_1_1}
+2\\path=${additional_pathenv_var_value_1_2}
+size=2
+
+[${additional_pathenv_var_name_2}]
+1\\path=${additional_pathenv_var_value_2_1}
+2\\path=${additional_pathenv_var_value_2_2}
+size=2
 
 ")
 
@@ -120,6 +152,14 @@ if(rv)
                       "directory [${launcher_binary_dir}]\n${ev}")
 endif()
 
+set(expected_pathenv_var_value_1
+  "${additional_pathenv_var_value_1_1}${pathsep}${additional_pathenv_var_value_1_2}")
+set(expected_pathenv_var_value_1
+  "${expected_pathenv_var_value_1}${pathsep}${regular_pathenv_var_value_1_1}${pathsep}${regular_pathenv_var_value_1_2}")
+
+set(expected_pathenv_var_value_2
+  "${additional_pathenv_var_value_2_1}${pathsep}${additional_pathenv_var_value_2_2}")
+
 set(expected_ov_lines
   "${additional_env_var_name_2}=${additional_env_var_value_2}"
   "${additional_env_var_name_1}=${additional_env_var_value_1}"
@@ -127,6 +167,8 @@ set(expected_ov_lines
   "PATH=${additional_path_1}${pathsep}${additional_path_2}${pathsep}${regular_path_1}${pathsep}${regular_path_2}"
   "${regular_env_var_name_2}=${regular_env_var_value_2}\n"
   "${regular_env_var_name_1}=${regular_env_var_value_1}\n"
+  "${regular_pathenv_var_name_1}=${expected_pathenv_var_value_1}\n"
+  "${additional_pathenv_var_name_2}=${expected_pathenv_var_value_2}\n"
   "${common_env_var_name}=${common_env_var_value_1}:${common_env_var_value_2}\n"
   "${common_env_var2_name}=${common_env_var2_value_2}:${common_env_var2_value_1}\n"
   )
@@ -137,6 +179,8 @@ if(WIN32)
     "PATH=${additional_path_1}${pathsep}${additional_path_2}${pathsep}${regular_path_1}${pathsep}${regular_path_2}${pathsep}${additional_library_path}${pathsep}${regular_library_path_1}${pathsep}${regular_library_path_2}"
     "${regular_env_var_name_2}=${regular_env_var_value_2}\n"
     "${regular_env_var_name_1}=${regular_env_var_value_1}\n"
+    "${regular_pathenv_var_name_1}=${expected_pathenv_var_value_1}\n"
+    "${additional_pathenv_var_name_2}=${expected_pathenv_var_value_2}\n"
     "${common_env_var_name}=${common_env_var_value_1}:${common_env_var_value_2}\n"
     "${common_env_var2_name}=${common_env_var2_value_2}:${common_env_var2_value_1}\n"
     )
