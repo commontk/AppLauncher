@@ -1,6 +1,5 @@
 
-//Qt includes
-#include <QApplication>
+// Qt includes
 #include <QDebug>
 #include <QDir>
 #include <QFile>
@@ -26,7 +25,7 @@
 // ctkAppLauncherPrivate methods
 
 // --------------------------------------------------------------------------
-ctkAppLauncherPrivate::ctkAppLauncherPrivate()
+ctkAppLauncherPrivate::ctkAppLauncherPrivate(ctkAppLauncher& object) : ctkAppLauncherSettingsPrivate(object)
 {
   QSettings::setDefaultFormat(QSettings::IniFormat);
   this->LauncherStarting = false;
@@ -37,6 +36,7 @@ ctkAppLauncherPrivate::ctkAppLauncherPrivate()
   this->LauncherNoSplashScreen = false;
   this->DefaultLauncherSplashImagePath = ":Images/ctk-splash.png";
   this->DefaultLauncherSplashScreenHideDelayMs = 800;
+  this->LauncherSettingSubDirs << "." << "bin" << "lib";
 
   this->ValidSettingsFile = false;
   this->LongArgPrefix = "--";
@@ -65,34 +65,6 @@ void ctkAppLauncherPrivate::exit(int exitCode)
     {
     this->Application->exit(exitCode);
     }
-}
-
-// --------------------------------------------------------------------------
-QString ctkAppLauncherPrivate::additionalSettingsDir()const
-{
-  QFileInfo fileInfo(QSettings().fileName());
-  return fileInfo.path();
-}
-
-// --------------------------------------------------------------------------
-QString ctkAppLauncherPrivate::findUserAdditionalSettings()const
-{
-  QString prefix = QFileInfo(QSettings().fileName()).completeBaseName();
-  QString suffix;
-  if (!this->ApplicationRevision.isEmpty())
-    {
-    suffix = "-" + this->ApplicationRevision;
-    }
-  QString fileName =
-      QDir(this->additionalSettingsDir()).filePath(QString("%1%2%3.ini").
-                                                   arg(prefix).
-                                                   arg(this->UserAdditionalSettingsFileBaseName).
-                                                   arg(suffix));
-  if (QFile::exists(fileName))
-    {
-    return fileName;
-    }
-  return QString();
 }
 
 // --------------------------------------------------------------------------
@@ -422,34 +394,56 @@ bool ctkAppLauncherPrivate::extractLauncherNameAndDir(const QString& application
 }
 
 // --------------------------------------------------------------------------
-QString ctkAppLauncherPrivate::expandValue(const QString& value)
+QString ctkAppLauncherPrivate::shellQuote(bool posix, QString text, const QString& trailing)
 {
-  QHash<QString, QString> keyValueMap;
-  keyValueMap["<APPLAUNCHER_DIR>"] = this->LauncherDir;
-  keyValueMap["<APPLAUNCHER_NAME>"] = this->LauncherName;
-  keyValueMap["<PATHSEP>"] = this->PathSep;
+#ifdef Q_OS_WIN32
+  if (!posix)
+    {
+    static QRegExp reSpecialCharacters("([\"^])");
+    text.replace(reSpecialCharacters, "^\\1");
+    text.replace("\n", "^\n\n");
+    return text + trailing;
+    }
+#else
+  Q_UNUSED(posix)
+#endif
 
-  QString updatedValue = value;
-  foreach(const QString& key, keyValueMap.keys())
+  static QRegExp reSpecialCharacters("([`$\"!\\\\])");
+  text.replace(reSpecialCharacters, "\\\\1");
+  return QString("\"%1%2\"").arg(text, trailing);
+}
+
+// --------------------------------------------------------------------------
+void ctkAppLauncherPrivate::buildEnvironment(QProcessEnvironment &env)
+{
+  Q_Q(ctkAppLauncher);
+
+  this->reportInfo(QString("<APPLAUNCHER_DIR> -> [%1]").arg(this->LauncherDir));
+
+  QHash<QString, QString> newVars = q->envVars();
+
+  QSet<QString> appendVars = this->AdditionalPathVariables;
+  appendVars << "PATH" << this->LibraryPathVariableName;
+
+  // Add library path and PATH to map
+#ifdef Q_OS_WIN32
+  newVars["PATH"] = (q->paths() + q->libraryPaths()).join(this->PathSep);
+#else
+  newVars[this->LibraryPathVariableName] = q->libraryPaths().join(this->PathSep);
+  newVars["PATH"] = q->paths().join(this->PathSep);
+#endif
+
+  // Set environment variables
+  foreach(const QString& key, newVars.keys())
     {
-    updatedValue.replace(key, keyValueMap.value(key), Qt::CaseInsensitive);
-    }
-  // Consider environment expression
-  QRegExp regex("\\<env\\:([a-zA-Z0-9\\-\\_]+)\\>");
-  int pos = 0;
-  while ((pos = regex.indexIn(value, pos)) != -1)
-    {
-    pos += regex.matchedLength();
-    Q_ASSERT(regex.captureCount() == 1);
-    QString envVarName = regex.cap(1);
-    QString envVarValue = QString("<env-NOTFOUND:%1>").arg(envVarName);
-    if (this->SystemEnvironment.contains(envVarName))
+    QString value = newVars[key];
+    if (appendVars.contains(key) && env.contains(key))
       {
-      envVarValue = this->SystemEnvironment.value(envVarName);
+      value = QString("%1%2%3").arg(value, this->PathSep, env.value(key));
       }
-    updatedValue.replace(QString("<env:%1>").arg(envVarName), envVarValue, Qt::CaseInsensitive);
+    this->reportInfo(QString("Setting env. variable [%1]:%2").arg(key, value));
+    env.insert(key, value);
     }
-  return updatedValue;
 }
 
 // --------------------------------------------------------------------------
@@ -460,37 +454,15 @@ bool ctkAppLauncherPrivate::readSettings(const QString& fileName, int settingsTy
     return false;
     }
 
-  QString settingsTypeDesc;
-  if(settingsType == Self::AdditionalSettings)
+  if (!this->checkSettings(fileName, settingsType))
     {
-    settingsTypeDesc = QLatin1String(" additional");
-    }
-  if(settingsType == Self::UserAdditionalSettings)
-    {
-    settingsTypeDesc = QLatin1String(" user additional");
-    }
-
-  // Check if settings file exists
-  if (!QFile::exists(fileName))
-    {
+    if (!this->ReadSettingsError.isEmpty())
+      {
+      this->reportError(this->ReadSettingsError);
+      }
     return false;
     }
-
-  if (! (QFile::permissions(fileName) & QFile::ReadOwner) )
-    {
-    this->reportError(
-      QString("Failed to read%1 launcher setting file [%2]").arg(settingsTypeDesc).arg(fileName));
-    return false;
-    }
-
-  // Open settings file ...
   QSettings settings(fileName, QSettings::IniFormat);
-  if (settings.status() != QSettings::NoError)
-    {
-    this->reportError(
-      QString("Failed to open%1 setting file [%2]").arg(settingsTypeDesc).arg(fileName));
-    return false;
-    }
 
   // Read default launcher image path
   QVariant splashImagePathVariant = settings.value("launcherSplashImagePath");
@@ -518,29 +490,10 @@ bool ctkAppLauncherPrivate::readSettings(const QString& fileName, int settingsTy
     {
     this->DefaultApplicationToLaunchArguments = applicationGroup["arguments"];
     }
+  // Read user additional settings info
   if(settingsType == Self::RegularSettings)
     {
-    this->UserAdditionalSettingsFileBaseName =
-        settings.value("userAdditionalSettingsFileBaseName", "").toString();
-
-    // Read revision, organization and application names
-    this->OrganizationName = applicationGroup["organizationName"];
-    this->OrganizationDomain = applicationGroup["organizationDomain"];
-    this->ApplicationName = applicationGroup["name"];
-    this->ApplicationRevision = applicationGroup["revision"];
-
-    if (!this->OrganizationName.isEmpty())
-      {
-      qApp->setOrganizationName(this->OrganizationName);
-      }
-    if (!this->OrganizationDomain.isEmpty())
-      {
-      qApp->setOrganizationDomain(this->OrganizationDomain);
-      }
-    if (!this->ApplicationName.isEmpty())
-      {
-      qApp->setApplicationName(this->ApplicationName);
-      }
+    this->readUserAdditionalSettingsInfo(settings);
     }
 
   // Read additional launcher arguments
@@ -567,91 +520,9 @@ bool ctkAppLauncherPrivate::readSettings(const QString& fileName, int settingsTy
     }
   settings.endGroup();
 
-  // Read PATHs
-  this->ListOfPaths = ctk::readArrayValues(settings, "Paths", "path") + this->ListOfPaths;
-
-  // Read LibraryPaths
-  this->ListOfLibraryPaths = ctk::readArrayValues(settings, "LibraryPaths", "path") + this->ListOfLibraryPaths;
-
-  // Read additional environment variables
-  QHash<QString, QString> mapOfEnvVars = ctk::readKeyValuePairs(settings, "EnvironmentVariables");
-  foreach(const QString& envVarName, mapOfEnvVars.keys())
-    {
-    QString envVarValue = mapOfEnvVars.value(envVarName);
-    envVarValue.replace(QString("<env:%1>").arg(envVarName), this->MapOfEnvVars.value(envVarName));
-    this->MapOfEnvVars.insert(envVarName, envVarValue);
-    }
-
-  // Read additional path environment variables
-  this->AdditionalPathVariables.unite(settings.value("additionalPathVariables").toStringList().toSet());
-  foreach(const QString& envVarName, this->AdditionalPathVariables)
-    {
-    if (!envVarName.isEmpty())
-      {
-      QStringList paths = ctk::readArrayValues(settings, envVarName, "path");
-      if (!paths.empty())
-        {
-        if (this->MapOfEnvVars.contains(envVarName))
-          {
-          paths.append(this->MapOfEnvVars[envVarName]);
-          }
-        this->MapOfEnvVars.insert(envVarName, paths.join(this->PathSep));
-        }
-      }
-    }
+  this->Superclass::readPathSettings(settings);
 
   return true;
-}
-
-// --------------------------------------------------------------------------
-QString ctkAppLauncherPrivate::shellQuote(bool posix, QString text, const QString& trailing)
-{
-#ifdef Q_OS_WIN32
-  if (!posix)
-    {
-    static QRegExp reSpecialCharacters("([\"^])");
-    text.replace(reSpecialCharacters, "^\\1");
-    text.replace("\n", "^\n\n");
-    return text + trailing;
-    }
-#else
-  Q_UNUSED(posix)
-#endif
-
-  static QRegExp reSpecialCharacters("([`$\"!\\\\])");
-  text.replace(reSpecialCharacters, "\\\\1");
-  return QString("\"%1%2\"").arg(text, trailing);
-}
-
-// --------------------------------------------------------------------------
-void ctkAppLauncherPrivate::buildEnvironment(QProcessEnvironment &env)
-{
-  this->reportInfo(QString("<APPLAUNCHER_DIR> -> [%1]").arg(this->LauncherDir));
-
-  QHash<QString, QString> newVars = this->MapOfEnvVars;
-
-  QSet<QString> appendVars = this->AdditionalPathVariables;
-  appendVars << "PATH" << this->LibraryPathVariableName;
-
-  // Add library path and PATH to map
-#ifdef Q_OS_WIN32
-  newVars["PATH"] = (this->ListOfPaths + this->ListOfLibraryPaths).join(this->PathSep);
-#else
-  newVars[this->LibraryPathVariableName] = this->ListOfLibraryPaths.join(this->PathSep);
-  newVars["PATH"] = this->ListOfPaths.join(this->PathSep);
-#endif
-
-  // Set environment variables
-  foreach(const QString& key, newVars.keys())
-    {
-    QString value = this->expandValue(newVars[key]);
-    if (appendVars.contains(key) && env.contains(key))
-      {
-      value = QString("%1%2%3").arg(value, this->PathSep, env.value(key));
-      }
-    this->reportInfo(QString("Setting env. variable [%1]:%2").arg(key, value));
-    env.insert(key, value);
-    }
 }
 
 // --------------------------------------------------------------------------
@@ -740,14 +611,14 @@ void ctkAppLauncherPrivate::applicationStarted()
 
 // --------------------------------------------------------------------------
 ctkAppLauncher::ctkAppLauncher(const QCoreApplication& application, QObject* parentObject)
-  : Superclass(new ctkAppLauncherPrivate(), parentObject)
+  : Superclass(new ctkAppLauncherPrivate(*this), parentObject)
 {
   this->setApplication(application);
 }
 
 // --------------------------------------------------------------------------
 ctkAppLauncher::ctkAppLauncher(QObject* parentObject)
-  : Superclass(new ctkAppLauncherPrivate(), parentObject)
+  : Superclass(new ctkAppLauncherPrivate(*this), parentObject)
 {
 }
 
@@ -1181,21 +1052,6 @@ QString ctkAppLauncher::findSettingsFile()const
   return QString();
 }
 
-// --------------------------------------------------------------------------
-QString ctkAppLauncher::findUserAdditionalSettings()const
-{
-  Q_D(const ctkAppLauncher);
-  return d->findUserAdditionalSettings();
-}
-
-// --------------------------------------------------------------------------
-bool ctkAppLauncher::readSettings(const QString& fileName)
-{
-  Q_D(ctkAppLauncher);
-  return d->readSettings(fileName, ctkAppLauncherPrivate::RegularSettings);
-}
-
-// --------------------------------------------------------------------------
 bool ctkAppLauncher::writeSettings(const QString& outputFilePath)
 {
   Q_D(ctkAppLauncher);
@@ -1242,34 +1098,6 @@ bool ctkAppLauncher::writeSettings(const QString& outputFilePath)
   ctk::writeKeyValuePairs(settings, d->MapOfEnvVars, "EnvironmentVariables");
 
   return true;
-}
-
-// --------------------------------------------------------------------------
-const QStringList& ctkAppLauncher::libraryPaths()const
-{
-  Q_D(const ctkAppLauncher);
-  return d->ListOfPaths;
-}
-
-// --------------------------------------------------------------------------
-void ctkAppLauncher::setLibraryPaths(const QStringList& listOfLibraryPaths)
-{
-  Q_D(ctkAppLauncher);
-  d->ListOfLibraryPaths = listOfLibraryPaths;
-}
-
-// --------------------------------------------------------------------------
-const QStringList& ctkAppLauncher::paths()const
-{
-  Q_D(const ctkAppLauncher);
-  return d->ListOfPaths;
-}
-
-// --------------------------------------------------------------------------
-void ctkAppLauncher::setPaths(const QStringList& listOfPaths)
-{
-  Q_D(ctkAppLauncher);
-  d->ListOfPaths = listOfPaths;
 }
 
 // --------------------------------------------------------------------------
@@ -1376,7 +1204,23 @@ int ctkAppLauncher::configure()
 
   QString settingFileName = this->findSettingsFile();
 
-  d->ValidSettingsFile = this->readSettings(settingFileName);
+  d->ValidSettingsFile = d->readSettings(settingFileName, ctkAppLauncherPrivate::RegularSettings);
+
+  if (d->ValidSettingsFile)
+    {
+    if (!d->OrganizationName.isEmpty())
+      {
+      qApp->setOrganizationName(d->OrganizationName);
+      }
+    if (!d->OrganizationDomain.isEmpty())
+      {
+      qApp->setOrganizationDomain(d->OrganizationDomain);
+      }
+    if (!d->ApplicationName.isEmpty())
+      {
+      qApp->setApplicationName(d->ApplicationName);
+      }
+    }
 
   int status = this->processArguments();
   if (status == ctkAppLauncher::ExitWithError)

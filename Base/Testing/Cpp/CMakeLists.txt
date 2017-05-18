@@ -4,6 +4,7 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR})
 set(KIT_TEST_SRCS
   ctkAppArgumentsTest.cpp
   ctkAppLauncherTest1.cpp
+  ctkAppLauncherSettingsTest.cpp
   ctkCommandLineParserTest1.cpp
   )
 create_test_sourcelist(Tests ${KIT}CppTests.cpp
@@ -14,6 +15,7 @@ create_test_sourcelist(Tests ${KIT}CppTests.cpp
 foreach(file IN ITEMS
     ctkAppArgumentsTest.cpp
     ctkAppLauncherTest1.cpp
+    ctkAppLauncherSettingsTest.cpp
     )
   set(moc_file moc_${file})
   QT4_GENERATE_MOC(${file} ${moc_file})
@@ -43,4 +45,5 @@ endmacro()
 
 add_simple_test(ctkAppArgumentsTest XDisplayRequired)
 add_simple_test(ctkAppLauncherTest1 XDisplayRequired)
+add_simple_test(ctkAppLauncherSettingsTest XDisplayRequired)
 add_simple_test(ctkCommandLineParserTest1)

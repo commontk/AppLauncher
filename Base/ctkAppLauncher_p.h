@@ -2,6 +2,7 @@
 #define __ctkAppLauncher_p_h
 
 // AppLauncher includes
+#include "ctkAppLauncher.h"
 #include "ctkAppLauncherSettings.h"
 #include "ctkAppLauncherSettings_p.h"
 
@@ -23,10 +24,12 @@ class QCoreApplication;
 class ctkAppLauncherPrivate : public ctkAppLauncherSettingsPrivate
 {
   Q_OBJECT
+  Q_DECLARE_PUBLIC(ctkAppLauncher)
 public:
-  ctkAppLauncherPrivate();
+  ctkAppLauncherPrivate(ctkAppLauncher& object);
   ~ctkAppLauncherPrivate(){}
   typedef ctkAppLauncherPrivate Self;
+  typedef ctkAppLauncherSettingsPrivate Superclass;
 
   /// Display error on Standard Error
   void reportError(const QString& msg)const;
@@ -38,31 +41,16 @@ public:
   /// \sa ctkAppLauncher::setApplication
   void exit(int exitCode);
 
-  /// Return additional settings directory associated with the \a ApplicationOrganization
-  /// read from the main settings.
-  /// The location of the additional settings directory is expected to match the following
-  /// path: path/to/settings/<OrganisationName|DomainName>/
-  QString additionalSettingsDir()const;
-
-  QString findUserAdditionalSettings()const;
-
-  enum SettingsType
-    {
-    RegularSettings = 0,
-    AdditionalSettings,
-    UserAdditionalSettings
-    };
-
+  /// Will return False if the object is NOT initialized
   bool readSettings(const QString& fileName, int settingsType);
 
-  void buildEnvironment(QProcessEnvironment&);
   bool processApplicationToLaunchArgument();
   bool processExtraApplicationToLaunchArgument(const QStringList& unparsedArgs);
   bool processSplashPathArgument();
   bool processScreenHideDelayMsArgument();
   bool processAdditionalSettingsArgument();
 
-  /// \sa ctkAppLauncher::findUserAdditionalSettings()
+  /// \sa ctkAppLauncherSettingsPrivate::findUserAdditionalSettings()
   bool processUserAdditionalSettings();
 
   bool extractLauncherNameAndDir(const QString& applicationFilePath);
@@ -77,18 +65,10 @@ public:
   /// build prepend expressions to environment variables, like \c FOO=...:$FOO.
   static QString shellQuote(bool posix, QString text, const QString& trailing = QString());
 
-  /// \brief Expand setting \a value
-  /// The following string will be updated:
-  /// <ul>
-  ///  <li>&lt;APPLAUNCHER_DIR&gt; -> LauncherDir</li>
-  ///  <li>&lt;APPLAUNCHER_NAME&gt; -> LauncherName</li>
-  ///  <li>&lt;PATHSEP&gt; -> PathSep</li>
-  ///  <li>&lt;env:VARNAME&gt; -> If any, expand to corresponding system environment variable</li>
-  /// </ul>
-  QString expandValue(const QString& value);
+  void buildEnvironment(QProcessEnvironment&);
 
   QString invalidSettingsMessage()const;
-  virtual bool verbose()const;
+  bool verbose()const;
   QString splashImagePath()const;
   bool disableSplash()const;
 
@@ -115,9 +95,9 @@ public:
   /// Options passed to the launcher from the command line
   QString     ApplicationToLaunch;
   QStringList ApplicationToLaunchArguments;
-//  QString     LauncherSplashImagePath;
-//  int         LauncherSplashScreenHideDelayMs;
-//  bool        LauncherNoSplashScreen;
+  QString     LauncherSplashImagePath;
+  int         LauncherSplashScreenHideDelayMs;
+  bool        LauncherNoSplashScreen;
 
   /// Variable used internally
   bool                            LauncherStarting;
@@ -128,29 +108,29 @@ public:
   QString                         LongArgPrefix;
   QHash<QString, QVariant>        ParsedArgs;
   QString                         ParseError;
-//  QString                         DefaultApplicationToLaunch;
-//  QString                         DefaultLauncherSplashImagePath;
-//  int                             DefaultLauncherSplashScreenHideDelayMs;
-//  bool                            DefaultLauncherNoSplashScreen;
-//  QString                         DefaultApplicationToLaunchArguments;
+  QString                         DefaultApplicationToLaunch;
+  QString                         DefaultLauncherSplashImagePath;
+  int                             DefaultLauncherSplashScreenHideDelayMs;
+  bool                            DefaultLauncherNoSplashScreen;
+  QString                         DefaultApplicationToLaunchArguments;
 //  QString                         LauncherName;
 //  QString                         LauncherDir;
-//  QStringList                     LauncherSettingSubDirs;
+  QStringList                     LauncherSettingSubDirs;
   bool                            ValidSettingsFile;
 //  QString                         OrganizationName;
 //  QString                         OrganizationDomain;
 //  QString                         ApplicationName;
 //  QString                         ApplicationRevision;
 //  QString                         UserAdditionalSettingsFileBaseName;
-//  QString                         LauncherAdditionalHelpShortArgument;
-//  QString                         LauncherAdditionalHelpLongArgument;
-//  QStringList                     LauncherAdditionalNoSplashArguments;
+  QString                         LauncherAdditionalHelpShortArgument;
+  QString                         LauncherAdditionalHelpLongArgument;
+  QStringList                     LauncherAdditionalNoSplashArguments;
 //  QStringList                     ListOfPaths;
 //  QStringList                     ListOfLibraryPaths;
 //  QSet<QString>                   AdditionalPathVariables;
 //  QHash<QString, QString>         MapOfEnvVars;
   QCoreApplication*               Application;
-//  bool                            Initialized;
+  bool                            Initialized;
   bool                            DetachApplicationToLaunch;
 //  QString                         PathSep;
 //  QString                         LibraryPathVariableName;
@@ -159,12 +139,12 @@ public:
 //  QProcessEnvironment             SystemEnvironment;
 
   /// Extra 'application to launch'
-//  QString                                          ExtraApplicationToLaunchLongArgument;
-//  QString                                          ExtraApplicationToLaunchShortArgument;
+  QString                                          ExtraApplicationToLaunchLongArgument;
+  QString                                          ExtraApplicationToLaunchShortArgument;
   QString                                          ExtraApplicationToLaunch;
   QString                                          ExtraApplicationToLaunchArguments;
-//  typedef QHash<QString, QString>                  ExtraApplicationToLaunchProperty;
-//  QHash<QString, ExtraApplicationToLaunchProperty> ExtraApplicationToLaunchList;
+  typedef QHash<QString, QString>                  ExtraApplicationToLaunchProperty;
+  QHash<QString, ExtraApplicationToLaunchProperty> ExtraApplicationToLaunchList;
 };
 
 #endif

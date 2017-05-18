@@ -84,26 +84,9 @@ public:
   /// if the file does NOT exist
   QString findSettingsFile()const;
 
-  /// Return user specific additional settings file associated with the \a ApplicationOrganization,
-  /// \a ApplicationName and \a ApplicationRevision read from the main settings.
-  /// The location of the additional settings file is expected to match the following name
-  /// and path: path/to/settings/<OrganisationName|DomainName>/<ApplicationName>(-<revision>).ini
-  /// If the settings file does NOT exist, an empty string will be returned.
-  /// \sa additionalSettingsDir()
-  QString findUserAdditionalSettings()const;
-
   /// Read/Write settings
   /// Will return False if the object is NOT initialized
-  bool readSettings(const QString& fileName);
   bool writeSettings(const QString& outputFilePath);
-
-  /// Set/Get list of library paths
-  const QStringList& libraryPaths()const;
-  void setLibraryPaths(const QStringList& listOfLibraryPaths);
-
-  /// Set/Get list of paths
-  const QStringList& paths()const;
-  void setPaths(const QStringList& listOfPaths);
 
   /// Get applicationToLaunch
   QString applicationToLaunch()const;
