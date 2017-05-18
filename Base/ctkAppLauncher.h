@@ -11,7 +11,7 @@
 // STD includes
 #include <iostream>
 
-class ctkAppLauncherInternal;
+class ctkAppLauncherPrivate;
 
 // --------------------------------------------------------------------------
 class ctkAppLauncher : public QObject
@@ -133,10 +133,12 @@ public slots:
   /// Slot called just after the application event loop is started
   void startLauncher();
 
-private:
-  friend class ctkAppLauncherInternal;
-  ctkAppLauncherInternal* Internal;
+protected:
+  QScopedPointer<ctkAppLauncherPrivate> d_ptr;
 
+private:
+  Q_DECLARE_PRIVATE(ctkAppLauncher)
+  Q_DISABLE_COPY(ctkAppLauncher)
 };
 
 #endif

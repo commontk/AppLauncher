@@ -16,13 +16,13 @@
 class QCoreApplication;
 
 // --------------------------------------------------------------------------
-class ctkAppLauncherInternal : public QObject
+class ctkAppLauncherPrivate : public QObject
 {
   Q_OBJECT
 public:
-  ctkAppLauncherInternal();
-  ~ctkAppLauncherInternal(){}
-  typedef ctkAppLauncherInternal Self;
+  ctkAppLauncherPrivate();
+  ~ctkAppLauncherPrivate(){}
+  typedef ctkAppLauncherPrivate Self;
 
   /// Display error on Standard Error
   void reportError(const QString& msg)const;
