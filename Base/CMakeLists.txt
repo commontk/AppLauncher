@@ -20,6 +20,9 @@ set(KIT_SRCS
   ctkAppLauncher.cpp
   ctkAppLauncher.h
   ctkAppLauncher_p.h
+  ctkAppLauncherSettings.cpp
+  ctkAppLauncherSettings.h
+  ctkAppLauncherSettings_p.h
   ctkCommandLineParser.cpp
   ctkCommandLineParser.h
   ctkSettingsHelper.cpp
@@ -30,6 +33,8 @@ set(KIT_SRCS
 set(KIT_MOC_SRCS
   ctkAppLauncher.h
   ctkAppLauncher_p.h
+  ctkAppLauncherSettings.h
+  ctkAppLauncherSettings_p.h
   )
 
 # Resources

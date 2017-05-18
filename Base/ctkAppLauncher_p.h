@@ -1,6 +1,10 @@
 #ifndef __ctkAppLauncher_p_h
 #define __ctkAppLauncher_p_h
 
+// AppLauncher includes
+#include "ctkAppLauncherSettings.h"
+#include "ctkAppLauncherSettings_p.h"
+
 // Qt includes
 #include <QStringList>
 #include <QSettings>
@@ -16,7 +20,7 @@
 class QCoreApplication;
 
 // --------------------------------------------------------------------------
-class ctkAppLauncherPrivate : public QObject
+class ctkAppLauncherPrivate : public ctkAppLauncherSettingsPrivate
 {
   Q_OBJECT
 public:
@@ -84,7 +88,7 @@ public:
   QString expandValue(const QString& value);
 
   QString invalidSettingsMessage()const;
-  bool verbose()const;
+  virtual bool verbose()const;
   QString splashImagePath()const;
   bool disableSplash()const;
 
@@ -111,9 +115,9 @@ public:
   /// Options passed to the launcher from the command line
   QString     ApplicationToLaunch;
   QStringList ApplicationToLaunchArguments;
-  QString     LauncherSplashImagePath;
-  int         LauncherSplashScreenHideDelayMs;
-  bool        LauncherNoSplashScreen;
+//  QString     LauncherSplashImagePath;
+//  int         LauncherSplashScreenHideDelayMs;
+//  bool        LauncherNoSplashScreen;
 
   /// Variable used internally
   bool                            LauncherStarting;
@@ -124,43 +128,43 @@ public:
   QString                         LongArgPrefix;
   QHash<QString, QVariant>        ParsedArgs;
   QString                         ParseError;
-  QString                         DefaultApplicationToLaunch;
-  QString                         DefaultLauncherSplashImagePath;
-  int                             DefaultLauncherSplashScreenHideDelayMs;
-  bool                            DefaultLauncherNoSplashScreen;
-  QString                         DefaultApplicationToLaunchArguments;
-  QString                         LauncherName;
-  QString                         LauncherDir;
-  QStringList                     LauncherSettingSubDirs;
+//  QString                         DefaultApplicationToLaunch;
+//  QString                         DefaultLauncherSplashImagePath;
+//  int                             DefaultLauncherSplashScreenHideDelayMs;
+//  bool                            DefaultLauncherNoSplashScreen;
+//  QString                         DefaultApplicationToLaunchArguments;
+//  QString                         LauncherName;
+//  QString                         LauncherDir;
+//  QStringList                     LauncherSettingSubDirs;
   bool                            ValidSettingsFile;
-  QString                         OrganizationName;
-  QString                         OrganizationDomain;
-  QString                         ApplicationName;
-  QString                         ApplicationRevision;
-  QString                         UserAdditionalSettingsFileBaseName;
-  QString                         LauncherAdditionalHelpShortArgument;
-  QString                         LauncherAdditionalHelpLongArgument;
-  QStringList                     LauncherAdditionalNoSplashArguments;
-  QStringList                     ListOfPaths;
-  QStringList                     ListOfLibraryPaths;
-  QSet<QString>                   AdditionalPathVariables;
-  QHash<QString, QString>         MapOfEnvVars;
+//  QString                         OrganizationName;
+//  QString                         OrganizationDomain;
+//  QString                         ApplicationName;
+//  QString                         ApplicationRevision;
+//  QString                         UserAdditionalSettingsFileBaseName;
+//  QString                         LauncherAdditionalHelpShortArgument;
+//  QString                         LauncherAdditionalHelpLongArgument;
+//  QStringList                     LauncherAdditionalNoSplashArguments;
+//  QStringList                     ListOfPaths;
+//  QStringList                     ListOfLibraryPaths;
+//  QSet<QString>                   AdditionalPathVariables;
+//  QHash<QString, QString>         MapOfEnvVars;
   QCoreApplication*               Application;
-  bool                            Initialized;
+//  bool                            Initialized;
   bool                            DetachApplicationToLaunch;
-  QString                         PathSep;
-  QString                         LibraryPathVariableName;
+//  QString                         PathSep;
+//  QString                         LibraryPathVariableName;
   QSharedPointer<QSplashScreen>   SplashScreen;
   QScopedPointer<QPixmap>         SplashPixmap;
-  QProcessEnvironment             SystemEnvironment;
+//  QProcessEnvironment             SystemEnvironment;
 
   /// Extra 'application to launch'
-  QString                                          ExtraApplicationToLaunchLongArgument;
-  QString                                          ExtraApplicationToLaunchShortArgument;
+//  QString                                          ExtraApplicationToLaunchLongArgument;
+//  QString                                          ExtraApplicationToLaunchShortArgument;
   QString                                          ExtraApplicationToLaunch;
   QString                                          ExtraApplicationToLaunchArguments;
-  typedef QHash<QString, QString>                  ExtraApplicationToLaunchProperty;
-  QHash<QString, ExtraApplicationToLaunchProperty> ExtraApplicationToLaunchList;
+//  typedef QHash<QString, QString>                  ExtraApplicationToLaunchProperty;
+//  QHash<QString, ExtraApplicationToLaunchProperty> ExtraApplicationToLaunchList;
 };
 
 #endif

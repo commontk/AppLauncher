@@ -8,18 +8,21 @@
 #include <QSettings>
 #include <QCoreApplication>
 
+// CTK includes
+#include "ctkAppLauncherSettings.h"
+
 // STD includes
 #include <iostream>
 
 class ctkAppLauncherPrivate;
 
 // --------------------------------------------------------------------------
-class ctkAppLauncher : public QObject
+class ctkAppLauncher : public ctkAppLauncherSettings
 {
   Q_OBJECT
 public:
   typedef ctkAppLauncher Self;
-  typedef QObject Superclass;
+  typedef ctkAppLauncherSettings Superclass;
   ctkAppLauncher(const QCoreApplication& application, QObject* parentObject = 0);
   ctkAppLauncher(QObject* parentObject = 0);
   ~ctkAppLauncher();
@@ -132,9 +135,6 @@ public slots:
 
   /// Slot called just after the application event loop is started
   void startLauncher();
-
-protected:
-  QScopedPointer<ctkAppLauncherPrivate> d_ptr;
 
 private:
   Q_DECLARE_PRIVATE(ctkAppLauncher)

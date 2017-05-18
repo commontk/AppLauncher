@@ -13,6 +13,8 @@
 // CTK includes
 #include "ctkAppLauncher.h"
 #include "ctkAppLauncher_p.h"
+#include "ctkAppLauncherSettings.h"
+#include "ctkAppLauncherSettings_p.h"
 #include "ctkAppLauncherVersionConfig.h"
 #include "ctkSettingsHelper.h"
 
@@ -35,26 +37,10 @@ ctkAppLauncherPrivate::ctkAppLauncherPrivate()
   this->LauncherNoSplashScreen = false;
   this->DefaultLauncherSplashImagePath = ":Images/ctk-splash.png";
   this->DefaultLauncherSplashScreenHideDelayMs = 800;
-  this->LauncherSettingSubDirs << "." << "bin" << "lib";
+
   this->ValidSettingsFile = false;
   this->LongArgPrefix = "--";
   this->ShortArgPrefix = "-";
-  this->SystemEnvironment = QProcessEnvironment::systemEnvironment();
-
-#if defined(Q_OS_WIN32)
-  this->PathSep = ";";
-  this->LibraryPathVariableName = "PATH";
-#else
-  this->PathSep = ":";
-# if defined(Q_OS_MAC)
-  this->LibraryPathVariableName = "DYLD_LIBRARY_PATH";
-# elif defined(Q_OS_LINUX)
-  this->LibraryPathVariableName = "LD_LIBRARY_PATH";
-# else
-  // TODO support solaris?
-#  error CTK launcher is not supported on this platform
-# endif
-#endif
 }
 
 // --------------------------------------------------------------------------
@@ -754,14 +740,14 @@ void ctkAppLauncherPrivate::applicationStarted()
 
 // --------------------------------------------------------------------------
 ctkAppLauncher::ctkAppLauncher(const QCoreApplication& application, QObject* parentObject)
-  : Superclass(parentObject), d_ptr(new ctkAppLauncherPrivate())
+  : Superclass(new ctkAppLauncherPrivate(), parentObject)
 {
   this->setApplication(application);
 }
 
 // --------------------------------------------------------------------------
 ctkAppLauncher::ctkAppLauncher(QObject* parentObject)
-  : Superclass(parentObject), d_ptr(new ctkAppLauncherPrivate())
+  : Superclass(new ctkAppLauncherPrivate(), parentObject)
 {
 }
 
