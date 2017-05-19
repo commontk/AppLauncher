@@ -278,6 +278,15 @@ if(BUILD_TESTING)
   add_subdirectory(Testing)
 endif()
 
+# Documentation - Automatically generate documentation at build time
+set(all_arg)
+if(DOCUMENTATION_TARGET_IN_ALL)
+  set(all_arg "ALL")
+endif()
+add_custom_target(doc ${all_arg})
+add_custom_target(doc-tarballs ${all_arg})
+add_subdirectory(Docs)
+
 # Copy CMake scripts to build directory
 set(srcDistributables)
 macro(ctkCopyDistributable FILE DESTINATION)
