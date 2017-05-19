@@ -45,7 +45,7 @@ build_script:
 test_script:
   # Run tests
   - ps: |
-        ctest -C Release -j4
+        ctest -C Release -j4 -VV
   # Upload release and prerelease packages
   - ps: |
       pip install scikit-ci-addons==0.15.0

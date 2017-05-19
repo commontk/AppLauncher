@@ -47,7 +47,7 @@ script:
     ../
 - make -j4 && make package
 # Exclude tests requiring X Display
-- ctest -LE XDisplayRequired
+- ctest -LE XDisplayRequired -VV
 
 deploy:
   - provider: script

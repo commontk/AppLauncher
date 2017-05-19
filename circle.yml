@@ -27,7 +27,7 @@ test:
     - |
       docker run --name applauncher-test \
         --volumes-from applauncher \
-        --env APP="sudo chown -R user.user /usr/src/AppLauncher-build && cd /usr/src/AppLauncher-build && ctest -LE 'CompilerRequired' -V" \
+        --env APP="sudo chown -R user.user /usr/src/AppLauncher-build && cd /usr/src/AppLauncher-build && ctest -LE 'CompilerRequired' -VV" \
         thewtex/opengl:debian; \
       docker cp applauncher-test:/var/log/supervisor/graphical-app-launcher.log - | tar xO; [ "$(docker cp applauncher-test:/tmp/graphical-app.return_code - | tar xO)" = 0 ]
     # Upload release and prerelease packages
