@@ -431,17 +431,10 @@ void ctkAppLauncherPrivate::buildEnvironment(QProcessEnvironment &env)
     }
 
   // Path environment variables
-  QHash<QString, QStringList> envPathsVars = q->additionalPathsVars();
-  // Add LibraryPaths and Paths to map
-#ifdef Q_OS_WIN32
-  envPathsVars["PATH"] = (q->paths() + q->libraryPaths());
-#else
-  envPathsVars[q->libraryPathVariableName()] = q->libraryPaths();
-  envPathsVars["PATH"] = q->paths();
-#endif
-  foreach(const QString& key, envPathsVars.keys())
+  QHash<QString, QStringList> pathsEnvVars = q->pathsEnvVars();
+  foreach(const QString& key, pathsEnvVars.keys())
     {
-    QString value = envPathsVars[key].join(this->PathSep);
+    QString value = pathsEnvVars[key].join(this->PathSep);
     this->reportInfo(QString("Setting env. variable [%1]:%2").arg(key, value));
     if (env.contains(key))
       {

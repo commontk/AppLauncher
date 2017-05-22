@@ -395,6 +395,19 @@ QHash<QString, QString> ctkAppLauncherSettings::envVars(bool expand /* = true */
 }
 
 // --------------------------------------------------------------------------
+QHash<QString, QStringList> ctkAppLauncherSettings::pathsEnvVars(bool expand /* = true */) const
+{
+  QHash<QString, QStringList> newVars = this->additionalPathsVars(expand);
+#ifdef Q_OS_WIN32
+  newVars["PATH"] = (this->paths(expand) + this->libraryPaths(expand));
+#else
+  newVars[this->libraryPathVariableName()] = this->libraryPaths(expand);
+  newVars["PATH"] = this->paths(expand);
+#endif
+  return newVars;
+}
+
+// --------------------------------------------------------------------------
 QStringList ctkAppLauncherSettings::additionalPaths(const QString& variableName, bool expand /* = true */) const
 {
   Q_D(const ctkAppLauncherSettings);
