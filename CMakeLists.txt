@@ -85,6 +85,7 @@ set(CTK_INSTALL_CONFIG_DIR "CMake")
 #
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_INCLUDE_CURRENT_DIR_IN_INTERFACE ON)
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 #-----------------------------------------------------------------------------
 # Update CMake module path
