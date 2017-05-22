@@ -211,7 +211,7 @@ int checkReadSettingsWithoutExpand()
         appLauncherSettings.paths(/* expand= */ false),
         QStringList()
                 << "<APPLAUNCHER_DIR>/cow"
-                << "/path/to/pig"
+                << "/path/to/pig-<env:BOTH>"
                 << "/path/to/<env:PET>"
         );
 
@@ -220,7 +220,7 @@ int checkReadSettingsWithoutExpand()
         QStringList()
                 << "/path/to/libA"
                 << "<APPLAUNCHER_DIR>/libB"
-                << "/path/to/libC"
+                << "/path/to/libC-<env:PET>"
         );
 
   CHECK_QSTRING(
@@ -231,6 +231,11 @@ int checkReadSettingsWithoutExpand()
   CHECK_QSTRING(
         appLauncherSettings.envVar("PET", /* expand= */ false),
         "dog"
+        );
+
+  CHECK_QSTRING(
+        appLauncherSettings.envVar("BOTH", /* expand= */ false),
+        "cat-and-<env:PET>"
         );
 
 #if defined(Q_OS_WIN32)
@@ -286,7 +291,7 @@ int checkReadSettingsWithExpand()
         appLauncherSettings.paths(),
         QStringList()
                 << "/awesome/path/to/cow"
-                << "/path/to/pig"
+                << "/path/to/pig-cat-and-dog"
                 << "/path/to/dog"
         );
 
@@ -295,7 +300,7 @@ int checkReadSettingsWithExpand()
         QStringList()
                 << "/path/to/libA"
                 << "/awesome/path/to/libB"
-                << "/path/to/libC"
+                << "/path/to/libC-dog"
         );
 
   CHECK_QSTRING(
@@ -306,6 +311,11 @@ int checkReadSettingsWithExpand()
   CHECK_QSTRING(
         appLauncherSettings.envVar("PET"),
         "dog"
+        );
+
+  CHECK_QSTRING(
+        appLauncherSettings.envVar("BOTH"),
+        "cat-and-dog"
         );
 
 #if defined(Q_OS_WIN32)
@@ -410,7 +420,7 @@ int checkReadAdditionalSettingsWithExpand()
                 << "/path/to/cat-and-dog"
                 << "/path/to/Klimt"
                 << "/awesome/path/to/cow"
-                << "/path/to/pig"
+                << "/path/to/pig-cat-and-dog"
                 << "/path/to/dog"
         );
 
@@ -418,10 +428,10 @@ int checkReadAdditionalSettingsWithExpand()
         appLauncherSettings.libraryPaths(),
         QStringList()
                 << "/path/to/libD"
-                << "/awesome/path/to/libE"
+                << "/awesome/path/to/libE-dog"
                 << "/path/to/libA"
                 << "/awesome/path/to/libB"
-                << "/path/to/libC"
+                << "/path/to/libC-dog"
         );
 
   CHECK_QSTRING(

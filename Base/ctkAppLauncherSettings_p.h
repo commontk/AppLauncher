@@ -45,6 +45,9 @@ public:
   /// </ul>
   QString expandValue(const QString& value) const;
 
+  void expandEnvVars();
+  QHash<QString, QString> MapOfExpandedEnvVars;
+
   bool checkSettings(const QString& fileName, int settingsType);
 
   void readUserAdditionalSettingsInfo(QSettings& settings);

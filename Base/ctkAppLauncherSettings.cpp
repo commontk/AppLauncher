@@ -124,20 +124,20 @@ void ctkAppLauncherSettingsPrivate::readUserAdditionalSettingsInfo(QSettings& se
 // --------------------------------------------------------------------------
 void ctkAppLauncherSettingsPrivate::readPathSettings(QSettings& settings)
 {
+  // Read additional environment variables
+  QHash<QString, QString> mapOfEnvVars = ctk::readKeyValuePairs(settings, "EnvironmentVariables");
+  foreach(const QString& envVarName, mapOfEnvVars.keys())
+    {
+    this->MapOfEnvVars.insert(envVarName, mapOfEnvVars[envVarName]);
+    }
+
+  this->expandEnvVars();
+
   // Read PATHs
   this->ListOfPaths = ctk::readArrayValues(settings, "Paths", "path") + this->ListOfPaths;
 
   // Read LibraryPaths
   this->ListOfLibraryPaths = ctk::readArrayValues(settings, "LibraryPaths", "path") + this->ListOfLibraryPaths;
-
-  // Read additional environment variables
-  QHash<QString, QString> mapOfEnvVars = ctk::readKeyValuePairs(settings, "EnvironmentVariables");
-  foreach(const QString& envVarName, mapOfEnvVars.keys())
-    {
-    QString envVarValue = mapOfEnvVars.value(envVarName);
-    envVarValue.replace(QString("<env:%1>").arg(envVarName), this->MapOfEnvVars.value(envVarName));
-    this->MapOfEnvVars.insert(envVarName, envVarValue);
-    }
 
   // Read additional path environment variables
   this->AdditionalPathVariables.unite(settings.value("additionalPathVariables").toStringList().toSet());
@@ -161,6 +161,7 @@ void ctkAppLauncherSettingsPrivate::readPathSettings(QSettings& settings)
 // --------------------------------------------------------------------------
 QString ctkAppLauncherSettingsPrivate::expandValue(const QString& value) const
 {
+  QHash<QString, QString> mapOfEnvVars = this->MapOfExpandedEnvVars;
   QHash<QString, QString> keyValueMap;
   keyValueMap["<APPLAUNCHER_DIR>"] = this->LauncherDir;
   keyValueMap["<APPLAUNCHER_NAME>"] = this->LauncherName;
@@ -171,6 +172,7 @@ QString ctkAppLauncherSettingsPrivate::expandValue(const QString& value) const
     {
     updatedValue.replace(key, keyValueMap.value(key), Qt::CaseInsensitive);
     }
+
   // Consider environment expression
   QRegExp regex("\\<env\\:([a-zA-Z0-9\\-\\_]+)\\>");
   int pos = 0;
@@ -180,9 +182,9 @@ QString ctkAppLauncherSettingsPrivate::expandValue(const QString& value) const
     Q_ASSERT(regex.captureCount() == 1);
     QString envVarName = regex.cap(1);
     QString envVarValue = QString("<env-NOTFOUND:%1>").arg(envVarName);
-    if (this->MapOfEnvVars.contains(envVarName))
+    if (mapOfEnvVars.contains(envVarName))
       {
-      envVarValue = this->MapOfEnvVars.value(envVarName);
+      envVarValue = mapOfEnvVars.value(envVarName);
       }
     else if (this->SystemEnvironment.contains(envVarName))
       {
@@ -191,6 +193,51 @@ QString ctkAppLauncherSettingsPrivate::expandValue(const QString& value) const
     updatedValue.replace(QString("<env:%1>").arg(envVarName), envVarValue, Qt::CaseInsensitive);
     }
   return updatedValue;
+}
+
+// --------------------------------------------------------------------------
+void ctkAppLauncherSettingsPrivate::expandEnvVars()
+{
+  QRegExp regex("\\<env\\:([a-zA-Z0-9\\-\\_]+)\\>");
+
+  QHash<QString, QString> expanded = this->MapOfEnvVars;
+
+  foreach(const QString& key, this->MapOfEnvVars.keys())
+    {
+    QString value = this->MapOfEnvVars[key];
+    int pos = 0;
+    int previousPos = pos;
+    while ((pos = regex.indexIn(value, pos)) != -1)
+      {
+      pos += regex.matchedLength();
+      Q_ASSERT(regex.captureCount() == 1);
+      QString envVarName = regex.cap(1);
+      QString envVarValue = QString("<env:%1>").arg(envVarName);
+      if (this->MapOfExpandedEnvVars.contains(envVarName))
+        {
+        envVarValue = this->MapOfExpandedEnvVars[envVarName];
+        value.replace(QString("<env:%1>").arg(envVarName), envVarValue, Qt::CaseInsensitive);
+        pos = previousPos;
+        }
+      else if (expanded.contains(envVarName) && envVarName != key)
+        {
+        envVarValue = expanded[envVarName];
+        value.replace(QString("<env:%1>").arg(envVarName), envVarValue, Qt::CaseInsensitive);
+        pos = previousPos;
+        }
+      else if (this->SystemEnvironment.contains(envVarName))
+        {
+        value = this->SystemEnvironment.value(envVarName);
+        }
+      else
+        {
+        value = QString("<env-NOTFOUND:%1>").arg(envVarName);
+        }
+      previousPos = pos;
+      }
+    expanded[key] = value;
+    }
+  this->MapOfExpandedEnvVars = expanded;
 }
 
 // --------------------------------------------------------------------------
@@ -321,8 +368,7 @@ QStringList ctkAppLauncherSettings::paths(bool expand /* = true */)const
 QString ctkAppLauncherSettings::envVar(const QString& variableName, bool expand /* = true */) const
 {
   Q_D(const ctkAppLauncherSettings);
-  QString value = d->MapOfEnvVars.value(variableName);
-  value = expand ? d->expandValue(value) : value;
+  QString value = expand ? d->MapOfExpandedEnvVars[variableName] : d->MapOfEnvVars[variableName];
 
   if (d->MapOfPathVars.contains(variableName))
     {
