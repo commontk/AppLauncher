@@ -113,10 +113,13 @@ macro(ctkMacroBuildLib)
     set_target_properties(${lib_name} PROPERTIES ${CTK_LIBRARY_PROPERTIES})
   endif()
 
+  # Export targets
+  set_property(GLOBAL APPEND PROPERTY CTKAppLauncherLib_TARGETS ${lib_name})
+
   # Install rules
   if(CTK_BUILD_SHARED_LIBS OR CTKAppLauncher_INSTALL_LauncherLibrary)
     install(TARGETS ${lib_name}
-      EXPORT CTKAppLauncherTargets
+      EXPORT CTKAppLauncherLibTargets
       RUNTIME DESTINATION ${CTK_INSTALL_BIN_DIR} COMPONENT Runtime
       LIBRARY DESTINATION ${CTK_INSTALL_LIB_DIR} COMPONENT Runtime
       ARCHIVE DESTINATION ${CTK_INSTALL_LIB_DIR} COMPONENT Development)
