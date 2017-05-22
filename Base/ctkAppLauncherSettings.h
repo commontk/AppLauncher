@@ -192,6 +192,16 @@ public:
   ///
   QString pathSep() const;
 
+  /// \brief Get current platform library path variable name.
+  ///
+  /// Platform     | Variable name
+  /// -------------| -------------------
+  /// MacOSX       | `DYLD_LIBRARY_PATH`
+  /// Unix         | `LD_LIBRARY_PATH`
+  /// Windows      | `PATH`
+  ///
+  QString libraryPathVariableName() const;
+
   /// Return user specific additional settings file associated with the \c ApplicationOrganization,
   /// \c ApplicationName and \c ApplicationRevision read from the main settings using
   /// readSettings(const QString&).

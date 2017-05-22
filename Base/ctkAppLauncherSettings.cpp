@@ -424,3 +424,10 @@ QString ctkAppLauncherSettings::pathSep() const
   Q_D(const ctkAppLauncherSettings);
   return d->PathSep;
 }
+
+// --------------------------------------------------------------------------
+QString ctkAppLauncherSettings::libraryPathVariableName() const
+{
+  Q_D(const ctkAppLauncherSettings);
+  return d->LibraryPathVariableName;
+}

@@ -436,7 +436,7 @@ void ctkAppLauncherPrivate::buildEnvironment(QProcessEnvironment &env)
 #ifdef Q_OS_WIN32
   envPathsVars["PATH"] = (q->paths() + q->libraryPaths());
 #else
-  envPathsVars[this->LibraryPathVariableName] = q->libraryPaths();
+  envPathsVars[q->libraryPathVariableName()] = q->libraryPaths();
   envPathsVars["PATH"] = q->paths();
 #endif
   foreach(const QString& key, envPathsVars.keys())

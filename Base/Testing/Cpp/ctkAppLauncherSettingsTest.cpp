@@ -17,6 +17,7 @@ private slots:
   void testLauncherName();
   void testReadSettingsError();
   void testPathSep();
+  void testLibraryPathVariableName();
 };
 
 // ----------------------------------------------------------------------------
@@ -75,6 +76,21 @@ void ctkAppLauncherSettingsTester::testPathSep()
   QCOMPARE(appLauncherSettings.pathSep(), QString(";"));
 #else
   QCOMPARE(appLauncherSettings.pathSep(), QString(":"));
+#endif
+}
+
+// ----------------------------------------------------------------------------
+void ctkAppLauncherSettingsTester::testLibraryPathVariableName()
+{
+  ctkAppLauncherSettings appLauncherSettings;
+#if defined(Q_OS_WIN32)
+  QCOMPARE(appLauncherSettings.libraryPathVariableName(), QString("PATH"));
+#elif defined(Q_OS_MAC)
+  QCOMPARE(appLauncherSettings.libraryPathVariableName(), QString("DYLD_LIBRARY_PATH"));
+#elif defined(Q_OS_LINUX)
+  QCOMPARE(appLauncherSettings.libraryPathVariableName(), QString("LD_LIBRARY_PATH"));
+#else
+  QFAIL("Platform not yet supported");
 #endif
 }
 
