@@ -53,6 +53,9 @@ void ctkAppLauncherSettingsTester::testReadSettingsError()
   QCOMPARE(appLauncherSettings.readSettings("/path/to/invalid"), false);
   QCOMPARE(appLauncherSettings.readSettingsError(), QString());
 
+  // Disable on windows where setting group permission is not supported
+  // See http://stackoverflow.com/questions/5021645/qt-setpermissions-not-setting-permisions
+#ifndef Q_OS_WIN32
   QTemporaryFile nonreadable("testReadSettingsError");
   QVERIFY(nonreadable.open());
   QFile file(nonreadable.fileName());
@@ -60,6 +63,7 @@ void ctkAppLauncherSettingsTester::testReadSettingsError()
   QCOMPARE(appLauncherSettings.readSettings(nonreadable.fileName()), false);
   QCOMPARE(appLauncherSettings.readSettingsError(),
         QString("Failed to read launcher setting file [%1]").arg(nonreadable.fileName()));
+#endif
 }
 
 // ----------------------------------------------------------------------------

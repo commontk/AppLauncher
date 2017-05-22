@@ -321,12 +321,12 @@ int checkReadSettingsWithExpand()
 #if defined(Q_OS_WIN32)
   CHECK_QSTRING(
         appLauncherSettings.envVar("PYTHONPATH"),
-        "<APPLAUNCHER_DIR>/lib/python/site-packages;/path/to/site-packages-2"
+        "/awesome/path/to/lib/python/site-packages;/path/to/site-packages-2"
         );
 
   CHECK_QSTRING(
         appLauncherSettings.envVar("QT_PLUGIN_PATH"),
-        "<APPLAUNCHER_DIR>/libexec/qt;<APPLAUNCHER_DIR>/libexec/ASSOCIATION"
+        "/awesome/path/to/libexec/qt;/awesome/path/to/libexec/ASSOCIATION"
         );
 #else
   CHECK_QSTRING(
@@ -452,7 +452,7 @@ int checkReadAdditionalSettingsWithExpand()
 
   CHECK_QSTRING(
         appLauncherSettings.envVar("QT_PLUGIN_PATH"),
-        "<APPLAUNCHER_DIR>/libexec/qt;<APPLAUNCHER_DIR>/libexec/RAB"
+        "/awesome/path/to/libexec/qt;/awesome/path/to/libexec/RAB"
         );
 #else
   CHECK_QSTRING(
