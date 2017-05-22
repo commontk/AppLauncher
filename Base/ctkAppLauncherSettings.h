@@ -61,7 +61,7 @@ class ctkAppLauncherSettingsPrivate;
 /// The following special strings are expanded:
 ///
 /// Special string           | Description
-/// ------------------------ | -------------
+/// ------------------------ |-------------------------------------------------------
 /// &lt;APPLAUNCHER_DIR&gt;  | Replace with value set using setLauncherDir()
 /// &lt;APPLAUNCHER_NAME&gt; | Replace with value set using setLauncherName()
 /// &lt;PATHSEP&gt;          | Replace by ":" on unix and ";" on windows
@@ -154,16 +154,9 @@ public:
   QStringList paths(bool expand = true)const;
 
   /// Get environment variable value associated with \c EnvironmentVariables
-  /// group or any path environment variables associated
-  /// with \c General/additionalPathVariables.
+  /// group.
   ///
-  /// Paths associated with \c General/additionalPathVariables are obtained
-  /// using additionalPaths(const QString&, bool) and are joined using the
-  /// platform specific separator (":" on Unix, ";" on Windows).
-  ///
-  /// If \a variableName corresponds to both \c EnvironmentVariables
-  /// and \c General/additionalPathVariables, the final value is generated
-  /// by appending the environment variable to the matching path variable.
+  /// \sa envVars(bool)
   QString envVar(const QString& variableName, bool expand = true) const;
 
   /// Get list of environment variables associated with \c EnvironmentVariables
@@ -174,11 +167,11 @@ public:
 
   /// \brief Get paths associated with \a variableName.
   ///
-  /// The returned list corresponds to the path matching one of the variable
-  /// associated with \c General/additionalPathVariables.
+  /// The returned list corresponds to the path list identified by one of
+  /// the variable associated with \c General/additionalPathVariables.
   QStringList additionalPaths(const QString& variableName, bool expand = true) const;
 
-  /// \brief Get dictionnary of path variable list associated with \c General/additionalPathVariables.
+  /// \brief Get dictionnary of path list associated with \c General/additionalPathVariables.
   ///
   /// \sa additionalPaths(const QString& variableName, bool expand)
   QHash<QString, QStringList> additionalPathsVars(bool expand = true) const;
@@ -186,7 +179,7 @@ public:
   /// \brief Get current platform path separator.
   ///
   /// Platform     | Path separator
-  /// -------------| -------------
+  /// -------------|---------------
   /// Unix         | `:`
   /// Windows      | `;`
   ///
@@ -195,9 +188,9 @@ public:
   /// \brief Get current platform library path variable name.
   ///
   /// Platform     | Variable name
-  /// -------------| -------------------
+  /// -------------|--------------------
+  /// Linux        | `LD_LIBRARY_PATH`
   /// MacOSX       | `DYLD_LIBRARY_PATH`
-  /// Unix         | `LD_LIBRARY_PATH`
   /// Windows      | `PATH`
   ///
   QString libraryPathVariableName() const;
