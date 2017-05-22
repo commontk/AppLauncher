@@ -120,7 +120,7 @@ class ctkAppLauncherSettingsPrivate;
 /// // Get values (read from both the main settings file and the additional one).
 /// qDebug() << appLauncherSettings.paths();
 /// qDebug() << appLauncherSettings.libraryPaths();
-/// qDebug() << appLauncherSettings.additionalPaths("PYTHONPATH");
+/// qDebug() << appLauncherSettings.additionalPathsVars().value("PYTHONPATH");
 /// qDebug() << appLauncherSettings.envVars().value("FOO");
 /// \endcode
 ///
@@ -166,18 +166,31 @@ public:
   /// by appending the environment variable to the matching path variable.
   QString envVar(const QString& variableName, bool expand = true) const;
 
+  /// Get list of environment variables associated with \c EnvironmentVariables
+  /// group.
+  ///
+  /// \sa envVar(const QString& variableName, bool expand)
+  QHash<QString, QString> envVars(bool expand = true) const;
+
   /// \brief Get paths associated with \a variableName.
   ///
   /// The returned list corresponds to the path matching one of the variable
   /// associated with \c General/additionalPathVariables.
   QStringList additionalPaths(const QString& variableName, bool expand = true) const;
 
-  /// Get list of environment variables associated with \a EnvironmentVariables
-  /// group or any path environment variables associated
-  /// with \c General/additionalPathVariables.
+  /// \brief Get dictionnary of path variable list associated with \c General/additionalPathVariables.
   ///
-  /// \sa envVar(const QString& variableName, bool expand)
-  QHash<QString, QString> envVars(bool expand = true) const;
+  /// \sa additionalPaths(const QString& variableName, bool expand)
+  QHash<QString, QStringList> additionalPathsVars(bool expand = true) const;
+
+  /// \brief Get current platform path separator.
+  ///
+  /// Platform     | Path separator
+  /// -------------| -------------
+  /// Unix         | `:`
+  /// Windows      | `;`
+  ///
+  QString pathSep() const;
 
   /// Return user specific additional settings file associated with the \c ApplicationOrganization,
   /// \c ApplicationName and \c ApplicationRevision read from the main settings using

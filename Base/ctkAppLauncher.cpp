@@ -419,29 +419,34 @@ void ctkAppLauncherPrivate::buildEnvironment(QProcessEnvironment &env)
   Q_Q(ctkAppLauncher);
 
   this->reportInfo(QString("<APPLAUNCHER_DIR> -> [%1]").arg(this->LauncherDir));
+  this->reportInfo(QString("<APPLAUNCHER_NAME> -> [%1]").arg(this->LauncherName));
+  this->reportInfo(QString("<PATHSEP> -> [%1]").arg(this->PathSep));
 
-  QHash<QString, QString> newVars = q->envVars();
-
-  QSet<QString> appendVars = this->AdditionalPathVariables;
-  appendVars << "PATH" << this->LibraryPathVariableName;
-
-  // Add library path and PATH to map
-#ifdef Q_OS_WIN32
-  newVars["PATH"] = (q->paths() + q->libraryPaths()).join(this->PathSep);
-#else
-  newVars[this->LibraryPathVariableName] = q->libraryPaths().join(this->PathSep);
-  newVars["PATH"] = q->paths().join(this->PathSep);
-#endif
-
-  // Set environment variables
-  foreach(const QString& key, newVars.keys())
+  // Regular environment variables
+  QHash<QString, QString> envVars = q->envVars();
+  foreach(const QString& key, envVars.keys())
     {
-    QString value = newVars[key];
-    if (appendVars.contains(key) && env.contains(key))
+    this->reportInfo(QString("Setting env. variable [%1]:%2").arg(key, envVars[key]));
+    env.insert(key, envVars[key]);
+    }
+
+  // Path environment variables
+  QHash<QString, QStringList> envPathsVars = q->additionalPathsVars();
+  // Add LibraryPaths and Paths to map
+#ifdef Q_OS_WIN32
+  envPathsVars["PATH"] = (q->paths() + q->libraryPaths());
+#else
+  envPathsVars[this->LibraryPathVariableName] = q->libraryPaths();
+  envPathsVars["PATH"] = q->paths();
+#endif
+  foreach(const QString& key, envPathsVars.keys())
+    {
+    QString value = envPathsVars[key].join(this->PathSep);
+    this->reportInfo(QString("Setting env. variable [%1]:%2").arg(key, value));
+    if (env.contains(key))
       {
       value = QString("%1%2%3").arg(value, this->PathSep, env.value(key));
       }
-    this->reportInfo(QString("Setting env. variable [%1]:%2").arg(key, value));
     env.insert(key, value);
     }
 }

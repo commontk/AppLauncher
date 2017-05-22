@@ -16,6 +16,7 @@ private slots:
   void testLauncherDir();
   void testLauncherName();
   void testReadSettingsError();
+  void testPathSep();
 };
 
 // ----------------------------------------------------------------------------
@@ -63,6 +64,17 @@ void ctkAppLauncherSettingsTester::testReadSettingsError()
   QCOMPARE(appLauncherSettings.readSettings(nonreadable.fileName()), false);
   QCOMPARE(appLauncherSettings.readSettingsError(),
         QString("Failed to read launcher setting file [%1]").arg(nonreadable.fileName()));
+#endif
+}
+
+// ----------------------------------------------------------------------------
+void ctkAppLauncherSettingsTester::testPathSep()
+{
+  ctkAppLauncherSettings appLauncherSettings;
+#if defined(Q_OS_WIN32)
+  QCOMPARE(appLauncherSettings.pathSep(), QString(";"));
+#else
+  QCOMPARE(appLauncherSettings.pathSep(), QString(":"));
 #endif
 }
 
