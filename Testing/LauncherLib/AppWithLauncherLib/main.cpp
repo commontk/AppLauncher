@@ -354,6 +354,20 @@ int checkReadSettingsWithExpand()
                 << "/awesome/path/to/libexec/ASSOCIATION"
         );
 
+  CHECK_QSTRINGLIST(
+        appLauncherSettings.additionalPathsVars().value("PYTHONPATH"),
+        QStringList()
+                << "/awesome/path/to/lib/python/site-packages"
+                << "/path/to/site-packages-2"
+        );
+
+  CHECK_QSTRINGLIST(
+        appLauncherSettings.additionalPathsVars().value("QT_PLUGIN_PATH"),
+        QStringList()
+                << "/awesome/path/to/libexec/qt"
+                << "/awesome/path/to/libexec/ASSOCIATION"
+        );
+
   return EXIT_SUCCESS;
 }
 
@@ -444,28 +458,6 @@ int checkReadAdditionalSettingsWithExpand()
         "dog"
         );
 
-#if defined(Q_OS_WIN32)
-  CHECK_QSTRING(
-        appLauncherSettings.envVar("PYTHONPATH"),
-        "/awesome/path/to/lib/python/site-packages;/awesome/path/to/lib/python/site-packages-3;/path/to/site-packages-RAB;/awesome/path/to/lib/python/site-packages;/path/to/site-packages-2"
-        );
-
-  CHECK_QSTRING(
-        appLauncherSettings.envVar("QT_PLUGIN_PATH"),
-        "/awesome/path/to/libexec/qt;/awesome/path/to/libexec/RAB"
-        );
-#else
-  CHECK_QSTRING(
-        appLauncherSettings.envVar("PYTHONPATH"),
-        "/awesome/path/to/lib/python/site-packages:/awesome/path/to/lib/python/site-packages-3:/path/to/site-packages-RAB:/awesome/path/to/lib/python/site-packages:/path/to/site-packages-2"
-        );
-
-  CHECK_QSTRING(
-        appLauncherSettings.envVar("QT_PLUGIN_PATH"),
-        "/awesome/path/to/libexec/qt:/awesome/path/to/libexec/RAB"
-        );
-#endif
-
   CHECK_QSTRINGLIST(
         appLauncherSettings.additionalPaths("PYTHONPATH"),
         QStringList()
@@ -477,7 +469,24 @@ int checkReadAdditionalSettingsWithExpand()
         );
 
   CHECK_QSTRINGLIST(
+        appLauncherSettings.additionalPathsVars().value("PYTHONPATH"),
+        QStringList()
+                << "/awesome/path/to/lib/python/site-packages"
+                << "/awesome/path/to/lib/python/site-packages-3"
+                << "/path/to/site-packages-RAB"
+                << "/awesome/path/to/lib/python/site-packages"
+                << "/path/to/site-packages-2"
+        );
+
+  CHECK_QSTRINGLIST(
         appLauncherSettings.additionalPaths("QT_PLUGIN_PATH"),
+        QStringList()
+                << "/awesome/path/to/libexec/qt"
+                << "/awesome/path/to/libexec/RAB"
+        );
+
+  CHECK_QSTRINGLIST(
+        appLauncherSettings.additionalPathsVars().value("QT_PLUGIN_PATH"),
         QStringList()
                 << "/awesome/path/to/libexec/qt"
                 << "/awesome/path/to/libexec/RAB"

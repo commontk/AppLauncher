@@ -388,6 +388,13 @@ QString ctkAppLauncherSettings::envVar(const QString& variableName, bool expand 
 }
 
 // --------------------------------------------------------------------------
+QHash<QString, QString> ctkAppLauncherSettings::envVars(bool expand /* = true */) const
+{
+  Q_D(const ctkAppLauncherSettings);
+  return expand ? d->MapOfExpandedEnvVars : d->MapOfEnvVars;
+}
+
+// --------------------------------------------------------------------------
 QStringList ctkAppLauncherSettings::additionalPaths(const QString& variableName, bool expand /* = true */) const
 {
   Q_D(const ctkAppLauncherSettings);
@@ -400,15 +407,20 @@ QStringList ctkAppLauncherSettings::additionalPaths(const QString& variableName,
 }
 
 // --------------------------------------------------------------------------
-QHash<QString, QString> ctkAppLauncherSettings::envVars(bool expand /* = true */) const
+QHash<QString, QStringList> ctkAppLauncherSettings::additionalPathsVars(bool expand /* = true */) const
 {
   Q_D(const ctkAppLauncherSettings);
-  QHash<QString, QString> newVars;
-  QSet<QString> keys = QSet<QString>::fromList(
-        d->MapOfEnvVars.keys() + d->MapOfPathVars.keys());
-  foreach(const QString& key, keys)
+  QHash<QString, QStringList> newVars;
+  foreach(const QString& varName, d->MapOfPathVars.keys())
     {
-    newVars.insert(key, this->envVar(key, expand));
+    newVars.insert(varName, this->additionalPaths(varName, expand));
     }
   return newVars;
+}
+
+// --------------------------------------------------------------------------
+QString ctkAppLauncherSettings::pathSep() const
+{
+  Q_D(const ctkAppLauncherSettings);
+  return d->PathSep;
 }
