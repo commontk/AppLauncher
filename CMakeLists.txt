@@ -349,7 +349,7 @@ configure_package_config_file(
 
 # Configure 'CTKAppLauncherLibTargets.cmake'
 get_property(CTKAppLauncherLib_TARGETS GLOBAL PROPERTY CTKAppLauncherLib_TARGETS)
-export(TARGETS ${CTKAppLauncherLib_TARGETS} APPEND FILE ${PROJECT_BINARY_DIR}/CTKAppLauncherLibTargets.cmake)
+export(TARGETS ${CTKAppLauncherLib_TARGETS} FILE ${PROJECT_BINARY_DIR}/CTKAppLauncherLibTargets.cmake)
 
 # Install 'CTKAppLauncherLibConfig.cmake'
 install(
