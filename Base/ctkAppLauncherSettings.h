@@ -118,6 +118,11 @@ class ctkAppLauncherSettingsPrivate;
 /// appLauncherSettings.readSettings("/path/to/AwesomeAppLauncherSetting.ini");
 ///
 /// // Get values (read from both the main settings file and the additional one).
+/// qDebug() << appLauncherSettings.pathsEnvVars().value("PATH");
+/// qDebug() << appLauncherSettings.pathsEnvVars().value("LD_LIBRARY_PATH");
+/// qDebug() << appLauncherSettings.pathsEnvVars().value("PYTHONPATH");
+/// qDebug() << appLauncherSettings.envVars().value("FOO");
+/// // or
 /// qDebug() << appLauncherSettings.paths();
 /// qDebug() << appLauncherSettings.libraryPaths();
 /// qDebug() << appLauncherSettings.additionalPathsVars().value("PYTHONPATH");
@@ -164,6 +169,32 @@ public:
   ///
   /// \sa envVar(const QString& variableName, bool expand)
   QHash<QString, QString> envVars(bool expand = true) const;
+
+  /// \brief Get dictionnary of all list of paths.
+  ///
+  /// These include list of paths associated with:
+  ///
+  /// * \c General/additionalPathVariables group (see additionalPathsVars()).
+  ///
+  /// * \c LibraryPaths group (see libraryPaths()).
+  ///
+  /// * \c Paths group (see paths()).
+  ///
+  /// Depending on the platform, list associated with the \c LibraryPaths and \c Paths
+  /// groups are mapped with different environment variable names:
+  ///
+  /// Variable name         | Linux           | MacOSX          | Windows
+  /// ----------------------|-----------------|-----------------|--------------------------|
+  /// `LD_LIBRARY_PATH`     | libraryPaths()  | NA              | NA                       |
+  /// `DYLD_LIBRARY_PATH`   | NA              | libraryPaths()  | NA                       |
+  /// `PATH`                | paths()         | paths()         | paths() + libraryPaths() |
+  ///
+  /// \sa additionalPathsVars(bool expand)
+  /// \sa libraryPaths(bool expand)
+  /// \sa paths(bool expand)
+  /// \sa libraryPathVariableName()
+  ///
+  QHash<QString, QStringList> pathsEnvVars(bool expand = true) const;
 
   /// \brief Get paths associated with \a variableName.
   ///
