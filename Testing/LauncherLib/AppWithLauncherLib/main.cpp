@@ -274,6 +274,53 @@ int checkReadSettingsWithoutExpand()
                 << "<APPLAUNCHER_DIR>/libexec/<env:BAR>"
         );
 
+  //
+  // pathsEnvVars
+  //
+
+  QHash<QString, QStringList> pathsEnvVars =
+      appLauncherSettings.pathsEnvVars(/* expand= */ false);
+
+  CHECK_QSTRINGLIST(
+        pathsEnvVars.value("PATH"),
+        QStringList()
+                << "<APPLAUNCHER_DIR>/cow"
+                << "/path/to/pig-<env:BOTH>"
+                << "/path/to/<env:PET>"
+        );
+
+  CHECK_QSTRINGLIST(
+        pathsEnvVars.value("LD_LIBRARY_PATH"),
+        QStringList()
+                << "/path/to/libA"
+                << "<APPLAUNCHER_DIR>/libB"
+                << "/path/to/libC-<env:PET>"
+        );
+
+  CHECK_QSTRINGLIST(
+        pathsEnvVars.value("PYTHONPATH"),
+        QStringList()
+                << "<APPLAUNCHER_DIR>/lib/python/site-packages"
+                << "/path/to/site-packages-2"
+        );
+
+  CHECK_QSTRINGLIST(
+        pathsEnvVars.value("QT_PLUGIN_PATH"),
+        QStringList()
+                << "<APPLAUNCHER_DIR>/libexec/qt"
+                << "<APPLAUNCHER_DIR>/libexec/<env:BAR>"
+        );
+
+  if (pathsEnvVars.count() != 4)
+    {
+    qWarning() << "Line" << __LINE__ << __FILE__ << "\n"
+               << "pathsEnvVars has not the expected number of entries\n"
+               << "current:" << pathsEnvVars.count() << "\n"
+               << "expected:" << 4 << "\n"
+               << "current list:" << pathsEnvVars;
+    return EXIT_FAILURE;
+    }
+
   return EXIT_SUCCESS;
 }
 
@@ -367,6 +414,53 @@ int checkReadSettingsWithExpand()
                 << "/awesome/path/to/libexec/qt"
                 << "/awesome/path/to/libexec/ASSOCIATION"
         );
+
+  //
+  // pathsEnvVars
+  //
+
+  QHash<QString, QStringList> pathsEnvVars =
+      appLauncherSettings.pathsEnvVars();
+
+  CHECK_QSTRINGLIST(
+        pathsEnvVars.value("PATH"),
+        QStringList()
+                << "/awesome/path/to/cow"
+                << "/path/to/pig-cat-and-dog"
+                << "/path/to/dog"
+        );
+
+  CHECK_QSTRINGLIST(
+        pathsEnvVars.value("LD_LIBRARY_PATH"),
+        QStringList()
+                << "/path/to/libA"
+                << "/awesome/path/to/libB"
+                << "/path/to/libC-dog"
+        );
+
+  CHECK_QSTRINGLIST(
+        pathsEnvVars.value("PYTHONPATH"),
+        QStringList()
+                << "/awesome/path/to/lib/python/site-packages"
+                << "/path/to/site-packages-2"
+        );
+
+  CHECK_QSTRINGLIST(
+        pathsEnvVars.value("QT_PLUGIN_PATH"),
+        QStringList()
+                << "/awesome/path/to/libexec/qt"
+                << "/awesome/path/to/libexec/ASSOCIATION"
+        );
+
+  if (pathsEnvVars.count() != 4)
+    {
+    qWarning() << "Line" << __LINE__ << __FILE__ << "\n"
+               << "pathsEnvVars has not the expected number of entries\n"
+               << "current:" << pathsEnvVars.count() << "\n"
+               << "expected:" << 4 << "\n"
+               << "current list:" << pathsEnvVars;
+    return EXIT_FAILURE;
+    }
 
   return EXIT_SUCCESS;
 }
