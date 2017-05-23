@@ -36,14 +36,19 @@ public:
     };
 
   /// \brief Expand setting \a value
-  /// The following string will be updated:
+  ///
+  /// The following placeholder strings will be updated:
   /// <ul>
   ///  <li>&lt;APPLAUNCHER_DIR&gt; -> LauncherDir</li>
   ///  <li>&lt;APPLAUNCHER_NAME&gt; -> LauncherName</li>
   ///  <li>&lt;PATHSEP&gt; -> PathSep</li>
   ///  <li>&lt;env:VARNAME&gt; -> If any, expand to corresponding system environment variable</li>
   /// </ul>
+  ///
+  /// \sa expandPlaceHolders()
   QString expandValue(const QString& value) const;
+
+  QString expandPlaceHolders(const QString& value) const;
 
   void expandEnvVars();
   QHash<QString, QString> MapOfExpandedEnvVars;

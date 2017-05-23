@@ -161,17 +161,9 @@ void ctkAppLauncherSettingsPrivate::readPathSettings(QSettings& settings)
 // --------------------------------------------------------------------------
 QString ctkAppLauncherSettingsPrivate::expandValue(const QString& value) const
 {
-  QHash<QString, QString> mapOfEnvVars = this->MapOfExpandedEnvVars;
-  QHash<QString, QString> keyValueMap;
-  keyValueMap["<APPLAUNCHER_DIR>"] = this->LauncherDir;
-  keyValueMap["<APPLAUNCHER_NAME>"] = this->LauncherName;
-  keyValueMap["<PATHSEP>"] = this->PathSep;
+  QString updatedValue = this->expandPlaceHolders(value);
 
-  QString updatedValue = value;
-  foreach(const QString& key, keyValueMap.keys())
-    {
-    updatedValue.replace(key, keyValueMap.value(key), Qt::CaseInsensitive);
-    }
+  QHash<QString, QString> mapOfEnvVars = this->MapOfExpandedEnvVars;
 
   // Consider environment expression
   QRegExp regex("\\<env\\:([a-zA-Z0-9\\-\\_]+)\\>");
@@ -191,6 +183,22 @@ QString ctkAppLauncherSettingsPrivate::expandValue(const QString& value) const
       envVarValue = this->SystemEnvironment.value(envVarName);
       }
     updatedValue.replace(QString("<env:%1>").arg(envVarName), envVarValue, Qt::CaseInsensitive);
+    }
+  return updatedValue;
+}
+
+// --------------------------------------------------------------------------
+QString ctkAppLauncherSettingsPrivate::expandPlaceHolders(const QString& value) const
+{
+  QHash<QString, QString> keyValueMap;
+  keyValueMap["<APPLAUNCHER_DIR>"] = this->LauncherDir;
+  keyValueMap["<APPLAUNCHER_NAME>"] = this->LauncherName;
+  keyValueMap["<PATHSEP>"] = this->PathSep;
+
+  QString updatedValue = value;
+  foreach(const QString& key, keyValueMap.keys())
+    {
+    updatedValue.replace(key, keyValueMap.value(key), Qt::CaseInsensitive);
     }
   return updatedValue;
 }
@@ -235,7 +243,7 @@ void ctkAppLauncherSettingsPrivate::expandEnvVars()
         }
       previousPos = pos;
       }
-    expanded[key] = value;
+    expanded[key] = this->expandPlaceHolders(value);
     }
   this->MapOfExpandedEnvVars = expanded;
 }

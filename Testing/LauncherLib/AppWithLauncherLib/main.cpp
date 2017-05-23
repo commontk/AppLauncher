@@ -238,6 +238,11 @@ int checkReadSettingsWithoutExpand()
         "cat-and-<env:PET>"
         );
 
+  CHECK_QSTRING(
+        appLauncherSettings.envVar("PLACEHOLDER", /* expand= */ false),
+        "<APPLAUNCHER_DIR>-<APPLAUNCHER_NAME>"
+        );
+
 #if defined(Q_OS_WIN32)
   CHECK_QSTRING(
         appLauncherSettings.envVar("PYTHONPATH", /* expand= */ false),
@@ -381,6 +386,11 @@ int checkReadSettingsWithExpand()
   CHECK_QSTRING(
         appLauncherSettings.envVar("BOTH"),
         "cat-and-dog"
+        );
+
+  CHECK_QSTRING(
+        appLauncherSettings.envVar("PLACEHOLDER"),
+        "/awesome/path/to-AwesomeApp"
         );
 
 #if defined(Q_OS_WIN32)
