@@ -274,6 +274,71 @@ int checkReadSettingsWithoutExpand()
                 << "<APPLAUNCHER_DIR>/libexec/<env:BAR>"
         );
 
+  //
+  // pathsEnvVars
+  //
+
+  QHash<QString, QStringList> pathsEnvVars =
+      appLauncherSettings.pathsEnvVars(/* expand= */ false);
+
+#if defined(Q_OS_WIN32)
+  CHECK_QSTRINGLIST(
+        pathsEnvVars.value("PATH"),
+        QStringList()
+                << "<APPLAUNCHER_DIR>/cow"
+                << "/path/to/pig-<env:BOTH>"
+                << "/path/to/<env:PET>"
+                << "/path/to/libA"
+                << "<APPLAUNCHER_DIR>/libB"
+                << "/path/to/libC-<env:PET>"
+        );
+#else
+  CHECK_QSTRINGLIST(
+        pathsEnvVars.value("PATH"),
+        QStringList()
+                << "<APPLAUNCHER_DIR>/cow"
+                << "/path/to/pig-<env:BOTH>"
+                << "/path/to/<env:PET>"
+        );
+
+  CHECK_QSTRINGLIST(
+        pathsEnvVars.value(appLauncherSettings.libraryPathVariableName()),
+        QStringList()
+                << "/path/to/libA"
+                << "<APPLAUNCHER_DIR>/libB"
+                << "/path/to/libC-<env:PET>"
+        );
+#endif
+
+  CHECK_QSTRINGLIST(
+        pathsEnvVars.value("PYTHONPATH"),
+        QStringList()
+                << "<APPLAUNCHER_DIR>/lib/python/site-packages"
+                << "/path/to/site-packages-2"
+        );
+
+  CHECK_QSTRINGLIST(
+        pathsEnvVars.value("QT_PLUGIN_PATH"),
+        QStringList()
+                << "<APPLAUNCHER_DIR>/libexec/qt"
+                << "<APPLAUNCHER_DIR>/libexec/<env:BAR>"
+        );
+
+#if defined(Q_OS_WIN32)
+  int expectedPathsEnvVarsCount = 3;
+#else
+  int expectedPathsEnvVarsCount = 4;
+#endif
+  if (pathsEnvVars.count() != expectedPathsEnvVarsCount)
+    {
+    qWarning() << "Line" << __LINE__ << __FILE__ << "\n"
+               << "pathsEnvVars has not the expected number of entries\n"
+               << "current:" << pathsEnvVars.count() << "\n"
+               << "expected:" << expectedPathsEnvVarsCount << "\n"
+               << "current list:" << pathsEnvVars;
+    return EXIT_FAILURE;
+    }
+
   return EXIT_SUCCESS;
 }
 
@@ -367,6 +432,71 @@ int checkReadSettingsWithExpand()
                 << "/awesome/path/to/libexec/qt"
                 << "/awesome/path/to/libexec/ASSOCIATION"
         );
+
+  //
+  // pathsEnvVars
+  //
+
+  QHash<QString, QStringList> pathsEnvVars =
+      appLauncherSettings.pathsEnvVars();
+
+#if defined(Q_OS_WIN32)
+  CHECK_QSTRINGLIST(
+        pathsEnvVars.value("PATH"),
+        QStringList()
+                << "/awesome/path/to/cow"
+                << "/path/to/pig-cat-and-dog"
+                << "/path/to/dog"
+                << "/path/to/libA"
+                << "/awesome/path/to/libB"
+                << "/path/to/libC-dog"
+        );
+#else
+  CHECK_QSTRINGLIST(
+        pathsEnvVars.value("PATH"),
+        QStringList()
+                << "/awesome/path/to/cow"
+                << "/path/to/pig-cat-and-dog"
+                << "/path/to/dog"
+        );
+
+  CHECK_QSTRINGLIST(
+        pathsEnvVars.value(appLauncherSettings.libraryPathVariableName()),
+        QStringList()
+                << "/path/to/libA"
+                << "/awesome/path/to/libB"
+                << "/path/to/libC-dog"
+        );
+#endif
+
+  CHECK_QSTRINGLIST(
+        pathsEnvVars.value("PYTHONPATH"),
+        QStringList()
+                << "/awesome/path/to/lib/python/site-packages"
+                << "/path/to/site-packages-2"
+        );
+
+  CHECK_QSTRINGLIST(
+        pathsEnvVars.value("QT_PLUGIN_PATH"),
+        QStringList()
+                << "/awesome/path/to/libexec/qt"
+                << "/awesome/path/to/libexec/ASSOCIATION"
+        );
+
+#if defined(Q_OS_WIN32)
+  int expectedPathsEnvVarsCount = 3;
+#else
+  int expectedPathsEnvVarsCount = 4;
+#endif
+  if (pathsEnvVars.count() != expectedPathsEnvVarsCount)
+    {
+    qWarning() << "Line" << __LINE__ << __FILE__ << "\n"
+               << "pathsEnvVars has not the expected number of entries\n"
+               << "current:" << pathsEnvVars.count() << "\n"
+               << "expected:" << expectedPathsEnvVarsCount << "\n"
+               << "current list:" << pathsEnvVars;
+    return EXIT_FAILURE;
+    }
 
   return EXIT_SUCCESS;
 }
