@@ -8,4 +8,4 @@ if(NOT CTKAppLauncherLib_TARGETS_IMPORTED)
   include(${CTKAppLauncherLib_TARGETS})
 endif()
 
-set(CTKAppLauncherLib_LIBRARIES CTKAppLauncherBase)
+set(CTKAppLauncherLib_LIBRARIES "@CTKAppLauncherLib_TARGETS@")

@@ -325,6 +325,10 @@ install(FILES
   CTKAppLauncherSettings.ini.in
   DESTINATION ${CTK_INSTALL_BIN_DIR} COMPONENT Development)
 
+# Retrieve CTKAppLauncherLib used to configure 'CTKAppLauncherLibConfig.cmake' and
+# 'CTKAppLauncherLibTargets.cmake'.
+get_property(CTKAppLauncherLib_TARGETS GLOBAL PROPERTY CTKAppLauncherLib_TARGETS)
+
 # Configure 'CTKAppLauncherLibConfig.cmake' for a build tree
 include(CMakePackageConfigHelpers)
 set(CONFIG_DIR_CONFIG ${PROJECT_BINARY_DIR})
@@ -349,7 +353,6 @@ configure_package_config_file(
     )
 
 # Configure 'CTKAppLauncherLibTargets.cmake'
-get_property(CTKAppLauncherLib_TARGETS GLOBAL PROPERTY CTKAppLauncherLib_TARGETS)
 export(TARGETS ${CTKAppLauncherLib_TARGETS} FILE ${PROJECT_BINARY_DIR}/CTKAppLauncherLibTargets.cmake)
 
 # Install 'CTKAppLauncherLibConfig.cmake'
