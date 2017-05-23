@@ -210,7 +210,7 @@ int checkReadSettingsWithoutExpand()
   CHECK_QSTRINGLIST(
         appLauncherSettings.paths(/* expand= */ false),
         QStringList()
-                << "<APPLAUNCHER_DIR>/cow"
+                << "<APPLAUNCHER_DIR>/cow/<APPLAUNCHER_NAME>"
                 << "/path/to/pig-<env:BOTH>"
                 << "/path/to/<env:PET>"
         );
@@ -285,7 +285,7 @@ int checkReadSettingsWithoutExpand()
   CHECK_QSTRINGLIST(
         pathsEnvVars.value("PATH"),
         QStringList()
-                << "<APPLAUNCHER_DIR>/cow"
+                << "<APPLAUNCHER_DIR>/cow/<APPLAUNCHER_NAME>"
                 << "/path/to/pig-<env:BOTH>"
                 << "/path/to/<env:PET>"
                 << "/path/to/libA"
@@ -296,7 +296,7 @@ int checkReadSettingsWithoutExpand()
   CHECK_QSTRINGLIST(
         pathsEnvVars.value("PATH"),
         QStringList()
-                << "<APPLAUNCHER_DIR>/cow"
+                << "<APPLAUNCHER_DIR>/cow/<APPLAUNCHER_NAME>"
                 << "/path/to/pig-<env:BOTH>"
                 << "/path/to/<env:PET>"
         );
@@ -355,7 +355,7 @@ int checkReadSettingsWithExpand()
   CHECK_QSTRINGLIST(
         appLauncherSettings.paths(),
         QStringList()
-                << "/awesome/path/to/cow"
+                << "/awesome/path/to/cow/AwesomeApp"
                 << "/path/to/pig-cat-and-dog"
                 << "/path/to/dog"
         );
@@ -444,7 +444,7 @@ int checkReadSettingsWithExpand()
   CHECK_QSTRINGLIST(
         pathsEnvVars.value("PATH"),
         QStringList()
-                << "/awesome/path/to/cow"
+                << "/awesome/path/to/cow/AwesomeApp"
                 << "/path/to/pig-cat-and-dog"
                 << "/path/to/dog"
                 << "/path/to/libA"
@@ -455,7 +455,7 @@ int checkReadSettingsWithExpand()
   CHECK_QSTRINGLIST(
         pathsEnvVars.value("PATH"),
         QStringList()
-                << "/awesome/path/to/cow"
+                << "/awesome/path/to/cow/AwesomeApp"
                 << "/path/to/pig-cat-and-dog"
                 << "/path/to/dog"
         );
@@ -563,7 +563,7 @@ int checkReadAdditionalSettingsWithExpand()
                 << "/awesome/path/to/fawn"
                 << "/path/to/cat-and-dog"
                 << "/path/to/Klimt"
-                << "/awesome/path/to/cow"
+                << QString("/awesome/path/to/cow/%1").arg(appName)
                 << "/path/to/pig-cat-and-dog"
                 << "/path/to/dog"
         );
