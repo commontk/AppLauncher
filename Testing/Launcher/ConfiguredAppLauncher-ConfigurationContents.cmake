@@ -9,7 +9,9 @@ function(compare_files ACTUAL EXPECTED)
   string(CONFIGURE "${expected}" expected @ONLY)
   string(STRIP "${expected}" expected)
   if(NOT "${actual}" STREQUAL "${expected}")
-    message(FATAL_ERROR "Content validation of '${ACTUAL}' failed:
+    message(FATAL_ERROR "Content validation failed:
+  ACTUAL: ${ACTUAL}
+EXPECTED: ${EXPECTED}
 
 --
 expected content:

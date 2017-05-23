@@ -29,6 +29,7 @@ size=2
 
 [EnvironmentVariables]
 BAR=NONE
+PLACEHOLDER=build-<APPLAUNCHER_DIR>-<APPLAUNCHER_NAME>
 
 
 

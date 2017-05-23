@@ -29,6 +29,7 @@ size=2
 
 [EnvironmentVariables]
 BAR=ASSOCIATION
+PLACEHOLDER=install-<APPLAUNCHER_DIR>-<APPLAUNCHER_NAME>
 
 
 
