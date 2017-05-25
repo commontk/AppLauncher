@@ -213,7 +213,12 @@ endif()
 #-----------------------------------------------------------------------------
 # Set symbol visibility Flags
 #
-ctkFunctionGetCompilerVisibilityFlags(VISIBILITY_CXX_FLAGS)
+
+option(CTKAppLauncher_VISIBILITY_HIDDEN "Whether to add compile flags to hide symbols of functions including inlines ones" ON)
+set(VISIBILITY_CXX_FLAGS)
+if(CTKAppLauncher_VISIBILITY_HIDDEN)
+  ctkFunctionGetCompilerVisibilityFlags(VISIBILITY_CXX_FLAGS)
+endif()
 
 #-----------------------------------------------------------------------------
 # Set C/CXX Flags
