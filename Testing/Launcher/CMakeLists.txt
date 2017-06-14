@@ -73,6 +73,17 @@ if(TEST_TREE_TYPE STREQUAL "BuildTree")
 endif()
 
 #
+# Get Qt library directory
+#
+if(CTKAppLauncher_QT_VERSION VERSION_GREATER "4")
+  get_target_property(_imported_location "Qt5::Core" IMPORTED_LOCATION_RELEASE)
+  get_filename_component(QT_LIBRARY_DIR ${_imported_location} DIRECTORY)
+  if(WIN32)
+    set(QT_LIBRARY_DIR "${QT_LIBRARY_DIR}/../bin")
+  endif()
+endif()
+
+#
 # Helper function
 #
 function(applauncher_add_test testname)
@@ -94,6 +105,8 @@ function(applauncher_add_test testname)
   endif()
   # Set labels
   set_property(TEST ${testname} PROPERTY LABELS "ctkAppLauncher")
+  # Environment
+  set_property(TEST ${testname} PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${QT_LIBRARY_DIR}")
 endfunction()
 
 #

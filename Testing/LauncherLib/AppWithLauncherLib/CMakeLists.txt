@@ -8,12 +8,9 @@ if(MSVC90)
   add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 endif()
 
-find_package(Qt4 COMPONENTS QtCore REQUIRED)
-
 find_package(CTKAppLauncherLib REQUIRED)
 
 add_executable(${PROJECT_NAME} main.cpp)
 target_link_libraries(${PROJECT_NAME} PUBLIC
   ${CTKAppLauncherLib_LIBRARIES}
-  Qt4::QtCore
   )

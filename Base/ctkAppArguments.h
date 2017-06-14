@@ -2,8 +2,10 @@
 #define __ctkAppArguments_h
 
 // Qt includes
+#include <QFlags>
 #include <QPair>
 #include <QScopedPointer>
+#include <QString>
 
 // --------------------------------------------------------------------------
 class ctkChar2DArrayPrivate;
