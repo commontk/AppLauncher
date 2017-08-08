@@ -783,7 +783,7 @@ void ctkAppLauncher::displayVersion(std::ostream &output)
     {
     return;
     }
-  output << qPrintable(d->LauncherName) << " launcher version "CTKAppLauncher_VERSION << "\n";
+  output << qPrintable(d->LauncherName) << " launcher version " CTKAppLauncher_VERSION << "\n";
 }
 
 // --------------------------------------------------------------------------

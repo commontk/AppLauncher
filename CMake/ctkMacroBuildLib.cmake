@@ -81,10 +81,18 @@ macro(ctkMacroBuildLib)
   set(${prefix}_QRC_SRCS)
 
   # Wrap
-  QT4_WRAP_CPP(${prefix}_MOC_CXX ${${prefix}_MOC_SRCS})
-  QT4_WRAP_UI(${prefix}_UI_CXX ${${prefix}_UI_FORMS})
-  if(DEFINED ${prefix}_RESOURCES)
-    QT4_ADD_RESOURCES(${prefix}_QRC_SRCS ${${prefix}_RESOURCES})
+  if(CTKAppLauncher_QT_VERSION VERSION_LESS "5")
+    QT4_WRAP_CPP(${prefix}_MOC_CXX ${${prefix}_MOC_SRCS})
+    QT4_WRAP_UI(${prefix}_UI_CXX ${${prefix}_UI_FORMS})
+    if(DEFINED ${prefix}_RESOURCES)
+      QT4_ADD_RESOURCES(${prefix}_QRC_SRCS ${${prefix}_RESOURCES})
+    endif()
+  else()
+    QT5_WRAP_CPP(${prefix}_MOC_CXX ${${prefix}_MOC_SRCS})
+    QT5_WRAP_UI(${prefix}_UI_CXX ${${prefix}_UI_FORMS})
+    if(DEFINED ${prefix}_RESOURCES)
+      QT5_ADD_RESOURCES(${prefix}_QRC_SRCS ${${prefix}_RESOURCES})
+    endif()
   endif()
 
   source_group("Resources" FILES

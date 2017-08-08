@@ -9,3 +9,28 @@ if(NOT CTKAppLauncherLib_TARGETS_IMPORTED)
 endif()
 
 set(CTKAppLauncherLib_LIBRARIES "@CTKAppLauncherLib_TARGETS@")
+
+# Set expected list of Qt components
+set(CTKAppLauncherLib_QT_VERSION "@CTKAppLauncherLib_QT_VERSION_CONFIG@")
+if(CTKAppLauncherLib_QT_VERSION VERSION_GREATER "4")
+  set(qt_components "Widgets")
+else()
+  set(QT_USE_IMPORTED_TARGETS 1)
+  set(qt_components "QtGui")
+endif()
+
+# Propagate QUIET and REQUIRED arguments
+set(cmake_fd_quiet_arg)
+if(${CMAKE_FIND_PACKAGE_NAME}_FIND_QUIETLY)
+  set(cmake_fd_quiet_arg QUIET)
+endif()
+set(cmake_fd_required_arg)
+if(${CMAKE_FIND_PACKAGE_NAME}_FIND_REQUIRED)
+  set(cmake_fd_required_arg REQUIRED)
+endif()
+
+find_package(
+  Qt${CTKAppLauncherLib_QT_VERSION}
+  COMPONENTS ${qt_components}
+  ${cmake_fd_required_arg} ${cmake_fd_quiet_arg}
+  )
