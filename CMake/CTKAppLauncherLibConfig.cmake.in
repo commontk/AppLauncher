@@ -15,7 +15,6 @@ set(CTKAppLauncherLib_QT_VERSION "@CTKAppLauncherLib_QT_VERSION_CONFIG@")
 if(CTKAppLauncherLib_QT_VERSION VERSION_GREATER "4")
   set(qt_components "Widgets")
 else()
-  set(QT_USE_IMPORTED_TARGETS 1)
   set(qt_components "QtGui")
 endif()
 
