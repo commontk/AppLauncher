@@ -35,6 +35,7 @@ ctkAppLauncherPrivate::ctkAppLauncherPrivate(ctkAppLauncher& object) : ctkAppLau
   this->DetachApplicationToLaunch = false;
   this->LauncherSplashScreenHideDelayMs = -1;
   this->LauncherNoSplashScreen = false;
+  this->LoadEnvironment = -1;
   this->DefaultLauncherSplashImagePath = ":Images/ctk-splash.png";
   this->DefaultLauncherSplashScreenHideDelayMs = 800;
   this->LauncherSettingSubDirs << "." << "bin" << "lib";
@@ -423,6 +424,11 @@ void ctkAppLauncherPrivate::buildEnvironment(QProcessEnvironment &env)
   this->reportInfo(QString("<APPLAUNCHER_NAME> -> [%1]").arg(this->LauncherName));
   this->reportInfo(QString("<PATHSEP> -> [%1]").arg(this->PathSep));
 
+  if(this->LoadEnvironment >= 0)
+    {
+    env = ctkAppLauncherEnvironment::environment(this->LoadEnvironment);
+    }
+
   // Regular environment variables
   QHash<QString, QString> envVars = q->envVars();
   foreach(const QString& key, envVars.keys())
@@ -486,6 +492,8 @@ bool ctkAppLauncherPrivate::readSettings(const QString& fileName, int settingsTy
 
   bool noSplashScreen = settings.value("launcherNoSplashScreen", false).toBool();
   this->LauncherNoSplashScreen = noSplashScreen;
+
+  this->LoadEnvironment = settings.value("launcherLoadEnvironment", -1).toInt();
 
   // Read default application to launch
   QHash<QString, QString> applicationGroup = ctk::readKeyValuePairs(settings, "Application");
@@ -834,6 +842,10 @@ bool ctkAppLauncher::initialize(QString launcherFilePath)
                      "-1 means no timeout", QVariant(-1));
   parser.setExactMatchRegularExpression("launcher-timeout",
                                         "(-1)|([0-9]+)", "-1 or a positive integer is expected.");
+  parser.addArgument("launcher-load-environment", "", QVariant::Int,
+                     "Specify the saved environment to load.");
+  parser.setExactMatchRegularExpression("launcher-load-environment",
+                                        "([0-9]+)", "a positive integer is expected.");
   parser.addArgument("launcher-dump-environment", "", QVariant::Bool,
                      "Launcher will print environment variables to be set, then exit");
   parser.addArgument("launcher-show-set-environment-commands", "", QVariant::Bool,
@@ -976,6 +988,17 @@ int ctkAppLauncher::processArguments()
     {
     d->reportInfo(
         QString("DetachApplicationToLaunch [%1]").arg(d->DetachApplicationToLaunch));
+    }
+
+  if (d->ParsedArgs.contains("launcher-load-environment"))
+    {
+    d->LoadEnvironment =
+        d->ParsedArgs.value("launcher-load-environment").toInt();
+    }
+  if (d->LauncherStarting)
+    {
+    d->reportInfo(
+        QString("LoadEnvironment [%1]").arg(d->LoadEnvironment));
     }
 
   QStringList unparsedArgs = d->Parser.unparsedArguments();

@@ -43,6 +43,7 @@ class ctkAppLauncherPrivate;
 /// --launcher-no-splash                         Hide launcher splash
 /// --launcher-timeout                           Specify the time in second before the launcher kills the
 ///                                              application. -1 means no timeout (default: -1)
+/// --launcher-load-environment                  Specify the saved environment to load.
 /// --launcher-dump-environment                  Launcher will print environment variables to be set, then exit
 /// --launcher-show-set-environment-commands     Launcher will print commands suitable for setting the parent
 ///                                              environment (i.e. using 'eval' in a POSIX shell), then exit
@@ -68,6 +69,7 @@ class ctkAppLauncherPrivate;
 /// launcherSplashImagePath             | Absolute or relative path to splashscreen. If empty, it defaults to ``:Images/ctk-splash.png`.
 /// launcherSplashScreenHideDelayMs     | Delay in milliseconds before hiding the launcher splashscreen. Default is 800ms.
 /// launcherNoSplashScreen              | If set to 1, no splashscreen is shown.
+/// launcherLoadEnvironment             | Optionally specify an integer identifying the saved environment to use.
 /// additionalLauncherHelpShortArgument | Short argument indicating that the launcher help should be displayed (e.g `-h`). This argument is passed down to the application.
 /// additionalLauncherHelpLongArgument  | Long argument indicating that the launcher help should be displayed (e.g `--help`). This argument is passed down to the application.
 /// additionalLauncherNoSplashArguments | List of arguments passed to the launched application meaning that no launcher spashscreen should be displayed.
