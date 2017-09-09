@@ -21,8 +21,13 @@ elseif(UNIX)
 endif()
 
 # --------------------------------------------------------------------------
-include(${CMAKE_CURRENT_LIST_DIR}/App4TestStepPrerequisites.cmake)
-include(${CMAKE_CURRENT_LIST_DIR}/App4TestStepChecks.cmake)
+if(NOT DEFINED AppLauncherTestPrerequisites_INCLUDE_APP4TEST_MODULES)
+  set(AppLauncherTestPrerequisites_INCLUDE_APP4TEST_MODULES 1)
+endif()
+if(AppLauncherTestPrerequisites_INCLUDE_APP4TEST_MODULES)
+  include(${CMAKE_CURRENT_LIST_DIR}/App4TestStepPrerequisites.cmake)
+  include(${CMAKE_CURRENT_LIST_DIR}/App4TestStepChecks.cmake)
+endif()
 
 # --------------------------------------------------------------------------
 # Sanity checks

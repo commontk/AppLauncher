@@ -444,8 +444,13 @@ void ctkAppLauncherPrivate::buildEnvironment(QProcessEnvironment &env)
     env.insert(key, value);
     }
 
+  QSet<QString> variables =
+      q->envVars().keys().toSet() +
+      q->pathsEnvVars().keys().toSet() +
+      this->SystemEnvironment.keys().toSet();
+
   ctkAppLauncherEnvironment::saveEnvironment(
-        this->SystemEnvironment, q->envVars().keys() + q->pathsEnvVars().keys(), env);
+        this->SystemEnvironment, variables.values(), env);
 }
 
 // --------------------------------------------------------------------------

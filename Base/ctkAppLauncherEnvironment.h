@@ -11,21 +11,15 @@ class ctkAppLauncherEnvironmentPrivate;
 /// \brief The ctkAppLauncherEnvironment class provides an interface for
 /// interacting with the AppLauncher environment variables.
 ///
-/// It supports retrieving the original launcher environment from
-/// a launched process.
+/// It supports saving the environment and retrieving it. This allows
+/// the original launcher environment to be saved and later retrieved
+/// from the launched process.
 ///
-/// APPLAUNCHER_* environment variable prefix
-/// -----------------------------------------
+/// Each time the environment is saved, if the environment variable `APPLAUNCHER_LEVEL`
+/// was set, its value `<level>` is incremented otherwise it is initialized to zero.
+/// Then all variables (*) are copied and named after `APPLAUNCHER_<level>_<varname>`.
 ///
-/// Each time the launcher starts an application, it keeps track of the
-/// the modified/added/removed environment variables using other environment
-/// variables.
-///
-/// With each invocation of the launcher, the variable `APPLAUNCHER_LEVEL` is
-/// set to `<level>` where `<level>` is an integer greater or equal to zero.
-/// Additonally, for every modified/added/removed variables, a variable named
-/// after `APPLAUNCHER_<level>_<varname>` is also added.
-///
+/// (*) expect the one named `APPLAUNCHER_LEVEL` or starting with `APPLAUNCHER_<level>_`.
 ///
 class ctkAppLauncherEnvironment : public QObject
 {
