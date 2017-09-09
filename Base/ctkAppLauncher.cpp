@@ -12,6 +12,7 @@
 // CTK includes
 #include "ctkAppLauncher.h"
 #include "ctkAppLauncher_p.h"
+#include "ctkAppLauncherEnvironment.h"
 #include "ctkAppLauncherSettings.h"
 #include "ctkAppLauncherSettings_p.h"
 #include "ctkAppLauncherVersionConfig.h"
@@ -442,6 +443,9 @@ void ctkAppLauncherPrivate::buildEnvironment(QProcessEnvironment &env)
       }
     env.insert(key, value);
     }
+
+  ctkAppLauncherEnvironment::saveEnvironment(
+        this->SystemEnvironment, q->envVars().keys() + q->pathsEnvVars().keys(), env);
 }
 
 // --------------------------------------------------------------------------

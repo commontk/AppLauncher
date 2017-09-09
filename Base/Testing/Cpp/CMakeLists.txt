@@ -2,6 +2,7 @@ set(KIT ${PROJECT_NAME})
 
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 set(KIT_TEST_SRCS
+  ctkAppLauncherEnvironmentTest.cpp
   ctkAppArgumentsTest.cpp
   ctkAppLauncherTest1.cpp
   ctkAppLauncherSettingsTest.cpp
@@ -14,6 +15,7 @@ create_test_sourcelist(Tests ${KIT}CppTests.cpp
 include(MacroAddFileDependencies)
 
 foreach(file IN ITEMS
+    ctkAppLauncherEnvironmentTest.cpp
     ctkAppArgumentsTest.cpp
     ctkAppLauncherTest1.cpp
     ctkAppLauncherSettingsTest.cpp
@@ -53,6 +55,7 @@ endmacro()
 # Add Tests
 #
 
+add_simple_test(ctkAppLauncherEnvironmentTest XDisplayRequired)
 add_simple_test(ctkAppArgumentsTest XDisplayRequired)
 add_simple_test(ctkAppLauncherTest1 XDisplayRequired)
 add_simple_test(ctkAppLauncherSettingsTest XDisplayRequired)
