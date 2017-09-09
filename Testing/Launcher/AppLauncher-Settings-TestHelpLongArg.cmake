@@ -38,7 +38,7 @@ if(rv)
                       "directory [${launcher_binary_dir}]\n${ev}")
 endif()
 
-set(expected_msg "This is the long help${expected_help_text}\n")
+set(expected_msg "This is the long help\n${expected_help_text}")
 
 if(NOT ${expected_msg} STREQUAL ${ov})
   message(FATAL_ERROR "Problem with flag --launcher-help."

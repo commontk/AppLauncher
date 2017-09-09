@@ -32,28 +32,11 @@ if(rv)
                       "directory [${launcher_binary_dir}]\n${ev}")
 endif()
 
-set(expected_msg "Usage
-  CTKAppLauncher [options]
-
-Options
-  --launcher-help                              Display help
-  --launcher-version                           Show launcher version information
-  --launcher-verbose                           Verbose mode
-  --launch                                     Specify the application to launch
-  --launcher-detach                            Launcher will NOT wait for the application to finish
-  --launcher-no-splash                         Hide launcher splash
-  --launcher-timeout                           Specify the time in second before the launcher kills the application. -1 means no timeout (default: -1)
-  --launcher-dump-environment                  Launcher will print environment variables to be set, then exit
-  --launcher-show-set-environment-commands     Launcher will print commands suitable for setting the parent environment (i.e. using 'eval' in a POSIX shell), then exit
-  --launcher-additional-settings               Additional settings file to consider
-  --launcher-ignore-user-additional-settings   Ignore additional user settings
-  --launcher-generate-exec-wrapper-script      Generate executable wrapper script allowing to set the environment
-  --launcher-generate-template                 Generate an example of setting file
-")
+set(expected_msg ${expected_help_text})
 
 if(NOT ${expected_msg} STREQUAL ${ov})
   message(FATAL_ERROR "Problem with flag --launcher-help."
-                      "\n expected_msg:\n ${expected_msg}"
-                      "\n current_msg:\n ${ov}")
+                      "\n expected_msg:\n [${expected_msg}]"
+                      "\n current_msg:\n [${ov}]")
 endif()
 

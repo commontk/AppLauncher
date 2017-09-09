@@ -80,8 +80,7 @@ execute_process(COMMAND ${CMAKE_COMMAND} -E remove -f ${launcher}AdditionalLaunc
 
 
 # --------------------------------------------------------------------------
-set(expected_help_text "
-Usage
+set(expected_help_text "Usage
   CTKAppLauncher [options]
 
 Options
@@ -97,4 +96,5 @@ Options
   --launcher-additional-settings               Additional settings file to consider
   --launcher-ignore-user-additional-settings   Ignore additional user settings
   --launcher-generate-exec-wrapper-script      Generate executable wrapper script allowing to set the environment
-  --launcher-generate-template                 Generate an example of setting file")
+  --launcher-generate-template                 Generate an example of setting file
+")
