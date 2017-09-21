@@ -1,3 +1,5 @@
+set(AppLauncherTestPrerequisites_INCLUDE_APP4TEST_MODULES 0)
+include(${TEST_BINARY_DIR}/../Launcher-${TEST_TREE_TYPE}/AppLauncherTestPrerequisites.cmake)
 include(${TEST_SOURCE_DIR}/../Launcher/AppLauncherTestMacros.cmake)
 
 # --------------------------------------------------------------------------
@@ -13,22 +15,17 @@ set(application ${application_dir}/${application_name}${CMAKE_EXECUTABLE_SUFFIX}
 
 # --------------------------------------------------------------------------
 # Debug flags - Set to True to display the command as string
-set(PRINT_COMMAND 0)
+set(PRINT_COMMAND 1)
 
-# --------------------------------------------------------------------------
-foreach(filename IN ITEMS
-    settings.ini
-    launcher-settings.ini
-    launcher-additional-settings.ini
-    )
-  configure_file(
-    ${APPLIB_SOURCE_DIR}/${filename}
-    ${application_dir}/${filename}
-    COPYONLY
-    )
-endforeach()
+# Configure settings file
+file(WRITE "${launcher}LauncherSettings.ini" "
+[EnvironmentVariables]
+APPWITHLAUNCHER_ENV_VAR=set-from-launcher-settings
+")
 
-set(command ${application})
+set(ENV{APPWITHLAUNCHER_ENV_VAR} "set-from-launcher-env")
+
+set(command ${launcher_exe} --launch ${application} --with-launcher)
 execute_process(
   COMMAND ${command}
   WORKING_DIRECTORY ${application_dir}

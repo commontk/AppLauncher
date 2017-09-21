@@ -21,8 +21,13 @@ elseif(UNIX)
 endif()
 
 # --------------------------------------------------------------------------
-include(${CMAKE_CURRENT_LIST_DIR}/App4TestStepPrerequisites.cmake)
-include(${CMAKE_CURRENT_LIST_DIR}/App4TestStepChecks.cmake)
+if(NOT DEFINED AppLauncherTestPrerequisites_INCLUDE_APP4TEST_MODULES)
+  set(AppLauncherTestPrerequisites_INCLUDE_APP4TEST_MODULES 1)
+endif()
+if(AppLauncherTestPrerequisites_INCLUDE_APP4TEST_MODULES)
+  include(${CMAKE_CURRENT_LIST_DIR}/App4TestStepPrerequisites.cmake)
+  include(${CMAKE_CURRENT_LIST_DIR}/App4TestStepChecks.cmake)
+endif()
 
 # --------------------------------------------------------------------------
 # Sanity checks
@@ -75,8 +80,7 @@ execute_process(COMMAND ${CMAKE_COMMAND} -E remove -f ${launcher}AdditionalLaunc
 
 
 # --------------------------------------------------------------------------
-set(expected_help_text "
-Usage
+set(expected_help_text "Usage
   CTKAppLauncher [options]
 
 Options
@@ -87,9 +91,11 @@ Options
   --launcher-detach                            Launcher will NOT wait for the application to finish
   --launcher-no-splash                         Hide launcher splash
   --launcher-timeout                           Specify the time in second before the launcher kills the application. -1 means no timeout (default: -1)
+  --launcher-load-environment                  Specify the saved environment to load.
   --launcher-dump-environment                  Launcher will print environment variables to be set, then exit
   --launcher-show-set-environment-commands     Launcher will print commands suitable for setting the parent environment (i.e. using 'eval' in a POSIX shell), then exit
   --launcher-additional-settings               Additional settings file to consider
   --launcher-ignore-user-additional-settings   Ignore additional user settings
   --launcher-generate-exec-wrapper-script      Generate executable wrapper script allowing to set the environment
-  --launcher-generate-template                 Generate an example of setting file")
+  --launcher-generate-template                 Generate an example of setting file
+")

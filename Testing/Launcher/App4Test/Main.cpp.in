@@ -130,6 +130,43 @@ int main(int argc, char** argv)
       verboseLibInstantiation = false;
       std::cout << "This is the short help" << std::endl;
       }
+    else if (argName == "--check-environment-load")
+      {
+      verboseLibInstantiation = false;
+      char * varStr = getenv("VAR_FOR_ENV_LOAD_TEST");
+      if (!varStr)
+        {
+        std::cout << "Failed to retrieve 'VAR_FOR_ENV_LOAD_TEST' env. variable !" << std::endl;
+        return EXIT_FAILURE;
+        }
+      std::string var(varStr);
+      std::string expectedVar("set-from-level-0");
+      if (var != expectedVar)
+        {
+        std::cout << "Failed to load the saved environment:"
+                  << "\n\texpected: " << expectedVar
+                  << "\n\t current: " << var
+                  << std::endl;
+        return EXIT_FAILURE;
+        }
+
+      varStr = getenv("VAR_FROM_SETTINGS");
+      if (!varStr)
+        {
+        std::cout << "Failed to retrieve 'VAR_FROM_SETTINGS' env. variable !" << std::endl;
+        return EXIT_FAILURE;
+        }
+      var = std::string(varStr);
+      expectedVar = "set-from-settings";
+      if (var != expectedVar)
+        {
+        std::cout << "Failed to load the saved environment:"
+                  << "\n\texpected: " << expectedVar
+                  << "\n\t current: " << var
+                  << std::endl;
+        return EXIT_FAILURE;
+        }
+      }
     }
   else if (argc == 1)
     {

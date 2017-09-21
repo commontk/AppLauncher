@@ -14,6 +14,7 @@
 
 // CTKAppLauncher includes
 #include <ctkSettingsHelper.h>
+#include <ctkAppLauncherEnvironment.h>
 #include <ctkAppLauncherSettings.h>
 
 // STD includes
@@ -64,7 +65,7 @@ bool CheckStringList(int line, const QString& description,
 }
 
 //----------------------------------------------------------------------------
-// Copied from CTK/Libs/Core/ctkCoreTestingMacros.h
+// Copied from CTK/Libs/Core/ctkCoreTestingUtilities.{h,cpp,tpp}
 bool CheckString(int line, const QString& description,
                  const char* current, const char* expected, bool errorIfDifferent = true)
 {
@@ -91,6 +92,48 @@ bool CheckString(int line, const QString& description,
 }
 
 //----------------------------------------------------------------------------
+// Copied from CTK/Libs/Core/ctkCoreTestingUtilities.{h,cpp,tpp}
+template<typename TYPE>
+bool Check(int line, const QString& description,
+           TYPE current, TYPE expected,
+           const QString& _testName,
+           bool errorIfDifferent = true)
+{
+  QString testName = _testName.isEmpty() ? "Check" : _testName;
+  if (errorIfDifferent)
+    {
+    if(current != expected)
+      {
+      qWarning() << "\nLine " << line << " - " << description
+                 << " : " << testName << " failed"
+                 << "\n\tcurrent :" << current
+                 << "\n\texpected:" << expected;
+      return false;
+      }
+    }
+  else
+    {
+    if(current == expected)
+      {
+      qWarning() << "\nLine " << line << " - " << description
+                 << " : " << testName << " failed"
+                 << "\n\tcurrent :" << current
+                 << "\n\texpected to be different from:" << expected;
+      return false;
+      }
+    }
+  return true;
+}
+
+//----------------------------------------------------------------------------
+// Copied from CTK/Libs/Core/ctkCoreTestingUtilities.{h,cpp,tpp}
+bool CheckInt(int line, const QString& description,
+              int current, int expected)
+{
+  return Check<int>(line, description, current, expected, "CheckInt");
+}
+
+//----------------------------------------------------------------------------
 // Copied from CTK/Libs/Core/ctkCoreTestingMacros.h
 #define CHECK_QSTRINGLIST(actual, expected) \
   { \
@@ -109,6 +152,26 @@ bool CheckString(int line, const QString& description,
   QString a = (actual); \
   QString e = (expected); \
   if (!CheckString(__LINE__,#actual " != " #expected, qPrintable(a), qPrintable(e))) \
+    { \
+    return EXIT_FAILURE; \
+    } \
+  }
+
+//----------------------------------------------------------------------------
+// Copied from CTK/Libs/Core/ctkCoreTestingMacros.h
+#define CHECK_INT(actual, expected) \
+  { \
+  if (!CheckInt(__LINE__,#actual " != " #expected, (actual), (expected))) \
+    { \
+    return EXIT_FAILURE; \
+    } \
+  }
+
+//----------------------------------------------------------------------------
+// Copied from CTK/Libs/Core/ctkCoreTestingMacros.h
+#define CHECK_BOOL(actual, expected) \
+  { \
+  if (!CheckInt(__LINE__,#actual " != " #expected, (actual)?1:0, (expected)?1:0)) \
     { \
     return EXIT_FAILURE; \
     } \
@@ -170,14 +233,16 @@ int checkReadArrayValues();
 int checkReadSettingsWithoutExpand();
 int checkReadSettingsWithExpand();
 int checkReadAdditionalSettingsWithExpand();
+int checkEnvironment(bool withLauncher);
 
 //----------------------------------------------------------------------------
-int main(int, char*[])
+int main(int argc, char*[])
 {
   CHECK_EXIT_SUCCESS(checkReadArrayValues());
   CHECK_EXIT_SUCCESS(checkReadSettingsWithoutExpand());
   CHECK_EXIT_SUCCESS(checkReadSettingsWithExpand());
   CHECK_EXIT_SUCCESS(checkReadAdditionalSettingsWithExpand());
+  CHECK_EXIT_SUCCESS(checkEnvironment(argc > 1));
 
   return EXIT_SUCCESS;
 }
@@ -631,6 +696,50 @@ int checkReadAdditionalSettingsWithExpand()
                 << "/awesome/path/to/libexec/qt"
                 << "/awesome/path/to/libexec/RAB"
         );
+
+  return EXIT_SUCCESS;
+}
+
+//----------------------------------------------------------------------------
+int checkEnvironment(bool withLauncher)
+{
+  QProcessEnvironment systemEnvironment = QProcessEnvironment::systemEnvironment();
+
+  CHECK_BOOL(systemEnvironment.contains("APPLAUNCHER_LEVEL"), withLauncher);
+
+  if (withLauncher)
+    {
+    CHECK_INT(ctkAppLauncherEnvironment::currentLevel(), 1);
+    CHECK_QSTRING(systemEnvironment.value("APPWITHLAUNCHER_ENV_VAR", ""), "set-from-launcher-settings");
+    }
+  else
+    {
+    CHECK_INT(ctkAppLauncherEnvironment::currentLevel(), 0);
+    CHECK_QSTRING(systemEnvironment.value("APPWITHLAUNCHER_ENV_VAR", ""), "");
+    }
+
+  qputenv("APPWITHLAUNCHER_ENV_VAR_ONLY_FROM_EXECUTABLE", "set-only-from-executable");
+  qputenv("APPWITHLAUNCHER_ENV_VAR", "set-from-executable");
+
+  systemEnvironment = QProcessEnvironment::systemEnvironment();
+  CHECK_QSTRING(systemEnvironment.value("APPWITHLAUNCHER_ENV_VAR", ""), "set-from-executable");
+
+  if (withLauncher)
+    {
+    CHECK_QSTRING(ctkAppLauncherEnvironment::environment(0).value("APPWITHLAUNCHER_ENV_VAR", ""), "set-from-launcher-env");
+    CHECK_QSTRING(ctkAppLauncherEnvironment::environment(0).value("APPWITHLAUNCHER_ENV_VAR_ONLY_FROM_EXECUTABLE", ""), "");
+
+    CHECK_QSTRING(ctkAppLauncherEnvironment::environment(1).value("APPWITHLAUNCHER_ENV_VAR", ""), "set-from-executable");
+    CHECK_QSTRING(ctkAppLauncherEnvironment::environment(1).value("APPWITHLAUNCHER_ENV_VAR_ONLY_FROM_EXECUTABLE", ""), "set-only-from-executable");
+    }
+  else
+    {
+    CHECK_QSTRING(ctkAppLauncherEnvironment::environment(0).value("APPWITHLAUNCHER_ENV_VAR", ""), "set-from-executable");
+    CHECK_QSTRING(ctkAppLauncherEnvironment::environment(0).value("APPWITHLAUNCHER_ENV_VAR_ONLY_FROM_EXECUTABLE", ""), "set-only-from-executable");
+
+    CHECK_QSTRING(ctkAppLauncherEnvironment::environment(1).value("APPWITHLAUNCHER_ENV_VAR", ""), "");
+    CHECK_QSTRING(ctkAppLauncherEnvironment::environment(1).value("APPWITHLAUNCHER_ENV_VAR_ONLY_FROM_EXECUTABLE", ""), "");
+    }
 
   return EXIT_SUCCESS;
 }

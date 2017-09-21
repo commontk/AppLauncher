@@ -15,6 +15,8 @@ set(KIT_include_directories
 
 # Source files
 set(KIT_SRCS
+  ctkAppLauncherEnvironment.cpp
+  ctkAppLauncherEnvironment.h
   ctkAppLauncherSettings.cpp
   ctkAppLauncherSettings.h
   ctkAppLauncherSettings_p.h
@@ -24,6 +26,7 @@ set(KIT_SRCS
 
 # Headers that should run through moc
 set(KIT_MOC_SRCS
+  ctkAppLauncherEnvironment.h
   ctkAppLauncherSettings.h
   ctkAppLauncherSettings_p.h
   )

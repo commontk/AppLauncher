@@ -29,6 +29,8 @@ function(applauncher_add_test testname)
   set_property(TEST "${testname}" PROPERTY RESOURCE_LOCK "${TEST_TREE_TYPE}-LauncherLib")
   # Set labels
   set_property(TEST ${testname} PROPERTY LABELS "ctkAppLauncher" "CompilerRequired")
+
+  set(testname ${testname} PARENT_SCOPE)
 endfunction()
 
 
@@ -46,6 +48,7 @@ if(TEST_TREE_TYPE STREQUAL "InstallTree")
 endif()
 
 set(test_args
+  -DTEST_TREE_TYPE:STRING=${TEST_TREE_TYPE}
   -DAPPLIB_SOURCE_DIR:PATH=${APPLIB_SOURCE_DIR}
   -DAPPLIB_BINARY_DIR:PATH=${APPLIB_BINARY_DIR}
   -DCMAKE_CONFIGURATION_TYPES:STRING=${CMAKE_CONFIGURATION_TYPES}
@@ -82,3 +85,8 @@ endforeach()
 applauncher_add_test(AppWithLauncherLib-ConfigureStep ${test_args})
 applauncher_add_test(AppWithLauncherLib-BuildStep ${test_args})
 applauncher_add_test(AppWithLauncherLib-RunStep ${test_args})
+applauncher_add_test(AppWithLauncherLib-RunWithLauncherStep ${test_args})
+set_property(TEST ${testname} PROPERTY LABELS "ctkAppLauncher") # Remove "CompilerRequired" label
+if(TEST_TREE_TYPE STREQUAL "InstallTree")
+  set_tests_properties(${testname} PROPERTIES DEPENDS "InstallTree_AppLauncher-Install")
+endif()

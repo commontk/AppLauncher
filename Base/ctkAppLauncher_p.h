@@ -132,6 +132,7 @@ public:
   QCoreApplication*               Application;
   bool                            Initialized;
   bool                            DetachApplicationToLaunch;
+  int                             LoadEnvironment;
 //  QString                         PathSep;
 //  QString                         LibraryPathVariableName;
   QSharedPointer<QSplashScreen>   SplashScreen;

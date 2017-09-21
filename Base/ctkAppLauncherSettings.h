@@ -8,8 +8,8 @@
 class ctkAppLauncherSettingsPrivate;
 
 ///
-/// \brief The CTKAppLauncherSettings class provides an interface for parsing settings file referencing environment
-/// variables useful to execute an application and load associated plugins.
+/// \brief The CTKAppLauncherSettings class provides an interface for parsing
+/// settings file referencing environment variables.
 ///
 /// Settings file format
 /// --------------------

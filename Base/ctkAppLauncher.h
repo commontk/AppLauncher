@@ -16,7 +16,101 @@
 
 class ctkAppLauncherPrivate;
 
-// --------------------------------------------------------------------------
+///
+/// \brief The ctkAppLauncher class provides an interface for setting
+/// the environment before executing an application.
+///
+/// The ctkAppLauncher can be configured using setting files and/or command
+/// line arguments. It relies on ctkAppLauncherSettings to parse settings file
+/// and define the particular environment to set before executing
+/// the selected application.
+///
+/// Command line arguments
+/// ----------------------
+///
+/// \todo Improve this paragraph
+///
+/// \code
+/// Usage
+/// CTKAppLauncher [options]
+///
+/// Options
+/// --launcher-help                              Display help
+/// --launcher-version                           Show launcher version information
+/// --launcher-verbose                           Verbose mode
+/// --launch                                     Specify the application to launch
+/// --launcher-detach                            Launcher will NOT wait for the application to finish
+/// --launcher-no-splash                         Hide launcher splash
+/// --launcher-timeout                           Specify the time in second before the launcher kills the
+///                                              application. -1 means no timeout (default: -1)
+/// --launcher-load-environment                  Specify the saved environment to load.
+/// --launcher-dump-environment                  Launcher will print environment variables to be set, then exit
+/// --launcher-show-set-environment-commands     Launcher will print commands suitable for setting the parent
+///                                              environment (i.e. using 'eval' in a POSIX shell), then exit
+/// --launcher-additional-settings               Additional settings file to consider
+/// --launcher-ignore-user-additional-settings   Ignore additional user settings
+/// --launcher-generate-exec-wrapper-script      Generate executable wrapper script allowing to set the environment
+/// --launcher-generate-template                 Generate an example of setting file
+/// \endcode
+///
+/// Settings file format
+/// --------------------
+///
+/// In addition of the settings already described in in ctkAppLauncherSettings
+/// class, the ctkAppLauncher class adds support for keys found in the `[General]`
+/// and `[ExtraApplicationToLaunch]` groups.
+///
+/// \todo Improve this paragraph
+///
+/// ### `[General]` group
+///
+/// Settings key                        | Description
+/// ------------------------------------|----------------------------------------------
+/// launcherSplashImagePath             | Absolute or relative path to splashscreen. If empty, it defaults to ``:Images/ctk-splash.png`.
+/// launcherSplashScreenHideDelayMs     | Delay in milliseconds before hiding the launcher splashscreen. Default is 800ms.
+/// launcherNoSplashScreen              | If set to 1, no splashscreen is shown.
+/// launcherLoadEnvironment             | Optionally specify an integer identifying the saved environment to use.
+/// additionalLauncherHelpShortArgument | Short argument indicating that the launcher help should be displayed (e.g `-h`). This argument is passed down to the application.
+/// additionalLauncherHelpLongArgument  | Long argument indicating that the launcher help should be displayed (e.g `--help`). This argument is passed down to the application.
+/// additionalLauncherNoSplashArguments | List of arguments passed to the launched application meaning that no launcher spashscreen should be displayed.
+///
+/// ### `[ExtraApplicationToLaunch]` group
+///
+/// This group allows to list applications that can be started using the launcher
+/// environment.
+///
+/// The list of available applications is displayed if the help is requested.
+///
+/// For example, this launcher help will display these additional options:
+///
+/// \code
+///
+/// Options
+///
+///   [...]
+///   --designer                                   Start Qt designer using Slicer plugins
+///   --gnome-terminal                             Start gnome-terminal
+///
+/// \endcode
+///
+/// by adding the corresponding applications in the settings:
+///
+/// \code
+/// [ExtraApplicationToLaunch]
+///
+/// designer/shortArgument=
+/// designer/help=Start Qt designer using Slicer plugins
+/// designer/path=/home/jcfr/Support/qt-everywhere-opensource-build-4.8.7/bin/designer
+/// designer/arguments=
+///
+/// gnome-terminal/shortArgument=
+/// gnome-terminal/help=Start gnome-terminal
+/// gnome-terminal/path=/usr/bin/gnome-terminal
+/// gnome-terminal/arguments=
+///
+/// ...
+/// \endcode
+///
 class ctkAppLauncher : public ctkAppLauncherSettings
 {
   Q_OBJECT

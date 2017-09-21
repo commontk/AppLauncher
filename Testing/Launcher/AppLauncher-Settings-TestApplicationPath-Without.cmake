@@ -21,12 +21,11 @@ execute_process(
   COMMAND ${command}
   WORKING_DIRECTORY ${launcher_binary_dir}
   ERROR_VARIABLE ev
-  ERROR_STRIP_TRAILING_WHITESPACE
   )
 
 print_command_as_string("${command}")
 
-set(expected_error_msg "error: Application does NOT exists []${expected_help_text}")
+set(expected_error_msg "error: Application does NOT exists []\n${expected_help_text}")
 if(NOT "${ev}" STREQUAL "${expected_error_msg}")
   message(FATAL_ERROR "No application has been specified"
                       "\n  expected_error_msg:${expected_error_msg}"
