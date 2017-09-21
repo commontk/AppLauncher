@@ -175,15 +175,16 @@ void ctkAppLauncherEnvironmentTester::testEnvironment_data()
   qRegisterMetaType<QProcessEnvironment>("QProcessEnvironment");
 
   QProcessEnvironment sysEnv = QProcessEnvironment::systemEnvironment();
-#if QT_VERSION >= 0x040800
-  QStringList sysEnvKeys = sysEnv.keys();
-#else
+
   QStringList sysEnvKeys;
   foreach (const QString& pair, sysEnv.toStringList())
     {
+    if (pair.startsWith("="))
+      {
+      continue;
+      }
     sysEnvKeys.append(pair.split("=").first());
     }
-#endif
 
   QTest::addColumn<QProcessEnvironment>("env");
   QTest::addColumn<QProcessEnvironment>("expectedEnv");
@@ -215,13 +216,12 @@ void ctkAppLauncherEnvironmentTester::testEnvironment_data()
     {
     env.insert(QString("APPLAUNCHER_0_%1").arg(varname), sysEnv.value(varname));
     }
-  env.insert("APPLAUNCHER_1_FOO", "foo-level-1");
+
+  QProcessEnvironment expectedEnv;
   foreach(const QString& varname, sysEnvKeys)
     {
-    env.insert(QString("APPLAUNCHER_1_%1").arg(varname), sysEnv.value(varname));
+    expectedEnv.insert(varname, sysEnv.value(varname));
     }
-
-  QProcessEnvironment expectedEnv = sysEnv;
   expectedEnv.insert("FOO", "foo-level-0");
 
   QTest::newRow("APPLAUNCHER_LEVEL=1, requested 0") << env << expectedEnv << 0;
@@ -241,7 +241,11 @@ void ctkAppLauncherEnvironmentTester::testEnvironment_data()
     env.insert(QString("APPLAUNCHER_1_%1").arg(varname), sysEnv.value(varname));
     }
 
-  QProcessEnvironment expectedEnv = sysEnv;
+  QProcessEnvironment expectedEnv;
+  foreach(const QString& varname, sysEnvKeys)
+    {
+    expectedEnv.insert(varname, sysEnv.value(varname));
+    }
   expectedEnv.insert("APPLAUNCHER_LEVEL", "1");
   expectedEnv.insert("APPLAUNCHER_0_FOO", "foo-level-0");
   expectedEnv.insert("FOO", "foo-level-1");
