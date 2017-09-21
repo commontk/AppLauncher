@@ -10,6 +10,11 @@ The launcher is available on Linux, Windows and MacOSX.
 
 Read the [wiki](http://www.commontk.org/index.php/Tools:_Application_launcher) for more details.
 
+Contributions are welcome, and they are greatly appreciated! Every
+little bit helps, and credit will always be given. See [here][contributing] for more details. 
+
+[contributing]: https://github.com/commontk/AppLauncher/blob/master/CONTRIBUTING.md
+
 Build Status
 ------------
 
@@ -27,25 +32,6 @@ Build Status
 [travisci]: https://travis-ci.org/commontk/AppLauncher.svg?branch=master
 [travisci-lnk]: https://travis-ci.org/commontk/AppLauncher
 
-Contributing
-------------
-
-Once you've made your great commits:
-
-1. [Fork][fk] AppLauncher
-2. Create a topic branch - `git checkout -b my_branch`
-3. Push to your branch - `git push origin my_branch`
-4. Create a [Pull Request][pr] or an [Issue][is] with a link to your branch
-5. That's it!
-
-
-Meta
-----
-
-* Code: `git clone git://github.com/commontk/AppLauncher.git`
-* Home: <http://commontk.org/>
-* Bugs: <http://github.com/commontk/AppLauncher/issues>
-
 License
 -------
 
@@ -61,6 +47,3 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 
-[fk]: http://help.github.com/forking/
-[is]: http://github.com/commontk/AppLauncher/issues
-[pr]: https://github.com/commontk/AppLauncher/pulls
