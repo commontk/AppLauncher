@@ -450,10 +450,20 @@ void ctkAppLauncherPrivate::buildEnvironment(QProcessEnvironment &env)
     env.insert(key, value);
     }
 
+#if QT_VERSION >= 0x040800
+  QStringList systemEnvKeys = this->SystemEnvironment.keys();
+#else
+  QStringList systemEnvKeys;
+  foreach (const QString& pair, this->SystemEnvironment.toStringList())
+    {
+    systemEnvKeys.append(pair.split("=").first());
+    }
+#endif
+
   QSet<QString> variables =
       q->envVars().keys().toSet() +
       q->pathsEnvVars().keys().toSet() +
-      this->SystemEnvironment.keys().toSet();
+      systemEnvKeys.toSet();
 
   ctkAppLauncherEnvironment::saveEnvironment(
         this->SystemEnvironment, variables.values(), env);

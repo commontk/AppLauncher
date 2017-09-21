@@ -16,8 +16,6 @@ set(application ${application_dir}/${application_name}${CMAKE_EXECUTABLE_SUFFIX}
 set(PRINT_COMMAND 0)
 
 # --------------------------------------------------------------------------
-# Build AppWithLauncherLib
-
 foreach(filename IN ITEMS
     settings.ini
     launcher-settings.ini

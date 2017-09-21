@@ -1,6 +1,9 @@
 
 #include <ctkAppLauncherEnvironment.h>
 
+// Qt includes
+#include <QSet>
+
 // STD includes
 #include <cstdlib>
 
@@ -15,7 +18,12 @@ protected:
   ctkAppLauncherEnvironment* q_ptr;
 public:
   ctkAppLauncherEnvironmentPrivate(ctkAppLauncherEnvironment& object);
+
+  static QRegExp LevelVarNameRegex;
 };
+
+// --------------------------------------------------------------------------
+QRegExp ctkAppLauncherEnvironmentPrivate::LevelVarNameRegex = QRegExp("^APPLAUNCHER\\_(\\d+)\\_");
 
 // --------------------------------------------------------------------------
 ctkAppLauncherEnvironmentPrivate::ctkAppLauncherEnvironmentPrivate(ctkAppLauncherEnvironment& object)
@@ -53,18 +61,36 @@ int ctkAppLauncherEnvironment::currentLevel()
 QProcessEnvironment ctkAppLauncherEnvironment::environment(int requestedLevel)
 {
   QProcessEnvironment currentEnv = QProcessEnvironment::systemEnvironment();
-  QProcessEnvironment env(currentEnv);
-  QRegExp levelVarNameRegex("^APPLAUNCHER\\_(\\d+)\\_");
-  foreach(const QString& varname, currentEnv.keys())
+  if (requestedLevel == Self::currentLevel())
     {
-    if (levelVarNameRegex.indexIn(varname) == 0)
+    return currentEnv;
+    }
+  else if (requestedLevel > Self::currentLevel() || requestedLevel < 0)
+    {
+    return QProcessEnvironment();
+    }
+  QProcessEnvironment env(currentEnv);
+#if QT_VERSION >= 0x040800
+  QStringList currentEnvKeys = currentEnv.keys();
+#else
+  QStringList currentEnvKeys;
+  foreach (const QString& pair, currentEnv.toStringList())
+    {
+    currentEnvKeys.append(pair.split("=").first());
+    }
+#endif
+  QStringList requestedEnvKeys;
+  foreach(const QString& varname, currentEnvKeys)
+    {
+    if (ctkAppLauncherEnvironmentPrivate::LevelVarNameRegex.indexIn(varname) == 0)
       {
-      int currentLevel = levelVarNameRegex.cap(1).toInt();
+      int currentLevel = ctkAppLauncherEnvironmentPrivate::LevelVarNameRegex.cap(1).toInt();
       if (currentLevel == requestedLevel)
         {
-        QString currentVarName = QString(varname).remove(0, levelVarNameRegex.matchedLength());
+        QString currentVarName = QString(varname).remove(0, ctkAppLauncherEnvironmentPrivate::LevelVarNameRegex.matchedLength());
         env.insert(currentVarName, currentEnv.value(varname));
         env.remove(varname);
+        requestedEnvKeys.append(currentVarName);
         }
       else if (currentLevel > requestedLevel)
         {
@@ -78,8 +104,19 @@ QProcessEnvironment ctkAppLauncherEnvironment::environment(int requestedLevel)
     }
   else if (requestedLevel > 0)
     {
-    env.insert("APPLAUNCHER_LEVEL", QString("%1").arg(requestedLevel - 1));
+    env.insert("APPLAUNCHER_LEVEL", QString("%1").arg(requestedLevel));
     }
+
+  // Remove variables that are present in current environment but not
+  // associated with the requested saved level.
+  QSet<QString> variablesToRemove =
+      ctkAppLauncherEnvironment::excludeReservedVariableNames(currentEnvKeys).toSet()
+      - ctkAppLauncherEnvironment::excludeReservedVariableNames(requestedEnvKeys).toSet();
+  foreach(const QString& varname, variablesToRemove.values())
+    {
+    env.remove(varname);
+    }
+
   return env;
 }
 
@@ -89,7 +126,7 @@ void ctkAppLauncherEnvironment::saveEnvironment(
     const QStringList& variables, QProcessEnvironment& env)
 {
   // Keep track of launcher level
-  int launcher_level = 0;
+  int launcher_level = 1;
   if (systemEnvironment.contains("APPLAUNCHER_LEVEL"))
     {
     launcher_level =
@@ -100,12 +137,36 @@ void ctkAppLauncherEnvironment::saveEnvironment(
   // Save value environment variables
   foreach(const QString& varname, variables)
     {
-    if (!systemEnvironment.contains(varname))
+    if (!systemEnvironment.contains(varname)
+        || ctkAppLauncherEnvironment::isReservedVariableName(varname))
       {
       continue;
       }
-    QString saved_varname = QString("APPLAUNCHER_%1_%2").arg(launcher_level).arg(varname);
+    QString saved_varname = QString("APPLAUNCHER_%1_%2").arg(launcher_level - 1).arg(varname);
     QString saved_value = systemEnvironment.value(varname, "");
     env.insert(saved_varname, saved_value);
     }
+}
+
+// --------------------------------------------------------------------------
+bool ctkAppLauncherEnvironment::isReservedVariableName(const QString& varname)
+{
+  return
+      ctkAppLauncherEnvironmentPrivate::LevelVarNameRegex.indexIn(varname) == 0
+      || varname == "APPLAUNCHER_LEVEL";
+}
+
+// --------------------------------------------------------------------------
+QStringList ctkAppLauncherEnvironment::excludeReservedVariableNames(const QStringList& variableNames)
+{
+  QStringList updatedList;
+  foreach(const QString& varname, variableNames)
+    {
+    if (ctkAppLauncherEnvironment::isReservedVariableName(varname))
+      {
+      continue;
+      }
+    updatedList.append(varname);
+    }
+  return updatedList;
 }

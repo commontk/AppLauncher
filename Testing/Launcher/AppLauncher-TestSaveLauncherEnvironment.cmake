@@ -21,13 +21,13 @@ else()
 endif()
 
 # --------------------------------------------------------------------------
-function(run_laucher level)
-  message(STATUS "Executing launcher for level [${level}]")
+function(run_laucher expected_level)
+  message(STATUS "Executing launcher for level [${expected_level}]")
   set(command ${launcher_exe} --launcher-no-splash
     --launch ${CMAKE_COMMAND}
     -DTEST_SOURCE_DIR:PATH=${TEST_SOURCE_DIR}
     -DTEST_BINARY_DIR:PATH=${TEST_BINARY_DIR}
-    -DCURRENT_LEVEL:BOOL=${level}
+    -DEXPECTED_LEVEL:BOOL=${expected_level}
     -P ${CMAKE_CURRENT_LIST_FILE}
     )
   print_command_as_string("${command}")
@@ -88,7 +88,7 @@ endfunction()
 function(check_env level)
 
   # Env. variables
-  check_value("LEVEL_VALUE"             "value-overridden-at-level_${level}")
+  check_value("LEVEL_VALUE"          "value-overridden-at-level_${level}")
   set(expected_path "")
   foreach(idx RANGE ${level})
     check_value("LEVEL_${idx}_VALUE" "level_${idx}")
@@ -115,7 +115,7 @@ function(check_env level)
 
   display_env()
 
-  check_value("APPLAUNCHER_LEVEL" "${saved_level}")
+  check_value("APPLAUNCHER_LEVEL" "${level}")
 
   set(expected_path "")
   foreach(idx RANGE 0 ${saved_level})
@@ -134,14 +134,36 @@ function(check_env level)
     check_value("APPLAUNCHER_${idx}_PATH" "${expected_path}")
   endforeach()
 
+  # Check that variables used to save an environment are excluded from
+  # enviroment save operations.
+  if(level GREATER 1)
+    set(prefix "")
+    foreach(idx RANGE 1 ${level})
+      set(prefix "APPLAUNCHER_${idx}_${prefix}")
+    endforeach()
+    set(envvar_name "${prefix}LEVEL_VALUE")
+    set(envvar_value "value-set-at-level_0")
+    if("$ENV{${envvar_name}}" STREQUAL "${envvar_value}")
+      message(FATAL_ERROR "Env variable '${envvar_name}' should NOT be set")
+    endif()
+  endif()
+
+  # Check that APPLAUNCHER_LEVEL variable is not saved
+  if(level GREATER 0)
+    set(envvar_name "APPLAUNCHER_${level}_APPLAUNCHER_LEVEL")
+    if(NOT "$ENV{${envvar_name}}" STREQUAL "")
+      message(FATAL_ERROR "Env variable '${envvar_name}' should NOT be set")
+    endif()
+  endif()
+
 endfunction()
 
 # --------------------------------------------------------------------------
-if(DEFINED CURRENT_LEVEL)
+if(DEFINED EXPECTED_LEVEL)
 
-  check_env(${CURRENT_LEVEL})
+  check_env(${EXPECTED_LEVEL})
 
-  math(EXPR next_level "${CURRENT_LEVEL} + 1")
+  math(EXPR next_level "${EXPECTED_LEVEL} + 1")
   if(NOT next_level GREATER TEST_MAX_LEVEL)
     write_launcher_settings(${next_level})
     run_laucher(${next_level})

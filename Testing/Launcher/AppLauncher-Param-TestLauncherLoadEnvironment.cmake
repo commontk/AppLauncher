@@ -22,7 +22,7 @@ VAR_FROM_SETTINGS=set-from-settings
 # Debug flags - Set to True to display the command as string
 set(PRINT_COMMAND 1)
 
-set(ENV{APPLAUNCHER_LEVEL} "0")
+set(ENV{APPLAUNCHER_LEVEL} "1")
 set(ENV{APPLAUNCHER_0_VAR_FOR_ENV_LOAD_TEST} "set-from-level-0")
 set(ENV{VAR_FOR_ENV_LOAD_TEST} "set-from-level-1")
 set(ENV{VAR_FROM_SETTINGS} "set-from-env")

@@ -703,21 +703,22 @@ int checkReadAdditionalSettingsWithExpand()
 //----------------------------------------------------------------------------
 int checkEnvironment(bool withLauncher)
 {
-  CHECK_INT(ctkAppLauncherEnvironment::currentLevel(), 0);
-
   QProcessEnvironment systemEnvironment = QProcessEnvironment::systemEnvironment();
 
   CHECK_BOOL(systemEnvironment.contains("APPLAUNCHER_LEVEL"), withLauncher);
 
   if (withLauncher)
     {
+    CHECK_INT(ctkAppLauncherEnvironment::currentLevel(), 1);
     CHECK_QSTRING(systemEnvironment.value("APPWITHLAUNCHER_ENV_VAR", ""), "set-from-launcher-settings");
     }
   else
     {
+    CHECK_INT(ctkAppLauncherEnvironment::currentLevel(), 0);
     CHECK_QSTRING(systemEnvironment.value("APPWITHLAUNCHER_ENV_VAR", ""), "");
     }
 
+  qputenv("APPWITHLAUNCHER_ENV_VAR_ONLY_FROM_EXECUTABLE", "set-only-from-executable");
   qputenv("APPWITHLAUNCHER_ENV_VAR", "set-from-executable");
 
   systemEnvironment = QProcessEnvironment::systemEnvironment();
@@ -726,10 +727,18 @@ int checkEnvironment(bool withLauncher)
   if (withLauncher)
     {
     CHECK_QSTRING(ctkAppLauncherEnvironment::environment(0).value("APPWITHLAUNCHER_ENV_VAR", ""), "set-from-launcher-env");
+    CHECK_QSTRING(ctkAppLauncherEnvironment::environment(0).value("APPWITHLAUNCHER_ENV_VAR_ONLY_FROM_EXECUTABLE", ""), "");
+
+    CHECK_QSTRING(ctkAppLauncherEnvironment::environment(1).value("APPWITHLAUNCHER_ENV_VAR", ""), "set-from-executable");
+    CHECK_QSTRING(ctkAppLauncherEnvironment::environment(1).value("APPWITHLAUNCHER_ENV_VAR_ONLY_FROM_EXECUTABLE", ""), "set-only-from-executable");
     }
   else
     {
     CHECK_QSTRING(ctkAppLauncherEnvironment::environment(0).value("APPWITHLAUNCHER_ENV_VAR", ""), "set-from-executable");
+    CHECK_QSTRING(ctkAppLauncherEnvironment::environment(0).value("APPWITHLAUNCHER_ENV_VAR_ONLY_FROM_EXECUTABLE", ""), "set-only-from-executable");
+
+    CHECK_QSTRING(ctkAppLauncherEnvironment::environment(1).value("APPWITHLAUNCHER_ENV_VAR", ""), "");
+    CHECK_QSTRING(ctkAppLauncherEnvironment::environment(1).value("APPWITHLAUNCHER_ENV_VAR_ONLY_FROM_EXECUTABLE", ""), "");
     }
 
   return EXIT_SUCCESS;
