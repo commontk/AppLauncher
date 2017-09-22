@@ -10,11 +10,6 @@ The launcher is available on Linux, Windows and MacOSX.
 
 Read the [wiki](http://www.commontk.org/index.php/Tools:_Application_launcher) for more details.
 
-Contributions are welcome, and they are greatly appreciated! Every
-little bit helps, and credit will always be given. See [here][contributing] for more details. 
-
-[contributing]: https://github.com/commontk/AppLauncher/blob/master/CONTRIBUTING.md
-
 Build Status
 ------------
 
@@ -31,6 +26,65 @@ Build Status
 
 [travisci]: https://travis-ci.org/commontk/AppLauncher.svg?branch=master
 [travisci-lnk]: https://travis-ci.org/commontk/AppLauncher
+
+contributing
+------------
+
+Contributions are welcome, and they are greatly appreciated! Every
+little bit helps, and credit will always be given.
+
+See [CONTRIBUTING.md][contributing] for more details.
+
+[contributing]: https://github.com/commontk/AppLauncher/blob/master/CONTRIBUTING.md
+
+maintainers: how to make a release ?
+------------------------------------
+
+*Follow step below after checking that all tests pass*
+
+1. Update [CMakeLists.txt][cmakelists]
+
+  * set `CTKAppLauncher_VERSION_IS_RELEASE` to `1`
+  * update `CTKAppLauncher_*_VERSION` variables
+
+2. Commit changes with message:
+
+    ```
+    CTKAppLauncher X.Y.Z
+    ```
+
+3. Tag the release. Requires a GPG key with signatures. For version *X.Y.Z*:
+
+    ```bash
+    git tag -s -m "CTKAppLauncher X.Y.Z" vX.Y.Z master
+    ```
+
+4. Publish the tag
+
+    ```bash
+    git push origin vX.Y.Z
+    ```
+
+5. Then publish the `master` branch to trigger the release build
+
+    ```bash
+    git push origin master
+    ```
+
+6. Update [CMakeLists.txt][cmakelists] setting `CTKAppLauncher_VERSION_IS_RELEASE` to `0`
+
+7. Commit changes with message:
+
+    ```
+    Begin post-X.Y.Z development
+
+    [ci skip]
+    ```
+
+8. Publish the `master` branch
+
+
+[cmakelists]: https://github.com/commontk/AppLauncher/blob/29fb4b4db29356ea33b9be8f2a392f5683184bb8/CMakeLists.txt#L51-L54
 
 License
 -------
