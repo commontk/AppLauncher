@@ -48,7 +48,7 @@ test_script:
         ctest -C Release -j4 -VV
   # Upload release and prerelease packages
   - ps: |
-      pip install scikit-ci-addons==0.15.0
+      pip install scikit-ci-addons==0.18.0
       ci_addons publish_github_release commontk/applauncher       `
         --exit-success-if-missing-token                           `
         --prerelease-packages CTKAppLauncher-*.tar.gz                `

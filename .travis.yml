@@ -33,7 +33,7 @@ before_script:
 # * streamline installation of CMake
 # * install package required to automatically create or update GitHub releases
 - |
-  pip install scikit-ci-addons==0.15.0
+  pip install scikit-ci-addons==0.18.0
   ci_addons travis/install_cmake 3.8.0
 script:
 - |

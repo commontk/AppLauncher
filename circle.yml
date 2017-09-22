@@ -32,7 +32,7 @@ test:
       docker cp applauncher-test:/var/log/supervisor/graphical-app-launcher.log - | tar xO; [ "$(docker cp applauncher-test:/tmp/graphical-app.return_code - | tar xO)" = 0 ]
     # Upload release and prerelease packages
     - |
-      pip install scikit-ci-addons==0.15.0
+      pip install scikit-ci-addons==0.18.0
       ci_addons publish_github_release commontk/applauncher \
         --exit-success-if-missing-token                     \
         --prerelease-packages ~/AppLauncher-build/CTKAppLauncher-*.tar.gz \
