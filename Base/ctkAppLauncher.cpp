@@ -450,23 +450,29 @@ void ctkAppLauncherPrivate::buildEnvironment(QProcessEnvironment &env)
     env.insert(key, value);
     }
 
-#if QT_VERSION >= 0x040800
-  QStringList systemEnvKeys = this->SystemEnvironment.keys();
-#else
-  QStringList systemEnvKeys;
-  foreach (const QString& pair, this->SystemEnvironment.toStringList())
+  QProcessEnvironment baseEnv = this->SystemEnvironment;
+  if(this->LoadEnvironment >= 0)
     {
-    systemEnvKeys.append(pair.split("=").first());
+    baseEnv = env;
+    }
+
+#if QT_VERSION >= 0x040800
+  QStringList baseEnvKeys = baseEnv.keys();
+#else
+  QStringList baseEnvKeys;
+  foreach (const QString& pair, baseEnv.toStringList())
+    {
+    baseEnvKeys.append(pair.split("=").first());
     }
 #endif
 
   QSet<QString> variables =
       q->envVars().keys().toSet() +
       q->pathsEnvVars().keys().toSet() +
-      systemEnvKeys.toSet();
+      baseEnvKeys.toSet();
 
   ctkAppLauncherEnvironment::saveEnvironment(
-        this->SystemEnvironment, variables.values(), env);
+        baseEnv, variables.values(), env);
 }
 
 // --------------------------------------------------------------------------
@@ -1005,7 +1011,7 @@ int ctkAppLauncher::processArguments()
     d->LoadEnvironment =
         d->ParsedArgs.value("launcher-load-environment").toInt();
     }
-  if (d->LauncherStarting)
+  if (reportInfo)
     {
     d->reportInfo(
         QString("LoadEnvironment [%1]").arg(d->LoadEnvironment));
