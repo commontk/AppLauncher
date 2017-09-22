@@ -48,6 +48,27 @@ inline std::string currentWorkingDirectory()
 }
 #endif
 
+int check_env_var(const char* varname, const char* expected_value)
+{
+  char * varStr = getenv(varname);
+  if (!varStr)
+    {
+    std::cout << "Failed to retrieve '" << varname << "' env. variable !" << std::endl;
+    return EXIT_FAILURE;
+    }
+  std::string var(varStr);
+  std::string expectedVar(expected_value);
+  if (var != expectedVar)
+    {
+    std::cout << "Failed to load the saved environment:"
+              << "\n\texpected: " << expectedVar
+              << "\n\t current: " << var
+              << std::endl;
+    return EXIT_FAILURE;
+    }
+  return EXIT_SUCCESS;
+}
+
 int main(int argc, char** argv)
 {
   //std::cout << "Hello World !" << std::endl;
@@ -133,37 +154,24 @@ int main(int argc, char** argv)
     else if (argName == "--check-environment-load")
       {
       verboseLibInstantiation = false;
-      char * varStr = getenv("VAR_FOR_ENV_LOAD_TEST");
-      if (!varStr)
+      if (check_env_var(
+            /* varname= */ "VAR_FOR_ENV_LOAD_TEST",
+            /* expected_value= */ "set-from-level-0") != EXIT_SUCCESS)
         {
-        std::cout << "Failed to retrieve 'VAR_FOR_ENV_LOAD_TEST' env. variable !" << std::endl;
         return EXIT_FAILURE;
         }
-      std::string var(varStr);
-      std::string expectedVar("set-from-level-0");
-      if (var != expectedVar)
+      if (check_env_var(
+            /* varname= */ "VAR_FROM_SETTINGS",
+            /* expected_value= */ "set-from-settings") != EXIT_SUCCESS)
         {
-        std::cout << "Failed to load the saved environment:"
-                  << "\n\texpected: " << expectedVar
-                  << "\n\t current: " << var
-                  << std::endl;
         return EXIT_FAILURE;
         }
 
-      varStr = getenv("VAR_FROM_SETTINGS");
-      if (!varStr)
+      // Check that the loaded environment is also saved
+      if (check_env_var(
+            /* varname= */ "APPLAUNCHER_LEVEL",
+            /* expected_value= */ "1") != EXIT_SUCCESS)
         {
-        std::cout << "Failed to retrieve 'VAR_FROM_SETTINGS' env. variable !" << std::endl;
-        return EXIT_FAILURE;
-        }
-      var = std::string(varStr);
-      expectedVar = "set-from-settings";
-      if (var != expectedVar)
-        {
-        std::cout << "Failed to load the saved environment:"
-                  << "\n\texpected: " << expectedVar
-                  << "\n\t current: " << var
-                  << std::endl;
         return EXIT_FAILURE;
         }
       }
