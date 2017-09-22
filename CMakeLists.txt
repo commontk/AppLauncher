@@ -52,7 +52,6 @@ set(CTKAppLauncher_MAJOR_VERSION 0)
 set(CTKAppLauncher_MINOR_VERSION 1)
 set(CTKAppLauncher_BUILD_VERSION 17)
 set(CTKAppLauncher_VERSION_IS_RELEASE 0)
-#set(CTKAppLauncher_VERSION_RC 1)
 
 if(CTKAppLauncher_VERSION_IS_RELEASE)
   set(CTKAppLauncher_VERSION_SOURCE "")
@@ -63,9 +62,6 @@ endif()
 # Compute the full version string.
 set(CTKAppLauncher_VERSION
     "${CTKAppLauncher_MAJOR_VERSION}.${CTKAppLauncher_MINOR_VERSION}.${CTKAppLauncher_BUILD_VERSION}")
-if(CTKAppLauncher_VERSION_RC)
-  set(CTKAppLauncher_VERSION ${CTKAppLauncher_VERSION}-rc${CTKAppLauncher_VERSION_RC})
-endif()
 if(CTKAppLauncher_VERSION_SOURCE)
   set(CTKAppLauncher_VERSION ${CTKAppLauncher_VERSION}-${CTKAppLauncher_VERSION_SOURCE})
 endif()
