@@ -22,7 +22,16 @@ set(TEST_PYTHONPATH_INSTALLED "<APPLAUNCHER_DIR>/lib/python/site-packages")
 set(TEST_QT_PLUGIN_PATH_BUILD "<APPLAUNCHER_DIR>/build/libexec/qt")
 set(TEST_QT_PLUGIN_PATH_INSTALLED "<APPLAUNCHER_DIR>/libexec/qt")
 
-include(${CTKAPPLAUNCHER_DIR}/CMake/ctkAppLauncher.cmake)
+if(NOT DEFINED WITH_CONFIG_FILE)
+  message(FATAL_ERROR "Configuring with WITH_CONFIG_FILE is mandatory.")
+endif()
+
+if(WITH_CONFIG_FILE)
+  find_package(CTKAppLauncher REQUIRED)
+else()
+  include(${CTKAPPLAUNCHER_DIR}/CMake/ctkAppLauncher.cmake)
+endif()
+
 ctkAppLauncherConfigure(
   TARGET ${PROJECT_NAME}-real
   APPLICATION_INSTALL_SUBDIR bin

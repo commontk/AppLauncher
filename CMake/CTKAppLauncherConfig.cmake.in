@@ -1,0 +1,19 @@
+@PACKAGE_INIT@
+
+set_and_check(CTKAppLauncher_BIN_DIR "@PACKAGE_BIN_DIR_CONFIG@")
+set_and_check(CTKAppLauncher_CMAKE_DIR "@PACKAGE_CMAKE_DIR_CONFIG@")
+set_and_check(CTKAppLauncher_CONFIG_DIR "@PACKAGE_CONFIG_DIR_CONFIG@")
+set_and_check(CTKAppLauncher_SETTINGS_TEMPLATE "@PACKAGE_SETTINGS_TEMPLATE_CONFIG@")
+
+@CTKAppLauncher_CONFIG_CODE@
+
+set(CTK_INSTALL_BIN_DIR "@CTK_INSTALL_BIN_DIR@")
+set(CTK_INSTALL_CMAKE_DIR "@CTK_INSTALL_CMAKE_DIR@")
+
+find_program(CTKAppLauncher_EXECUTABLE
+  NAME CTKAppLauncher
+  PATHS ${CTKAppLauncher_BIN_DIR} ${CTKAppLauncher_BIN_ADDITIONAL_PATHS} NO_DEFAULT_PATH
+  DOC "CTK AppLauncher command line executable"
+  )
+
+include(${CTKAppLauncher_CMAKE_DIR}/ctkAppLauncher.cmake)

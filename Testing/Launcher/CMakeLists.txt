@@ -17,6 +17,7 @@ set(APP4CONFIGURELAUNCHERTEST_CMAKE_GENERATOR "${CMAKE_GENERATOR}")
 set(APP4CONFIGURELAUNCHERTEST_BUILD_TYPE "Release")
 set(APP4CONFIGURELAUNCHERTEST_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/App4ConfigureLauncherTest)
 set(APP4CONFIGURELAUNCHERTEST_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/App4ConfigureLauncherTest-build)
+set(APP4CONFIGURELAUNCHERTEST_WITH_CONFIG_FILE_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/App4ConfigureLauncherTestWithConfigFile-build)
 
 #
 # Configure Test Prerequisites
@@ -52,27 +53,6 @@ configure_file(
   )
 
 #
-# Helper function
-#
-function(applauncher_add_cmakescript_test testname script)
-  add_test(cmake_${testname} ${CMAKE_COMMAND}
-    -DTEST_${testname}:BOOL=ON
-    -P ${CTKAppLauncher_SOURCE_DIR}/CMake/${script}.cmake)
-  set_tests_properties(cmake_${testname} PROPERTIES
-    LABELS ctkAppLauncher
-    PASS_REGULAR_EXPRESSION "SUCCESS")
-endfunction()
-
-#
-# Add 'CMake script' Tests - Since these tests are independent of the TEST_TREE_TYPE, include them once.
-#
-if(TEST_TREE_TYPE STREQUAL "BuildTree")
-  applauncher_add_cmakescript_test(ctkAppLauncherListToQtSettingsArrayTest ctkAppLauncher)
-  applauncher_add_cmakescript_test(ctkAppLauncherAppendExtraAppToLaunchToListTest ctkAppLauncher)
-  applauncher_add_cmakescript_test(ctkAppLauncherExtraAppToLaunchListToQtSettingsTest ctkAppLauncher)
-endif()
-
-#
 # Get Qt library directory
 #
 if(CTKAppLauncher_QT_VERSION VERSION_GREATER "4")
@@ -88,7 +68,7 @@ endif()
 #
 function(applauncher_add_test testname)
   set(testscript ${testname})
-  set(testname "${TEST_TREE_TYPE}_${testname}")
+  set(testname "${TEST_TREE_TYPE}_${testname}${TEST_SUFFIX}")
   add_test(NAME ${testname} COMMAND ${CMAKE_COMMAND}
     -DTEST_SOURCE_DIR:PATH=${CMAKE_CURRENT_SOURCE_DIR}
     -DTEST_BINARY_DIR:PATH=${CMAKE_CURRENT_BINARY_DIR}
@@ -193,12 +173,22 @@ if(UNIX)
   applauncher_add_test(AppLauncher-TestSymbolicLinkInPATH)
 endif()
 
-applauncher_add_test(App4ConfigureLauncherTest-ConfigureStep)
-applauncher_add_test(App4ConfigureLauncherTest-BuildStep)
+applauncher_add_test(App4ConfigureLauncherTest-ConfigureStep -DWITH_CONFIG_FILE:BOOL=0)
+applauncher_add_test(App4ConfigureLauncherTest-BuildStep -DWITH_CONFIG_FILE:BOOL=0)
 set_property(
   TEST "${TEST_TREE_TYPE}_App4ConfigureLauncherTest-BuildStep"
   APPEND PROPERTY DEPENDS "${TEST_TREE_TYPE}_App4ConfigureLauncherTest-ConfigureStep"
   )
+
+set(TEST_SUFFIX "-WithConfigFile")
+applauncher_add_test(App4ConfigureLauncherTest-ConfigureStep -DWITH_CONFIG_FILE:BOOL=1)
+applauncher_add_test(App4ConfigureLauncherTest-BuildStep -DWITH_CONFIG_FILE:BOOL=1)
+set_property(
+  TEST "${TEST_TREE_TYPE}_App4ConfigureLauncherTest-BuildStep${TEST_SUFFIX}"
+  APPEND PROPERTY DEPENDS "${TEST_TREE_TYPE}_App4ConfigureLauncherTest-ConfigureStep${TEST_SUFFIX}"
+  )
+set(TEST_SUFFIX "")
+
 applauncher_add_test(ConfiguredAppLauncher-ConfigurationContents)
 set_property(
   TEST "${TEST_TREE_TYPE}_ConfiguredAppLauncher-ConfigurationContents"
@@ -228,3 +218,17 @@ foreach(test IN ITEMS
     )
   set_property(TEST "${TEST_TREE_TYPE}_${test}" APPEND PROPERTY LABELS "CompilerRequired")
 endforeach()
+
+# Test "find_package(CTKAppLauncher)" can be used in script mode
+set(script "AppLauncher-ScriptMode-FindPackage")
+set(testname "${TEST_TREE_TYPE}_${script}")
+add_test(
+  NAME ${testname}
+  COMMAND ${CMAKE_COMMAND}
+    -DCTKAppLauncher_DIR:PATH=${LAUNCHER_DIR}
+    -P ${CMAKE_CURRENT_SOURCE_DIR}/${script}.cmake
+  )
+set_tests_properties(${testname} PROPERTIES LABELS ctkAppLauncher)
+if(TEST_TREE_TYPE STREQUAL "InstallTree")
+  set_tests_properties(${testname} PROPERTIES DEPENDS "${TEST_TREE_TYPE}_AppLauncher-Install")
+endif()

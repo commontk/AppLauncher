@@ -38,14 +38,6 @@ if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
 endif()
 
 #-----------------------------------------------------------------------------
-# Output directories.
-foreach(type LIBRARY RUNTIME ARCHIVE)
-  if(NOT CMAKE_${type}_OUTPUT_DIRECTORY)
-    set(CMAKE_${type}_OUTPUT_DIRECTORY ${${PROJECT_NAME}_BINARY_DIR}/bin CACHE INTERNAL "Single output directory for building all libraries.")
-  endif()
-endforeach()
-
-#-----------------------------------------------------------------------------
 # CTKAppLauncher version number.
 #
 set(CTKAppLauncher_MAJOR_VERSION 0)
@@ -70,11 +62,27 @@ message(STATUS "CTKAppLauncher version: ${CTKAppLauncher_VERSION}")
 #-----------------------------------------------------------------------------
 # Install directories, used for install rules.
 #
-set(CTK_INSTALL_BIN_DIR "bin")
-set(CTK_INSTALL_LIB_DIR "lib")
-set(CTK_INSTALL_INCLUDE_DIR "include")
-set(CTK_INSTALL_DOC_DIR "doc")
-set(CTK_INSTALL_CONFIG_DIR "CMake")
+
+macro(_set_if_not_defined varname value)
+  if(NOT DEFINED ${varname})
+    set(${varname} ${value})
+  endif()
+endmacro()
+
+_set_if_not_defined(CTK_INSTALL_BIN_DIR "bin")
+_set_if_not_defined(CTK_INSTALL_LIB_DIR "lib")
+_set_if_not_defined(CTK_INSTALL_INCLUDE_DIR "include")
+_set_if_not_defined(CTK_INSTALL_DOC_DIR "doc")
+_set_if_not_defined(CTK_INSTALL_CONFIG_DIR ".")
+_set_if_not_defined(CTK_INSTALL_CMAKE_DIR "CMake")
+
+#-----------------------------------------------------------------------------
+# Output directories.
+foreach(type LIBRARY RUNTIME ARCHIVE)
+  if(NOT CMAKE_${type}_OUTPUT_DIRECTORY)
+    set(CMAKE_${type}_OUTPUT_DIRECTORY ${${PROJECT_NAME}_BINARY_DIR}/${CTK_INSTALL_BIN_DIR} CACHE INTERNAL "Single output directory for building all libraries.")
+  endif()
+endforeach()
 
 #-----------------------------------------------------------------------------
 # Global settings
@@ -316,23 +324,24 @@ add_subdirectory(Docs)
 # Copy CMake scripts to build directory
 set(srcDistributables)
 macro(ctkCopyDistributable FILE DESTINATION)
+  get_filename_component(_filename ${FILE} NAME)
   add_custom_command(
-    OUTPUT ${DESTINATION}/${FILE}
+    OUTPUT ${DESTINATION}/${_filename}
     DEPENDS ${${PROJECT_NAME}_SOURCE_DIR}/${FILE}
     COMMAND ${CMAKE_COMMAND} -E make_directory ${DESTINATION}
     COMMAND ${CMAKE_COMMAND} -E copy
       ${${PROJECT_NAME}_SOURCE_DIR}/${FILE}
-      ${DESTINATION}/${FILE}
+      ${DESTINATION}/${_filename}
     WORKING_DIRECTORY
       ${${PROJECT_NAME}_SOURCE_DIR}
-    COMMENT "Copying ${FILE} to build directory"
+    COMMENT "Copying ${_filename} to build directory"
     )
-  list(APPEND srcDistributables ${DESTINATION}/${FILE})
+  list(APPEND srcDistributables ${DESTINATION}/${_filename})
 endmacro()
 
-ctkCopyDistributable(CMake/ctkAppLauncher.cmake ${${PROJECT_NAME}_BINARY_DIR})
-ctkCopyDistributable(CMake/ctkAppLauncher-configure.cmake ${${PROJECT_NAME}_BINARY_DIR})
-ctkCopyDistributable(CTKAppLauncherSettings.ini.in ${${PROJECT_NAME}_BINARY_DIR}/bin)
+ctkCopyDistributable(CMake/ctkAppLauncher.cmake ${${PROJECT_NAME}_BINARY_DIR}/${CTK_INSTALL_CMAKE_DIR})
+ctkCopyDistributable(CMake/ctkAppLauncher-configure.cmake ${${PROJECT_NAME}_BINARY_DIR}/${CTK_INSTALL_CMAKE_DIR})
+ctkCopyDistributable(CTKAppLauncherSettings.ini.in ${${PROJECT_NAME}_BINARY_DIR}/${CTK_INSTALL_BIN_DIR})
 add_custom_target(copyDistributables ALL DEPENDS ${srcDistributables})
 
 # Install rules
@@ -344,11 +353,15 @@ install(TARGETS ${targets_to_install}
 install(FILES
   CMake/ctkAppLauncher.cmake
   CMake/ctkAppLauncher-configure.cmake
-  DESTINATION CMake COMPONENT Development)
+  DESTINATION ${CTK_INSTALL_CMAKE_DIR} COMPONENT Development)
 
 install(FILES
   CTKAppLauncherSettings.ini.in
   DESTINATION ${CTK_INSTALL_BIN_DIR} COMPONENT Development)
+
+#-----------------------------------------------------------------------------
+# Configure CTKAppLauncherLibConfig
+#
 
 # Retrieve CTKAppLauncherLib used to configure 'CTKAppLauncherLibConfig.cmake' and
 # 'CTKAppLauncherLibTargets.cmake'.
@@ -359,44 +372,98 @@ set(CTKAppLauncherLib_QT_VERSION_CONFIG "${CTKAppLauncher_QT_VERSION}")
 
 # Configure 'CTKAppLauncherLibConfig.cmake' for a build tree
 include(CMakePackageConfigHelpers)
+set(CMAKE_DIR_CONFIG ${PROJECT_BINARY_DIR}/${CTK_INSTALL_CMAKE_DIR})
 set(CONFIG_DIR_CONFIG ${PROJECT_BINARY_DIR})
-set(launcher_config ${PROJECT_BINARY_DIR}/CTKAppLauncherLibConfig.cmake)
+set(launcherlib_config ${PROJECT_BINARY_DIR}/CTKAppLauncherLibConfig.cmake)
 configure_package_config_file(
     CMake/CTKAppLauncherLibConfig.cmake.in
-    ${launcher_config}
+    ${launcherlib_config}
     INSTALL_DESTINATION ${PROJECT_BINARY_DIR}
-    PATH_VARS CONFIG_DIR_CONFIG
+    PATH_VARS CMAKE_DIR_CONFIG CONFIG_DIR_CONFIG
     NO_CHECK_REQUIRED_COMPONENTS_MACRO
 )
 
 # Configure 'CTKAppLauncherLibConfig.cmake' for a install tree
+set(CMAKE_DIR_CONFIG ${CTK_INSTALL_CMAKE_DIR})
 set(CONFIG_DIR_CONFIG ${CTK_INSTALL_CONFIG_DIR})
-set(launcher_install_config ${PROJECT_BINARY_DIR}/CMakeFiles/CTKAppLauncherLibConfig.cmake)
+set(launcherlib_install_config ${PROJECT_BINARY_DIR}/CMakeFiles/CTKAppLauncherLibConfig.cmake)
 configure_package_config_file(
     CMake/CTKAppLauncherLibConfig.cmake.in
-    ${launcher_install_config}
+    ${launcherlib_install_config}
     INSTALL_DESTINATION ${CMAKE_INSTALL_PREFIX}/${CONFIG_DIR_CONFIG}
-    PATH_VARS CONFIG_DIR_CONFIG
+    PATH_VARS CMAKE_DIR_CONFIG CONFIG_DIR_CONFIG
     NO_CHECK_REQUIRED_COMPONENTS_MACRO
     )
 
 # Configure 'CTKAppLauncherLibTargets.cmake'
-export(TARGETS ${CTKAppLauncherLib_TARGETS} FILE ${PROJECT_BINARY_DIR}/CTKAppLauncherLibTargets.cmake)
+export(TARGETS ${CTKAppLauncherLib_TARGETS} FILE ${PROJECT_BINARY_DIR}/${CTK_INSTALL_CMAKE_DIR}/CTKAppLauncherLibTargets.cmake)
 
-# Install 'CTKAppLauncherLibConfig.cmake'
+if(CTKAppLauncher_INSTALL_LauncherLibrary)
+  # Install 'CTKAppLauncherLibConfig.cmake'
+  install(
+    FILES ${launcherlib_install_config}
+    DESTINATION ${CTK_INSTALL_CONFIG_DIR} COMPONENT Development
+    )
+
+  # Install 'CTKAppLauncherLibTargets.cmake'
+  install(EXPORT CTKAppLauncherLibTargets
+    FILE CTKAppLauncherLibTargets.cmake
+    DESTINATION ${CTK_INSTALL_CMAKE_DIR}
+    COMPONENT Development
+  )
+endif()
+
+#-----------------------------------------------------------------------------
+# Configure CTKAppLauncherConfig
+#
+
+# Configure 'CTKAppLauncherConfig.cmake' for a build tree
+set(BIN_DIR_CONFIG ${PROJECT_BINARY_DIR}/${CTK_INSTALL_BIN_DIR})
+set(CMAKE_DIR_CONFIG ${PROJECT_BINARY_DIR}/${CTK_INSTALL_CMAKE_DIR})
+set(CONFIG_DIR_CONFIG ${PROJECT_BINARY_DIR})
+set(SETTINGS_TEMPLATE_CONFIG "${PROJECT_BINARY_DIR}/${CTK_INSTALL_BIN_DIR}/CTKAppLauncherSettings.ini.in")
+set(_additional_paths)
+if(DEFINED CMAKE_CONFIGURATION_TYPES)
+  foreach(type IN LISTS CMAKE_CONFIGURATION_TYPES)
+    list(APPEND _additional_paths ${BIN_DIR_CONFIG}/${type})
+  endforeach()
+endif()
+set(CTKAppLauncher_CONFIG_CODE "####### Expanded from \@CTKAppLauncher_CONFIG_CODE\@ #######\n")
+set(CTKAppLauncher_CONFIG_CODE "${CTKAppLauncher_CONFIG_CODE}set(CTKAppLauncher_BIN_ADDITIONAL_PATHS \"${_additional_paths}\")\n")
+set(CTKAppLauncher_CONFIG_CODE "${CTKAppLauncher_CONFIG_CODE}##################################################")
+set(launcher_config ${PROJECT_BINARY_DIR}/CTKAppLauncherConfig.cmake)
+configure_package_config_file(
+    CMake/CTKAppLauncherConfig.cmake.in
+    ${launcher_config}
+    INSTALL_DESTINATION ${PROJECT_BINARY_DIR}
+    PATH_VARS BIN_DIR_CONFIG CMAKE_DIR_CONFIG CONFIG_DIR_CONFIG SETTINGS_TEMPLATE_CONFIG
+    NO_CHECK_REQUIRED_COMPONENTS_MACRO
+)
+
+# Configure 'CTKAppLauncherConfig.cmake' for an install tree
+set(BIN_DIR_CONFIG ${CTK_INSTALL_BIN_DIR})
+set(CMAKE_DIR_CONFIG ${CTK_INSTALL_CMAKE_DIR})
+set(CONFIG_DIR_CONFIG ${CTK_INSTALL_CONFIG_DIR})
+set(SETTINGS_TEMPLATE_CONFIG "${CTK_INSTALL_BIN_DIR}/CTKAppLauncherSettings.ini.in")
+set(CTKAppLauncher_CONFIG_CODE "####### Expanded from \@CTKAppLauncher_CONFIG_CODE\@ #######\n")
+set(CTKAppLauncher_CONFIG_CODE "${CTKAppLauncher_CONFIG_CODE}set(CTKAppLauncher_BIN_ADDITIONAL_PATHS \"\")\n")
+set(CTKAppLauncher_CONFIG_CODE "${CTKAppLauncher_CONFIG_CODE}##################################################")
+set(launcher_install_config ${PROJECT_BINARY_DIR}/CMakeFiles/CTKAppLauncherConfig.cmake)
+configure_package_config_file(
+    CMake/CTKAppLauncherConfig.cmake.in
+    ${launcher_install_config}
+    INSTALL_DESTINATION ${CMAKE_INSTALL_PREFIX}/${CONFIG_DIR_CONFIG}
+    PATH_VARS BIN_DIR_CONFIG CMAKE_DIR_CONFIG CONFIG_DIR_CONFIG SETTINGS_TEMPLATE_CONFIG
+    NO_CHECK_REQUIRED_COMPONENTS_MACRO
+    )
+
+# Install 'CTKAppLauncherConfig.cmake'
 install(
   FILES ${launcher_install_config}
   DESTINATION ${CTK_INSTALL_CONFIG_DIR} COMPONENT Development
   )
 
-if(CTKAppLauncher_INSTALL_LauncherLibrary)
-  # Install 'CTKAppLauncherLibTargets.cmake'
-  install(EXPORT CTKAppLauncherLibTargets
-    FILE CTKAppLauncherLibTargets.cmake
-    DESTINATION ${CTK_INSTALL_CONFIG_DIR}
-    COMPONENT Development
-  )
-endif()
-
+#-----------------------------------------------------------------------------
 # Setup CPack
+#
 include(CTKAppLauncherCPack.cmake)
