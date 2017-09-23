@@ -453,7 +453,9 @@ function(ctkAppLauncherConfigure)
   endif()
   set(comment "Creating application launcher: ${CTKAPPLAUNCHER_APPLICATION_NAME}${extra_message}")
 
-  set(configured_launcher_executable ${CTKAPPLAUNCHER_DESTINATION_DIR}/${CTKAPPLAUNCHER_APPLICATION_NAME}${CMAKE_EXECUTABLE_SUFFIX})
+  set(configured_launcher_executable
+    ${CTKAPPLAUNCHER_DESTINATION_DIR}/${CTKAPPLAUNCHER_APPLICATION_NAME}${CMAKE_EXECUTABLE_SUFFIX}
+    )
 
   # Create command to copy launcher executable into the build tree
   add_custom_command(
@@ -475,6 +477,14 @@ function(ctkAppLauncherConfigure)
   endif()
   set(comment "Configuring application launcher: ${CTKAPPLAUNCHER_APPLICATION_NAME}${extra_message}")
 
+  # Settings
+  set(configured_launcher_settings
+    ${CTKAPPLAUNCHER_DESTINATION_DIR}/${CTKAPPLAUNCHER_APPLICATION_NAME}LauncherSettings.ini
+    )
+  set(configured_launcher_settings_to_install
+    ${CTKAPPLAUNCHER_DESTINATION_DIR}/${CTKAPPLAUNCHER_APPLICATION_NAME}LauncherSettingsToInstall.ini
+    )
+
   # Create command to generate the launcher configuration files
   add_custom_command(
     DEPENDS
@@ -482,8 +492,8 @@ function(ctkAppLauncherConfigure)
       ${BUILD_SETTINGS_CONFIGURATION_FILEPATH}
       ${INSTALL_SETTINGS_CONFIGURATION_FILEPATH}
     OUTPUT
-      ${CTKAPPLAUNCHER_DESTINATION_DIR}/${CTKAPPLAUNCHER_APPLICATION_NAME}LauncherSettings.ini
-      ${CTKAPPLAUNCHER_DESTINATION_DIR}/${CTKAPPLAUNCHER_APPLICATION_NAME}LauncherSettingsToInstall.ini
+      ${configured_launcher_settings}
+      ${configured_launcher_settings_to_install}
     COMMAND ${CMAKE_COMMAND}
       -DBUILD_SETTINGS_CONFIGURATION_FILEPATH:FILEPATH=${BUILD_SETTINGS_CONFIGURATION_FILEPATH}
       -DINSTALL_SETTINGS_CONFIGURATION_FILEPATH:FILEPATH=${INSTALL_SETTINGS_CONFIGURATION_FILEPATH}
@@ -497,8 +507,8 @@ function(ctkAppLauncherConfigure)
   add_custom_target(${CTKAPPLAUNCHER_APPLICATION_NAME}ConfigureLauncher ALL
     DEPENDS
       ${configured_launcher_executable}
-      ${CTKAPPLAUNCHER_DESTINATION_DIR}/${CTKAPPLAUNCHER_APPLICATION_NAME}LauncherSettings.ini
-      ${CTKAPPLAUNCHER_DESTINATION_DIR}/${CTKAPPLAUNCHER_APPLICATION_NAME}LauncherSettingsToInstall.ini
+      ${configured_launcher_settings}
+      ${configured_launcher_settings_to_install}
     )
   add_dependencies(${CTKAPPLAUNCHER_APPLICATION_NAME}ConfigureLauncher ${CTKAPPLAUNCHER_TARGET})
 
