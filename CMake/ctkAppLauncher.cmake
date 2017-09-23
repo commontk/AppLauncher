@@ -197,7 +197,6 @@ function(_generate_settings VARIABLE_SUFFIX SETTINGS_TYPE SETTING_FILEPATH_VAR)
 
   # Common settings
   set(COMMON_SETTING_VARS
-    CTKAPPLAUNCHER_EXECUTABLE
     CTKAPPLAUNCHER_SETTINGS_TEMPLATE
     CTKAPPLAUNCHER_APPLICATION_NAME
     CTKAPPLAUNCHER_APPLICATION_REVISION
@@ -341,10 +340,9 @@ function(ctkAppLauncherConfigure)
   endif()
 
   set(CTKAPPLAUNCHER_SETTINGS_TEMPLATE ${CTKAppLauncher_SETTINGS_TEMPLATE})
-  set(CTKAPPLAUNCHER_EXECUTABLE ${CTKAppLauncher_EXECUTABLE})
 
   # Sanity checks - Are mandatory variable defined
-  foreach(varname EXECUTABLE APPLICATION_NAME TARGET SETTINGS_TEMPLATE DESTINATION_DIR)
+  foreach(varname APPLICATION_NAME TARGET SETTINGS_TEMPLATE DESTINATION_DIR)
     if(NOT DEFINED CTKAPPLAUNCHER_${varname})
       message(FATAL_ERROR "${varname} is mandatory")
     endif()
@@ -356,7 +354,7 @@ function(ctkAppLauncherConfigure)
   endif()
 
   # Sanity checks - Do files/directories exist ?
-  foreach(varname EXECUTABLE SETTINGS_TEMPLATE DESTINATION_DIR)
+  foreach(varname SETTINGS_TEMPLATE DESTINATION_DIR)
     if(NOT EXISTS ${CTKAPPLAUNCHER_${varname}})
       message(FATAL_ERROR "${varname} [${CTKAPPLAUNCHER_${varname}}] doesn't seem to exist !")
     endif()
@@ -455,11 +453,11 @@ function(ctkAppLauncherConfigure)
   # Create command to copy launcher executable into the build tree
   add_custom_command(
     DEPENDS
-      ${CTKAPPLAUNCHER_EXECUTABLE}
+      ${CTKAppLauncher_EXECUTABLE}
     OUTPUT
       ${CTKAPPLAUNCHER_DESTINATION_DIR}/${CTKAPPLAUNCHER_APPLICATION_NAME}${CMAKE_EXECUTABLE_SUFFIX}
     COMMAND ${CMAKE_COMMAND} -E copy
-      ${CTKAPPLAUNCHER_EXECUTABLE}
+      ${CTKAppLauncher_EXECUTABLE}
       ${CTKAPPLAUNCHER_DESTINATION_DIR}/${CTKAPPLAUNCHER_APPLICATION_NAME}${CMAKE_EXECUTABLE_SUFFIX}
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
     COMMENT ${comment}

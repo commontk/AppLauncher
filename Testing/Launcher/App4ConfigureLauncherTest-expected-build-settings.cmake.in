@@ -1,5 +1,4 @@
 # Common settings
-set(CTKAPPLAUNCHER_EXECUTABLE "@ctkapplauncher_dir@/bin/@ctkapplauncher_name@")
 set(CTKAPPLAUNCHER_SETTINGS_TEMPLATE "@ctkapplauncher_dir@/bin/CTKAppLauncherSettings.ini.in")
 set(CTKAPPLAUNCHER_APPLICATION_NAME "App4ConfigureLauncherTest")
 set(CTKAPPLAUNCHER_APPLICATION_REVISION "0.1")
