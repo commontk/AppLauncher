@@ -1,4 +1,17 @@
 
+# Add 'CMake script' Tests
+function(applauncher_add_cmakescript_test testname script)
+  add_test(cmake_${testname} ${CMAKE_COMMAND}
+    -DTEST_${testname}:BOOL=ON
+    -P ${CTKAppLauncher_SOURCE_DIR}/CMake/${script}.cmake)
+  set_tests_properties(cmake_${testname} PROPERTIES
+    LABELS ctkAppLauncher
+    PASS_REGULAR_EXPRESSION "SUCCESS")
+endfunction()
+applauncher_add_cmakescript_test(ctkAppLauncherListToQtSettingsArrayTest ctkAppLauncher)
+applauncher_add_cmakescript_test(ctkAppLauncherAppendExtraAppToLaunchToListTest ctkAppLauncher)
+applauncher_add_cmakescript_test(ctkAppLauncherExtraAppToLaunchListToQtSettingsTest ctkAppLauncher)
+
 # Run tests against a build tree of CTKAppLauncher
 set(TEST_TREE_TYPE "BuildTree")
 set(LAUNCHER_BUILD_DIR ${CTKAppLauncher_BINARY_DIR})
