@@ -10,19 +10,15 @@
 #
 # The different parameters are:
 #
-#    TARGET_NAME ...............:
+#    TARGET_SUBDIR
 #
-#    TARGET_SUBDIR .............:
+#    BUILD_SETTINGS_FILEPATH
 #
-#    CMAKE_EXECUTABLE_SUFFIX ...:
-#
-#    BUILD_SETTINGS_FILEPATH ...:
-#
-#    INSTALL_SETTINGS_FILEPATH .:
+#    INSTALL_SETTINGS_FILEPATH
 #
 
 # Check for non-defined var
-foreach(var TARGET_NAME TARGET_SUBDIR CMAKE_EXECUTABLE_SUFFIX BUILD_SETTINGS_FILEPATH INSTALL_SETTINGS_FILEPATH)
+foreach(var TARGET_SUBDIR BUILD_SETTINGS_FILEPATH INSTALL_SETTINGS_FILEPATH)
   if(NOT DEFINED ${var})
     message(FATAL_ERROR "${var} not specified when calling ctkAppLauncher-configure.cmake")
   endif()
@@ -34,13 +30,6 @@ macro(_replace_cfg_intdir_in_settings settings_filepath updated_settings_filepat
   string(REPLACE "<CMAKE_CFG_INTDIR>" "${TARGET_SUBDIR}" tmp_var ${tmp_var})
   file(WRITE ${updated_settings_filepath} ${tmp_var})
 endmacro()
-
-#-----------------------------------------------------------------------------
-# Settings common to build and install tree
-#-----------------------------------------------------------------------------
-
-set(CTKAPPLAUNCHER_APPLICATION_EXECUTABLE_NAME ${TARGET_NAME}${CMAKE_EXECUTABLE_SUFFIX})
-
 
 #-----------------------------------------------------------------------------
 # Settings specific to the build tree.
