@@ -41,8 +41,6 @@ endmacro()
 
 set(CTKAPPLAUNCHER_APPLICATION_EXECUTABLE_NAME ${TARGET_NAME}${CMAKE_EXECUTABLE_SUFFIX})
 
-_replace_cfg_intdir_in_settings("common")
-
 
 #-----------------------------------------------------------------------------
 # Settings specific to the build tree.
