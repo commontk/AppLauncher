@@ -16,9 +16,4 @@ find_program(CTKAppLauncher_EXECUTABLE
   DOC "CTK AppLauncher command line executable"
   )
 
-if(CTKAppLauncher_EXECUTABLE AND NOT TARGET ctk::CTKAppLauncher)
-  add_executable(ctk::CTKAppLauncher IMPORTED)
-  set_property(TARGET ctk::CTKAppLauncher PROPERTY IMPORTED_LOCATION ${CTKAppLauncher_EXECUTABLE})
-endif()
-
 include(${CTKAppLauncher_CMAKE_DIR}/ctkAppLauncher.cmake)

@@ -218,3 +218,17 @@ foreach(test IN ITEMS
     )
   set_property(TEST "${TEST_TREE_TYPE}_${test}" APPEND PROPERTY LABELS "CompilerRequired")
 endforeach()
+
+# Test "find_package(CTKAppLauncher)" can be used in script mode
+set(script "AppLauncher-ScriptMode-FindPackage")
+set(testname "${TEST_TREE_TYPE}_${script}")
+add_test(
+  NAME ${testname}
+  COMMAND ${CMAKE_COMMAND}
+    -DCTKAppLauncher_DIR:PATH=${LAUNCHER_DIR}
+    -P ${CMAKE_CURRENT_SOURCE_DIR}/${script}.cmake
+  )
+set_tests_properties(${testname} PROPERTIES LABELS ctkAppLauncher)
+if(TEST_TREE_TYPE STREQUAL "InstallTree")
+  set_tests_properties(${testname} PROPERTIES DEPENDS "${TEST_TREE_TYPE}_AppLauncher-Install")
+endif()
