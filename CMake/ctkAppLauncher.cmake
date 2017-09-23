@@ -191,7 +191,9 @@ endfunction()
 #
 #   SETTINGS_TYPE .......: build or install
 #
-function(_generate_settings VARIABLE_SUFFIX SETTINGS_TYPE)
+#   SETTING_FILEPATH_VAR .: Variable set to the name of the generate file
+#
+function(_generate_settings VARIABLE_SUFFIX SETTINGS_TYPE SETTING_FILEPATH_VAR)
 
   # Common settings
   set(COMMON_SETTING_VARS
@@ -261,11 +263,15 @@ ${CTKAPPLAUNCHER_ADDITIONAL_PATHS_${envvar}}")
     set(CMAKE_CONFIGURABLE_FILE_CONTENT "${CMAKE_CONFIGURABLE_FILE_CONTENT}
 set(CTKAPPLAUNCHER_ADDITIONAL_PATHS \"${CTKAPPLAUNCHER_ADDITIONAL_PATHS}\")")
 
+  set(setting_file "${CMAKE_CURRENT_BINARY_DIR}/CTKAppLauncher-${CTKAPPLAUNCHER_TARGET_OUTPUT_NAME}-${SETTINGS_TYPE}-settings.cmake")
+
   # Let's dump settings specific to this config into a file.
   configure_file(
     "${CMAKE_ROOT}/Modules/CMakeConfigurableFile.in"
-    "${CMAKE_CURRENT_BINARY_DIR}/CTKAppLauncher-${CTKAPPLAUNCHER_TARGET_OUTPUT_NAME}-${SETTINGS_TYPE}-settings.cmake"
+    "${setting_file}"
     )
+
+  set(${SETTING_FILEPATH_VAR} ${setting_file} PARENT_SCOPE)
 endfunction()
 
 #
@@ -418,7 +424,7 @@ function(ctkAppLauncherConfigure)
     endif()
   endif()
 
-  _generate_settings("BUILD" "build")
+  _generate_settings("BUILD" "build" "BUILD_SETTINGS_FILEPATH")
 
   #-----------------------------------------------------------------------------
   # Settings specific to the install tree.
@@ -434,7 +440,7 @@ function(ctkAppLauncherConfigure)
   endif()
   set(CTKAPPLAUNCHER_APPLICATION_SUBDIR "<APPLAUNCHER_DIR>/${CTKAPPLAUNCHER_APPLICATION_SUBDIR}")
 
-  _generate_settings("INSTALLED" "install")
+  _generate_settings("INSTALLED" "install" "INSTALL_SETTINGS_FILEPATH")
 
   #-----------------------------------------------------------------------------
   # Custom targets to copy laucher and generate settings files
@@ -470,12 +476,14 @@ function(ctkAppLauncherConfigure)
   add_custom_command(
     DEPENDS
       ${CTKAppLauncher_DIR}/${CTK_INSTALL_CMAKE_DIR}/ctkAppLauncher-configure.cmake
-      ${CMAKE_CURRENT_BINARY_DIR}/CTKAppLauncher-${CTKAPPLAUNCHER_TARGET_OUTPUT_NAME}-build-settings.cmake
-      ${CMAKE_CURRENT_BINARY_DIR}/CTKAppLauncher-${CTKAPPLAUNCHER_TARGET_OUTPUT_NAME}-install-settings.cmake
+      ${BUILD_SETTINGS_FILEPATH}
+      ${INSTALL_SETTINGS_FILEPATH}
     OUTPUT
       ${CTKAPPLAUNCHER_DESTINATION_DIR}/${CTKAPPLAUNCHER_APPLICATION_NAME}LauncherSettings.ini
       ${CTKAPPLAUNCHER_DESTINATION_DIR}/${CTKAPPLAUNCHER_APPLICATION_NAME}LauncherSettingsToInstall.ini
     COMMAND ${CMAKE_COMMAND}
+      -DBUILD_SETTINGS_FILEPATH:FILEPATH=${BUILD_SETTINGS_FILEPATH}
+      -DINSTALL_SETTINGS_FILEPATH:FILEPATH=${INSTALL_SETTINGS_FILEPATH}
       -DTARGET_NAME:STRING=${CTKAPPLAUNCHER_TARGET_OUTPUT_NAME}
       -DTARGET_SUBDIR:STRING=${CMAKE_CFG_INTDIR}
       -DCMAKE_EXECUTABLE_SUFFIX:STRING=${CMAKE_EXECUTABLE_SUFFIX}
