@@ -45,7 +45,7 @@ include(${settings_file}_updated.cmake)
 #-----------------------------------------------------------------------------
 
 # Replace <CMAKE_CFG_INTDIR> with the appropriate value
-set(settings_file CTKAppLauncher-${TARGET_NAME}-buildtree-settings)
+set(settings_file CTKAppLauncher-${TARGET_NAME}-build-settings)
 
 file(READ ${settings_file}.cmake tmp_var)
 string(REPLACE "<CMAKE_CFG_INTDIR>" "${TARGET_SUBDIR}" tmp_var ${tmp_var})
@@ -65,7 +65,7 @@ configure_file(
 # Settings specific to the install tree.
 #-----------------------------------------------------------------------------
 
-set(settings_file CTKAppLauncher-${TARGET_NAME}-installtree-settings)
+set(settings_file CTKAppLauncher-${TARGET_NAME}-install-settings)
 
 file(READ ${settings_file}.cmake tmp_var)
 string(REPLACE "<CMAKE_CFG_INTDIR>" "${TARGET_SUBDIR}" tmp_var ${tmp_var})

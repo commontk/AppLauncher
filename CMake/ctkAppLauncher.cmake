@@ -405,7 +405,7 @@ set(CTKAPPLAUNCHER_ADDITIONAL_PATHS \"${CTKAPPLAUNCHER_ADDITIONAL_PATHS}\")")
 
   # Let's dump settings specific to build config into a file.
   configure_file("${CMAKE_ROOT}/Modules/CMakeConfigurableFile.in"
-    "${CMAKE_CURRENT_BINARY_DIR}/CTKAppLauncher-${CTKAPPLAUNCHER_TARGET_OUTPUT_NAME}-buildtree-settings.cmake")
+    "${CMAKE_CURRENT_BINARY_DIR}/CTKAppLauncher-${CTKAPPLAUNCHER_TARGET_OUTPUT_NAME}-build-settings.cmake")
 
   #-----------------------------------------------------------------------------
   # Settings specific to the install tree.
@@ -465,7 +465,7 @@ set(CTKAPPLAUNCHER_ADDITIONAL_PATHS \"${CTKAPPLAUNCHER_ADDITIONAL_PATHS}\")")
 
   # Let's dump settings specific to install config into a file.
   configure_file("${CMAKE_ROOT}/Modules/CMakeConfigurableFile.in"
-    "${CMAKE_CURRENT_BINARY_DIR}/CTKAppLauncher-${CTKAPPLAUNCHER_TARGET_OUTPUT_NAME}-installtree-settings.cmake")
+    "${CMAKE_CURRENT_BINARY_DIR}/CTKAppLauncher-${CTKAPPLAUNCHER_TARGET_OUTPUT_NAME}-install-settings.cmake")
 
   # Generate informational message ...
   set(extra_message)
@@ -499,8 +499,8 @@ set(CTKAPPLAUNCHER_ADDITIONAL_PATHS \"${CTKAPPLAUNCHER_ADDITIONAL_PATHS}\")")
     DEPENDS
       ${CTKAppLauncher_DIR}/${CTK_INSTALL_CMAKE_DIR}/ctkAppLauncher-configure.cmake
       ${CMAKE_CURRENT_BINARY_DIR}/CTKAppLauncher-${CTKAPPLAUNCHER_TARGET_OUTPUT_NAME}-common-settings.cmake
-      ${CMAKE_CURRENT_BINARY_DIR}/CTKAppLauncher-${CTKAPPLAUNCHER_TARGET_OUTPUT_NAME}-buildtree-settings.cmake
-      ${CMAKE_CURRENT_BINARY_DIR}/CTKAppLauncher-${CTKAPPLAUNCHER_TARGET_OUTPUT_NAME}-installtree-settings.cmake
+      ${CMAKE_CURRENT_BINARY_DIR}/CTKAppLauncher-${CTKAPPLAUNCHER_TARGET_OUTPUT_NAME}-build-settings.cmake
+      ${CMAKE_CURRENT_BINARY_DIR}/CTKAppLauncher-${CTKAPPLAUNCHER_TARGET_OUTPUT_NAME}-install-settings.cmake
     OUTPUT
       ${CTKAPPLAUNCHER_DESTINATION_DIR}/${CTKAPPLAUNCHER_APPLICATION_NAME}LauncherSettings.ini
       ${CTKAPPLAUNCHER_DESTINATION_DIR}/${CTKAPPLAUNCHER_APPLICATION_NAME}LauncherSettingsToInstall.ini
