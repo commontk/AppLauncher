@@ -78,8 +78,7 @@
 #    NOSPLASH_ARGS [optional]
 #
 
-# By requiring version 2.8, we also make sure CMP0007 is set to NEW
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 3.0)
 
 #
 # Helper macro used internally - See http://www.cmake.org/Wiki/CMakeMacroParseArguments
