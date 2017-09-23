@@ -10,15 +10,19 @@
 #
 # The different parameters are:
 #
+#    BUILD_SETTINGS_CONFIGURATION_FILEPATH
+#
+#    INSTALL_SETTINGS_CONFIGURATION_FILEPATH
+#
 #    TARGET_SUBDIR
-#
-#    BUILD_SETTINGS_FILEPATH
-#
-#    INSTALL_SETTINGS_FILEPATH
 #
 
 # Check for non-defined var
-foreach(var TARGET_SUBDIR BUILD_SETTINGS_FILEPATH INSTALL_SETTINGS_FILEPATH)
+foreach(var
+    BUILD_SETTINGS_CONFIGURATION_FILEPATH
+    INSTALL_SETTINGS_CONFIGURATION_FILEPATH
+    TARGET_SUBDIR
+    )
   if(NOT DEFINED ${var})
     message(FATAL_ERROR "${var} not specified when calling ctkAppLauncher-configure.cmake")
   endif()
@@ -35,14 +39,14 @@ endmacro()
 # Settings specific to the build tree.
 #-----------------------------------------------------------------------------
 
-set(BUILD_SETTINGS_FILEPATH_UPDATED ${BUILD_SETTINGS_FILEPATH}.updated)
+set(updated_config_filepath ${BUILD_SETTINGS_CONFIGURATION_FILEPATH}.updated)
 
 _replace_cfg_intdir_in_settings(
-  ${BUILD_SETTINGS_FILEPATH}
-  ${BUILD_SETTINGS_FILEPATH_UPDATED}
+  ${BUILD_SETTINGS_CONFIGURATION_FILEPATH}
+  ${updated_config_filepath}
   )
 
-include(${BUILD_SETTINGS_FILEPATH_UPDATED})
+include(${updated_config_filepath})
 
 set(CTKAPPLAUNCHER_APPLICATION_SUBDIR "${CTKAPPLAUNCHER_APPLICATION_SUBDIR}${TARGET_SUBDIR}/")
 configure_file(
@@ -56,14 +60,14 @@ configure_file(
 # Settings specific to the install tree.
 #-----------------------------------------------------------------------------
 
-set(INSTALL_SETTINGS_FILEPATH_UPDATED ${INSTALL_SETTINGS_FILEPATH}.updated)
+set(updated_config_filepath ${INSTALL_SETTINGS_CONFIGURATION_FILEPATH}.updated)
 
 _replace_cfg_intdir_in_settings(
-  ${INSTALL_SETTINGS_FILEPATH}
-  ${INSTALL_SETTINGS_FILEPATH_UPDATED}
+  ${INSTALL_SETTINGS_CONFIGURATION_FILEPATH}
+  ${updated_config_filepath}
   )
 
-include(${INSTALL_SETTINGS_FILEPATH_UPDATED})
+include(${updated_config_filepath})
 
 configure_file(
   ${CTKAPPLAUNCHER_SETTINGS_TEMPLATE}
