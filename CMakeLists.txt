@@ -62,11 +62,18 @@ message(STATUS "CTKAppLauncher version: ${CTKAppLauncher_VERSION}")
 #-----------------------------------------------------------------------------
 # Install directories, used for install rules.
 #
-set(CTK_INSTALL_BIN_DIR "bin")
-set(CTK_INSTALL_LIB_DIR "lib")
-set(CTK_INSTALL_INCLUDE_DIR "include")
-set(CTK_INSTALL_DOC_DIR "doc")
-set(CTK_INSTALL_CONFIG_DIR "CMake")
+
+macro(_set_if_not_defined varname value)
+  if(NOT DEFINED ${varname})
+    set(${varname} ${value})
+  endif()
+endmacro()
+
+_set_if_not_defined(CTK_INSTALL_BIN_DIR "bin")
+_set_if_not_defined(CTK_INSTALL_LIB_DIR "lib")
+_set_if_not_defined(CTK_INSTALL_INCLUDE_DIR "include")
+_set_if_not_defined(CTK_INSTALL_DOC_DIR "doc")
+_set_if_not_defined(CTK_INSTALL_CONFIG_DIR "CMake")
 
 #-----------------------------------------------------------------------------
 # Output directories.
