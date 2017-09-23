@@ -38,14 +38,6 @@ if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
 endif()
 
 #-----------------------------------------------------------------------------
-# Output directories.
-foreach(type LIBRARY RUNTIME ARCHIVE)
-  if(NOT CMAKE_${type}_OUTPUT_DIRECTORY)
-    set(CMAKE_${type}_OUTPUT_DIRECTORY ${${PROJECT_NAME}_BINARY_DIR}/bin CACHE INTERNAL "Single output directory for building all libraries.")
-  endif()
-endforeach()
-
-#-----------------------------------------------------------------------------
 # CTKAppLauncher version number.
 #
 set(CTKAppLauncher_MAJOR_VERSION 0)
@@ -75,6 +67,14 @@ set(CTK_INSTALL_LIB_DIR "lib")
 set(CTK_INSTALL_INCLUDE_DIR "include")
 set(CTK_INSTALL_DOC_DIR "doc")
 set(CTK_INSTALL_CONFIG_DIR "CMake")
+
+#-----------------------------------------------------------------------------
+# Output directories.
+foreach(type LIBRARY RUNTIME ARCHIVE)
+  if(NOT CMAKE_${type}_OUTPUT_DIRECTORY)
+    set(CMAKE_${type}_OUTPUT_DIRECTORY ${${PROJECT_NAME}_BINARY_DIR}/${CTK_INSTALL_BIN_DIR} CACHE INTERNAL "Single output directory for building all libraries.")
+  endif()
+endforeach()
 
 #-----------------------------------------------------------------------------
 # Global settings
@@ -332,7 +332,7 @@ endmacro()
 
 ctkCopyDistributable(CMake/ctkAppLauncher.cmake ${${PROJECT_NAME}_BINARY_DIR})
 ctkCopyDistributable(CMake/ctkAppLauncher-configure.cmake ${${PROJECT_NAME}_BINARY_DIR})
-ctkCopyDistributable(CTKAppLauncherSettings.ini.in ${${PROJECT_NAME}_BINARY_DIR}/bin)
+ctkCopyDistributable(CTKAppLauncherSettings.ini.in ${${PROJECT_NAME}_BINARY_DIR}/${CTK_INSTALL_BIN_DIR})
 add_custom_target(copyDistributables ALL DEPENDS ${srcDistributables})
 
 # Install rules
