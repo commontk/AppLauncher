@@ -450,15 +450,17 @@ function(ctkAppLauncherConfigure)
   endif()
   set(comment "Creating application launcher: ${CTKAPPLAUNCHER_APPLICATION_NAME}${extra_message}")
 
+  set(configured_launcher_executable ${CTKAPPLAUNCHER_DESTINATION_DIR}/${CTKAPPLAUNCHER_APPLICATION_NAME}${CMAKE_EXECUTABLE_SUFFIX})
+
   # Create command to copy launcher executable into the build tree
   add_custom_command(
     DEPENDS
       ${CTKAppLauncher_EXECUTABLE}
     OUTPUT
-      ${CTKAPPLAUNCHER_DESTINATION_DIR}/${CTKAPPLAUNCHER_APPLICATION_NAME}${CMAKE_EXECUTABLE_SUFFIX}
+      ${configured_launcher_executable}
     COMMAND ${CMAKE_COMMAND} -E copy
       ${CTKAppLauncher_EXECUTABLE}
-      ${CTKAPPLAUNCHER_DESTINATION_DIR}/${CTKAPPLAUNCHER_APPLICATION_NAME}${CMAKE_EXECUTABLE_SUFFIX}
+      ${configured_launcher_executable}
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
     COMMENT ${comment}
     )
@@ -493,7 +495,7 @@ function(ctkAppLauncherConfigure)
   # Create target for launcher
   add_custom_target(${CTKAPPLAUNCHER_APPLICATION_NAME}ConfigureLauncher ALL
     DEPENDS
-      ${CTKAPPLAUNCHER_DESTINATION_DIR}/${CTKAPPLAUNCHER_APPLICATION_NAME}${CMAKE_EXECUTABLE_SUFFIX}
+      ${configured_launcher_executable}
       ${CTKAPPLAUNCHER_DESTINATION_DIR}/${CTKAPPLAUNCHER_APPLICATION_NAME}LauncherSettings.ini
       ${CTKAPPLAUNCHER_DESTINATION_DIR}/${CTKAPPLAUNCHER_APPLICATION_NAME}LauncherSettingsToInstall.ini
     )
