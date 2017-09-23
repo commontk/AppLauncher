@@ -17,6 +17,7 @@ set(APP4CONFIGURELAUNCHERTEST_CMAKE_GENERATOR "${CMAKE_GENERATOR}")
 set(APP4CONFIGURELAUNCHERTEST_BUILD_TYPE "Release")
 set(APP4CONFIGURELAUNCHERTEST_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/App4ConfigureLauncherTest)
 set(APP4CONFIGURELAUNCHERTEST_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/App4ConfigureLauncherTest-build)
+set(APP4CONFIGURELAUNCHERTEST_WITH_CONFIG_FILE_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/App4ConfigureLauncherTestWithConfigFile-build)
 
 #
 # Configure Test Prerequisites
@@ -88,7 +89,7 @@ endif()
 #
 function(applauncher_add_test testname)
   set(testscript ${testname})
-  set(testname "${TEST_TREE_TYPE}_${testname}")
+  set(testname "${TEST_TREE_TYPE}_${testname}${TEST_SUFFIX}")
   add_test(NAME ${testname} COMMAND ${CMAKE_COMMAND}
     -DTEST_SOURCE_DIR:PATH=${CMAKE_CURRENT_SOURCE_DIR}
     -DTEST_BINARY_DIR:PATH=${CMAKE_CURRENT_BINARY_DIR}
@@ -193,12 +194,22 @@ if(UNIX)
   applauncher_add_test(AppLauncher-TestSymbolicLinkInPATH)
 endif()
 
-applauncher_add_test(App4ConfigureLauncherTest-ConfigureStep)
-applauncher_add_test(App4ConfigureLauncherTest-BuildStep)
+applauncher_add_test(App4ConfigureLauncherTest-ConfigureStep -DWITH_CONFIG_FILE:BOOL=0)
+applauncher_add_test(App4ConfigureLauncherTest-BuildStep -DWITH_CONFIG_FILE:BOOL=0)
 set_property(
   TEST "${TEST_TREE_TYPE}_App4ConfigureLauncherTest-BuildStep"
   APPEND PROPERTY DEPENDS "${TEST_TREE_TYPE}_App4ConfigureLauncherTest-ConfigureStep"
   )
+
+set(TEST_SUFFIX "-WithConfigFile")
+applauncher_add_test(App4ConfigureLauncherTest-ConfigureStep -DWITH_CONFIG_FILE:BOOL=1)
+applauncher_add_test(App4ConfigureLauncherTest-BuildStep -DWITH_CONFIG_FILE:BOOL=1)
+set_property(
+  TEST "${TEST_TREE_TYPE}_App4ConfigureLauncherTest-BuildStep${TEST_SUFFIX}"
+  APPEND PROPERTY DEPENDS "${TEST_TREE_TYPE}_App4ConfigureLauncherTest-ConfigureStep${TEST_SUFFIX}"
+  )
+set(TEST_SUFFIX "")
+
 applauncher_add_test(ConfiguredAppLauncher-ConfigurationContents)
 set_property(
   TEST "${TEST_TREE_TYPE}_ConfiguredAppLauncher-ConfigurationContents"

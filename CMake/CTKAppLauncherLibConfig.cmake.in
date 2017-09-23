@@ -1,7 +1,8 @@
 @PACKAGE_INIT@
 
+set_and_check(CTKAppLauncherLib_CMAKE_DIR "@PACKAGE_CMAKE_DIR_CONFIG@")
 set_and_check(CTKAppLauncherLib_CONFIG_DIR "@PACKAGE_CONFIG_DIR_CONFIG@")
-set_and_check(CTKAppLauncherLib_TARGETS "@PACKAGE_CONFIG_DIR_CONFIG@/CTKAppLauncherLibTargets.cmake")
+set_and_check(CTKAppLauncherLib_TARGETS "${CTKAppLauncherLib_CMAKE_DIR}/CTKAppLauncherLibTargets.cmake")
 
 if(NOT CTKAppLauncherLib_TARGETS_IMPORTED)
   set(CTKAppLauncherLib_TARGETS_IMPORTED 1)

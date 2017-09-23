@@ -208,17 +208,29 @@ function(ctkAppLauncherConfigure)
     ${ARGN}
     )
 
-  # If CTKAPPLAUNCHER_DIR is set, try to autodiscover the location of launcher executable and settings template file
-  if(EXISTS "${CTKAPPLAUNCHER_DIR}")
-    set(CTKAPPLAUNCHER_SEARCH_PATHS ${CTKAPPLAUNCHER_DIR}/bin)
-    foreach(type ${CTKAPPLAUNCHER_BUILD_CONFIGURATIONS})
-      list(APPEND CTKAPPLAUNCHER_SEARCH_PATHS ${CTKAPPLAUNCHER_DIR}/bin/${type})
-    endforeach()
-    unset(CTKAPPLAUNCHER_EXECUTABLE CACHE)
-    find_program(CTKAPPLAUNCHER_EXECUTABLE CTKAppLauncher PATHS ${CTKAPPLAUNCHER_SEARCH_PATHS} NO_DEFAULT_PATH)
-    unset(CTKAPPLAUNCHER_SETTINGS_TEMPLATE CACHE)
-    find_file(CTKAPPLAUNCHER_SETTINGS_TEMPLATE CTKAppLauncherSettings.ini.in PATHS ${CTKAPPLAUNCHER_DIR}/bin NO_DEFAULT_PATH)
+  # Set default values for backward compatibility
+  if(NOT CTKAppLauncher_FOUND)
+    set(CTK_INSTALL_BIN_DIR "bin")
+    set(CTK_INSTALL_CMAKE_DIR "CMake")
+    if(NOT DEFINED CTKAppLauncher_DIR AND DEFINED CTKAPPLAUNCHER_DIR)
+      set(CTKAppLauncher_DIR ${CTKAPPLAUNCHER_DIR})
+    endif()
+
+    # If CTKAppLauncher_DIR is set, try to autodiscover the location of launcher executable and settings template file
+    if(EXISTS "${CTKAppLauncher_DIR}")
+      set(CTKAPPLAUNCHER_SEARCH_PATHS ${CTKAppLauncher_DIR}/${CTK_INSTALL_BIN_DIR})
+      foreach(type ${CTKAPPLAUNCHER_BUILD_CONFIGURATIONS})
+        list(APPEND CTKAPPLAUNCHER_SEARCH_PATHS ${CTKAppLauncher_DIR}/${CTK_INSTALL_BIN_DIR}/${type})
+      endforeach()
+      unset(CTKAppLauncher_EXECUTABLE CACHE)
+      find_program(CTKAppLauncher_EXECUTABLE CTKAppLauncher PATHS ${CTKAPPLAUNCHER_SEARCH_PATHS} NO_DEFAULT_PATH)
+      unset(CTKAppLauncher_SETTINGS_TEMPLATE CACHE)
+      find_file(CTKAppLauncher_SETTINGS_TEMPLATE CTKAppLauncherSettings.ini.in PATHS ${CTKAppLauncher_DIR}/${CTK_INSTALL_BIN_DIR} NO_DEFAULT_PATH)
+    endif()
   endif()
+
+  set(CTKAPPLAUNCHER_SETTINGS_TEMPLATE ${CTKAppLauncher_SETTINGS_TEMPLATE})
+  set(CTKAPPLAUNCHER_EXECUTABLE ${CTKAppLauncher_EXECUTABLE})
 
   # Sanity checks - Are mandatory variable defined
   foreach(varname EXECUTABLE APPLICATION_NAME TARGET SETTINGS_TEMPLATE DESTINATION_DIR)
@@ -464,7 +476,7 @@ set(CTKAPPLAUNCHER_ADDITIONAL_PATHS \"${CTKAPPLAUNCHER_ADDITIONAL_PATHS}\")")
   # Create command to generate the launcher configuration files
   add_custom_command(
     DEPENDS
-      ${CTKAPPLAUNCHER_DIR}/CMake/ctkAppLauncher-configure.cmake
+      ${CTKAppLauncher_DIR}/${CTK_INSTALL_CMAKE_DIR}/ctkAppLauncher-configure.cmake
       ${CMAKE_CURRENT_BINARY_DIR}/CTKAppLauncher-${CTKAPPLAUNCHER_TARGET_OUTPUT_NAME}-common-settings.cmake
       ${CMAKE_CURRENT_BINARY_DIR}/CTKAppLauncher-${CTKAPPLAUNCHER_TARGET_OUTPUT_NAME}-buildtree-settings.cmake
       ${CMAKE_CURRENT_BINARY_DIR}/CTKAppLauncher-${CTKAPPLAUNCHER_TARGET_OUTPUT_NAME}-installtree-settings.cmake
@@ -475,7 +487,7 @@ set(CTKAPPLAUNCHER_ADDITIONAL_PATHS \"${CTKAPPLAUNCHER_ADDITIONAL_PATHS}\")")
       -DTARGET_NAME:STRING=${CTKAPPLAUNCHER_TARGET_OUTPUT_NAME}
       -DTARGET_SUBDIR:STRING=${CMAKE_CFG_INTDIR}
       -DCMAKE_EXECUTABLE_SUFFIX:STRING=${CMAKE_EXECUTABLE_SUFFIX}
-      -P ${CTKAPPLAUNCHER_DIR}/CMake/ctkAppLauncher-configure.cmake
+      -P ${CTKAppLauncher_DIR}/${CTK_INSTALL_CMAKE_DIR}/ctkAppLauncher-configure.cmake
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
     COMMENT ${comment}
     )

@@ -30,11 +30,22 @@ execute_process(
 # Debug flags - Set to True to display the command as string
 set(PRINT_COMMAND 0)
 
+if(WITH_CONFIG_FILE)
+  set(args
+    -DCTKAppLauncher_DIR:PATH=${ctkapplauncher_dir}
+    )
+else()
+  set(args
+    -DCTKAPPLAUNCHER_DIR:PATH=${ctkapplauncher_dir}
+    )
+endif()
+
 # --------------------------------------------------------------------------
 # Configure App4ConfigureLauncherTest
 set(command ${CMAKE_COMMAND}
   -DCMAKE_BUILD_TYPE:STRING=${app4configurelaunchertest_build_type}
-  -DCTKAPPLAUNCHER_DIR:PATH=${ctkapplauncher_dir}
+  ${args}
+  -DWITH_CONFIG_FILE:BOOL=${WITH_CONFIG_FILE}
   -DCTKAPPLAUNCHER_BUILD_CONFIGURATIONS:STRING=${TEST_CONFIGURATION}
   -G ${app4configurelaunchertest_cmake_generator}
   ${app4configurelaunchertest_source_dir}
