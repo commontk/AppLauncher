@@ -21,8 +21,6 @@
 #
 #  ctkAppLauncherConfigure
 #
-#    EXECUTABLE
-#
 #    APPLICATION_NAME
 #
 #    APPLICATION_REVISION [optional]
@@ -79,40 +77,7 @@
 #
 
 cmake_minimum_required(VERSION 3.0)
-
-#
-# Helper macro used internally - See http://www.cmake.org/Wiki/CMakeMacroParseArguments
-#
-macro(ctkAppLauncherMacroParseArguments prefix arg_names option_names)
-  set(DEFAULT_ARGS)
-  foreach(arg_name ${arg_names})
-    set(${prefix}_${arg_name})
-  endforeach(arg_name)
-  foreach(option ${option_names})
-    set(${prefix}_${option} FALSE)
-  endforeach(option)
-
-  set(current_arg_name DEFAULT_ARGS)
-  set(current_arg_list)
-  foreach(arg ${ARGN})
-    set(larg_names ${arg_names})
-    list(FIND larg_names "${arg}" is_arg_name)
-    if(is_arg_name GREATER -1)
-      set(${prefix}_${current_arg_name} ${current_arg_list})
-      set(current_arg_name ${arg})
-      set(current_arg_list)
-    else(is_arg_name GREATER -1)
-      set(loption_names ${option_names})
-      list(FIND loption_names "${arg}" is_option)
-      if(is_option GREATER -1)
-        set(${prefix}_${arg} TRUE)
-      else(is_option GREATER -1)
-        set(current_arg_list ${current_arg_list} ${arg})
-      endif(is_option GREATER -1)
-    endif(is_arg_name GREATER -1)
-  endforeach(arg)
-  set(${prefix}_${current_arg_name} ${current_arg_list})
-endmacro()
+include(CMakeParseArguments)
 
 #
 # ctkAppLauncherGenerateQtSettingsArray(ITEMS ITEMNAME OUTPUTVAR)
@@ -139,11 +104,25 @@ endfunction()
 #      OUTPUTVAR)
 #
 function(ctkAppLauncherAppendExtraAppToLaunchToList)
-  ctkAppLauncherMacroParseArguments(MY
-    "LONG_ARG;SHORT_ARG;HELP;PATH;ARGUMENTS;OUTPUTVAR"
-    ""
+  set(options
+    )
+  set(oneValueArgs
+    LONG_ARG
+    SHORT_ARG
+    HELP
+    PATH
+    OUTPUTVAR
+    )
+  set(multiValueArgs
+    ARGUMENTS
+    )
+  cmake_parse_arguments(MY
+    "${options}"
+    "${oneValueArgs}"
+    "${multiValueArgs}"
     ${ARGN}
     )
+
   # Sanity checks - Are mandatory variable defined
   foreach(varname LONG_ARG PATH OUTPUTVAR)
     if(NOT DEFINED MY_${varname})
@@ -164,9 +143,17 @@ endfunction()
 # ctkAppLauncherExtraAppToLaunchListToQtSettings()
 #
 function(ctkAppLauncherExtraAppToLaunchListToQtSettings)
-  ctkAppLauncherMacroParseArguments(MY
-    "LIST;OUTPUTVAR"
-    ""
+  set(options)
+  set(oneValueArgs
+    OUTPUTVAR
+    )
+  set(multiValueArgs
+    LIST
+    )
+  cmake_parse_arguments(MY
+    "${options}"
+    "${oneValueArgs}"
+    "${multiValueArgs}"
     ${ARGN}
     )
   # Sanity checks - Are mandatory variable defined
@@ -201,9 +188,44 @@ endfunction()
 # ctkAppLauncherConfigure
 #
 function(ctkAppLauncherConfigure)
-  ctkAppLauncherMacroParseArguments(CTKAPPLAUNCHER
-    "EXECUTABLE;APPLICATION_NAME;APPLICATION_REVISION;ORGANIZATION_DOMAIN;ORGANIZATION_NAME;USER_ADDITIONAL_SETTINGS_FILEBASENAME;TARGET;APPLICATION_INSTALL_SUBDIR;SETTINGS_TEMPLATE;DESTINATION_DIR;SPLASHSCREEN_HIDE_DELAY_MS;SPLASH_IMAGE_PATH;SPLASH_IMAGE_INSTALL_SUBDIR;DEFAULT_APPLICATION_ARGUMENT;EXTRA_APPLICATION_TO_LAUNCH_BUILD;EXTRA_APPLICATION_TO_LAUNCH_INSTALLED;LIBRARY_PATHS_BUILD;LIBRARY_PATHS_INSTALLED;PATHS_BUILD;PATHS_INSTALLED;ENVVARS_BUILD;ENVVARS_INSTALLED;ADDITIONAL_PATH_ENVVARS_BUILD;ADDITIONAL_PATH_ENVVARS_INSTALLED;ADDITIONAL_PATH_ENVVARS_PREFIX;HELP_SHORT_ARG;HELP_LONG_ARG;NOSPLASH_ARGS"
-    "VERBOSE_CONFIG"
+  set(options
+    VERBOSE_CONFIG
+    )
+  set(oneValueArgs
+    APPLICATION_NAME
+    APPLICATION_REVISION
+    ORGANIZATION_DOMAIN
+    ORGANIZATION_NAME
+    USER_ADDITIONAL_SETTINGS_FILEBASENAME
+    TARGET
+    APPLICATION_INSTALL_SUBDIR
+    SETTINGS_TEMPLATE
+    DESTINATION_DIR
+    SPLASHSCREEN_HIDE_DELAY_MS
+    SPLASH_IMAGE_PATH
+    SPLASH_IMAGE_INSTALL_SUBDIR
+    DEFAULT_APPLICATION_ARGUMENT
+    ADDITIONAL_PATH_ENVVARS_PREFIX
+    HELP_SHORT_ARG
+    HELP_LONG_ARG
+    )
+  set(multiValueArgs
+    EXTRA_APPLICATION_TO_LAUNCH_BUILD
+    EXTRA_APPLICATION_TO_LAUNCH_INSTALLED
+    LIBRARY_PATHS_BUILD
+    LIBRARY_PATHS_INSTALLED
+    PATHS_BUILD
+    PATHS_INSTALLED
+    ENVVARS_BUILD
+    ENVVARS_INSTALLED
+    ADDITIONAL_PATH_ENVVARS_BUILD
+    ADDITIONAL_PATH_ENVVARS_INSTALLED
+    NOSPLASH_ARGS
+    )
+  cmake_parse_arguments(CTKAPPLAUNCHER
+    "${options}"
+    "${oneValueArgs}"
+    "${multiValueArgs}"
     ${ARGN}
     )
 
