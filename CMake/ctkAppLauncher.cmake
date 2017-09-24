@@ -434,6 +434,7 @@ function(ctk_applauncher_configure)
     SPLASH_IMAGE_PATH
     SPLASH_IMAGE_INSTALL_SUBDIR
 
+    NOSPLASH_ARGS
     DEFAULT_APPLICATION_ARGUMENT
     ADDITIONAL_PATH_ENVVARS_PREFIX
     HELP_SHORT_ARG
@@ -450,7 +451,6 @@ function(ctk_applauncher_configure)
     ENVVARS_INSTALLED
     ADDITIONAL_PATH_ENVVARS_BUILD
     ADDITIONAL_PATH_ENVVARS_INSTALLED
-    NOSPLASH_ARGS
     )
   cmake_parse_arguments(CTKAPPLAUNCHER
     "${options}"
