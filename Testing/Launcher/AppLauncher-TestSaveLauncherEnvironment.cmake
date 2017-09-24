@@ -8,6 +8,9 @@ include(${TEST_BINARY_DIR}/AppLauncherTestPrerequisites.cmake)
 # Debug flags - Set to True to display the command as string
 set(PRINT_COMMAND 0)
 
+# Debug flags - Set to True to display the environment
+set(DISPLAY_ENV 0)
+
 # --------------------------------------------------------------------------
 # Define how many time the launcher should be recursively called from
 # the launched process.
@@ -113,7 +116,9 @@ function(check_env level)
   endforeach()
   message(STATUS "  -> Expect env. variables prefixed with ${extra}")
 
-  display_env()
+  if(DISPLAY_ENV)
+    display_env()
+  endif()
 
   check_value("APPLAUNCHER_LEVEL" "${level}")
 
