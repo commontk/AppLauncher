@@ -319,7 +319,9 @@ endfunction()
 function(ctkAppLauncherConfigureForTarget)
   set(options)
   set(oneValueArgs
+    # Executable target associated with the launcher
     TARGET
+    # Location of the launcher settings in the build tree
     DESTINATION_DIR
     )
   set(multiValueArgs)
@@ -418,37 +420,60 @@ function(ctk_applauncher_configure)
     )
   set(oneValueArgs
     APPLICATION_EXECUTABLE_NAME
-    DESTINATION_DIR
 
+    # Location of the launcher settings in the build tree
+    DESTINATION_DIR
     APPLICATION_BUILD_SUBDIR
+
+    # Location of the launcher settings in the install tree
     APPLICATION_INSTALL_SUBDIR
 
+    # Info allowing to retrieve the revision specific settings
     APPLICATION_NAME
     APPLICATION_REVISION
     ORGANIZATION_DOMAIN
     ORGANIZATION_NAME
     USER_ADDITIONAL_SETTINGS_FILEBASENAME
+
     SETTINGS_TEMPLATE
 
+    # Splash screen
     SPLASHSCREEN_HIDE_DELAY_MS
     SPLASH_IMAGE_PATH
     SPLASH_IMAGE_INSTALL_SUBDIR
 
+    # Comma seperated list of arguments that should NOT be associated with the spash screen
     NOSPLASH_ARGS
+
     DEFAULT_APPLICATION_ARGUMENT
     ADDITIONAL_PATH_ENVVARS_PREFIX
+
+    # Arguments triggering display of launcher help
     HELP_SHORT_ARG
     HELP_LONG_ARG
     )
   set(multiValueArgs
+    # Extra application associated with the launcher
     EXTRA_APPLICATION_TO_LAUNCH_BUILD
     EXTRA_APPLICATION_TO_LAUNCH_INSTALLED
+
+    # Launcher settings specific to build tree
     LIBRARY_PATHS_BUILD
-    LIBRARY_PATHS_INSTALLED
     PATHS_BUILD
-    PATHS_INSTALLED
     ENVVARS_BUILD
+
+    # Launcher settings specific to install tree
+    LIBRARY_PATHS_INSTALLED
+    PATHS_INSTALLED
     ENVVARS_INSTALLED
+
+    # The ADDITIONAL_PATH_ENVVARS_(BUILD_INSTALLED) variables contains names of
+    # environment variables expected to be associated with a list of paths.
+    # Examples of such variables are PYTHONPATH, QT_PLUGIN_PATH, ...
+    # For each "ADDITIONAL_PATH_ENVVARS", the "ctkAppLauncherConfigure" macro
+    # will look for variables named <ADDITIONAL_PATH_ENVVARS_PREFIX>_<ADDITIONAL_PATH_ENVVAR>_(BUILD|INSTALLED)
+    # listing paths.
+    # For example: SLICER_PYTHONPATH_BUILD, SLICER_PYTHONPATH_INSTALLED
     ADDITIONAL_PATH_ENVVARS_BUILD
     ADDITIONAL_PATH_ENVVARS_INSTALLED
     )
