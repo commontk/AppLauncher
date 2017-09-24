@@ -274,26 +274,166 @@ set(CTKAPPLAUNCHER_ADDITIONAL_PATHS \"${CTKAPPLAUNCHER_ADDITIONAL_PATHS}\")")
   set(${SETTING_FILEPATH_VAR} ${setting_file} PARENT_SCOPE)
 endfunction()
 
-#
-# ctkAppLauncherConfigure
-#
 function(ctkAppLauncherConfigure)
+
+  # Set default values for backward compatibility
+  if(NOT CTKAppLauncher_FOUND)
+    set(CTK_INSTALL_BIN_DIR "bin")
+    set(CTK_INSTALL_CMAKE_DIR "CMake")
+    if(NOT DEFINED CTKAppLauncher_DIR AND DEFINED CTKAPPLAUNCHER_DIR)
+      set(CTKAppLauncher_DIR ${CTKAPPLAUNCHER_DIR})
+    endif()
+
+    # If CTKAppLauncher_DIR is set, try to autodiscover the location of launcher executable and settings template file
+    if(EXISTS "${CTKAppLauncher_DIR}")
+      set(CTKAPPLAUNCHER_SEARCH_PATHS ${CTKAppLauncher_DIR}/${CTK_INSTALL_BIN_DIR})
+      foreach(type ${CTKAPPLAUNCHER_BUILD_CONFIGURATIONS})
+        list(APPEND CTKAPPLAUNCHER_SEARCH_PATHS ${CTKAppLauncher_DIR}/${CTK_INSTALL_BIN_DIR}/${type})
+      endforeach()
+      unset(CTKAppLauncher_EXECUTABLE CACHE)
+      find_program(CTKAppLauncher_EXECUTABLE CTKAppLauncher PATHS ${CTKAPPLAUNCHER_SEARCH_PATHS} NO_DEFAULT_PATH)
+      unset(CTKAppLauncher_SETTINGS_TEMPLATE CACHE)
+      find_file(CTKAppLauncher_SETTINGS_TEMPLATE CTKAppLauncherSettings.ini.in PATHS ${CTKAppLauncher_DIR}/${CTK_INSTALL_BIN_DIR} NO_DEFAULT_PATH)
+    endif()
+  endif()
+
+  ctkAppLauncherConfigureForTarget(${ARGN})
+endfunction()
+
+function(_check_variables_defined)
+  foreach(varname IN LISTS ARGN)
+    if(NOT DEFINED CTKAPPLAUNCHER_${varname})
+      message(FATAL_ERROR "${varname} is mandatory")
+    endif()
+  endforeach()
+endfunction()
+
+function(_check_variables_exists)
+  foreach(varname IN LISTS ARGN)
+    if(NOT EXISTS ${CTKAPPLAUNCHER_${varname}})
+      message(FATAL_ERROR "${varname} [${CTKAPPLAUNCHER_${varname}}] doesn't seem to exist !")
+    endif()
+  endforeach()
+endfunction()
+
+function(ctkAppLauncherConfigureForTarget)
+  set(options)
+  set(oneValueArgs
+    TARGET
+    DESTINATION_DIR
+    )
+  set(multiValueArgs)
+  cmake_parse_arguments(CTKAPPLAUNCHER
+    "${options}"
+    "${oneValueArgs}"
+    "${multiValueArgs}"
+    ${ARGN}
+    )
+
+  _check_variables_defined(DESTINATION_DIR TARGET)
+  _check_variables_exists(DESTINATION_DIR)
+
+  # Sanity checks - Make sure TARGET is valid
+  if(NOT TARGET ${CTKAPPLAUNCHER_TARGET})
+    message(FATAL_ERROR "TARGET specified doesn't seem to be correct !")
+  endif()
+
+  #-----------------------------------------------------------------------------
+  # Retrieve the output name of the target application
+  get_target_property(CTKAPPLAUNCHER_TARGET_OUTPUT_NAME
+    ${CTKAPPLAUNCHER_TARGET} OUTPUT_NAME)
+
+  # Default to target name if OUTPUT_NAME is not set
+  if(NOT CTKAPPLAUNCHER_TARGET_OUTPUT_NAME)
+    set(CTKAPPLAUNCHER_TARGET_OUTPUT_NAME ${CTKAPPLAUNCHER_TARGET})
+  endif()
+
+  set(CTKAPPLAUNCHER_APPLICATION_EXECUTABLE_NAME ${CTKAPPLAUNCHER_TARGET_OUTPUT_NAME}${CMAKE_EXECUTABLE_SUFFIX})
+
+  #-----------------------------------------------------------------------------
+  # Settings specific to the build tree.
+
+  # Retrieve location of the target application
+  get_target_property(CTKAPPLAUNCHER_TARGET_DIR
+    ${CTKAPPLAUNCHER_TARGET} RUNTIME_OUTPUT_DIRECTORY)
+
+  file(RELATIVE_PATH CTKAPPLAUNCHER_APPLICATION_BUILD_SUBDIR ${CTKAPPLAUNCHER_DESTINATION_DIR} ${CTKAPPLAUNCHER_TARGET_DIR})
+
+  if(APPLE)
+    # Is the target an app bundle?
+    get_target_property(CTK_APPLAUNCHER_TARGET_BUNDLE ${CTKAPPLAUNCHER_TARGET} MACOSX_BUNDLE)
+
+    if(CTK_APPLAUNCHER_TARGET_BUNDLE)
+      if(NOT "${CTKAPPLAUNCHER_APPLICATION_BUILD_SUBDIR}" STREQUAL "")
+        set(CTKAPPLAUNCHER_APPLICATION_BUILD_SUBDIR "${CTKAPPLAUNCHER_APPLICATION_BUILD_SUBDIR}/")
+      endif()
+      set(CTKAPPLAUNCHER_APPLICATION_BUILD_SUBDIR "${CTKAPPLAUNCHER_APPLICATION_BUILD_SUBDIR}${CTKAPPLAUNCHER_APPLICATION_NAME}.app/Contents/MacOS")
+    endif()
+  endif()
+
+  ctk_applauncher_configure(
+    APPLICATION_EXECUTABLE_NAME ${CTKAPPLAUNCHER_APPLICATION_EXECUTABLE_NAME}
+    APPLICATION_BUILD_SUBDIR ${CTKAPPLAUNCHER_APPLICATION_BUILD_SUBDIR}
+    DESTINATION_DIR ${CTKAPPLAUNCHER_DESTINATION_DIR}
+    ${CTKAPPLAUNCHER_UNPARSED_ARGUMENTS}
+    )
+
+endfunction()
+
+function(ctkAppLauncherConfigureForExecutable)
+  set(options)
+  set(oneValueArgs
+    APPLICATION_EXECUTABLE
+    )
+  set(multiValueArgs)
+  cmake_parse_arguments(CTKAPPLAUNCHER
+    "${options}"
+    "${oneValueArgs}"
+    "${multiValueArgs}"
+    ${ARGN}
+    )
+
+  _check_variables_defined(APPLICATION_EXECUTABLE)
+  _check_variables_exists(APPLICATION_EXECUTABLE)
+
+  get_filename_component(
+    CTKAPPLAUNCHER_APPLICATION_EXECUTABLE_NAME
+    ${CTKAPPLAUNCHER_APPLICATION_EXECUTABLE}
+    NAME_WE
+    )
+
+  file(RELATIVE_PATH CTKAPPLAUNCHER_APPLICATION_BUILD_SUBDIR ${CTKAPPLAUNCHER_DESTINATION_DIR} ${CTKAPPLAUNCHER_TARGET_DIR})
+
+  ctk_applauncher_configure(
+    APPLICATION_EXECUTABLE_NAME ${CTKAPPLAUNCHER_APPLICATION_EXECUTABLE_NAME}
+    APPLICATION_BUILD_SUBDIR ${CTKAPPLAUNCHER_APPLICATION_BUILD_SUBDIR}
+    ${CTKAPPLAUNCHER_UNPARSED_ARGUMENTS}
+    )
+
+endfunction()
+
+function(ctk_applauncher_configure)
   set(options
     VERBOSE_CONFIG
     )
   set(oneValueArgs
+    APPLICATION_EXECUTABLE_NAME
+    DESTINATION_DIR
+
+    APPLICATION_BUILD_SUBDIR
+    APPLICATION_INSTALL_SUBDIR
+
     APPLICATION_NAME
     APPLICATION_REVISION
     ORGANIZATION_DOMAIN
     ORGANIZATION_NAME
     USER_ADDITIONAL_SETTINGS_FILEBASENAME
-    TARGET
-    APPLICATION_INSTALL_SUBDIR
     SETTINGS_TEMPLATE
-    DESTINATION_DIR
+
     SPLASHSCREEN_HIDE_DELAY_MS
     SPLASH_IMAGE_PATH
     SPLASH_IMAGE_INSTALL_SUBDIR
+
     DEFAULT_APPLICATION_ARGUMENT
     ADDITIONAL_PATH_ENVVARS_PREFIX
     HELP_SHORT_ARG
@@ -319,47 +459,10 @@ function(ctkAppLauncherConfigure)
     ${ARGN}
     )
 
-  # Set default values for backward compatibility
-  if(NOT CTKAppLauncher_FOUND)
-    set(CTK_INSTALL_BIN_DIR "bin")
-    set(CTK_INSTALL_CMAKE_DIR "CMake")
-    if(NOT DEFINED CTKAppLauncher_DIR AND DEFINED CTKAPPLAUNCHER_DIR)
-      set(CTKAppLauncher_DIR ${CTKAPPLAUNCHER_DIR})
-    endif()
-
-    # If CTKAppLauncher_DIR is set, try to autodiscover the location of launcher executable and settings template file
-    if(EXISTS "${CTKAppLauncher_DIR}")
-      set(CTKAPPLAUNCHER_SEARCH_PATHS ${CTKAppLauncher_DIR}/${CTK_INSTALL_BIN_DIR})
-      foreach(type ${CTKAPPLAUNCHER_BUILD_CONFIGURATIONS})
-        list(APPEND CTKAPPLAUNCHER_SEARCH_PATHS ${CTKAppLauncher_DIR}/${CTK_INSTALL_BIN_DIR}/${type})
-      endforeach()
-      unset(CTKAppLauncher_EXECUTABLE CACHE)
-      find_program(CTKAppLauncher_EXECUTABLE CTKAppLauncher PATHS ${CTKAPPLAUNCHER_SEARCH_PATHS} NO_DEFAULT_PATH)
-      unset(CTKAppLauncher_SETTINGS_TEMPLATE CACHE)
-      find_file(CTKAppLauncher_SETTINGS_TEMPLATE CTKAppLauncherSettings.ini.in PATHS ${CTKAppLauncher_DIR}/${CTK_INSTALL_BIN_DIR} NO_DEFAULT_PATH)
-    endif()
-  endif()
-
   set(CTKAPPLAUNCHER_SETTINGS_TEMPLATE ${CTKAppLauncher_SETTINGS_TEMPLATE})
 
-  # Sanity checks - Are mandatory variable defined
-  foreach(varname APPLICATION_NAME TARGET SETTINGS_TEMPLATE DESTINATION_DIR)
-    if(NOT DEFINED CTKAPPLAUNCHER_${varname})
-      message(FATAL_ERROR "${varname} is mandatory")
-    endif()
-  endforeach()
-
-  # Sanity checks - Make sure TARGET is valid
-  if(NOT TARGET ${CTKAPPLAUNCHER_TARGET})
-    message(FATAL_ERROR "TARGET specified doesn't seem to be correct !")
-  endif()
-
-  # Sanity checks - Do files/directories exist ?
-  foreach(varname SETTINGS_TEMPLATE DESTINATION_DIR)
-    if(NOT EXISTS ${CTKAPPLAUNCHER_${varname}})
-      message(FATAL_ERROR "${varname} [${CTKAPPLAUNCHER_${varname}}] doesn't seem to exist !")
-    endif()
-  endforeach()
+  _check_variables_defined(APPLICATION_EXECUTABLE_NAME APPLICATION_NAME SETTINGS_TEMPLATE DESTINATION_DIR)
+  _check_variables_exists(SETTINGS_TEMPLATE DESTINATION_DIR)
 
   # Set splash image name
   set(CTKAPPLAUNCHER_SPLASH_IMAGE_NAME)
@@ -386,18 +489,6 @@ function(ctkAppLauncherConfigure)
   endif()
 
   #-----------------------------------------------------------------------------
-  # Retrieve the output name of the target application
-  get_target_property(CTKAPPLAUNCHER_TARGET_OUTPUT_NAME
-    ${CTKAPPLAUNCHER_TARGET} OUTPUT_NAME)
-
-  # Default to target name if OUTPUT_NAME is not set
-  if(NOT CTKAPPLAUNCHER_TARGET_OUTPUT_NAME)
-    set(CTKAPPLAUNCHER_TARGET_OUTPUT_NAME ${CTKAPPLAUNCHER_TARGET})
-  endif()
-
-  set(CTKAPPLAUNCHER_APPLICATION_EXECUTABLE_NAME ${CTKAPPLAUNCHER_TARGET_OUTPUT_NAME}${CMAKE_EXECUTABLE_SUFFIX})
-
-  #-----------------------------------------------------------------------------
   # Settings specific to the build tree.
 
   set(CTKAPPLAUNCHER_SPLASH_IMAGE_SUBDIR)
@@ -405,25 +496,11 @@ function(ctkAppLauncherConfigure)
     set(CTKAPPLAUNCHER_SPLASH_IMAGE_SUBDIR "${CTKAPPLAUNCHER_SPLASH_IMAGE_PATH}/")
   endif()
 
-  # Retrieve location of the target application
-  get_target_property(CTKAPPLAUNCHER_TARGET_DIR
-    ${CTKAPPLAUNCHER_TARGET} RUNTIME_OUTPUT_DIRECTORY)
-
-  file(RELATIVE_PATH CTKAPPLAUNCHER_APPLICATION_RELPATH ${CTKAPPLAUNCHER_DESTINATION_DIR} ${CTKAPPLAUNCHER_TARGET_DIR})
   set(CTKAPPLAUNCHER_APPLICATION_SUBDIR)
-  if(NOT "${CTKAPPLAUNCHER_APPLICATION_RELPATH}" STREQUAL "")
-    set(CTKAPPLAUNCHER_APPLICATION_SUBDIR "${CTKAPPLAUNCHER_APPLICATION_RELPATH}/")
+  if(NOT "${CTKAPPLAUNCHER_APPLICATION_BUILD_SUBDIR}" STREQUAL "")
+    set(CTKAPPLAUNCHER_APPLICATION_SUBDIR "${CTKAPPLAUNCHER_APPLICATION_BUILD_SUBDIR}/")
   endif()
   set(CTKAPPLAUNCHER_APPLICATION_SUBDIR "<APPLAUNCHER_DIR>/${CTKAPPLAUNCHER_APPLICATION_SUBDIR}")
-
-  if(APPLE)
-    # Is the target an app bundle?
-    get_target_property(CTK_APPLAUNCHER_TARGET_BUNDLE ${CTKAPPLAUNCHER_TARGET} MACOSX_BUNDLE)
-
-    if(CTK_APPLAUNCHER_TARGET_BUNDLE)
-      set(CTKAPPLAUNCHER_APPLICATION_SUBDIR "${CTKAPPLAUNCHER_APPLICATION_SUBDIR}${CTKAPPLAUNCHER_APPLICATION_NAME}.app/Contents/MacOS/")
-    endif()
-  endif()
 
   _generate_settings_configuration("BUILD" "build" "BUILD_SETTINGS_CONFIGURATION_FILEPATH")
 

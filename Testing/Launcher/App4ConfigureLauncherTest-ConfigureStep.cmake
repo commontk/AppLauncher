@@ -33,10 +33,12 @@ set(PRINT_COMMAND 0)
 if(WITH_CONFIG_FILE)
   set(args
     -DCTKAppLauncher_DIR:PATH=${ctkapplauncher_dir}
+    -DTEST_FUNCTION:STRING=${TEST_FUNCTION}
     )
 else()
   set(args
     -DCTKAPPLAUNCHER_DIR:PATH=${ctkapplauncher_dir}
+    -DTEST_FUNCTION:STRING=""
     )
 endif()
 

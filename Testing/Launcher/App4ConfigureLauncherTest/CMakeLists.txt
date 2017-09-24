@@ -26,14 +26,11 @@ if(NOT DEFINED WITH_CONFIG_FILE)
   message(FATAL_ERROR "Configuring with WITH_CONFIG_FILE is mandatory.")
 endif()
 
-if(WITH_CONFIG_FILE)
-  find_package(CTKAppLauncher REQUIRED)
-else()
-  include(${CTKAPPLAUNCHER_DIR}/CMake/ctkAppLauncher.cmake)
+if(NOT DEFINED TEST_FUNCTION)
+  message(FATAL_ERROR "Configuring with TEST_FUNCTION is mandatory.")
 endif()
 
-ctkAppLauncherConfigure(
-  TARGET ${PROJECT_NAME}-real
+set(arguments
   APPLICATION_INSTALL_SUBDIR bin
   APPLICATION_NAME ${PROJECT_NAME}
   APPLICATION_REVISION 0.1
@@ -54,3 +51,31 @@ ctkAppLauncherConfigure(
   ADDITIONAL_PATH_ENVVARS_INSTALLED "PYTHONPATH;QT_PLUGIN_PATH"
   ADDITIONAL_PATH_ENVVARS_PREFIX TEST_
   )
+
+if(WITH_CONFIG_FILE)
+  find_package(CTKAppLauncher REQUIRED)
+
+  if(TEST_FUNCTION STREQUAL "ForTarget")
+    ctkAppLauncherConfigureForTarget(
+      TARGET ${PROJECT_NAME}-real
+      ${arguments}
+      )
+  elseif(TEST_FUNCTION STREQUAL "ForExecutable")
+    ctkAppLauncherConfigureForExecutable(
+      APPLICATION_EXECUTABLE ${${PROJECT_NAME}_BINARY_DIR}/bin/${PROJECT_NAME}-real${CMAKE_EXECUTABLE_SUFFIX}
+      ${arguments}
+      )
+  else()
+    ctkAppLauncherConfigure(
+      TARGET ${PROJECT_NAME}-real
+      ${arguments}
+      )
+  endif()
+
+else()
+  include(${CTKAPPLAUNCHER_DIR}/CMake/ctkAppLauncher.cmake)
+  ctkAppLauncherConfigure(
+    TARGET ${PROJECT_NAME}-real
+    ${arguments}
+    )
+endif()
