@@ -42,8 +42,8 @@ if(TEST_TREE_TYPE STREQUAL "InstallTree")
     -DLAUNCHER_BUILD_DIR:PATH=${LAUNCHER_BUILD_DIR}
     -DLAUNCHER_INSTALL_DIR:PATH=${LAUNCHER_INSTALL_DIR}
     )
-  set_property(TEST "${TEST_TREE_TYPE}_AppWithLauncherLib-Install" PROPERTY RESOURCE_LOCK "AppLauncherConfigure")
-
+  set(install_step_testname ${testname})
+  set_property(TEST "${install_step_testname}" PROPERTY RESOURCE_LOCK "AppLauncherConfigure")
   set(CTKAppLauncherLib_DIR ${LAUNCHER_DIR}/${CTK_INSTALL_CONFIG_DIR})
 endif()
 
@@ -83,9 +83,21 @@ foreach(varname IN ITEMS
 endforeach()
 
 applauncher_add_test(AppWithLauncherLib-ConfigureStep ${test_args})
+if(TEST_TREE_TYPE STREQUAL "InstallTree")
+  set_property(TEST ${testname} APPEND PROPERTY DEPENDS ${install_step_testname})
+endif()
+set(configure_step_testname ${testname})
+
 applauncher_add_test(AppWithLauncherLib-BuildStep ${test_args})
+set_property(TEST ${testname} APPEND PROPERTY DEPENDS ${configure_step_testname})
+set(build_step_testname ${testname})
+
 applauncher_add_test(AppWithLauncherLib-RunStep ${test_args})
+set_property(TEST ${testname} APPEND PROPERTY DEPENDS ${build_step_testname})
+
 applauncher_add_test(AppWithLauncherLib-RunWithLauncherStep ${test_args})
+set_property(TEST ${testname} APPEND PROPERTY DEPENDS ${build_step_testname})
+
 set_property(TEST ${testname} PROPERTY LABELS "ctkAppLauncher") # Remove "CompilerRequired" label
 if(TEST_TREE_TYPE STREQUAL "InstallTree")
   set_tests_properties(${testname} PROPERTIES DEPENDS "InstallTree_AppLauncher-Install")
