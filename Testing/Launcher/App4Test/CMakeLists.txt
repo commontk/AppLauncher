@@ -15,8 +15,8 @@ set(APP4TEST_INCLUDE_DIRS CACHE INTERNAL "App4Test include dirs" FORCE)
 set(LIB_INCLUDES)
 set(LIB_INSTANCIATES)
 
-# Configure 20 libraries
-foreach(LIBSUFFIX RANGE 1 30)
+# Configure libraries
+foreach(LIBSUFFIX RANGE 1 3)
 
   set(lib_subdir lib${LIBSUFFIX})
   
