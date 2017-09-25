@@ -39,6 +39,8 @@
 #
 #    DESTINATION_DIR
 #
+#    SPLASHSCREEN_DISABLED [optional]
+#
 #    SPLASHSCREEN_HIDE_DELAY_MS [optional]
 #
 #    SPLASH_IMAGE_PATH [optional]
@@ -204,6 +206,7 @@ function(_generate_settings_configuration VARIABLE_SUFFIX SETTINGS_TYPE SETTING_
     CTKAPPLAUNCHER_ORGANIZATION_DOMAIN
     CTKAPPLAUNCHER_ORGANIZATION_NAME
     CTKAPPLAUNCHER_DESTINATION_DIR
+    CTKAPPLAUNCHER_SPLASHSCREEN_DISABLED
     CTKAPPLAUNCHER_SPLASHSCREEN_HIDE_DELAY_MS
     CTKAPPLAUNCHER_HELP_SHORT_ARG
     CTKAPPLAUNCHER_HELP_LONG_ARG
@@ -417,6 +420,7 @@ endfunction()
 function(ctk_applauncher_configure)
   set(options
     VERBOSE_CONFIG
+    SPLASHSCREEN_DISABLED
     )
   set(oneValueArgs
     APPLICATION_EXECUTABLE_NAME
@@ -497,6 +501,13 @@ function(ctk_applauncher_configure)
     endif()
     get_filename_component(CTKAPPLAUNCHER_SPLASH_IMAGE_NAME ${CTKAPPLAUNCHER_SPLASH_IMAGE_PATH} NAME)
     get_filename_component(CTKAPPLAUNCHER_SPLASH_IMAGE_PATH ${CTKAPPLAUNCHER_SPLASH_IMAGE_PATH} PATH)
+  endif()
+
+  # Set spashscreen disabled option
+  if(CTKAPPLAUNCHER_SPLASHSCREEN_DISABLED)
+    set(CTKAPPLAUNCHER_SPLASHSCREEN_DISABLED "true")
+  else()
+    set(CTKAPPLAUNCHER_SPLASHSCREEN_DISABLED "false")
   endif()
 
   # Set splashscreen hide delay in ms

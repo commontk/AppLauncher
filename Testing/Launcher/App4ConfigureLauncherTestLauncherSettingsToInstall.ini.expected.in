@@ -1,4 +1,5 @@
 [General]
+launcherNoSplashScreen=false
 launcherSplashImagePath=
 launcherSplashScreenHideDelayMs=
 additionalLauncherHelpShortArgument=-h
