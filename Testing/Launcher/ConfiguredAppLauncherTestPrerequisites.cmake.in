@@ -1,11 +1,11 @@
+
+include(${CMAKE_CURRENT_LIST_DIR}/App4ConfigureLauncherTestStepPrerequisites.cmake)
+
 set(CMAKE_CONFIGURATION_TYPES "@CMAKE_CONFIGURATION_TYPES@")
 set(CMAKE_BUILD_TYPE "@CMAKE_BUILD_TYPE@")
 set(CMAKE_EXECUTABLE_SUFFIX "@CMAKE_EXECUTABLE_SUFFIX@")
 
 set(TEST_TREE_TYPE "@TEST_TREE_TYPE@")
-
-set(app4configurelaunchertest_source_dir "@APP4CONFIGURELAUNCHERTEST_SOURCE_DIR@")
-set(app4configurelaunchertest_binary_dir "@APP4CONFIGURELAUNCHERTEST_BINARY_DIR@")
 
 # --------------------------------------------------------------------------
 # Attempt to guess launcher build type

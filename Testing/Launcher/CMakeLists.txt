@@ -16,8 +16,7 @@ set(APP4TEST_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/App4Test-build)
 set(APP4CONFIGURELAUNCHERTEST_CMAKE_GENERATOR "${CMAKE_GENERATOR}")
 set(APP4CONFIGURELAUNCHERTEST_BUILD_TYPE "Release")
 set(APP4CONFIGURELAUNCHERTEST_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/App4ConfigureLauncherTest)
-set(APP4CONFIGURELAUNCHERTEST_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/App4ConfigureLauncherTest-build)
-set(APP4CONFIGURELAUNCHERTEST_WITH_CONFIG_FILE_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/App4ConfigureLauncherTestWithConfigFile-build)
+set(APP4CONFIGURELAUNCHERTEST_ROOT_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR})
 
 #
 # Configure Test Prerequisites
@@ -178,9 +177,8 @@ endif()
 set(tests_compiler_required)
 
 set(TEST_SUFFIX "-Deprecated")
-applauncher_add_test(App4ConfigureLauncherTest-ConfigureStep -DWITH_CONFIG_FILE:BOOL=0)
-applauncher_add_test(App4ConfigureLauncherTest-BuildStep -DWITH_CONFIG_FILE:BOOL=0)
-set(App4ConfigureLauncherTest_build_step_testname ${testname})
+applauncher_add_test(App4ConfigureLauncherTest-ConfigureStep -DWITH_CONFIG_FILE:BOOL=0 -DTEST_FUNCTION:STRING=Deprecated)
+applauncher_add_test(App4ConfigureLauncherTest-BuildStep -DWITH_CONFIG_FILE:BOOL=0 -DTEST_FUNCTION:STRING=Deprecated)
 set_property(
   TEST ${testname}
   APPEND PROPERTY DEPENDS "${TEST_TREE_TYPE}_App4ConfigureLauncherTest-ConfigureStep${TEST_SUFFIX}"
@@ -192,8 +190,8 @@ list(APPEND tests_compiler_required
 set(TEST_SUFFIX "")
 
 set(TEST_SUFFIX "-WithConfigFile-Deprecated")
-applauncher_add_test(App4ConfigureLauncherTest-ConfigureStep -DWITH_CONFIG_FILE:BOOL=1 -DTEST_FUNCTION:STRING="")
-applauncher_add_test(App4ConfigureLauncherTest-BuildStep -DWITH_CONFIG_FILE:BOOL=1 -DTEST_FUNCTION:STRING="")
+applauncher_add_test(App4ConfigureLauncherTest-ConfigureStep -DWITH_CONFIG_FILE:BOOL=1 -DTEST_FUNCTION:STRING=Deprecated)
+applauncher_add_test(App4ConfigureLauncherTest-BuildStep -DWITH_CONFIG_FILE:BOOL=1 -DTEST_FUNCTION:STRING=Deprecated)
 set_property(
   TEST ${testname}
   APPEND PROPERTY DEPENDS "${TEST_TREE_TYPE}_App4ConfigureLauncherTest-ConfigureStep${TEST_SUFFIX}"
@@ -205,8 +203,9 @@ list(APPEND tests_compiler_required
 set(TEST_SUFFIX "")
 
 set(TEST_SUFFIX "-WithConfigFile-ForTarget")
-applauncher_add_test(App4ConfigureLauncherTest-ConfigureStep -DWITH_CONFIG_FILE:BOOL=1 -DTEST_FUNCTION:STRING="ForTarget")
-applauncher_add_test(App4ConfigureLauncherTest-BuildStep -DWITH_CONFIG_FILE:BOOL=1 -DTEST_FUNCTION:STRING="ForTarget")
+applauncher_add_test(App4ConfigureLauncherTest-ConfigureStep -DWITH_CONFIG_FILE:BOOL=1 -DTEST_FUNCTION:STRING=ForTarget)
+applauncher_add_test(App4ConfigureLauncherTest-BuildStep -DWITH_CONFIG_FILE:BOOL=1 -DTEST_FUNCTION:STRING=ForTarget)
+set(App4ConfigureLauncherTest_build_step_testname ${testname})
 set_property(
   TEST ${testname}
   APPEND PROPERTY DEPENDS "${TEST_TREE_TYPE}_App4ConfigureLauncherTest-ConfigureStep${TEST_SUFFIX}"
@@ -218,8 +217,8 @@ list(APPEND tests_compiler_required
 set(TEST_SUFFIX "")
 
 set(TEST_SUFFIX "-WithConfigFile-ForExecutable")
-applauncher_add_test(App4ConfigureLauncherTest-ConfigureStep -DWITH_CONFIG_FILE:BOOL=1 -DTEST_FUNCTION:STRING="ForExecutable")
-applauncher_add_test(App4ConfigureLauncherTest-BuildStep -DWITH_CONFIG_FILE:BOOL=1 -DTEST_FUNCTION:STRING="ForExecutable")
+applauncher_add_test(App4ConfigureLauncherTest-ConfigureStep -DWITH_CONFIG_FILE:BOOL=1 -DTEST_FUNCTION:STRING=ForExecutable)
+applauncher_add_test(App4ConfigureLauncherTest-BuildStep -DWITH_CONFIG_FILE:BOOL=1 -DTEST_FUNCTION:STRING=ForExecutable)
 set_property(
   TEST ${testname}
   APPEND PROPERTY DEPENDS "${TEST_TREE_TYPE}_App4ConfigureLauncherTest-ConfigureStep${TEST_SUFFIX}"
@@ -230,12 +229,12 @@ list(APPEND tests_compiler_required
   )
 set(TEST_SUFFIX "")
 
-applauncher_add_test(ConfiguredAppLauncher-ConfigurationContents)
+applauncher_add_test(ConfiguredAppLauncher-ConfigurationContents -DWITH_CONFIG_FILE:BOOL=1 -DTEST_FUNCTION:STRING=ForTarget)
 set_property(
   TEST ${testname}
   APPEND PROPERTY DEPENDS ${App4ConfigureLauncherTest_build_step_testname}
   )
-applauncher_add_test(ConfiguredAppLauncher-LauncherExecutable)
+applauncher_add_test(ConfiguredAppLauncher-LauncherExecutable -DWITH_CONFIG_FILE:BOOL=1 -DTEST_FUNCTION:STRING=ForTarget)
 set_property(
   TEST ${testname}
   APPEND PROPERTY DEPENDS "${TEST_TREE_TYPE}_ConfiguredAppLauncher-ConfigurationContents"

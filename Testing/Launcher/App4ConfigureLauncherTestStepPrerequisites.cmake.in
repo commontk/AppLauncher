@@ -1,13 +1,20 @@
 
-if(NOT DEFINED WITH_CONFIG_FILE)
-  message(FATAL_ERROR "Make sure variable WITH_CONFIG_FILE is defined")
-endif()
+foreach(varname IN ITEMS
+  WITH_CONFIG_FILE
+  TEST_FUNCTION
+  )
+  if(NOT DEFINED ${varname})
+    message(FATAL_ERROR "Make sure variable ${varname} is defined")
+  endif()
+endforeach()
+
+set(APP4CONFIGURELAUNCHERTEST_ROOT_BINARY_DIR "@APP4CONFIGURELAUNCHERTEST_ROOT_BINARY_DIR@")
 
 set(app4configurelaunchertest_source_dir "@APP4CONFIGURELAUNCHERTEST_SOURCE_DIR@")
 if(WITH_CONFIG_FILE)
-  set(app4configurelaunchertest_binary_dir "@APP4CONFIGURELAUNCHERTEST_WITH_CONFIG_FILE_BINARY_DIR@")
+  set(app4configurelaunchertest_binary_dir "${APP4CONFIGURELAUNCHERTEST_ROOT_BINARY_DIR}/App4ConfigureLauncherTest${TEST_FUNCTION}-build")
 else()
-  set(app4configurelaunchertest_binary_dir "@APP4CONFIGURELAUNCHERTEST_BINARY_DIR@")
+  set(app4configurelaunchertest_binary_dir "${APP4CONFIGURELAUNCHERTEST_ROOT_BINARY_DIR}/App4ConfigureLauncherTestWithConfigFile${TEST_FUNCTION}-build")
 endif()
 set(app4configurelaunchertest_build_type "@APP4CONFIGURELAUNCHERTEST_BUILD_TYPE@")
 set(app4configurelaunchertest_cmake_generator "@APP4CONFIGURELAUNCHERTEST_CMAKE_GENERATOR@")

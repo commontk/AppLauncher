@@ -62,20 +62,33 @@ if(WITH_CONFIG_FILE)
       )
   elseif(TEST_FUNCTION STREQUAL "ForExecutable")
     ctkAppLauncherConfigureForExecutable(
+      APPLICATION_NAME ${PROJECT_NAME}
       APPLICATION_EXECUTABLE ${${PROJECT_NAME}_BINARY_DIR}/bin/${PROJECT_NAME}-real${CMAKE_EXECUTABLE_SUFFIX}
       ${arguments}
       )
-  else()
+  elseif(TEST_FUNCTION STREQUAL "Deprecated")
     ctkAppLauncherConfigure(
       TARGET ${PROJECT_NAME}-real
       ${arguments}
       )
+  else()
+    message(FATAL_ERROR "Problem with TEST_FUNCTION parameter. Unknown value [${TEST_FUNCTION}]")
   endif()
 
 else()
   include(${CTKAPPLAUNCHER_DIR}/CMake/ctkAppLauncher.cmake)
-  ctkAppLauncherConfigure(
-    TARGET ${PROJECT_NAME}-real
-    ${arguments}
-    )
+
+  if(TEST_FUNCTION STREQUAL "Deprecated")
+    ctkAppLauncherConfigure(
+      TARGET ${PROJECT_NAME}-real
+      ${arguments}
+      )
+  else()
+    message(FATAL_ERROR "Problem with TEST_FUNCTION parameter. Unknown value [${TEST_FUNCTION}]")
+  endif()
+endif()
+
+set(expected_target "${PROJECT_NAME}ConfigureLauncher")
+if(NOT TARGET "${expected_target}")
+  message(FATAL_ERROR "Missing expected target: ${expected_target}")
 endif()

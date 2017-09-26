@@ -322,6 +322,7 @@ endfunction()
 function(ctkAppLauncherConfigureForTarget)
   set(options)
   set(oneValueArgs
+    APPLICATION_NAME
     # Executable target associated with the launcher
     TARGET
     # Location of the launcher settings in the build tree
@@ -335,7 +336,7 @@ function(ctkAppLauncherConfigureForTarget)
     ${ARGN}
     )
 
-  _check_variables_defined(DESTINATION_DIR TARGET)
+  _check_variables_defined(APPLICATION_NAME DESTINATION_DIR TARGET)
   _check_variables_exists(DESTINATION_DIR)
 
   # Sanity checks - Make sure TARGET is valid
@@ -377,11 +378,14 @@ function(ctkAppLauncherConfigureForTarget)
   endif()
 
   ctk_applauncher_configure(
+    APPLICATION_NAME ${CTKAPPLAUNCHER_APPLICATION_NAME}
     APPLICATION_EXECUTABLE_NAME ${CTKAPPLAUNCHER_APPLICATION_EXECUTABLE_NAME}
     APPLICATION_BUILD_SUBDIR ${CTKAPPLAUNCHER_APPLICATION_BUILD_SUBDIR}
     DESTINATION_DIR ${CTKAPPLAUNCHER_DESTINATION_DIR}
     ${CTKAPPLAUNCHER_UNPARSED_ARGUMENTS}
     )
+
+  add_dependencies(${CTKAPPLAUNCHER_APPLICATION_NAME}ConfigureLauncher ${CTKAPPLAUNCHER_TARGET})
 
 endfunction()
 
@@ -389,6 +393,8 @@ function(ctkAppLauncherConfigureForExecutable)
   set(options)
   set(oneValueArgs
     APPLICATION_EXECUTABLE
+    APPLICATION_NAME
+    DESTINATION_DIR
     )
   set(multiValueArgs)
   cmake_parse_arguments(CTKAPPLAUNCHER
@@ -398,8 +404,7 @@ function(ctkAppLauncherConfigureForExecutable)
     ${ARGN}
     )
 
-  _check_variables_defined(APPLICATION_EXECUTABLE)
-  _check_variables_exists(APPLICATION_EXECUTABLE)
+  _check_variables_defined(APPLICATION_EXECUTABLE APPLICATION_NAME)
 
   get_filename_component(
     CTKAPPLAUNCHER_APPLICATION_EXECUTABLE_NAME
@@ -407,14 +412,24 @@ function(ctkAppLauncherConfigureForExecutable)
     NAME_WE
     )
 
-  file(RELATIVE_PATH CTKAPPLAUNCHER_APPLICATION_BUILD_SUBDIR ${CTKAPPLAUNCHER_DESTINATION_DIR} ${CTKAPPLAUNCHER_TARGET_DIR})
-
-  ctk_applauncher_configure(
-    APPLICATION_EXECUTABLE_NAME ${CTKAPPLAUNCHER_APPLICATION_EXECUTABLE_NAME}
-    APPLICATION_BUILD_SUBDIR ${CTKAPPLAUNCHER_APPLICATION_BUILD_SUBDIR}
-    ${CTKAPPLAUNCHER_UNPARSED_ARGUMENTS}
+  get_filename_component(
+    CTKAPPLAUNCHER_APPLICATION_EXECUTABLE_DIRECTORY
+    ${CTKAPPLAUNCHER_APPLICATION_EXECUTABLE}
+    DIRECTORY
     )
 
+  file(RELATIVE_PATH CTKAPPLAUNCHER_APPLICATION_BUILD_SUBDIR
+    ${CTKAPPLAUNCHER_DESTINATION_DIR}
+    ${CTKAPPLAUNCHER_APPLICATION_EXECUTABLE_DIRECTORY}
+    )
+
+  ctk_applauncher_configure(
+    APPLICATION_NAME ${CTKAPPLAUNCHER_APPLICATION_NAME}
+    APPLICATION_EXECUTABLE_NAME ${CTKAPPLAUNCHER_APPLICATION_EXECUTABLE_NAME}
+    APPLICATION_BUILD_SUBDIR ${CTKAPPLAUNCHER_APPLICATION_BUILD_SUBDIR}
+    DESTINATION_DIR ${CTKAPPLAUNCHER_DESTINATION_DIR}
+    ${CTKAPPLAUNCHER_UNPARSED_ARGUMENTS}
+    )
 endfunction()
 
 function(ctk_applauncher_configure)
@@ -625,8 +640,6 @@ function(ctk_applauncher_configure)
       ${configured_launcher_settings}
       ${configured_launcher_settings_to_install}
     )
-  add_dependencies(${CTKAPPLAUNCHER_APPLICATION_NAME}ConfigureLauncher ${CTKAPPLAUNCHER_TARGET})
-
 endfunction()
 
 #
