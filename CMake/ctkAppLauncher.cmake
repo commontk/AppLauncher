@@ -18,66 +18,6 @@
 #
 ###########################################################################
 
-#
-#  ctkAppLauncherConfigure
-#
-#    APPLICATION_NAME
-#
-#    APPLICATION_REVISION [optional]
-#
-#    ORGANIZATION_DOMAIN [optional]
-#
-#    ORGANIZATION_NAME [optional]
-#
-#    USER_ADDITIONAL_SETTINGS_FILEBASENAME [optional]
-#
-#    TARGET
-#
-#    APPLICATION_INSTALL_SUBDIR
-#
-#    SETTINGS_TEMPLATE [optional]
-#
-#    DESTINATION_DIR
-#
-#    SPLASHSCREEN_DISABLED [optional]
-#
-#    SPLASHSCREEN_HIDE_DELAY_MS [optional]
-#
-#    SPLASH_IMAGE_PATH [optional]
-#
-#    SPLASH_IMAGE_INSTALL_SUBDIR [optional]
-#
-#    DEFAULT_APPLICATION_ARGUMENT [optional]
-#
-#    EXTRA_APPLICATION_TO_LAUNCH_BUILD [optional]
-#
-#    EXTRA_APPLICATION_TO_LAUNCH_INSTALLED [optional]
-#
-#    LIBRARY_PATHS_BUILD [optional]
-#
-#    LIBRARY_PATHS_INSTALLED [optional]
-#
-#    PATHS_BUILD [optional]
-#
-#    PATHS_INSTALLED [optional]
-#
-#    ENVVARS_BUILD [optional]
-#
-#    ENVVARS_INSTALLED [optional]
-#
-#    ADDITIONAL_PATH_ENVVARS_BUILD [optional]
-#
-#    ADDITIONAL_PATH_ENVVARS_INSTALLED [optional]
-#
-#    ADDITIONAL_PATH_ENVVARS_PREFIX [optional]
-#
-#    HELP_SHORT_ARG [optional]
-#
-#    HELP_LONG_ARG [optional]
-#
-#    NOSPLASH_ARGS [optional]
-#
-
 cmake_minimum_required(VERSION 3.0)
 include(CMakeParseArguments)
 
@@ -344,7 +284,6 @@ function(ctkAppLauncherConfigureForTarget)
     message(FATAL_ERROR "TARGET specified doesn't seem to be correct !")
   endif()
 
-  #-----------------------------------------------------------------------------
   # Retrieve the output name of the target application
   get_target_property(CTKAPPLAUNCHER_TARGET_OUTPUT_NAME
     ${CTKAPPLAUNCHER_TARGET} OUTPUT_NAME)
@@ -356,7 +295,6 @@ function(ctkAppLauncherConfigureForTarget)
 
   set(CTKAPPLAUNCHER_APPLICATION_EXECUTABLE_NAME ${CTKAPPLAUNCHER_TARGET_OUTPUT_NAME}${CMAKE_EXECUTABLE_SUFFIX})
 
-  #-----------------------------------------------------------------------------
   # Settings specific to the build tree.
 
   # Retrieve location of the target application
@@ -539,9 +477,7 @@ function(ctk_applauncher_configure)
       "userAdditionalSettingsFileBaseName=${CTKAPPLAUNCHER_USER_ADDITIONAL_SETTINGS_FILEBASENAME}")
   endif()
 
-  #-----------------------------------------------------------------------------
   # Settings specific to the build tree.
-
   set(CTKAPPLAUNCHER_SPLASH_IMAGE_SUBDIR)
   if(DEFINED CTKAPPLAUNCHER_SPLASH_IMAGE_PATH AND NOT ${CTKAPPLAUNCHER_SPLASH_IMAGE_PATH} STREQUAL "")
     set(CTKAPPLAUNCHER_SPLASH_IMAGE_SUBDIR "${CTKAPPLAUNCHER_SPLASH_IMAGE_PATH}/")
@@ -555,9 +491,7 @@ function(ctk_applauncher_configure)
 
   _generate_settings_configuration("BUILD" "build" "BUILD_SETTINGS_CONFIGURATION_FILEPATH")
 
-  #-----------------------------------------------------------------------------
   # Settings specific to the install tree.
-
   set(CTKAPPLAUNCHER_SPLASH_IMAGE_SUBDIR)
   if(DEFINED CTKAPPLAUNCHER_SPLASH_IMAGE_INSTALL_SUBDIR AND NOT ${CTKAPPLAUNCHER_SPLASH_IMAGE_INSTALL_SUBDIR} STREQUAL "")
     set(CTKAPPLAUNCHER_SPLASH_IMAGE_SUBDIR "<APPLAUNCHER_DIR>/${CTKAPPLAUNCHER_SPLASH_IMAGE_INSTALL_SUBDIR}/")
@@ -570,9 +504,6 @@ function(ctk_applauncher_configure)
   set(CTKAPPLAUNCHER_APPLICATION_SUBDIR "<APPLAUNCHER_DIR>/${CTKAPPLAUNCHER_APPLICATION_SUBDIR}")
 
   _generate_settings_configuration("INSTALLED" "install" "INSTALL_SETTINGS_CONFIGURATION_FILEPATH")
-
-  #-----------------------------------------------------------------------------
-  # Custom targets to copy laucher and generate settings files
 
   # Generate informational message ...
   set(extra_message)
@@ -605,7 +536,7 @@ function(ctk_applauncher_configure)
   endif()
   set(comment "Configuring application launcher: ${CTKAPPLAUNCHER_APPLICATION_NAME}${extra_message}")
 
-  # Settings
+  # Launcher settings filepaths
   set(configured_launcher_settings
     ${CTKAPPLAUNCHER_DESTINATION_DIR}/${CTKAPPLAUNCHER_APPLICATION_NAME}LauncherSettings.ini
     )
