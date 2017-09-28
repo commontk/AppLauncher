@@ -7,6 +7,7 @@ additionalLauncherHelpLongArgument=--help
 additionalLauncherNoSplashArguments=--no-splash
 additionalPathVariables=PYTHONPATH,QT_PLUGIN_PATH
 
+launcherLoadEnvironment=0
 
 [Application]
 path=<APPLAUNCHER_DIR>/bin/App4ConfigureLauncherTest-real@CMAKE_EXECUTABLE_SUFFIX@
