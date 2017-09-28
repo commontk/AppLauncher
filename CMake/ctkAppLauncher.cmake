@@ -415,6 +415,7 @@ function(ctk_applauncher_configure)
   set(oneValueArgs
     APPLICATION_EXECUTABLE_NAME
     APPLICATION_INSTALL_EXECUTABLE_NAME
+    APPLICATION_DEFAULT_ARGUMENTS
 
     # Location of the launcher settings in the build tree
     DESTINATION_DIR
