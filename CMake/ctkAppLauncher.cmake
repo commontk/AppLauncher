@@ -524,32 +524,12 @@ function(ctk_applauncher_configure)
   if(NOT ${CTKAPPLAUNCHER_SPLASH_IMAGE_NAME} STREQUAL "")
     set(extra_message " [${CTKAPPLAUNCHER_SPLASH_IMAGE_NAME}]")
   endif()
-  set(comment "Creating application launcher: ${CTKAPPLAUNCHER_APPLICATION_NAME}${extra_message}")
+  set(comment "Configuring application launcher: ${CTKAPPLAUNCHER_APPLICATION_NAME}${extra_message}")
 
+  # Launcher executable filepath
   set(configured_launcher_executable
     ${CTKAPPLAUNCHER_DESTINATION_DIR}/${CTKAPPLAUNCHER_APPLICATION_NAME}${CMAKE_EXECUTABLE_SUFFIX}
     )
-
-  # Create command to copy launcher executable into the build tree
-  add_custom_command(
-    DEPENDS
-      ${CTKAppLauncher_EXECUTABLE}
-    OUTPUT
-      ${configured_launcher_executable}
-    COMMAND ${CMAKE_COMMAND} -E copy
-      ${CTKAppLauncher_EXECUTABLE}
-      ${configured_launcher_executable}
-    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-    COMMENT ${comment}
-    )
-
-  # Generate informational message ...
-  set(extra_message)
-  if(NOT ${CTKAPPLAUNCHER_SPLASH_IMAGE_NAME} STREQUAL "")
-    set(extra_message " [${CTKAPPLAUNCHER_SPLASH_IMAGE_NAME}]")
-  endif()
-  set(comment "Configuring application launcher: ${CTKAPPLAUNCHER_APPLICATION_NAME}${extra_message}")
-
   # Launcher settings filepaths
   set(configured_launcher_settings
     ${CTKAPPLAUNCHER_DESTINATION_DIR}/${CTKAPPLAUNCHER_APPLICATION_NAME}LauncherSettings.ini
@@ -558,15 +538,20 @@ function(ctk_applauncher_configure)
     ${CTKAPPLAUNCHER_DESTINATION_DIR}/${CTKAPPLAUNCHER_APPLICATION_NAME}LauncherSettingsToInstall.ini
     )
 
-  # Create command to generate the launcher configuration files
+  # Create command to copy the launcher and generate its configuration files
   add_custom_command(
     DEPENDS
+      ${CTKAppLauncher_EXECUTABLE}
       ${CTKAppLauncher_DIR}/${CTK_INSTALL_CMAKE_DIR}/ctkAppLauncher-configure.cmake
       ${BUILD_SETTINGS_CONFIGURATION_FILEPATH}
       ${INSTALL_SETTINGS_CONFIGURATION_FILEPATH}
     OUTPUT
+      ${configured_launcher_executable}
       ${configured_launcher_settings}
       ${configured_launcher_settings_to_install}
+    COMMAND ${CMAKE_COMMAND} -E copy
+      ${CTKAppLauncher_EXECUTABLE}
+      ${configured_launcher_executable}
     COMMAND ${CMAKE_COMMAND}
       -DBUILD_SETTINGS_CONFIGURATION_FILEPATH:FILEPATH=${BUILD_SETTINGS_CONFIGURATION_FILEPATH}
       -DBUILD_SETTINGS_FILEPATH:FILEPATH=${configured_launcher_settings}
