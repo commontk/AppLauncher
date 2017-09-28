@@ -267,6 +267,10 @@ function(ctkAppLauncherConfigureForTarget)
     TARGET
     # Location of the launcher settings in the build tree
     DESTINATION_DIR
+    # Output vars
+    COPY_LAUNCHER_COMMAND_VAR
+    CONFIGURE_LAUNCHER_COMMAND_VAR
+    COMMANDS_DEPENDS_VAR
     )
   set(multiValueArgs)
   cmake_parse_arguments(CTKAPPLAUNCHER
@@ -325,6 +329,16 @@ function(ctkAppLauncherConfigureForTarget)
 
   add_dependencies(${CTKAPPLAUNCHER_APPLICATION_NAME}ConfigureLauncher ${CTKAPPLAUNCHER_TARGET})
 
+  # Outputs
+  if(NOT CTKAPPLAUNCHER_COPY_LAUNCHER_COMMAND_VAR STREQUAL "")
+    set(${CTKAPPLAUNCHER_COPY_LAUNCHER_COMMAND_VAR} ${copy_command} PARENT_SCOPE)
+  endif()
+  if(NOT CTKAPPLAUNCHER_CONFIGURE_LAUNCHER_COMMAND_VAR STREQUAL "")
+    set(${CTKAPPLAUNCHER_CONFIGURE_LAUNCHER_COMMAND_VAR} ${configure_command} PARENT_SCOPE)
+  endif()
+  if(NOT CTKAPPLAUNCHER_COMMANDS_DEPENDS_VAR STREQUAL "")
+    set(${CTKAPPLAUNCHER_COMMANDS_DEPENDS_VAR} ${commands_depends} PARENT_SCOPE)
+  endif()
 endfunction()
 
 function(ctkAppLauncherConfigureForExecutable)
@@ -334,6 +348,11 @@ function(ctkAppLauncherConfigureForExecutable)
     APPLICATION_NAME
     APPLICATION_INSTALL_EXECUTABLE_NAME
     DESTINATION_DIR
+
+    # Output vars
+    COPY_LAUNCHER_COMMAND_VAR
+    CONFIGURE_LAUNCHER_COMMAND_VAR
+    COMMANDS_DEPENDS_VAR
     )
   set(multiValueArgs)
   cmake_parse_arguments(CTKAPPLAUNCHER
@@ -374,6 +393,17 @@ function(ctkAppLauncherConfigureForExecutable)
     DESTINATION_DIR ${CTKAPPLAUNCHER_DESTINATION_DIR}
     ${CTKAPPLAUNCHER_UNPARSED_ARGUMENTS}
     )
+
+  # Outputs
+  if(NOT CTKAPPLAUNCHER_COPY_LAUNCHER_COMMAND_VAR STREQUAL "")
+    set(${CTKAPPLAUNCHER_COPY_LAUNCHER_COMMAND_VAR} ${copy_command} PARENT_SCOPE)
+  endif()
+  if(NOT CTKAPPLAUNCHER_CONFIGURE_LAUNCHER_COMMAND_VAR STREQUAL "")
+    set(${CTKAPPLAUNCHER_CONFIGURE_LAUNCHER_COMMAND_VAR} ${configure_command} PARENT_SCOPE)
+  endif()
+  if(NOT CTKAPPLAUNCHER_COMMANDS_DEPENDS_VAR STREQUAL "")
+    set(${CTKAPPLAUNCHER_COMMANDS_DEPENDS_VAR} ${commands_depends} PARENT_SCOPE)
+  endif()
 endfunction()
 
 function(ctk_applauncher_configure)
@@ -538,27 +568,34 @@ function(ctk_applauncher_configure)
     ${CTKAPPLAUNCHER_DESTINATION_DIR}/${CTKAPPLAUNCHER_APPLICATION_NAME}LauncherSettingsToInstall.ini
     )
 
+  set(copy_command ${CMAKE_COMMAND} -E copy
+    ${CTKAppLauncher_EXECUTABLE}
+    ${configured_launcher_executable}
+    )
+  set(configure_command ${CMAKE_COMMAND}
+    -DBUILD_SETTINGS_CONFIGURATION_FILEPATH:FILEPATH=${BUILD_SETTINGS_CONFIGURATION_FILEPATH}
+    -DBUILD_SETTINGS_FILEPATH:FILEPATH=${configured_launcher_settings}
+    -DINSTALL_SETTINGS_CONFIGURATION_FILEPATH:FILEPATH=${INSTALL_SETTINGS_CONFIGURATION_FILEPATH}
+    -DINSTALL_SETTINGS_FILEPATH:FILEPATH=${configured_launcher_settings_to_install}
+    -DTARGET_SUBDIR:STRING=${CMAKE_CFG_INTDIR}
+    -P ${CTKAppLauncher_DIR}/${CTK_INSTALL_CMAKE_DIR}/ctkAppLauncher-configure.cmake
+    )
+  set(commands_depends
+    ${CTKAppLauncher_EXECUTABLE}
+    ${CTKAppLauncher_DIR}/${CTK_INSTALL_CMAKE_DIR}/ctkAppLauncher-configure.cmake
+    ${BUILD_SETTINGS_CONFIGURATION_FILEPATH}
+    ${INSTALL_SETTINGS_CONFIGURATION_FILEPATH}
+    )
+
   # Create command to copy the launcher and generate its configuration files
   add_custom_command(
-    DEPENDS
-      ${CTKAppLauncher_EXECUTABLE}
-      ${CTKAppLauncher_DIR}/${CTK_INSTALL_CMAKE_DIR}/ctkAppLauncher-configure.cmake
-      ${BUILD_SETTINGS_CONFIGURATION_FILEPATH}
-      ${INSTALL_SETTINGS_CONFIGURATION_FILEPATH}
+    DEPENDS ${commands_depends}
     OUTPUT
       ${configured_launcher_executable}
       ${configured_launcher_settings}
       ${configured_launcher_settings_to_install}
-    COMMAND ${CMAKE_COMMAND} -E copy
-      ${CTKAppLauncher_EXECUTABLE}
-      ${configured_launcher_executable}
-    COMMAND ${CMAKE_COMMAND}
-      -DBUILD_SETTINGS_CONFIGURATION_FILEPATH:FILEPATH=${BUILD_SETTINGS_CONFIGURATION_FILEPATH}
-      -DBUILD_SETTINGS_FILEPATH:FILEPATH=${configured_launcher_settings}
-      -DINSTALL_SETTINGS_CONFIGURATION_FILEPATH:FILEPATH=${INSTALL_SETTINGS_CONFIGURATION_FILEPATH}
-      -DINSTALL_SETTINGS_FILEPATH:FILEPATH=${configured_launcher_settings_to_install}
-      -DTARGET_SUBDIR:STRING=${CMAKE_CFG_INTDIR}
-      -P ${CTKAppLauncher_DIR}/${CTK_INSTALL_CMAKE_DIR}/ctkAppLauncher-configure.cmake
+    COMMAND ${copy_command}
+    COMMAND ${configure_command}
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
     COMMENT ${comment}
     )
@@ -575,6 +612,11 @@ function(ctk_applauncher_configure)
       ${configured_launcher_settings}
       ${configured_launcher_settings_to_install}
     )
+
+  # Outputs
+  set(copy_command ${copy_command} PARENT_SCOPE)
+  set(configure_command ${configure_command} PARENT_SCOPE)
+  set(commands_depends ${commands_depends} PARENT_SCOPE)
 endfunction()
 
 #
