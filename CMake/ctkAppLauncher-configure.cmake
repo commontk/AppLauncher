@@ -10,53 +10,54 @@
 #
 # The different parameters are:
 #
-#    TARGET_NAME ...............:
+#    BUILD_SETTINGS_CONFIGURATION_FILEPATH
 #
-#    TARGET_SUBDIR .............:
+#    BUILD_SETTINGS_FILEPATH
 #
-#    CMAKE_EXECUTABLE_SUFFIX ...:
+#    INSTALL_SETTINGS_CONFIGURATION_FILEPATH
+#
+#    INSTALL_SETTINGS_FILEPATH
+#
+#    TARGET_SUBDIR
 #
 
 # Check for non-defined var
-foreach(var TARGET_NAME TARGET_SUBDIR CMAKE_EXECUTABLE_SUFFIX)
+foreach(var
+    BUILD_SETTINGS_CONFIGURATION_FILEPATH
+    BUILD_SETTINGS_FILEPATH
+    INSTALL_SETTINGS_CONFIGURATION_FILEPATH
+    INSTALL_SETTINGS_FILEPATH
+    TARGET_SUBDIR
+    )
   if(NOT DEFINED ${var})
-    message(SEND_ERROR "${var} not specified when calling ctkAppLauncher-configure.cmake")
+    message(FATAL_ERROR "${var} not specified when calling ctkAppLauncher-configure.cmake")
   endif()
 endforeach()
 
-#-----------------------------------------------------------------------------
-# Settings common to build and install tree
-#-----------------------------------------------------------------------------
-
-set(CTKAPPLAUNCHER_APPLICATION_EXECUTABLE_NAME ${TARGET_NAME}${CMAKE_EXECUTABLE_SUFFIX})
-
-# Replace <CMAKE_CFG_INTDIR> with the appropriate value
-set(settings_file CTKAppLauncher-${TARGET_NAME}-common-settings)
-
-file(READ ${settings_file}.cmake tmp_var)
-string(REPLACE "<CMAKE_CFG_INTDIR>" "${TARGET_SUBDIR}" tmp_var ${tmp_var})
-file(WRITE ${settings_file}_updated.cmake ${tmp_var})
-
-include(${settings_file}_updated.cmake)
-
+macro(_replace_cfg_intdir_in_settings settings_filepath updated_settings_filepath)
+  # Replace <CMAKE_CFG_INTDIR> with the appropriate value
+  file(READ ${settings_filepath} tmp_var)
+  string(REPLACE "<CMAKE_CFG_INTDIR>" "${TARGET_SUBDIR}" tmp_var ${tmp_var})
+  file(WRITE ${updated_settings_filepath} ${tmp_var})
+endmacro()
 
 #-----------------------------------------------------------------------------
 # Settings specific to the build tree.
 #-----------------------------------------------------------------------------
 
-# Replace <CMAKE_CFG_INTDIR> with the appropriate value
-set(settings_file CTKAppLauncher-${TARGET_NAME}-buildtree-settings)
+set(updated_config_filepath ${BUILD_SETTINGS_CONFIGURATION_FILEPATH}.updated)
 
-file(READ ${settings_file}.cmake tmp_var)
-string(REPLACE "<CMAKE_CFG_INTDIR>" "${TARGET_SUBDIR}" tmp_var ${tmp_var})
-file(WRITE ${settings_file}_updated.cmake ${tmp_var})
+_replace_cfg_intdir_in_settings(
+  ${BUILD_SETTINGS_CONFIGURATION_FILEPATH}
+  ${updated_config_filepath}
+  )
 
-include(${settings_file}_updated.cmake)
+include(${updated_config_filepath})
 
 set(CTKAPPLAUNCHER_APPLICATION_SUBDIR "${CTKAPPLAUNCHER_APPLICATION_SUBDIR}${TARGET_SUBDIR}/")
 configure_file(
   ${CTKAPPLAUNCHER_SETTINGS_TEMPLATE}
-  ${CTKAPPLAUNCHER_DESTINATION_DIR}/${CTKAPPLAUNCHER_APPLICATION_NAME}LauncherSettings.ini
+  ${BUILD_SETTINGS_FILEPATH}
   @ONLY
   )
 
@@ -65,16 +66,17 @@ configure_file(
 # Settings specific to the install tree.
 #-----------------------------------------------------------------------------
 
-set(settings_file CTKAppLauncher-${TARGET_NAME}-installtree-settings)
+set(updated_config_filepath ${INSTALL_SETTINGS_CONFIGURATION_FILEPATH}.updated)
 
-file(READ ${settings_file}.cmake tmp_var)
-string(REPLACE "<CMAKE_CFG_INTDIR>" "${TARGET_SUBDIR}" tmp_var ${tmp_var})
-file(WRITE ${settings_file}_updated.cmake ${tmp_var})
+_replace_cfg_intdir_in_settings(
+  ${INSTALL_SETTINGS_CONFIGURATION_FILEPATH}
+  ${updated_config_filepath}
+  )
 
-include(${settings_file}_updated.cmake)
+include(${updated_config_filepath})
 
 configure_file(
   ${CTKAPPLAUNCHER_SETTINGS_TEMPLATE}
-  ${CTKAPPLAUNCHER_DESTINATION_DIR}/${CTKAPPLAUNCHER_APPLICATION_NAME}LauncherSettingsToInstall.ini
+  ${INSTALL_SETTINGS_FILEPATH}
   @ONLY
   )

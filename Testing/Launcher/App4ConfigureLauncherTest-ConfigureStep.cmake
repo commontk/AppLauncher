@@ -30,12 +30,15 @@ execute_process(
 # Debug flags - Set to True to display the command as string
 set(PRINT_COMMAND 0)
 
+set(args
+  -DTEST_FUNCTION:STRING=${TEST_FUNCTION}
+  )
 if(WITH_CONFIG_FILE)
-  set(args
+  list(APPEND args
     -DCTKAppLauncher_DIR:PATH=${ctkapplauncher_dir}
     )
 else()
-  set(args
+  list(APPEND args
     -DCTKAPPLAUNCHER_DIR:PATH=${ctkapplauncher_dir}
     )
 endif()

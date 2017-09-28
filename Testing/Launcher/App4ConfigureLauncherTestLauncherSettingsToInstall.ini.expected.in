@@ -1,4 +1,5 @@
 [General]
+launcherNoSplashScreen=false
 launcherSplashImagePath=
 launcherSplashScreenHideDelayMs=
 additionalLauncherHelpShortArgument=-h
@@ -6,10 +7,11 @@ additionalLauncherHelpLongArgument=--help
 additionalLauncherNoSplashArguments=--no-splash
 additionalPathVariables=PYTHONPATH,QT_PLUGIN_PATH
 
+launcherLoadEnvironment=0
 
 [Application]
 path=<APPLAUNCHER_DIR>/bin/App4ConfigureLauncherTest-real@CMAKE_EXECUTABLE_SUFFIX@
-arguments=
+arguments=--foo bar
 name=App4ConfigureLauncherTest
 revision=0.1
 organizationDomain=com.kitware

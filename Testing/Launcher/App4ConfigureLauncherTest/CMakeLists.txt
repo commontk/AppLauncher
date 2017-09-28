@@ -26,14 +26,13 @@ if(NOT DEFINED WITH_CONFIG_FILE)
   message(FATAL_ERROR "Configuring with WITH_CONFIG_FILE is mandatory.")
 endif()
 
-if(WITH_CONFIG_FILE)
-  find_package(CTKAppLauncher REQUIRED)
-else()
-  include(${CTKAPPLAUNCHER_DIR}/CMake/ctkAppLauncher.cmake)
+if(NOT DEFINED TEST_FUNCTION)
+  message(FATAL_ERROR "Configuring with TEST_FUNCTION is mandatory.")
 endif()
 
-ctkAppLauncherConfigure(
-  TARGET ${PROJECT_NAME}-real
+set(arguments
+  LAUNCHER_LOAD_ENVIRONMENT 0
+  APPLICATION_DEFAULT_ARGUMENTS "--foo bar"
   APPLICATION_INSTALL_SUBDIR bin
   APPLICATION_NAME ${PROJECT_NAME}
   APPLICATION_REVISION 0.1
@@ -54,3 +53,44 @@ ctkAppLauncherConfigure(
   ADDITIONAL_PATH_ENVVARS_INSTALLED "PYTHONPATH;QT_PLUGIN_PATH"
   ADDITIONAL_PATH_ENVVARS_PREFIX TEST_
   )
+
+if(WITH_CONFIG_FILE)
+  find_package(CTKAppLauncher REQUIRED)
+
+  if(TEST_FUNCTION STREQUAL "ForTarget")
+    ctkAppLauncherConfigureForTarget(
+      TARGET ${PROJECT_NAME}-real
+      ${arguments}
+      )
+  elseif(TEST_FUNCTION STREQUAL "ForExecutable")
+    ctkAppLauncherConfigureForExecutable(
+      APPLICATION_NAME ${PROJECT_NAME}
+      APPLICATION_EXECUTABLE ${${PROJECT_NAME}_BINARY_DIR}/bin/${PROJECT_NAME}-real${CMAKE_EXECUTABLE_SUFFIX}
+      ${arguments}
+      )
+  elseif(TEST_FUNCTION STREQUAL "Deprecated")
+    ctkAppLauncherConfigure(
+      TARGET ${PROJECT_NAME}-real
+      ${arguments}
+      )
+  else()
+    message(FATAL_ERROR "Problem with TEST_FUNCTION parameter. Unknown value [${TEST_FUNCTION}]")
+  endif()
+
+else()
+  include(${CTKAPPLAUNCHER_DIR}/CMake/ctkAppLauncher.cmake)
+
+  if(TEST_FUNCTION STREQUAL "Deprecated")
+    ctkAppLauncherConfigure(
+      TARGET ${PROJECT_NAME}-real
+      ${arguments}
+      )
+  else()
+    message(FATAL_ERROR "Problem with TEST_FUNCTION parameter. Unknown value [${TEST_FUNCTION}]")
+  endif()
+endif()
+
+set(expected_target "${PROJECT_NAME}ConfigureLauncher")
+if(NOT TARGET "${expected_target}")
+  message(FATAL_ERROR "Missing expected target: ${expected_target}")
+endif()
