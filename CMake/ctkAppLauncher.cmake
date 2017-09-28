@@ -380,6 +380,7 @@ function(ctk_applauncher_configure)
   set(options
     VERBOSE_CONFIG
     SPLASHSCREEN_DISABLED
+    EXCLUDE_FROM_ALL
     )
   set(oneValueArgs
     APPLICATION_EXECUTABLE_NAME
@@ -577,8 +578,13 @@ function(ctk_applauncher_configure)
     COMMENT ${comment}
     )
 
+  set(all ALL)
+  if(CTKAPPLAUNCHER_EXCLUDE_FROM_ALL)
+    set(all)
+  endif()
+
   # Create target for launcher
-  add_custom_target(${CTKAPPLAUNCHER_APPLICATION_NAME}ConfigureLauncher ALL
+  add_custom_target(${CTKAPPLAUNCHER_APPLICATION_NAME}ConfigureLauncher ${all}
     DEPENDS
       ${configured_launcher_executable}
       ${configured_launcher_settings}
