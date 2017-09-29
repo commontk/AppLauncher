@@ -86,6 +86,10 @@ function(applauncher_add_test name)
   endif()
   # Set labels
   set_property(TEST ${name} PROPERTY LABELS "ctkAppLauncher")
+  foreach(label IN LISTS TEST_LABELS)
+    set_property(TEST "${name}" APPEND PROPERTY LABELS ${label})
+  endforeach()
+
   # Environment
   set_property(TEST ${name} PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${QT_LIBRARY_DIR}")
 
@@ -100,10 +104,12 @@ endfunction()
 set(required_test_deps)
 
 #-----------------------------------------------------------------------------
+set(TEST_LABELS "CompilerRequired")
+#-----------------------------------------------------------------------------
+
+#-----------------------------------------------------------------------------
 applauncher_add_test(App4Test-ConfigureStep)
-set_property(TEST "${testname}" APPEND PROPERTY LABELS "CompilerRequired")
 applauncher_add_test(App4Test-BuildStep)
-set_property(TEST "${testname}" APPEND PROPERTY LABELS "CompilerRequired")
 set_property(TEST "${testname}" APPEND PROPERTY DEPENDS "${previous_testname}")
 
 set(required_test_deps
@@ -113,7 +119,6 @@ set(required_test_deps
 
 #-----------------------------------------------------------------------------
 applauncher_add_test(App4Test-TestRPATHDisabled)
-set_property(TEST "${testname}" APPEND PROPERTY LABELS "CompilerRequired")
 
 #-----------------------------------------------------------------------------
 if(TEST_TREE_TYPE STREQUAL "InstallTree")
@@ -124,12 +129,15 @@ if(TEST_TREE_TYPE STREQUAL "InstallTree")
     -DCTKAppLauncherTest_INSTALL_LauncherLibrary:BOOL=0
     )
   set_property(TEST ${testname} APPEND PROPERTY RESOURCE_LOCK "AppLauncherConfigure")
-  set_property(TEST ${testname} APPEND PROPERTY LABELS "CompilerRequired")
 
   list(APPEND required_test_deps
     ${testname}
     )
 endif()
+
+#-----------------------------------------------------------------------------
+set(TEST_LABELS "")
+#-----------------------------------------------------------------------------
 
 #-----------------------------------------------------------------------------
 applauncher_add_test(AppLauncher-Param-TestLauncherAdditionalSettings)
@@ -183,47 +191,45 @@ if(UNIX)
 endif()
 
 #-----------------------------------------------------------------------------
+set(TEST_LABELS "CompilerRequired")
+#-----------------------------------------------------------------------------
+
+#-----------------------------------------------------------------------------
 set(TEST_SUFFIX "-Deprecated")
 applauncher_add_test(App4ConfigureLauncherTest-ConfigureStep -DWITH_CONFIG_FILE:BOOL=0 -DTEST_FUNCTION:STRING=Deprecated)
-set_property(TEST "${testname}" APPEND PROPERTY LABELS "CompilerRequired")
 applauncher_add_test(App4ConfigureLauncherTest-BuildStep ${test_options})
-set_property(TEST "${testname}" APPEND PROPERTY LABELS "CompilerRequired")
 set_property(TEST "${testname}" APPEND PROPERTY DEPENDS "${previous_testname}")
 set(TEST_SUFFIX "")
 
 #-----------------------------------------------------------------------------
 set(TEST_SUFFIX "-WithConfigFile-Deprecated")
 applauncher_add_test(App4ConfigureLauncherTest-ConfigureStep -DWITH_CONFIG_FILE:BOOL=1 -DTEST_FUNCTION:STRING=Deprecated)
-set_property(TEST "${testname}" APPEND PROPERTY LABELS "CompilerRequired")
 applauncher_add_test(App4ConfigureLauncherTest-BuildStep ${test_options})
-set_property(TEST "${testname}" APPEND PROPERTY LABELS "CompilerRequired")
 set_property(TEST "${testname}" APPEND PROPERTY DEPENDS "${previous_testname}")
 set(TEST_SUFFIX "")
 
 #-----------------------------------------------------------------------------
 set(TEST_SUFFIX "-WithConfigFile-ForTarget")
 applauncher_add_test(App4ConfigureLauncherTest-ConfigureStep -DWITH_CONFIG_FILE:BOOL=1 -DTEST_FUNCTION:STRING=ForTarget)
-set_property(TEST "${testname}" APPEND PROPERTY LABELS "CompilerRequired")
 applauncher_add_test(App4ConfigureLauncherTest-BuildStep ${test_options})
-set_property(TEST "${testname}" APPEND PROPERTY LABELS "CompilerRequired")
 set_property(TEST "${testname}" APPEND PROPERTY DEPENDS "${previous_testname}")
 
 applauncher_add_test(ConfiguredAppLauncher-ConfigurationContents ${test_options})
-set_property(TEST "${testname}" APPEND PROPERTY LABELS "CompilerRequired")
 set_property(TEST ${testname} APPEND PROPERTY DEPENDS ${previous_testname})
 applauncher_add_test(ConfiguredAppLauncher-LauncherExecutable ${test_options})
-set_property(TEST "${testname}" APPEND PROPERTY LABELS "CompilerRequired")
 set_property(TEST "${testname}" APPEND PROPERTY DEPENDS "${previous_testname}")
 set(TEST_SUFFIX "")
 
 #-----------------------------------------------------------------------------
 set(TEST_SUFFIX "-WithConfigFile-ForExecutable")
 applauncher_add_test(App4ConfigureLauncherTest-ConfigureStep -DWITH_CONFIG_FILE:BOOL=1 -DTEST_FUNCTION:STRING=ForExecutable)
-set_property(TEST "${testname}" APPEND PROPERTY LABELS "CompilerRequired")
 applauncher_add_test(App4ConfigureLauncherTest-BuildStep ${test_options})
-set_property(TEST "${testname}" APPEND PROPERTY LABELS "CompilerRequired")
 set_property(TEST "${testname}" APPEND PROPERTY DEPENDS "${previous_testname}")
 set(TEST_SUFFIX "")
+
+#-----------------------------------------------------------------------------
+set(TEST_LABELS "")
+#-----------------------------------------------------------------------------
 
 #-----------------------------------------------------------------------------
 # Test "find_package(CTKAppLauncher)" can be used in script mode
