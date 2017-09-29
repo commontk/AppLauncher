@@ -225,6 +225,11 @@ set(TEST_SUFFIX "-WithConfigFile-ForExecutable")
 applauncher_add_test(App4ConfigureLauncherTest-ConfigureStep -DWITH_CONFIG_FILE:BOOL=1 -DTEST_FUNCTION:STRING=ForExecutable)
 applauncher_add_test(App4ConfigureLauncherTest-BuildStep ${test_options})
 set_property(TEST "${testname}" APPEND PROPERTY DEPENDS "${previous_testname}")
+
+applauncher_add_test(ConfiguredAppLauncher-ConfigurationContents ${test_options})
+set_property(TEST ${testname} APPEND PROPERTY DEPENDS ${previous_testname})
+applauncher_add_test(ConfiguredAppLauncher-LauncherExecutable ${test_options})
+set_property(TEST "${testname}" APPEND PROPERTY DEPENDS "${previous_testname}")
 set(TEST_SUFFIX "")
 
 #-----------------------------------------------------------------------------
