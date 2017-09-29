@@ -328,7 +328,9 @@ function(ctkAppLauncherConfigureForTarget)
     ${CTKAPPLAUNCHER_UNPARSED_ARGUMENTS}
     )
 
-  add_dependencies(${CTKAPPLAUNCHER_APPLICATION_NAME}ConfigureLauncher ${CTKAPPLAUNCHER_TARGET})
+  if(NOT DEFINED CMAKE_SCRIPT_MODE_FILE)
+    add_dependencies(${CTKAPPLAUNCHER_APPLICATION_NAME}ConfigureLauncher ${CTKAPPLAUNCHER_TARGET})
+  endif()
 
   # Outputs
   if(NOT CTKAPPLAUNCHER_COPY_LAUNCHER_COMMAND_VAR STREQUAL "")
@@ -598,36 +600,49 @@ function(ctk_applauncher_configure)
     ${INSTALL_SETTINGS_CONFIGURATION_FILEPATH}
     )
 
-  # Create command to copy the launcher and generate its configuration files
-  add_custom_command(
-    DEPENDS ${commands_depends}
-    OUTPUT
-      ${configured_launcher_executable}
-      ${configured_launcher_settings}
-      ${configured_launcher_settings_to_install}
-    COMMAND ${copy_command}
-    COMMAND ${configure_command}
-    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-    COMMENT ${comment}
-    )
+  if(NOT DEFINED CMAKE_SCRIPT_MODE_FILE)
 
-  set(all ALL)
-  if(CTKAPPLAUNCHER_EXCLUDE_FROM_ALL)
-    set(all)
+    # Create command to copy the launcher and generate its configuration files
+    add_custom_command(
+      DEPENDS ${commands_depends}
+      OUTPUT
+        ${configured_launcher_executable}
+        ${configured_launcher_settings}
+        ${configured_launcher_settings_to_install}
+      COMMAND ${copy_command}
+      COMMAND ${configure_command}
+      WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+      COMMENT ${comment}
+      )
+
+    set(all ALL)
+    if(CTKAPPLAUNCHER_EXCLUDE_FROM_ALL)
+      set(all)
+    endif()
+
+    # Create target for launcher
+    add_custom_target(${CTKAPPLAUNCHER_APPLICATION_NAME}ConfigureLauncher ${all}
+      DEPENDS
+        ${configured_launcher_executable}
+        ${configured_launcher_settings}
+        ${configured_launcher_settings_to_install}
+      )
+  else()
+
+    execute_process(
+      COMMAND ${copy_command}
+      )
+    execute_process(
+      COMMAND ${configure_command}
+      )
+
   endif()
-
-  # Create target for launcher
-  add_custom_target(${CTKAPPLAUNCHER_APPLICATION_NAME}ConfigureLauncher ${all}
-    DEPENDS
-      ${configured_launcher_executable}
-      ${configured_launcher_settings}
-      ${configured_launcher_settings_to_install}
-    )
 
   # Outputs
   set(copy_command ${copy_command} PARENT_SCOPE)
   set(configure_command ${configure_command} PARENT_SCOPE)
   set(commands_depends ${commands_depends} PARENT_SCOPE)
+
 endfunction()
 
 #
