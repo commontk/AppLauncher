@@ -49,6 +49,7 @@ set(command ${CMAKE_COMMAND}
   -DCMAKE_BUILD_TYPE:STRING=${app4configurelaunchertest_build_type}
   ${args}
   -DWITH_CONFIG_FILE:BOOL=${WITH_CONFIG_FILE}
+  -DSCRIPT_MODE:STRING=${SCRIPT_MODE}
   -DCTKAPPLAUNCHER_BUILD_CONFIGURATIONS:STRING=${TEST_CONFIGURATION}
   -G ${app4configurelaunchertest_cmake_generator}
   ${app4configurelaunchertest_source_dir}

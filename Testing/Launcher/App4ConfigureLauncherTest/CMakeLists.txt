@@ -90,7 +90,17 @@ else()
   endif()
 endif()
 
-set(expected_target "${PROJECT_NAME}ConfigureLauncher")
-if(NOT TARGET "${expected_target}")
-  message(FATAL_ERROR "Missing expected target: ${expected_target}")
+if(SCRIPT_MODE STREQUAL "Configure")
+
+  set(expected_target "${PROJECT_NAME}ConfigureLauncher")
+  if(NOT TARGET "${expected_target}")
+    message(FATAL_ERROR "Missing expected target: ${expected_target}")
+  endif()
+
+elseif(SCRIPT_MODE STREQUAL "Script")
+
+  # NA
+
+else()
+  message(FATAL_ERROR "Unknown SCRIPT_MODE value [${SCRIPT_MODE}]")
 endif()
