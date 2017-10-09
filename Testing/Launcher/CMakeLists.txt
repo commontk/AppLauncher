@@ -151,6 +151,7 @@ applauncher_add_test(AppLauncher-Param-TestLauncherLaunch-SearchPATH-WithLaunche
 applauncher_add_test(AppLauncher-Param-TestLauncherLaunch-WithArguments)
 applauncher_add_test(AppLauncher-Param-TestLauncherLaunch-WithoutValue)
 applauncher_add_test(AppLauncher-Param-TestLauncherLoadEnvironment)
+applauncher_add_test(AppLauncher-Param-TestLauncherLoadEnvironmentLevel1)
 applauncher_add_test(AppLauncher-Param-TestLauncherNoSplash)
 applauncher_add_test(AppLauncher-Param-TestLauncherTimeout)
 applauncher_add_test(AppLauncher-Param-TestLauncherVerbose)
@@ -177,6 +178,7 @@ applauncher_add_test(AppLauncher-Settings-TestLauncherAdditionalSettings-FileBas
 applauncher_add_test(AppLauncher-Settings-TestLauncherAdditionalSettings-WithoutRevision)
 applauncher_add_test(AppLauncher-Settings-TestLauncherLaunch-SearchPATH)
 applauncher_add_test(AppLauncher-Settings-TestLauncherLoadEnvironment)
+applauncher_add_test(AppLauncher-Settings-TestLauncherLoadEnvironmentLevel1)
 applauncher_add_test(AppLauncher-Settings-TestPATH)
 
 applauncher_add_test(AppLauncher-TestAppExitCode)

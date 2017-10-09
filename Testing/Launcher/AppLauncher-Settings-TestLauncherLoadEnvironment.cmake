@@ -66,8 +66,10 @@ if(rv)
 endif()
 
 function(check_env context)
-  check_unexpected_string("${ov}" "APPLAUNCHER_LEVEL=2" "${context}")
-  check_expected_string("${ov}" "APPLAUNCHER_0_VAR_FOR_ENV_LOAD_TEST" "${context}")
+  check_unexpected_string("${ov}" "APPLAUNCHER_LEVEL=1" "${context}")
+  check_unexpected_string("${ov}" "APPLAUNCHER_LEVEL=0" "${context}")
+  check_unexpected_string("${ov}" "APPLAUNCHER_0_VAR_FOR_ENV_LOAD_TEST" "${context}")
+  check_expected_string("${ov}" "VAR_FOR_ENV_LOAD_TEST" "${context}")
 endfunction()
 
 check_env("flags '${launcher_arg}'")

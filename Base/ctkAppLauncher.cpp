@@ -450,11 +450,13 @@ void ctkAppLauncherPrivate::buildEnvironment(QProcessEnvironment &env)
     env.insert(key, value);
     }
 
-  QProcessEnvironment baseEnv = this->SystemEnvironment;
+  // Do not save environment if one should be loaded
   if(this->LoadEnvironment >= 0)
     {
-    baseEnv = env;
+    return;
     }
+
+  QProcessEnvironment baseEnv = this->SystemEnvironment;
 
 #if QT_VERSION >= 0x040800
   QStringList baseEnvKeys = baseEnv.keys();
