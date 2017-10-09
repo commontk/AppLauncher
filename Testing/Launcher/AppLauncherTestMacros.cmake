@@ -40,3 +40,19 @@ function(extract_application_settings_value settings_name settings_value_varname
 
   set(${settings_value_varname} ${settings_value} PARENT_SCOPE)
 endfunction()
+
+function(check_expected_string text expected_str context)
+  string(FIND "${text}" "${expected_str}" pos)
+  if(${pos} STREQUAL -1)
+    message(FATAL_ERROR "Problem with ${context} - expected_str:${expected_str} "
+                        "not found in text:${text}")
+  endif()
+endfunction()
+
+function(check_unexpected_string text unexpected_str context)
+  string(FIND "${text}" "${unexpected_str}" pos)
+  if(NOT ${pos} STREQUAL -1)
+    message(FATAL_ERROR "Problem with ${context} - unexpected_str:${unexpected_str} "
+                        "found in text:${text}")
+  endif()
+endfunction()
