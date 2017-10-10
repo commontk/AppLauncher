@@ -456,25 +456,13 @@ void ctkAppLauncherPrivate::buildEnvironment(QProcessEnvironment &env)
     return;
     }
 
-  QProcessEnvironment baseEnv = this->SystemEnvironment;
-
-#if QT_VERSION >= 0x040800
-  QStringList baseEnvKeys = baseEnv.keys();
-#else
-  QStringList baseEnvKeys;
-  foreach (const QString& pair, baseEnv.toStringList())
-    {
-    baseEnvKeys.append(pair.split("=").first());
-    }
-#endif
-
   QSet<QString> variables =
       q->envVars().keys().toSet() +
       q->pathsEnvVars().keys().toSet() +
-      baseEnvKeys.toSet();
+      this->SystemEnvironmentKeys.toSet();
 
   ctkAppLauncherEnvironment::saveEnvironment(
-        baseEnv, variables.values(), env);
+        this->SystemEnvironment, variables.values(), env);
 }
 
 // --------------------------------------------------------------------------

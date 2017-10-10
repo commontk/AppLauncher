@@ -98,6 +98,7 @@ public:
 //  QSharedPointer<QSplashScreen>   SplashScreen;
 //  QScopedPointer<QPixmap>         SplashPixmap;
   QProcessEnvironment             SystemEnvironment;
+  QStringList                     SystemEnvironmentKeys;
 
   /// Extra 'application to launch'
 //  QString                                          ExtraApplicationToLaunchLongArgument;
