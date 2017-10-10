@@ -353,7 +353,7 @@ int checkReadSettingsWithoutExpand()
 
 #if defined(Q_OS_WIN32)
   CHECK_QSTRINGLIST(
-        pathsEnvVars.value("PATH"),
+        pathsEnvVars.value("Path"),
         QStringList()
                 << "<APPLAUNCHER_DIR>/cow/<APPLAUNCHER_NAME>"
                 << "/path/to/pig-<env:BOTH>"
@@ -517,7 +517,7 @@ int checkReadSettingsWithExpand()
 
 #if defined(Q_OS_WIN32)
   CHECK_QSTRINGLIST(
-        pathsEnvVars.value("PATH"),
+        pathsEnvVars.value("Path"),
         QStringList()
                 << "/awesome/path/to/cow/AwesomeApp"
                 << "/path/to/pig-cat-and-dog"

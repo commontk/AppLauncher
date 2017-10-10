@@ -176,7 +176,7 @@ if(WIN32)
   set(expected_ov_lines
     "${additional_env_var_name_2}=${additional_env_var_value_2}"
     "${additional_env_var_name_1}=${additional_env_var_value_1}"
-    "PATH=${additional_path_1}${pathsep}${additional_path_2}${pathsep}${regular_path_1}${pathsep}${regular_path_2}${pathsep}${additional_library_path}${pathsep}${regular_library_path_1}${pathsep}${regular_library_path_2}"
+    "Path=${additional_path_1}${pathsep}${additional_path_2}${pathsep}${regular_path_1}${pathsep}${regular_path_2}${pathsep}${additional_library_path}${pathsep}${regular_library_path_1}${pathsep}${regular_library_path_2}"
     "${regular_env_var_name_2}=${regular_env_var_value_2}\n"
     "${regular_env_var_name_1}=${regular_env_var_value_1}\n"
     "${regular_pathenv_var_name_1}=${expected_pathenv_var_value_1}\n"

@@ -84,7 +84,7 @@ void ctkAppLauncherSettingsTester::testLibraryPathVariableName()
 {
   ctkAppLauncherSettings appLauncherSettings;
 #if defined(Q_OS_WIN32)
-  QCOMPARE(appLauncherSettings.libraryPathVariableName(), QString("PATH"));
+  QCOMPARE(appLauncherSettings.libraryPathVariableName(), QString("Path"));
 #elif defined(Q_OS_MAC)
   QCOMPARE(appLauncherSettings.libraryPathVariableName(), QString("DYLD_LIBRARY_PATH"));
 #elif defined(Q_OS_LINUX)

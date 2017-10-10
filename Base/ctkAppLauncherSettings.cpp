@@ -8,6 +8,7 @@
 #include <QSettings>
 
 // CTK includes
+#include "ctkAppLauncherEnvironment.h"
 #include "ctkAppLauncherSettings.h"
 #include "ctkAppLauncherSettings_p.h"
 #include "ctkSettingsHelper.h"
@@ -39,6 +40,12 @@ ctkAppLauncherSettingsPrivate::ctkAppLauncherSettingsPrivate(ctkAppLauncherSetti
   this->PathVariableName = "PATH";
 
   this->SystemEnvironment = QProcessEnvironment::systemEnvironment();
+
+  this->LibraryPathVariableName = ctkAppLauncherEnvironment::casedVariableName(
+        this->SystemEnvironment.keys(), this->LibraryPathVariableName);
+
+  this->PathVariableName = ctkAppLauncherEnvironment::casedVariableName(
+        this->SystemEnvironment.keys(), this->PathVariableName);
 }
 
 // --------------------------------------------------------------------------

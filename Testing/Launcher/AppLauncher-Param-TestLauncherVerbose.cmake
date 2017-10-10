@@ -33,7 +33,7 @@ if(rv)
 endif()
 
 if(WIN32)
-  set(regex "Setting env. variable \\[PATH\\].*info: Starting")
+  set(regex "Setting env. variable \\[Path\\].*info: Starting")
 else()
   set(regex "Setting env. variable \\[(DY)?LD_LIBRARY_PATH\\].*info: Starting")
 endif()
