@@ -2,6 +2,7 @@
 #include <ctkAppLauncherEnvironment.h>
 
 // Qt includes
+#include <QDebug>
 #include <QSet>
 
 // STD includes
@@ -70,15 +71,7 @@ QProcessEnvironment ctkAppLauncherEnvironment::environment(int requestedLevel)
     return QProcessEnvironment();
     }
   QProcessEnvironment env(currentEnv);
-#if QT_VERSION >= 0x040800
-  QStringList currentEnvKeys = currentEnv.keys();
-#else
-  QStringList currentEnvKeys;
-  foreach (const QString& pair, currentEnv.toStringList())
-    {
-    currentEnvKeys.append(pair.split("=").first());
-    }
-#endif
+  QStringList currentEnvKeys = Self::envKeys(currentEnv);
   QStringList requestedEnvKeys;
   foreach(const QString& varname, currentEnvKeys)
     {
@@ -146,6 +139,57 @@ void ctkAppLauncherEnvironment::saveEnvironment(
     QString saved_value = systemEnvironment.value(varname, "");
     env.insert(saved_varname, saved_value);
     }
+}
+
+// --------------------------------------------------------------------------
+void ctkAppLauncherEnvironment::updateCurrentEnvironment(const QProcessEnvironment& environment)
+{
+  QStringList envKeys = Self::envKeys(environment);
+
+  QProcessEnvironment curEnv = QProcessEnvironment::systemEnvironment();
+  QStringList curKeys = Self::envKeys(curEnv);
+
+  // Unset variables not found in the provided environment
+  QStringList variablesToUnset = (curKeys.toSet() - envKeys.toSet()).toList();
+  foreach(const QString& varName, variablesToUnset)
+    {
+#if defined(Q_OS_WIN32)
+    bool success = qputenv(varName.toLatin1(), QString("").toLatin1());
+#else
+    bool success = unsetenv(varName.toLatin1()) == EXIT_SUCCESS;
+#endif
+    if (!success)
+      {
+      qWarning() << "Failed to unset environment variable" << varName;
+      }
+    }
+
+  // Set variables
+  foreach(const QString& varName, envKeys)
+    {
+    QString varValue = environment.value(varName);
+    bool success = qputenv(varName.toLatin1(), varValue.toLatin1());
+    if (!success)
+      {
+      qWarning() << "Failed to set environment variable"
+                 << varName << "=" << varValue;
+      }
+    }
+}
+
+// ----------------------------------------------------------------------------
+QStringList ctkAppLauncherEnvironment::envKeys(const QProcessEnvironment& env)
+{
+#if QT_VERSION >= 0x040800
+  return env.keys();
+#else
+  QStringList envKeys;
+  foreach (const QString& pair, env.toStringList())
+    {
+    envKeys.append(pair.split("=").first());
+    }
+  return envKeys;
+#endif
 }
 
 // --------------------------------------------------------------------------
