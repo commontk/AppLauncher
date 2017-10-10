@@ -94,6 +94,7 @@ public:
 //  bool                            DetachApplicationToLaunch;
   QString                         PathSep;
   QString                         LibraryPathVariableName;
+  QString                         PathVariableName;
 //  QSharedPointer<QSplashScreen>   SplashScreen;
 //  QScopedPointer<QPixmap>         SplashPixmap;
   QProcessEnvironment             SystemEnvironment;

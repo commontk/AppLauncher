@@ -36,6 +36,8 @@ ctkAppLauncherSettingsPrivate::ctkAppLauncherSettingsPrivate(ctkAppLauncherSetti
 # endif
 #endif
 
+  this->PathVariableName = "PATH";
+
   this->SystemEnvironment = QProcessEnvironment::systemEnvironment();
 }
 
@@ -407,10 +409,10 @@ QHash<QString, QStringList> ctkAppLauncherSettings::pathsEnvVars(bool expand /* 
 {
   QHash<QString, QStringList> newVars = this->additionalPathsVars(expand);
 #ifdef Q_OS_WIN32
-  newVars["PATH"] = (this->paths(expand) + this->libraryPaths(expand));
+  newVars[this->pathVariableName()] = (this->paths(expand) + this->libraryPaths(expand));
 #else
   newVars[this->libraryPathVariableName()] = this->libraryPaths(expand);
-  newVars["PATH"] = this->paths(expand);
+  newVars[this->pathVariableName()] = this->paths(expand);
 #endif
   return newVars;
 }
@@ -451,4 +453,11 @@ QString ctkAppLauncherSettings::libraryPathVariableName() const
 {
   Q_D(const ctkAppLauncherSettings);
   return d->LibraryPathVariableName;
+}
+
+// --------------------------------------------------------------------------
+QString ctkAppLauncherSettings::pathVariableName() const
+{
+  Q_D(const ctkAppLauncherSettings);
+  return d->PathVariableName;
 }
