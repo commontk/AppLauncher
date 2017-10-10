@@ -157,6 +157,21 @@ bool ctkAppLauncherEnvironment::isReservedVariableName(const QString& varname)
 }
 
 // --------------------------------------------------------------------------
+QString ctkAppLauncherEnvironment::casedVariableName(const QStringList& names, const QString& variableName)
+{
+  QRegExp rx(variableName, Qt::CaseInsensitive);
+  int index = names.indexOf(rx);
+  if (index >= 0)
+    {
+    return names.value(index);
+    }
+  else
+    {
+    return variableName;
+    }
+}
+
+// --------------------------------------------------------------------------
 QStringList ctkAppLauncherEnvironment::excludeReservedVariableNames(const QStringList& variableNames)
 {
   QStringList updatedList;

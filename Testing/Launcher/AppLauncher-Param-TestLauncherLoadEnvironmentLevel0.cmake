@@ -43,7 +43,8 @@ if(rv)
 endif()
 
 # --------------------------------------------------------------------------
-set(command ${launcher_exe} --launcher-load-environment 0 --launcher-dump-environment)
+set(launcher_arg "--launcher-dump-environment")
+set(command ${launcher_exe} --launcher-load-environment 0 ${launcher_arg})
 execute_process(
   COMMAND ${command}
   WORKING_DIRECTORY ${launcher_binary_dir}
@@ -58,25 +59,18 @@ if(rv)
                       "directory [${launcher_binary_dir}]\n${ev}")
 endif()
 
-#
-# Check that the loaded environment is also saved
-#
-set(unexpected_ov_str "APPLAUNCHER_LEVEL=2")
-string(FIND "${ov}" "${unexpected_ov_str}" pos)
-if(NOT ${pos} STREQUAL -1)
-  message(FATAL_ERROR "Problem with flags '--launcher-load-environment 0 --launcher-dump-environment' - unexpected_ov_str:${unexpected_ov_str} "
-                      "found in current_ov:${ov}")
-endif()
+function(check_env context)
+  check_unexpected_string("${ov}" "APPLAUNCHER_LEVEL=1" "${context}")
+  check_unexpected_string("${ov}" "APPLAUNCHER_LEVEL=0" "${context}")
+  check_unexpected_string("${ov}" "APPLAUNCHER_0_VAR_FOR_ENV_LOAD_TEST" "${context}")
+  check_expected_string("${ov}" "VAR_FOR_ENV_LOAD_TEST" "${context}")
+endfunction()
 
-set(expected_ov_str "APPLAUNCHER_0_VAR_FOR_ENV_LOAD_TEST")
-string(FIND "${ov}" "${expected_ov_str}" pos)
-if(${pos} STREQUAL -1)
-  message(FATAL_ERROR "Problem with flags '--launcher-load-environment 0 --launcher-dump-environment' - expected_ov_str:${expected_ov_str} "
-                      "not found in current_ov:${ov}")
-endif()
+check_env("flags '--launcher-load-environment 0 ${launcher_arg}'")
 
 # --------------------------------------------------------------------------
-set(command ${launcher_exe} --launcher-load-environment 0 --launcher-show-set-environment-commands)
+set(launcher_arg "--launcher-show-set-environment-commands")
+set(command ${launcher_exe} --launcher-load-environment 0 ${launcher_arg})
 execute_process(
   COMMAND ${command}
   WORKING_DIRECTORY ${launcher_binary_dir}
@@ -91,19 +85,4 @@ if(rv)
                       "directory [${launcher_binary_dir}]\n${ev}")
 endif()
 
-#
-# Check that the loaded environment is also saved
-#
-set(unexpected_ov_str "APPLAUNCHER_LEVEL=2")
-string(FIND "${ov}" "${unexpected_ov_str}" pos)
-if(NOT ${pos} STREQUAL -1)
-  message(FATAL_ERROR "Problem with flags '--launcher-load-environment 0 --launcher-show-set-environment-commands' - unexpected_ov_str:${unexpected_ov_str} "
-                      "found in current_ov:${ov}")
-endif()
-
-set(expected_ov_str "APPLAUNCHER_0_VAR_FOR_ENV_LOAD_TEST")
-string(FIND "${ov}" "${expected_ov_str}" pos)
-if(${pos} STREQUAL -1)
-  message(FATAL_ERROR "Problem with flags '--launcher-load-environment 0 --launcher-show-set-environment-commands' - expected_ov_str:${expected_ov_str} "
-                      "not found in current_ov:${ov}")
-endif()
+check_env("flags '--launcher-load-environment 0 ${launcher_arg}'")

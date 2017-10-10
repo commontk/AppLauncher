@@ -226,6 +226,9 @@ public:
   ///
   QString libraryPathVariableName() const;
 
+  ///  \brief Get path variable name.
+  QString pathVariableName() const;
+
   /// Return user specific additional settings file associated with the \c ApplicationOrganization,
   /// \c ApplicationName and \c ApplicationRevision read from the main settings using
   /// readSettings(const QString&).

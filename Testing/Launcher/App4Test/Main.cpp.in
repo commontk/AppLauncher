@@ -69,6 +69,17 @@ int check_env_var(const char* varname, const char* expected_value)
   return EXIT_SUCCESS;
 }
 
+int check_unexpected_env_var(const char* varname)
+{
+  char * varStr = getenv(varname);
+  if (varStr)
+    {
+    std::cout << "Environment variable '" << varname << "' with value [" << varStr << "] is unexpected !" << std::endl;
+    return EXIT_FAILURE;
+    }
+  return EXIT_SUCCESS;
+}
+
 int main(int argc, char** argv)
 {
   //std::cout << "Hello World !" << std::endl;
@@ -167,6 +178,28 @@ int main(int argc, char** argv)
         return EXIT_FAILURE;
         }
 
+      // Check that the loaded environment is also saved
+      if (check_unexpected_env_var(
+            /* varname= */ "APPLAUNCHER_LEVEL") != EXIT_SUCCESS)
+        {
+        return EXIT_FAILURE;
+        }
+      }
+    else if (argName == "--check-environment-load-level1")
+      {
+      verboseLibInstantiation = false;
+      if (check_env_var(
+            /* varname= */ "VAR_FOR_ENV_LOAD_TEST",
+            /* expected_value= */ "set-from-level-1") != EXIT_SUCCESS)
+        {
+        return EXIT_FAILURE;
+        }
+      if (check_env_var(
+            /* varname= */ "VAR_FROM_SETTINGS",
+            /* expected_value= */ "set-from-settings") != EXIT_SUCCESS)
+        {
+        return EXIT_FAILURE;
+        }
       // Check that the loaded environment is also saved
       if (check_env_var(
             /* varname= */ "APPLAUNCHER_LEVEL",

@@ -112,6 +112,11 @@ public:
   /// as well as name prefixed with `APPLAUNCHER_<level>_` where `<level>` is an integer.
   static bool isReservedVariableName(const QString& varname);
 
+  /// Return first variable name found in \c names performing a case insensitive search for \c variableName.
+  ///
+  /// If no variable was found, \c variableName is returned.
+  static QString casedVariableName(const QStringList& names, const QString& variableName);
+
 protected:
   ctkAppLauncherEnvironment(ctkAppLauncherEnvironmentPrivate* pimpl, QObject* parentObject);
   QScopedPointer<ctkAppLauncherEnvironmentPrivate> d_ptr;

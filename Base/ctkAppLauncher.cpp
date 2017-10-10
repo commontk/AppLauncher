@@ -300,7 +300,7 @@ bool ctkAppLauncherPrivate::disableSplash() const
 // --------------------------------------------------------------------------
 QString ctkAppLauncherPrivate::searchPaths(const QString& executableName, const QStringList& extensions)
 {
-  QStringList paths = this->SystemEnvironment.value("PATH").split(this->PathSep);
+  QStringList paths = this->SystemEnvironment.value(this->PathVariableName).split(this->PathSep);
   paths = this->ListOfPaths + paths;
   foreach(const QString& path, paths)
     {
@@ -353,7 +353,7 @@ bool ctkAppLauncherPrivate::extractLauncherNameAndDir(const QString& application
   // In case a symlink to the launcher is available from the PATH, resolve its location.
   if (!fileInfo.exists())
     {
-    QStringList paths = this->SystemEnvironment.value("PATH").split(this->PathSep);
+    QStringList paths = this->SystemEnvironment.value(this->PathVariableName).split(this->PathSep);
     foreach(const QString& path, paths)
       {
       QString executablePath = QDir(path).filePath(fileInfo.fileName());
@@ -450,29 +450,19 @@ void ctkAppLauncherPrivate::buildEnvironment(QProcessEnvironment &env)
     env.insert(key, value);
     }
 
-  QProcessEnvironment baseEnv = this->SystemEnvironment;
+  // Do not save environment if one should be loaded
   if(this->LoadEnvironment >= 0)
     {
-    baseEnv = env;
+    return;
     }
-
-#if QT_VERSION >= 0x040800
-  QStringList baseEnvKeys = baseEnv.keys();
-#else
-  QStringList baseEnvKeys;
-  foreach (const QString& pair, baseEnv.toStringList())
-    {
-    baseEnvKeys.append(pair.split("=").first());
-    }
-#endif
 
   QSet<QString> variables =
       q->envVars().keys().toSet() +
       q->pathsEnvVars().keys().toSet() +
-      baseEnvKeys.toSet();
+      this->SystemEnvironmentKeys.toSet();
 
   ctkAppLauncherEnvironment::saveEnvironment(
-        baseEnv, variables.values(), env);
+        this->SystemEnvironment, variables.values(), env);
 }
 
 // --------------------------------------------------------------------------
@@ -704,7 +694,7 @@ void ctkAppLauncher::generateEnvironmentScript(QTextStream &output, bool posix)
   envKeys.sort();
 
   QSet<QString> appendVars = d->AdditionalPathVariables;
-  appendVars << "PATH" << d->LibraryPathVariableName;
+  appendVars << d->PathVariableName << d->LibraryPathVariableName;
 
   static const char* const exportFormatPosix = "declare -x %1;";
   static const char* const appendFormatPosix = "${%1:+%2$%1}";

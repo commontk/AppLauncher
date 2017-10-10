@@ -8,6 +8,7 @@
 #include <QSettings>
 
 // CTK includes
+#include "ctkAppLauncherEnvironment.h"
 #include "ctkAppLauncherSettings.h"
 #include "ctkAppLauncherSettings_p.h"
 #include "ctkSettingsHelper.h"
@@ -36,7 +37,23 @@ ctkAppLauncherSettingsPrivate::ctkAppLauncherSettingsPrivate(ctkAppLauncherSetti
 # endif
 #endif
 
+  this->PathVariableName = "PATH";
+
   this->SystemEnvironment = QProcessEnvironment::systemEnvironment();
+#if QT_VERSION >= 0x040800
+  this->SystemEnvironmentKeys = this->SystemEnvironment.keys();
+#else
+  foreach (const QString& pair, this->SystemEnvironment.toStringList())
+    {
+    this->SystemEnvironmentKeys.append(pair.split("=").first());
+    }
+#endif
+
+  this->LibraryPathVariableName = ctkAppLauncherEnvironment::casedVariableName(
+        this->SystemEnvironmentKeys, this->LibraryPathVariableName);
+
+  this->PathVariableName = ctkAppLauncherEnvironment::casedVariableName(
+        this->SystemEnvironmentKeys, this->PathVariableName);
 }
 
 // --------------------------------------------------------------------------
@@ -407,10 +424,10 @@ QHash<QString, QStringList> ctkAppLauncherSettings::pathsEnvVars(bool expand /* 
 {
   QHash<QString, QStringList> newVars = this->additionalPathsVars(expand);
 #ifdef Q_OS_WIN32
-  newVars["PATH"] = (this->paths(expand) + this->libraryPaths(expand));
+  newVars[this->pathVariableName()] = (this->paths(expand) + this->libraryPaths(expand));
 #else
   newVars[this->libraryPathVariableName()] = this->libraryPaths(expand);
-  newVars["PATH"] = this->paths(expand);
+  newVars[this->pathVariableName()] = this->paths(expand);
 #endif
   return newVars;
 }
@@ -451,4 +468,11 @@ QString ctkAppLauncherSettings::libraryPathVariableName() const
 {
   Q_D(const ctkAppLauncherSettings);
   return d->LibraryPathVariableName;
+}
+
+// --------------------------------------------------------------------------
+QString ctkAppLauncherSettings::pathVariableName() const
+{
+  Q_D(const ctkAppLauncherSettings);
+  return d->PathVariableName;
 }

@@ -272,7 +272,7 @@ if(WIN32)
     "${additional_env_var_name_3}=${expected_additional_env_var_value_3}"
     "${additional_env_var_name_2}=${additional_env_var_value_2}"
     "${additional_env_var_name_1}=${additional_env_var_value_1}"
-    "PATH=${additional_path_1}${pathsep}${additional_path_2}${pathsep}${expected_additional_path_3}${pathsep}${user_additional_path_1}${pathsep}${user_additional_path_2}${pathsep}${expected_user_additional_path_3}${pathsep}${regular_path_1}${pathsep}${regular_path_2}${pathsep}${additional_library_path}${pathsep}${user_additional_library_path}${pathsep}${regular_library_path_1}${pathsep}${regular_library_path_2}"
+    "Path=${additional_path_1}${pathsep}${additional_path_2}${pathsep}${expected_additional_path_3}${pathsep}${user_additional_path_1}${pathsep}${user_additional_path_2}${pathsep}${expected_user_additional_path_3}${pathsep}${regular_path_1}${pathsep}${regular_path_2}${pathsep}${additional_library_path}${pathsep}${user_additional_library_path}${pathsep}${regular_library_path_1}${pathsep}${regular_library_path_2}"
     "${regular_env_var_name_2}=${regular_env_var_value_2}\n"
     "${regular_env_var_name_1}=${regular_env_var_value_1}\n"
     "${regular_pathenv_var_name_1}=${expected_pathenv_var_value_1}\n"
