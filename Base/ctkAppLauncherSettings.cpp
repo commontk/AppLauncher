@@ -40,14 +40,7 @@ ctkAppLauncherSettingsPrivate::ctkAppLauncherSettingsPrivate(ctkAppLauncherSetti
   this->PathVariableName = "PATH";
 
   this->SystemEnvironment = QProcessEnvironment::systemEnvironment();
-#if QT_VERSION >= 0x040800
-  this->SystemEnvironmentKeys = this->SystemEnvironment.keys();
-#else
-  foreach (const QString& pair, this->SystemEnvironment.toStringList())
-    {
-    this->SystemEnvironmentKeys.append(pair.split("=").first());
-    }
-#endif
+  this->SystemEnvironmentKeys = ctkAppLauncherEnvironment::envKeys(this->SystemEnvironment);
 
   this->LibraryPathVariableName = ctkAppLauncherEnvironment::casedVariableName(
         this->SystemEnvironmentKeys, this->LibraryPathVariableName);

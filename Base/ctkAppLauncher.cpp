@@ -682,15 +682,7 @@ void ctkAppLauncher::generateEnvironmentScript(QTextStream &output, bool posix)
   QProcessEnvironment env;
 
   d->buildEnvironment(env);
-#if QT_VERSION >= 0x040800
-  QStringList envKeys = env.keys();
-#else // emulate above on older versions of Qt
-  QStringList envKeys;
-  foreach (const QString& pair, env.toStringList())
-    {
-    envKeys.append(pair.split("=").first());
-    }
-#endif
+  QStringList envKeys = ctkAppLauncherEnvironment::envKeys(env);
   envKeys.sort();
 
   QSet<QString> appendVars = d->AdditionalPathVariables;

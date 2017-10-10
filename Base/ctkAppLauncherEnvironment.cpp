@@ -71,15 +71,7 @@ QProcessEnvironment ctkAppLauncherEnvironment::environment(int requestedLevel)
     return QProcessEnvironment();
     }
   QProcessEnvironment env(currentEnv);
-#if QT_VERSION >= 0x040800
-  QStringList currentEnvKeys = currentEnv.keys();
-#else
-  QStringList currentEnvKeys;
-  foreach (const QString& pair, currentEnv.toStringList())
-    {
-    currentEnvKeys.append(pair.split("=").first());
-    }
-#endif
+  QStringList currentEnvKeys = Self::envKeys(currentEnv);
   QStringList requestedEnvKeys;
   foreach(const QString& varname, currentEnvKeys)
     {
@@ -152,10 +144,10 @@ void ctkAppLauncherEnvironment::saveEnvironment(
 // --------------------------------------------------------------------------
 void ctkAppLauncherEnvironment::updateCurrentEnvironment(const QProcessEnvironment& environment)
 {
-  QStringList envKeys = environment.keys();
+  QStringList envKeys = Self::envKeys(environment);
 
   QProcessEnvironment curEnv = QProcessEnvironment::systemEnvironment();
-  QStringList curKeys = curEnv.keys();
+  QStringList curKeys = Self::envKeys(curEnv);
 
   // Unset variables not found in the provided environment
   QStringList variablesToUnset = (curKeys.toSet() - envKeys.toSet()).toList();
@@ -183,6 +175,21 @@ void ctkAppLauncherEnvironment::updateCurrentEnvironment(const QProcessEnvironme
                  << varName << "=" << varValue;
       }
     }
+}
+
+// ----------------------------------------------------------------------------
+QStringList ctkAppLauncherEnvironment::envKeys(const QProcessEnvironment& env)
+{
+#if QT_VERSION >= 0x040800
+  return env.keys();
+#else
+  QStringList envKeys;
+  foreach (const QString& pair, env.toStringList())
+    {
+    envKeys.append(pair.split("=").first());
+    }
+  return envKeys;
+#endif
 }
 
 // --------------------------------------------------------------------------
