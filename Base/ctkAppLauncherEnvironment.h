@@ -101,6 +101,11 @@ public:
       const QProcessEnvironment& systemEnvironment,
       const QStringList& variables, QProcessEnvironment& env);
 
+  /// Update current environment using \c environment.
+  ///
+  /// Variables found only in current environment are unset.
+  static void updateCurrentEnvironment(const QProcessEnvironment& environment);
+
   /// Return an updated list of names excluding AppLauncher reserved variable names.
   ///
   /// \sa isReservedVariableName(const QString& varname)
@@ -112,7 +117,7 @@ public:
   /// as well as name prefixed with `APPLAUNCHER_<level>_` where `<level>` is an integer.
   static bool isReservedVariableName(const QString& varname);
 
-  /// Return first variable name found in \c names performing a case insensitive search for \c variableName.
+  /// Return first variable name found in \c names by performing a case insensitive search for \c variableName.
   ///
   /// If no variable was found, \c variableName is returned.
   static QString casedVariableName(const QStringList& names, const QString& variableName);

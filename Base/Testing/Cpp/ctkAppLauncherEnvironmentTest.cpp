@@ -74,6 +74,7 @@ bool CheckStringList(int line, const QString& description,
 class ctkAppLauncherEnvironmentTester: public QObject
 {
   Q_OBJECT
+  typedef ctkAppLauncherEnvironmentTester Self;
 
 private slots:
   void initTestCase();
@@ -85,10 +86,12 @@ private slots:
   void testEnvironment_data();
   void testEnvironment();
 
+  void testUpdateCurrentEnvironment();
+
 private:
   void setEnv(const QString& name, const QString& value);
   void unsetEnv(const QString& name);
-  void compareEnv(const QProcessEnvironment& current, QProcessEnvironment& expected);
+  static QStringList envKeys(const QProcessEnvironment& env);
 
   QProcessEnvironment OriginalEnv;
   QSet<QString> VariableNames;
@@ -109,15 +112,7 @@ void ctkAppLauncherEnvironmentTester::cleanup()
     this->unsetEnv(varName);
     }
   // Reset original values
-#if QT_VERSION >= 0x040800
-  QStringList originalEnvKeys = this->OriginalEnv.keys();
-#else
-  QStringList originalEnvKeys;
-  foreach (const QString& pair, this->OriginalEnv.toStringList())
-    {
-    originalEnvKeys.append(pair.split("=").first());
-    }
-#endif
+  QStringList originalEnvKeys = Self::envKeys(this->OriginalEnv);
   foreach(const QString& varName, originalEnvKeys)
     {
     qputenv(varName.toLatin1(), this->OriginalEnv.value(varName).toLatin1());
@@ -138,6 +133,21 @@ void ctkAppLauncherEnvironmentTester::unsetEnv(const QString& name)
   qputenv(name.toLatin1(), QString("").toLatin1());
 #else
   unsetenv(name.toLatin1());
+#endif
+}
+
+// ----------------------------------------------------------------------------
+QStringList ctkAppLauncherEnvironmentTester::envKeys(const QProcessEnvironment& env)
+{
+#if QT_VERSION >= 0x040800
+  return env.keys();
+#else
+  QStringList envKeys;
+  foreach (const QString& pair, env.toStringList())
+    {
+    envKeys.append(pair.split("=").first());
+    }
+  return envKeys;
 #endif
 }
 
@@ -266,16 +276,7 @@ void ctkAppLauncherEnvironmentTester::testEnvironment()
   QFETCH(int, requestedLevel);
 
   // Update current environment
-#if QT_VERSION >= 0x040800
-  QStringList envKeys = env.keys();
-#else
-  QStringList envKeys;
-  foreach (const QString& pair, env.toStringList())
-    {
-    envKeys.append(pair.split("=").first());
-    }
-#endif
-  foreach(const QString& varName, envKeys)
+  foreach(const QString& varName, Self::envKeys(env))
     {
     this->setEnv(varName, env.value(varName));
     }
@@ -284,6 +285,38 @@ void ctkAppLauncherEnvironmentTester::testEnvironment()
       ctkAppLauncherEnvironment::environment(requestedLevel);
 
   CHECK_QSTRINGLIST(requestedEnv.toStringList(), expectedEnv.toStringList())
+}
+
+// ----------------------------------------------------------------------------
+void ctkAppLauncherEnvironmentTester::testUpdateCurrentEnvironment()
+{
+  {
+  qputenv("SYS_ONLY", "sys-only");
+  qputenv("COMMON", "sys-common");
+  QProcessEnvironment sysEnv = QProcessEnvironment::systemEnvironment();
+  QStringList sysEnvKeys = Self::envKeys(sysEnv);
+  QVERIFY(sysEnvKeys.contains("SYS_ONLY"));
+  QCOMPARE(sysEnv.value("SYS_ONLY"), QString("sys-only"));
+  QVERIFY(sysEnvKeys.contains("COMMON"));
+  QCOMPARE(sysEnv.value("COMMON"), QString("sys-common"));
+  }
+
+  {
+  QProcessEnvironment updatedEnv;
+  updatedEnv.insert("UPDATED_ONLY", "updated-only");
+  updatedEnv.insert("COMMON", "updated-common");
+  ctkAppLauncherEnvironment::updateCurrentEnvironment(updatedEnv);
+  }
+
+  {
+  QProcessEnvironment sysEnv = QProcessEnvironment::systemEnvironment();
+  QStringList sysEnvKeys = Self::envKeys(sysEnv);
+  QVERIFY(!sysEnvKeys.contains("SYS_ONLY"));
+  QVERIFY(sysEnvKeys.contains("COMMON"));
+  QCOMPARE(sysEnv.value("COMMON"), QString("updated-common"));
+  QVERIFY(sysEnvKeys.contains("UPDATED_ONLY"));
+  QCOMPARE(sysEnv.value("UPDATED_ONLY"), QString("updated-only"));
+  }
 }
 
 // ----------------------------------------------------------------------------

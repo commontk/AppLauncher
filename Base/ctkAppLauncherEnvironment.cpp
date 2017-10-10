@@ -2,6 +2,7 @@
 #include <ctkAppLauncherEnvironment.h>
 
 // Qt includes
+#include <QDebug>
 #include <QSet>
 
 // STD includes
@@ -145,6 +146,42 @@ void ctkAppLauncherEnvironment::saveEnvironment(
     QString saved_varname = QString("APPLAUNCHER_%1_%2").arg(launcher_level - 1).arg(varname);
     QString saved_value = systemEnvironment.value(varname, "");
     env.insert(saved_varname, saved_value);
+    }
+}
+
+// --------------------------------------------------------------------------
+void ctkAppLauncherEnvironment::updateCurrentEnvironment(const QProcessEnvironment& environment)
+{
+  QStringList envKeys = environment.keys();
+
+  QProcessEnvironment curEnv = QProcessEnvironment::systemEnvironment();
+  QStringList curKeys = curEnv.keys();
+
+  // Unset variables not found in the provided environment
+  QStringList variablesToUnset = (curKeys.toSet() - envKeys.toSet()).toList();
+  foreach(const QString& varName, variablesToUnset)
+    {
+#if defined(Q_OS_WIN32)
+    bool success = qputenv(varName.toLatin1(), QString("").toLatin1());
+#else
+    bool success = unsetenv(varName.toLatin1()) == EXIT_SUCCESS;
+#endif
+    if (!success)
+      {
+      qWarning() << "Failed to unset environment variable" << varName;
+      }
+    }
+
+  // Set variables
+  foreach(const QString& varName, envKeys)
+    {
+    QString varValue = environment.value(varName);
+    bool success = qputenv(varName.toLatin1(), varValue.toLatin1());
+    if (!success)
+      {
+      qWarning() << "Failed to set environment variable"
+                 << varName << "=" << varValue;
+      }
     }
 }
 
