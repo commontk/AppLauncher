@@ -2,6 +2,7 @@
 
 set -ex
 
+mkdir -p /usr/src/AppLauncher-build
 cd /usr/src/AppLauncher-build
 rm -rf *
 

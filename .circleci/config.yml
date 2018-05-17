@@ -1,0 +1,79 @@
+version: 2
+jobs:
+  build-package-test:
+    working_directory: /usr/src/AppLauncher
+    docker:
+      - image: commontk/qt-static:4.8.6-centos-5.5
+    steps:
+      - checkout
+      - run:
+         command: |
+           /usr/src/AppLauncher/docker-build-package.sh
+      - save_cache:
+          key: applauncher-src-{{ .Revision }}
+          paths: /usr/src/AppLauncher
+      - save_cache:
+          key: applauncher-build-{{ .Revision }}
+          paths: /usr/src/AppLauncher-build
+
+  test:
+    docker:
+      - image: thewtex/opengl:debian
+    steps:
+      - restore_cache:
+          keys:
+            - applauncher-src-{{ .Revision }}
+      - restore_cache:
+          keys:
+            - applauncher-build-{{ .Revision }}
+      - run:
+         name: Workaround the difference between cmake install path in 'commontk/qt-static:4.8.6-centos-5.5' and 'thewtex/opengl:debian' images
+         command: |
+           mkdir -p /usr/src/cmake-3.10.2/bin
+           ln -s $(which cmake) /usr/src/cmake-3.10.2/bin/cmake
+           ln -s $(which cpack) /usr/src/cmake-3.10.2/bin/cpack
+           ln -s $(which ctest) /usr/src/cmake-3.10.2/bin/ctest
+
+      - run:
+         command: |
+           export APP="sudo chown -R user.user /usr/src/AppLauncher-build && cd /usr/src/AppLauncher-build && ctest -LE 'CompilerRequired' -VV"
+           /usr/bin/supervisord -c /etc/supervisor/supervisord.conf
+           [ "$(cat /tmp/graphical-app.return_code)" = 0 ]
+
+
+  upload:
+    docker:
+      - image: dockbuild/centos7-devtoolset4-gcc5:latest
+    steps:
+      - restore_cache:
+          keys:
+            - applauncher-src-{{ .Revision }}
+      - restore_cache:
+          keys:
+            - applauncher-build-{{ .Revision }}
+      - run:
+         name: Upload release and prerelease packages
+         command: |
+           if [[ "${CIRCLE_BRANCH}" == "master" ]]; then
+             pip install -U scikit-ci-addons
+             cd /usr/src/AppLauncher
+             ci_addons publish_github_release commontk/applauncher \
+               --exit-success-if-missing-token                     \
+               --prerelease-packages /usr/src/AppLauncher-build/CTKAppLauncher-*.tar.gz \
+               --prerelease-packages-clear-pattern "*linux*"                     \
+               --prerelease-packages-keep-pattern "*<COMMIT_SHORT_SHA>*" \
+               --release-packages /usr/src/AppLauncher-build/CTKAppLauncher-*.tar.gz
+           fi
+workflows:
+  version: 2
+  build-package-test-upload:
+    jobs:
+      - build-package-test
+      - test
+      - upload
+      - test:
+          requires:
+            - build-package-test
+      - upload:
+          requires:
+            - test
