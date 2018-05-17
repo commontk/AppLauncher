@@ -19,6 +19,13 @@ cache:
   directories:
   - $HOME/downloads
 
+before_install:
+- |
+  # work-around for issue https://github.com/travis-ci/travis-ci/issues/6307
+  # might not be necessary in the future
+  command curl -sSL https://rvm.io/mpapis.asc | gpg --import -
+  rvm get stable
+
 before_script:
 # Downloads and extract Qt static build
 - |
@@ -33,7 +40,9 @@ before_script:
 # * streamline installation of CMake
 # * install package required to automatically create or update GitHub releases
 - |
-  pip install scikit-ci-addons==0.18.0
+  mkdir $HOME/bin
+  ln -s $(which pip2) $HOME/bin/pip
+  pip install -U scikit-ci-addons
   ci_addons travis/install_cmake 3.8.0
 script:
 - |
