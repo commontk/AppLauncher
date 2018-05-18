@@ -12,10 +12,15 @@ set(PRINT_COMMAND 0)
 set(launcher_settings_dir "${launcher_dir}/lib")
 file(MAKE_DIRECTORY ${launcher_settings_dir})
 
+set(organization_domain "www.commontk-${TEST_TREE_TYPE}.org")
+set(organization_name "Common ToolKit ${TEST_TREE_TYPE}")
+set(application_name "AppLauncher")
+
 file(WRITE "${launcher_settings_dir}/${launcher_name}LauncherSettings.ini" "
-[LibraryPaths]
-1\\path=${library_path}
-size=1
+[Application]
+organizationDomain=${organization_domain}
+organizationName=${organization_name}
+name=${application_name}
   
 [EnvironmentVariables]
 TEST_APPLAUNCHER_DIR=<APPLAUNCHER_DIR>/cat
@@ -39,9 +44,31 @@ if(NOT "${current_launcher_settings_dir}" STREQUAL "${launcher_settings_dir}")
 ")
 endif()
 
+
 # --------------------------------------------------------------------------
-set(launcher_arg "--launcher-dump-environment")
-set(command ${launcher_exe} ${launcher_arg})
+# Extract application settings directory
+extract_application_settings_value("AdditionalSettingsDir" additional_settings_dir)
+set(user_additional_settings_path "${additional_settings_dir}/${application_name}.ini")
+
+# Configure user additional settings file
+file(WRITE ${user_additional_settings_path} "
+[EnvironmentVariables]
+TEST_APPLAUNCHER_DIR_FROM_USER_ADDITIONAL_SETTINGS=<APPLAUNCHER_DIR>/cat-from-user-additional-settings
+TEST_APPLAUNCHER_SETTINGS_DIR_FROM_USER_ADDITIONAL_SETTINGS=<APPLAUNCHER_SETTINGS_DIR>/bob-from-user-additional-settings
+")
+
+# --------------------------------------------------------------------------
+# Configure explicit additional settings file
+set(additional_settings_path "${launcher}AdditionalLauncherSettings.ini")
+file(WRITE ${additional_settings_path} "
+[EnvironmentVariables]
+TEST_APPLAUNCHER_DIR_FROM_ADDITIONAL_SETTINGS=<APPLAUNCHER_DIR>/cat-from-additional-settings
+TEST_APPLAUNCHER_SETTINGS_DIR_FROM_ADDITIONAL_SETTINGS=<APPLAUNCHER_SETTINGS_DIR>/bob-from-additional-settings
+")
+
+# --------------------------------------------------------------------------
+set(launcher_args "--launcher-dump-environment" "--launcher-additional-settings" "${additional_settings_path}")
+set(command ${launcher_exe} ${launcher_args})
 execute_process(
   COMMAND ${command}
   WORKING_DIRECTORY ${launcher_dir}
@@ -59,6 +86,13 @@ endif()
 check_expected_string("${ov}" "TEST_APPLAUNCHER_DIR=${launcher_dir}/cat" "<APPLAUNCHER_DIR> placeholder")
 check_expected_string("${ov}" "TEST_APPLAUNCHER_SETTINGS_DIR=${launcher_settings_dir}/bob" "<APPLAUNCHER_SETTINGS_DIR> placeholder")
 
+check_expected_string("${ov}" "TEST_APPLAUNCHER_DIR_FROM_USER_ADDITIONAL_SETTINGS=${launcher_dir}/cat-from-user-additional-settings" "<APPLAUNCHER_DIR> placeholder")
+check_expected_string("${ov}" "TEST_APPLAUNCHER_SETTINGS_DIR_FROM_USER_ADDITIONAL_SETTINGS=${launcher_settings_dir}/bob-from-user-additional-settings" "<APPLAUNCHER_SETTINGS_DIR> placeholder")
+
+check_expected_string("${ov}" "TEST_APPLAUNCHER_DIR_FROM_ADDITIONAL_SETTINGS=${launcher_dir}/cat-from-additional-settings" "<APPLAUNCHER_DIR> placeholder")
+check_expected_string("${ov}" "TEST_APPLAUNCHER_SETTINGS_DIR_FROM_ADDITIONAL_SETTINGS=${launcher_settings_dir}/bob-from-additional-settings" "<APPLAUNCHER_SETTINGS_DIR> placeholder")
 
 # Clean
 file(REMOVE "${launcher_settings_dir}/${launcher_name}LauncherSettings.ini")
+file(REMOVE "${user_additional_settings_path}")
+file(REMOVE "${additional_settings_path}")
