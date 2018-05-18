@@ -203,6 +203,7 @@ QString ctkAppLauncherSettingsPrivate::expandPlaceHolders(const QString& value) 
   QHash<QString, QString> keyValueMap;
   keyValueMap["<APPLAUNCHER_DIR>"] = this->LauncherDir;
   keyValueMap["<APPLAUNCHER_NAME>"] = this->LauncherName;
+  keyValueMap["<APPLAUNCHER_SETTINGS_DIR>"] = this->LauncherSettingsDir;
   keyValueMap["<PATHSEP>"] = this->PathSep;
 
   QString updatedValue = value;
@@ -319,6 +320,20 @@ void ctkAppLauncherSettings::setLauncherName(const QString& name)
 {
   Q_D(ctkAppLauncherSettings);
   d->LauncherName = name;
+}
+
+// --------------------------------------------------------------------------
+QString ctkAppLauncherSettings::launcherSettingsDir() const
+{
+  Q_D(const ctkAppLauncherSettings);
+  return d->LauncherSettingsDir;
+}
+
+// --------------------------------------------------------------------------
+void ctkAppLauncherSettings::setLauncherSettingsDir(const QString& dir)
+{
+  Q_D(ctkAppLauncherSettings);
+  d->LauncherSettingsDir = dir;
 }
 
 // --------------------------------------------------------------------------

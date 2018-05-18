@@ -27,7 +27,8 @@ size=1
 [Paths]
 1\path=<APPLAUNCHER_DIR>/dog
 2\path=<APPLAUNCHER_DIR>/cat
-size=2
+3\path=<APPLAUNCHER_SETTINGS_DIR>/frog
+size=3
 
 [EnvironmentVariables]
 BAR=NONE

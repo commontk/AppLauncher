@@ -41,6 +41,7 @@ public:
   /// <ul>
   ///  <li>&lt;APPLAUNCHER_DIR&gt; -> LauncherDir</li>
   ///  <li>&lt;APPLAUNCHER_NAME&gt; -> LauncherName</li>
+  ///  <li>&lt;APPLAUNCHER_SETTINGS_DIR&gt; -> LauncherSettingsDir</li>
   ///  <li>&lt;PATHSEP&gt; -> PathSep</li>
   ///  <li>&lt;env:VARNAME&gt; -> If any, expand to corresponding system environment variable</li>
   /// </ul>
@@ -74,6 +75,7 @@ public:
 
   QString                         LauncherName;
   QString                         LauncherDir;
+  QString                         LauncherSettingsDir;
 //  QStringList                     LauncherSettingSubDirs;
 //  bool                            ValidSettingsFile;
   QString                         OrganizationName;

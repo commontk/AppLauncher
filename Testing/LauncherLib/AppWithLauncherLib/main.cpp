@@ -278,6 +278,7 @@ int checkReadSettingsWithoutExpand()
                 << "<APPLAUNCHER_DIR>/cow/<APPLAUNCHER_NAME>"
                 << "/path/to/pig-<env:BOTH>"
                 << "/path/to/<env:PET>"
+                << "<APPLAUNCHER_SETTINGS_DIR>/sheep/<APPLAUNCHER_NAME>"
         );
 
   CHECK_QSTRINGLIST(
@@ -286,6 +287,7 @@ int checkReadSettingsWithoutExpand()
                 << "/path/to/libA"
                 << "<APPLAUNCHER_DIR>/libB"
                 << "/path/to/libC-<env:PET>"
+                << "<APPLAUNCHER_SETTINGS_DIR>/libC"
         );
 
   CHECK_QSTRING(
@@ -307,26 +309,31 @@ int checkReadSettingsWithoutExpand()
         appLauncherSettings.envVar("PLACEHOLDER", /* expand= */ false),
         "<APPLAUNCHER_DIR>-<APPLAUNCHER_NAME>"
         );
+  
+  CHECK_QSTRING(
+        appLauncherSettings.envVar("SETTINGSPLACEHOLDER", /* expand= */ false),
+        "<APPLAUNCHER_SETTINGS_DIR>-<APPLAUNCHER_NAME>"
+        );
 
 #if defined(Q_OS_WIN32)
   CHECK_QSTRING(
         appLauncherSettings.envVar("PYTHONPATH", /* expand= */ false),
-        "<APPLAUNCHER_DIR>/lib/python/site-packages;/path/to/site-packages-2"
+        "<APPLAUNCHER_DIR>/lib/python/site-packages;/path/to/site-packages-2;<APPLAUNCHER_SETTINGS_DIR>/lib/python/site-packages-settings"
         );
 
   CHECK_QSTRING(
         appLauncherSettings.envVar("QT_PLUGIN_PATH", /* expand= */ false),
-        "<APPLAUNCHER_DIR>/libexec/qt;<APPLAUNCHER_DIR>/libexec/<env:BAR>"
+        "<APPLAUNCHER_DIR>/libexec/qt;<APPLAUNCHER_DIR>/libexec/<env:BAR>;<APPLAUNCHER_SETTINGS_DIR>/libexec-settings/<env:BAR>"
         );
 #else
   CHECK_QSTRING(
         appLauncherSettings.envVar("PYTHONPATH", /* expand= */ false),
-        "<APPLAUNCHER_DIR>/lib/python/site-packages:/path/to/site-packages-2"
+        "<APPLAUNCHER_DIR>/lib/python/site-packages:/path/to/site-packages-2:<APPLAUNCHER_SETTINGS_DIR>/lib/python/site-packages-settings"
         );
 
   CHECK_QSTRING(
         appLauncherSettings.envVar("QT_PLUGIN_PATH", /* expand= */ false),
-        "<APPLAUNCHER_DIR>/libexec/qt:<APPLAUNCHER_DIR>/libexec/<env:BAR>"
+        "<APPLAUNCHER_DIR>/libexec/qt:<APPLAUNCHER_DIR>/libexec/<env:BAR>:<APPLAUNCHER_SETTINGS_DIR>/libexec-settings/<env:BAR>"
         );
 #endif
 
@@ -335,6 +342,7 @@ int checkReadSettingsWithoutExpand()
         QStringList()
                 << "<APPLAUNCHER_DIR>/lib/python/site-packages"
                 << "/path/to/site-packages-2"
+                << "<APPLAUNCHER_SETTINGS_DIR>/lib/python/site-packages-settings"
         );
 
   CHECK_QSTRINGLIST(
@@ -342,6 +350,7 @@ int checkReadSettingsWithoutExpand()
         QStringList()
                 << "<APPLAUNCHER_DIR>/libexec/qt"
                 << "<APPLAUNCHER_DIR>/libexec/<env:BAR>"
+                << "<APPLAUNCHER_SETTINGS_DIR>/libexec-settings/<env:BAR>"
         );
 
   //
@@ -358,9 +367,11 @@ int checkReadSettingsWithoutExpand()
                 << "<APPLAUNCHER_DIR>/cow/<APPLAUNCHER_NAME>"
                 << "/path/to/pig-<env:BOTH>"
                 << "/path/to/<env:PET>"
+                << "<APPLAUNCHER_SETTINGS_DIR>/sheep/<APPLAUNCHER_NAME>"
                 << "/path/to/libA"
                 << "<APPLAUNCHER_DIR>/libB"
                 << "/path/to/libC-<env:PET>"
+                << "<APPLAUNCHER_SETTINGS_DIR>/libC"
         );
 #else
   CHECK_QSTRINGLIST(
@@ -369,6 +380,7 @@ int checkReadSettingsWithoutExpand()
                 << "<APPLAUNCHER_DIR>/cow/<APPLAUNCHER_NAME>"
                 << "/path/to/pig-<env:BOTH>"
                 << "/path/to/<env:PET>"
+                << "<APPLAUNCHER_SETTINGS_DIR>/sheep/<APPLAUNCHER_NAME>"
         );
 
   CHECK_QSTRINGLIST(
@@ -377,6 +389,7 @@ int checkReadSettingsWithoutExpand()
                 << "/path/to/libA"
                 << "<APPLAUNCHER_DIR>/libB"
                 << "/path/to/libC-<env:PET>"
+                << "<APPLAUNCHER_SETTINGS_DIR>/libC"
         );
 #endif
 
@@ -385,6 +398,7 @@ int checkReadSettingsWithoutExpand()
         QStringList()
                 << "<APPLAUNCHER_DIR>/lib/python/site-packages"
                 << "/path/to/site-packages-2"
+                << "<APPLAUNCHER_SETTINGS_DIR>/lib/python/site-packages-settings"
         );
 
   CHECK_QSTRINGLIST(
@@ -392,6 +406,7 @@ int checkReadSettingsWithoutExpand()
         QStringList()
                 << "<APPLAUNCHER_DIR>/libexec/qt"
                 << "<APPLAUNCHER_DIR>/libexec/<env:BAR>"
+                << "<APPLAUNCHER_SETTINGS_DIR>/libexec-settings/<env:BAR>"
         );
 
 #if defined(Q_OS_WIN32)
@@ -419,6 +434,7 @@ int checkReadSettingsWithExpand()
 
   appLauncherSettings.setLauncherDir("/awesome/path/to");
   appLauncherSettings.setLauncherName("AwesomeApp");
+  appLauncherSettings.setLauncherSettingsDir("/settings/path/to");
 
   appLauncherSettings.readSettings("launcher-settings.ini");
 
@@ -428,6 +444,7 @@ int checkReadSettingsWithExpand()
                 << "/awesome/path/to/cow/AwesomeApp"
                 << "/path/to/pig-cat-and-dog"
                 << "/path/to/dog"
+                << "/settings/path/to/sheep/AwesomeApp"
         );
 
   CHECK_QSTRINGLIST(
@@ -436,6 +453,7 @@ int checkReadSettingsWithExpand()
                 << "/path/to/libA"
                 << "/awesome/path/to/libB"
                 << "/path/to/libC-dog"
+                << "/settings/path/to/libC"
         );
 
   CHECK_QSTRING(
@@ -457,26 +475,31 @@ int checkReadSettingsWithExpand()
         appLauncherSettings.envVar("PLACEHOLDER"),
         "/awesome/path/to-AwesomeApp"
         );
+  
+  CHECK_QSTRING(
+        appLauncherSettings.envVar("SETTINGSPLACEHOLDER"),
+        "/settings/path/to-AwesomeApp"
+        );
 
 #if defined(Q_OS_WIN32)
   CHECK_QSTRING(
         appLauncherSettings.envVar("PYTHONPATH"),
-        "/awesome/path/to/lib/python/site-packages;/path/to/site-packages-2"
+        "/awesome/path/to/lib/python/site-packages;/path/to/site-packages-2;/settings/path/to/lib/python/site-packages-settings"
         );
 
   CHECK_QSTRING(
         appLauncherSettings.envVar("QT_PLUGIN_PATH"),
-        "/awesome/path/to/libexec/qt;/awesome/path/to/libexec/ASSOCIATION"
+        "/awesome/path/to/libexec/qt;/awesome/path/to/libexec/ASSOCIATION;/settings/path/to/libexec-settings/ASSOCIATION"
         );
 #else
   CHECK_QSTRING(
         appLauncherSettings.envVar("PYTHONPATH"),
-        "/awesome/path/to/lib/python/site-packages:/path/to/site-packages-2"
+        "/awesome/path/to/lib/python/site-packages:/path/to/site-packages-2:/settings/path/to/lib/python/site-packages-settings"
         );
 
   CHECK_QSTRING(
         appLauncherSettings.envVar("QT_PLUGIN_PATH"),
-        "/awesome/path/to/libexec/qt:/awesome/path/to/libexec/ASSOCIATION"
+        "/awesome/path/to/libexec/qt:/awesome/path/to/libexec/ASSOCIATION:/settings/path/to/libexec-settings/ASSOCIATION"
         );
 #endif
 
@@ -485,6 +508,7 @@ int checkReadSettingsWithExpand()
         QStringList()
                 << "/awesome/path/to/lib/python/site-packages"
                 << "/path/to/site-packages-2"
+                << "/settings/path/to/lib/python/site-packages-settings"
         );
 
   CHECK_QSTRINGLIST(
@@ -492,6 +516,7 @@ int checkReadSettingsWithExpand()
         QStringList()
                 << "/awesome/path/to/libexec/qt"
                 << "/awesome/path/to/libexec/ASSOCIATION"
+                << "/settings/path/to/libexec-settings/ASSOCIATION"
         );
 
   CHECK_QSTRINGLIST(
@@ -499,6 +524,7 @@ int checkReadSettingsWithExpand()
         QStringList()
                 << "/awesome/path/to/lib/python/site-packages"
                 << "/path/to/site-packages-2"
+                << "/settings/path/to/lib/python/site-packages-settings"
         );
 
   CHECK_QSTRINGLIST(
@@ -506,6 +532,7 @@ int checkReadSettingsWithExpand()
         QStringList()
                 << "/awesome/path/to/libexec/qt"
                 << "/awesome/path/to/libexec/ASSOCIATION"
+                << "/settings/path/to/libexec-settings/ASSOCIATION"
         );
 
   //
@@ -522,9 +549,11 @@ int checkReadSettingsWithExpand()
                 << "/awesome/path/to/cow/AwesomeApp"
                 << "/path/to/pig-cat-and-dog"
                 << "/path/to/dog"
+                << "/settings/path/to/sheep/AwesomeApp"
                 << "/path/to/libA"
                 << "/awesome/path/to/libB"
                 << "/path/to/libC-dog"
+                << "/settings/path/to/libC"
         );
 #else
   CHECK_QSTRINGLIST(
@@ -533,6 +562,7 @@ int checkReadSettingsWithExpand()
                 << "/awesome/path/to/cow/AwesomeApp"
                 << "/path/to/pig-cat-and-dog"
                 << "/path/to/dog"
+                << "/settings/path/to/sheep/AwesomeApp"
         );
 
   CHECK_QSTRINGLIST(
@@ -541,6 +571,7 @@ int checkReadSettingsWithExpand()
                 << "/path/to/libA"
                 << "/awesome/path/to/libB"
                 << "/path/to/libC-dog"
+                << "/settings/path/to/libC"
         );
 #endif
 
@@ -549,6 +580,7 @@ int checkReadSettingsWithExpand()
         QStringList()
                 << "/awesome/path/to/lib/python/site-packages"
                 << "/path/to/site-packages-2"
+                << "/settings/path/to/lib/python/site-packages-settings"
         );
 
   CHECK_QSTRINGLIST(
@@ -556,6 +588,7 @@ int checkReadSettingsWithExpand()
         QStringList()
                 << "/awesome/path/to/libexec/qt"
                 << "/awesome/path/to/libexec/ASSOCIATION"
+                << "/settings/path/to/libexec-settings/ASSOCIATION"
         );
 
 #if defined(Q_OS_WIN32)
@@ -629,6 +662,7 @@ int checkReadAdditionalSettingsWithExpand()
 
   appLauncherSettings.setLauncherDir("/awesome/path/to");
   appLauncherSettings.setLauncherName(appName);
+  appLauncherSettings.setLauncherSettingsDir("/settings/path/to");
 
   appLauncherSettings.readSettings("launcher-settings.ini");
 
@@ -638,9 +672,11 @@ int checkReadAdditionalSettingsWithExpand()
                 << "/awesome/path/to/fawn"
                 << "/path/to/cat-and-dog"
                 << "/path/to/Klimt"
+                << "/settings/path/to/osprey"
                 << QString("/awesome/path/to/cow/%1").arg(appName)
                 << "/path/to/pig-cat-and-dog"
                 << "/path/to/dog"
+                << QString("/settings/path/to/sheep/%1").arg(appName)
         );
 
   CHECK_QSTRINGLIST(
@@ -648,9 +684,11 @@ int checkReadAdditionalSettingsWithExpand()
         QStringList()
                 << "/path/to/libD"
                 << "/awesome/path/to/libE-dog"
+                << "/settings/path/to/libF"
                 << "/path/to/libA"
                 << "/awesome/path/to/libB"
                 << "/path/to/libC-dog"
+                << "/settings/path/to/libC"
         );
 
   CHECK_QSTRING(
@@ -669,8 +707,10 @@ int checkReadAdditionalSettingsWithExpand()
                 << "/awesome/path/to/lib/python/site-packages"
                 << "/awesome/path/to/lib/python/site-packages-3"
                 << "/path/to/site-packages-RAB"
+                << "/settings/path/to/lib/python/site-packages-settings-2"
                 << "/awesome/path/to/lib/python/site-packages"
                 << "/path/to/site-packages-2"
+                << "/settings/path/to/lib/python/site-packages-settings"
         );
 
   CHECK_QSTRINGLIST(
@@ -679,8 +719,10 @@ int checkReadAdditionalSettingsWithExpand()
                 << "/awesome/path/to/lib/python/site-packages"
                 << "/awesome/path/to/lib/python/site-packages-3"
                 << "/path/to/site-packages-RAB"
+                << "/settings/path/to/lib/python/site-packages-settings-2"
                 << "/awesome/path/to/lib/python/site-packages"
                 << "/path/to/site-packages-2"
+                << "/settings/path/to/lib/python/site-packages-settings"
         );
 
   CHECK_QSTRINGLIST(
@@ -688,6 +730,7 @@ int checkReadAdditionalSettingsWithExpand()
         QStringList()
                 << "/awesome/path/to/libexec/qt"
                 << "/awesome/path/to/libexec/RAB"
+                << "/settings/path/to/libexec-settings/RAB"
         );
 
   CHECK_QSTRINGLIST(
@@ -695,6 +738,7 @@ int checkReadAdditionalSettingsWithExpand()
         QStringList()
                 << "/awesome/path/to/libexec/qt"
                 << "/awesome/path/to/libexec/RAB"
+                << "/settings/path/to/libexec-settings/RAB"
         );
 
   return EXIT_SUCCESS;

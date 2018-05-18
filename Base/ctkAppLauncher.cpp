@@ -422,6 +422,7 @@ void ctkAppLauncherPrivate::buildEnvironment(QProcessEnvironment &env)
 
   this->reportInfo(QString("<APPLAUNCHER_DIR> -> [%1]").arg(this->LauncherDir));
   this->reportInfo(QString("<APPLAUNCHER_NAME> -> [%1]").arg(this->LauncherName));
+  this->reportInfo(QString("<APPLAUNCHER_SETTINGS_DIR> -> [%1]").arg(this->LauncherSettingsDir));
   this->reportInfo(QString("<PATHSEP> -> [%1]").arg(this->PathSep));
 
   if(this->LoadEnvironment >= 0)
@@ -940,6 +941,9 @@ int ctkAppLauncher::processArguments()
         QString("SettingsFileName [%1]").arg(this->findSettingsFile()));
 
     d->reportInfo(
+        QString("SettingsDir [%1]").arg(d->LauncherSettingsDir));
+
+    d->reportInfo(
         QString("AdditionalSettingsDir [%1]").arg(d->additionalSettingsDir()));
 
     d->reportInfo(
@@ -1231,6 +1235,10 @@ int ctkAppLauncher::configure()
     }
 
   QString settingFileName = this->findSettingsFile();
+  if (!settingFileName.isEmpty())
+    {
+    d->LauncherSettingsDir = QFileInfo(settingFileName).absoluteDir().absolutePath();
+    }
 
   d->ValidSettingsFile = d->readSettings(settingFileName, ctkAppLauncherPrivate::RegularSettings);
 

@@ -60,12 +60,13 @@ class ctkAppLauncherSettingsPrivate;
 ///
 /// The following special strings are expanded:
 ///
-/// Special string           | Description
-/// ------------------------ |-------------------------------------------------------
-/// &lt;APPLAUNCHER_DIR&gt;  | Replace with value set using setLauncherDir()
-/// &lt;APPLAUNCHER_NAME&gt; | Replace with value set using setLauncherName()
-/// &lt;PATHSEP&gt;          | Replace by ":" on unix and ";" on windows
-/// &lt;env:VARNAME&gt;      | If any, with corresponding system environment variable
+/// Special string                    | Description
+/// ----------------------------------|-------------------------------------------------------
+/// &lt;APPLAUNCHER_DIR&gt;           | Replace with value set using setLauncherDir()
+/// &lt;APPLAUNCHER_NAME&gt;          | Replace with value set using setLauncherName()
+/// &lt;APPLAUNCHER_SETTINGS_DIR&gt;  | Replace with value set using setLauncherSettingsDir()
+/// &lt;PATHSEP&gt;                   | Replace by ":" on unix and ";" on windows
+/// &lt;env:VARNAME&gt;               | If any, with corresponding system environment variable
 ///
 /// Additional User Settings
 /// ------------------------
@@ -254,6 +255,13 @@ public:
   /// when expanding variables.
   QString launcherDir() const;
   void setLauncherDir(const QString& dir);
+
+  /// \brief Set/Get launcher settings directory.
+  ///
+  /// This is used to replace \c &lt;APPLAUNCHER_SETTINGS_DIR&gt; with launcherSettingsDir()
+  /// when expanding variables.
+  QString launcherSettingsDir() const;
+  void setLauncherSettingsDir(const QString& dir);
 
   /// \brief Set/Get launcher name.
   ///
