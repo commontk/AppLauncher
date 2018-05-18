@@ -8,32 +8,32 @@ function(applauncher_test_launcher_overwrite_settings_test_case
 
   LauncherSplashScreenHideDelayMs
   user_additional_LauncherSplashScreenHideDelayMs
-  additional_LauncherSplashScreenHideDelayMs
+  cmdarg_additional_LauncherSplashScreenHideDelayMs
   expected_LauncherSplashScreenHideDelayMs
 
   LauncherSplashImagePath
   user_additional_LauncherSplashImagePath
-  additional_LauncherSplashImagePath
+  cmdarg_additional_LauncherSplashImagePath
   expected_LauncherSplashImagePath
 
   UserAdditionalSettingsFileBaseName
   user_additional_UserAdditionalSettingsFileBaseName
-  additional_UserAdditionalSettingsFileBaseName
+  cmdarg_additional_UserAdditionalSettingsFileBaseName
   expected_UserAdditionalSettingsFileBaseName
 
   AdditionalLauncherHelpShortArgument
   user_additional_AdditionalLauncherHelpShortArgument
-  additional_AdditionalLauncherHelpShortArgumenth
+  cmdarg_additional_AdditionalLauncherHelpShortArgumenth
   expected_AdditionalLauncherHelpShortArgument
 
   AdditionalLauncherHelpLongArgument
   user_additional_AdditionalLauncherHelpLongArgument
-  additional_AdditionalLauncherHelpLongArgument
+  cmdarg_additional_AdditionalLauncherHelpLongArgument
   expected_AdditionalLauncherHelpLongArgument
 
   AdditionalLauncherNoSplashArguments
   user_additional_AdditionalLauncherNoSplashArguments
-  additional_AdditionalLauncherNoSplashArguments
+  cmdarg_additional_AdditionalLauncherNoSplashArguments
   expected_AdditionalLauncherNoSplashArguments
   )
 
@@ -49,8 +49,8 @@ function(applauncher_test_launcher_overwrite_settings_test_case
     if(NOT ${setting} STREQUAL "NA")
       set(${setting}_set "${setting}=${${setting}}")
     endif()
-    if(NOT additional_${setting} STREQUAL "NA")
-      set(additional_${setting}_set "${setting}=${additional_${setting}}")
+    if(NOT cmdarg_additional_${setting} STREQUAL "NA")
+      set(cmdarg_additional_${setting}_set "${setting}=${cmdarg_additional_${setting}}")
     endif()
     if(NOT user_additional_${setting} STREQUAL "NA")
       set(user_additional_${setting}_set "${setting}=${user_additional_${setting}}")
@@ -101,15 +101,15 @@ ${user_additional_AdditionalLauncherNoSplashArguments_set}
 ")
 
   # Configure additional settings file
-  set(additional_settings_path "${launcher}AdditionalLauncherSettings.ini")
-  file(WRITE ${additional_settings_path} "
+  set(cmdarg_additional_settings_path "${launcher}AdditionalLauncherSettings.ini")
+  file(WRITE ${cmdarg_additional_settings_path} "
 [General]
-${additional_LauncherSplashScreenHideDelayMs_set}
-${additional_LauncherSplashImagePath_set}
-${additional_UserAdditionalSettingsFileBaseName_set}
-${additional_AdditionalLauncherHelpShortArgument_set}
-${additional_AdditionalLauncherHelpLongArgument_set}
-${additional_AdditionalLauncherNoSplashArguments_set}
+${cmdarg_additional_LauncherSplashScreenHideDelayMs_set}
+${cmdarg_additional_LauncherSplashImagePath_set}
+${cmdarg_additional_UserAdditionalSettingsFileBaseName_set}
+${cmdarg_additional_AdditionalLauncherHelpShortArgument_set}
+${cmdarg_additional_AdditionalLauncherHelpLongArgument_set}
+${cmdarg_additional_AdditionalLauncherNoSplashArguments_set}
 ")
 
   # Check if launcher works as expected
@@ -122,7 +122,7 @@ ${additional_AdditionalLauncherNoSplashArguments_set}
       AdditionalLauncherNoSplashArguments
       )
 
-    extract_application_settings_value("${setting}" current_${setting} --launcher-additional-settings ${additional_settings_path})
+    extract_application_settings_value("${setting}" current_${setting} --launcher-additional-settings ${cmdarg_additional_settings_path})
     if(NOT "${current_${setting}}" STREQUAL "${expected_${setting}}")
       message(FATAL_ERROR "TestCase: ${testcase_id}\n"
                           "expected_${setting} [${expected_${setting}}]\n"
