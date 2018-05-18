@@ -86,7 +86,7 @@ size=1
 ")
 
   # Extract application settings directory
-  extract_application_settings_value("AdditionalSettingsDir" user_additional_settings_dir)
+  extract_application_settings_value("UserAdditionalSettingsDir" user_additional_settings_dir)
   set(user_additional_settings_path "${user_additional_settings_dir}/${application_name}${UserAdditionalSettingsFileBaseName}-${application_revision}.ini")
 
   # Configure user additional settings file

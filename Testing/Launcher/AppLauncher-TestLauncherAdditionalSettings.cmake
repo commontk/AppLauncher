@@ -65,7 +65,7 @@ set(PRINT_COMMAND 0)
 # --------------------------------------------------------------------------
 # Extract application settings directory
 
-extract_application_settings_value("AdditionalSettingsDir" user_additional_settings_dir)
+extract_application_settings_value("UserAdditionalSettingsDir" user_additional_settings_dir)
 set(user_additional_settings_path "${user_additional_settings_dir}/${application_name}-${application_revision}.ini")
 
 # --------------------------------------------------------------------------
@@ -293,3 +293,4 @@ endforeach()
 
 # Clean
 file(REMOVE ${user_additional_settings_path})
+file(REMOVE ${additional_settings_path})

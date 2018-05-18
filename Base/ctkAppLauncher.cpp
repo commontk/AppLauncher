@@ -944,10 +944,10 @@ int ctkAppLauncher::processArguments()
         QString("SettingsDir [%1]").arg(d->LauncherSettingsDir));
 
     d->reportInfo(
-        QString("AdditionalSettingsDir [%1]").arg(d->userAdditionalSettingsDir()));
+        QString("UserAdditionalSettingsDir [%1]").arg(d->userAdditionalSettingsDir()));
 
     d->reportInfo(
-        QString("AdditionalSettingsFileName [%1]").arg(this->findUserAdditionalSettings()));
+        QString("UserAdditionalSettingsFileName [%1]").arg(this->findUserAdditionalSettings()));
 
     d->reportInfo(
         QString("UserAdditionalSettingsFileBaseName [%1]").arg(d->UserAdditionalSettingsFileBaseName));

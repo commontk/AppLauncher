@@ -50,8 +50,8 @@ set(PRINT_COMMAND 0)
 # --------------------------------------------------------------------------
 # Extract application settings directory
 
-extract_application_settings_value("AdditionalSettingsDir" additional_settings_dir)
-set(additional_settings_path "${additional_settings_dir}/${application_name}.ini")
+extract_application_settings_value("UserAdditionalSettingsDir" user_additional_settings_dir)
+set(user_additional_settings_path "${user_additional_settings_dir}/${application_name}.ini")
 
 # --------------------------------------------------------------------------
 # Configure user additional settings file
@@ -65,7 +65,7 @@ set(additional_env_var_value_2 "Rock climbing ! :)")
 set(common_env_var_value_2 "Sun")
 set(common_env_var2_value_2 "Trees")
 
-file(WRITE ${additional_settings_path} "
+file(WRITE ${user_additional_settings_path} "
 [LibraryPaths]
 1\\path=${additional_library_path}
 size=1
@@ -151,4 +151,4 @@ foreach(expected_ov_line ${expected_ov_lines})
 endforeach()
 
 # Clean
-file(REMOVE ${additional_settings_path})
+file(REMOVE ${user_additional_settings_path})

@@ -25,21 +25,21 @@ revision=${application_revision}
 # --------------------------------------------------------------------------
 # Extract application settings directory
 
-extract_application_settings_value("AdditionalSettingsDir" additional_settings_dir)
+extract_application_settings_value("UserAdditionalSettingsDir" user_additional_settings_dir)
 
 # --------------------------------------------------------------------------
 # Create user additional settings
-set(expected_additional_settings_path "${additional_settings_dir}/${application_name}-${application_revision}.ini")
-file(WRITE ${expected_additional_settings_path} "")
+set(expected_user_additional_settings_path "${user_additional_settings_dir}/${application_name}-${application_revision}.ini")
+file(WRITE ${expected_user_additional_settings_path} "")
 
 # Ask the launcher if it could located the file
-extract_application_settings_value("AdditionalSettingsFileName" additional_settings_path)
-if(NOT ${expected_additional_settings_path} STREQUAL ${additional_settings_path})
-  message(FATAL_ERROR "[${launcher_exe}] failed to lookup additional settings: [${expected_additional_settings_path}]")
+extract_application_settings_value("UserAdditionalSettingsFileName" user_additional_settings_path)
+if(NOT ${expected_user_additional_settings_path} STREQUAL ${user_additional_settings_path})
+  message(FATAL_ERROR "[${launcher_exe}] failed to lookup additional settings: [${expected_user_additional_settings_path}]")
 endif()
 
 # Clean
-file(REMOVE ${expected_additional_settings_path})
+file(REMOVE ${expected_user_additional_settings_path})
 
 # --------------------------------------------------------------------------
 # Configure settings file
@@ -58,17 +58,17 @@ revision=${application_revision}
 ")
 
 # Create user additional settings
-set(expected_additional_settings_path "${additional_settings_dir}/${application_name}${expectedUserAdditionalSettingsFileBaseName}-${application_revision}.ini")
-file(WRITE ${expected_additional_settings_path} "")
+set(expected_user_additional_settings_path "${user_additional_settings_dir}/${application_name}${expectedUserAdditionalSettingsFileBaseName}-${application_revision}.ini")
+file(WRITE ${expected_user_additional_settings_path} "")
 
 # Ask the launcher if it could located the file
-extract_application_settings_value("AdditionalSettingsFileName" additional_settings_path)
-if(NOT ${expected_additional_settings_path} STREQUAL ${additional_settings_path})
-  message(FATAL_ERROR "[${launcher_exe}] failed to lookup additional settings: [${expected_additional_settings_path}]")
+extract_application_settings_value("UserAdditionalSettingsFileName" user_additional_settings_path)
+if(NOT ${expected_user_additional_settings_path} STREQUAL ${user_additional_settings_path})
+  message(FATAL_ERROR "[${launcher_exe}] failed to lookup additional settings: [${expected_user_additional_settings_path}]")
 endif()
 
 # Clean
-file(REMOVE ${expected_additional_settings_path})
+file(REMOVE ${expected_user_additional_settings_path})
 
 # --------------------------------------------------------------------------
 # Configure settings file
@@ -87,14 +87,14 @@ revision=${application_revision}
 ")
 
 # Create user additional settings
-set(expected_additional_settings_path "${additional_settings_dir}/${application_name}${expectedUserAdditionalSettingsFileBaseName}-${application_revision}.ini")
-file(WRITE ${expected_additional_settings_path} "")
+set(expected_user_additional_settings_path "${user_additional_settings_dir}/${application_name}${expectedUserAdditionalSettingsFileBaseName}-${application_revision}.ini")
+file(WRITE ${expected_user_additional_settings_path} "")
 
 # Ask the launcher if it could located the file
-extract_application_settings_value("AdditionalSettingsFileName" additional_settings_path)
-if(NOT ${expected_additional_settings_path} STREQUAL ${additional_settings_path})
-  message(FATAL_ERROR "[${launcher_exe}] failed to lookup additional settings: [${expected_additional_settings_path}]")
+extract_application_settings_value("UserAdditionalSettingsFileName" user_additional_settings_path)
+if(NOT ${expected_user_additional_settings_path} STREQUAL ${user_additional_settings_path})
+  message(FATAL_ERROR "[${launcher_exe}] failed to lookup additional settings: [${expected_user_additional_settings_path}]")
 endif()
 
 # Clean
-file(REMOVE ${expected_additional_settings_path})
+file(REMOVE ${expected_user_additional_settings_path})

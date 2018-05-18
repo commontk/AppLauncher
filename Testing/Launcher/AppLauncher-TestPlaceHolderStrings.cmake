@@ -47,8 +47,8 @@ endif()
 
 # --------------------------------------------------------------------------
 # Extract application settings directory
-extract_application_settings_value("AdditionalSettingsDir" additional_settings_dir)
-set(user_additional_settings_path "${additional_settings_dir}/${application_name}.ini")
+extract_application_settings_value("UserAdditionalSettingsDir" user_additional_settings_dir)
+set(user_additional_settings_path "${user_additional_settings_dir}/${application_name}.ini")
 
 # Configure user additional settings file
 file(WRITE ${user_additional_settings_path} "
