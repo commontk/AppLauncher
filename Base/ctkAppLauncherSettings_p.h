@@ -28,11 +28,12 @@ public:
   QString userAdditionalSettingsDir()const;
   QString findUserAdditionalSettings()const;
 
+  /// Different type of settings files.
   enum SettingsType
     {
-    RegularSettings = 0,
-    AdditionalSettings,
-    UserAdditionalSettings
+    RegularSettings = 0,    ///< Primary settings file associated with the launcher.
+    UserAdditionalSettings, ///< Settings file implicitly associated using application `name`, `organizationName`, `organizationDomain`, and optionally `revision`.
+    AdditionalSettings      ///< Settings file explicitly specified using command line argument.
     };
 
   /// \brief Expand setting \a value

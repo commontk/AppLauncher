@@ -17,7 +17,7 @@ set(doc_tarball
   )
 
 set(${PROJECT_NAME}_DEV_DOCUMENTATION "NO")
-set(${PROJECT_NAME}_ADDITIONAL_EXCLUDE_PATTERN "*_p.h\  *Private.*")
+set(${PROJECT_NAME}_ADDITIONAL_EXCLUDE_PATTERN "")
 
 configure_file(Doxyfile.txt.in ${doxyfile})
 
