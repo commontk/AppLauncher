@@ -35,7 +35,7 @@ function(extract_application_settings_value settings_name settings_value_varname
 
   print_command_as_string("${command}")
 
-  string(REGEX REPLACE "^.*\n?info\\: ${settings_name}[ ]+\\[([^\n]+)\\].*"
+  string(REGEX REPLACE "^.*\n?info\\: ${settings_name}[ ]+\\[([^\n]*)\\].*"
         "\\1" settings_value "${ov}")
 
   set(${settings_value_varname} ${settings_value} PARENT_SCOPE)

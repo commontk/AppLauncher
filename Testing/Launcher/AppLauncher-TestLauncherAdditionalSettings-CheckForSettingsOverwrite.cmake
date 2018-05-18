@@ -113,10 +113,17 @@ ${additional_AdditionalLauncherNoSplashArguments_set}
 ")
 
   # Check if launcher works as expected
-  foreach(setting LauncherSplashScreenHideDelayMs LauncherSplashImagePath)
+  foreach(setting
+      LauncherSplashScreenHideDelayMs
+      LauncherSplashImagePath
+      UserAdditionalSettingsFileBaseName
+      AdditionalLauncherHelpShortArgument
+      AdditionalLauncherHelpLongArgument
+      AdditionalLauncherNoSplashArguments
+      )
 
     extract_application_settings_value("${setting}" current_${setting} --launcher-additional-settings ${additional_settings_path})
-    if(NOT ${current_${setting}} STREQUAL ${expected_${setting}})
+    if(NOT "${current_${setting}}" STREQUAL "${expected_${setting}}")
       message(FATAL_ERROR "TestCase: ${testcase_id}\n"
                           "expected_${setting} [${expected_${setting}}]\n"
                           "current_${setting} [${current_${setting}}]")
@@ -137,9 +144,9 @@ applauncher_test_launcher_overwrite_settings_test_case(
   "1" "2" "3" "3" # LauncherSplashScreenHideDelayMs
   "/home/path/image1.png" "/home/path/image2.png" "/home/path/image3.png" "/home/path/image3.png" # LauncherSplashImagePath
   "Foo1Settings" "Foo2Settings" "Foo3Settings" "Foo1Settings" # UserAdditionalSettingsFileBaseName
-  "-h1" "-h2" "-h3" "-h3" # AdditionalLauncherHelpShortArgument
-  "--help1" "--help2" "--help3" "--help3" # AdditionalLauncherHelpLongArgument
-  "--foo1,-b1" "--foo2,-b2" "--foo3,-b3" "--foo3,-b3" # AdditionalLauncherNoSplashArguments
+  "-h1" "-h2" "-h3" "-h1" # AdditionalLauncherHelpShortArgument
+  "--help1" "--help2" "--help3" "--help1" # AdditionalLauncherHelpLongArgument
+  "--foo1,-b1" "--foo2,-b2" "--foo3,-b3" "--foo1,-b1" # AdditionalLauncherNoSplashArguments
   )
 
 applauncher_test_launcher_overwrite_settings_test_case(
@@ -147,9 +154,9 @@ applauncher_test_launcher_overwrite_settings_test_case(
   "1" "2" "NA" "2" # LauncherSplashScreenHideDelayMs
   "/home/path/image1.png" "/home/path/image2.png" "NA" "/home/path/image2.png" # LauncherSplashImagePath
   "Foo1Settings" "Foo2Settings" "NA" "Foo1Settings" # UserAdditionalSettingsFileBaseName
-  "-h1" "-h2" "NA" "-h2" # AdditionalLauncherHelpShortArgument
-  "--help1" "--help2" "NA" "--help2" # AdditionalLauncherHelpLongArgument
-  "--foo1,-b1" "--foo2,-b2" "NA" "--foo2,-b2" # AdditionalLauncherNoSplashArguments
+  "-h1" "-h2" "NA" "-h1" # AdditionalLauncherHelpShortArgument
+  "--help1" "--help2" "NA" "--help1" # AdditionalLauncherHelpLongArgument
+  "--foo1,-b1" "--foo2,-b2" "NA" "--foo1,-b1" # AdditionalLauncherNoSplashArguments
   )
 
 applauncher_test_launcher_overwrite_settings_test_case(
@@ -166,7 +173,7 @@ applauncher_test_launcher_overwrite_settings_test_case(
   "4" # testcase_id
   "NA" "NA" "NA" "800" # LauncherSplashScreenHideDelayMs
   "NA" "NA" "NA" ":Images/ctk-splash.png" # LauncherSplashImagePath
-  "NA" "NA" "NA" "AdditionalLauncherSettings" # UserAdditionalSettingsFileBaseName
+  "NA" "NA" "NA" "" # UserAdditionalSettingsFileBaseName
   "NA" "NA" "NA" "" # AdditionalLauncherHelpShortArgument
   "NA" "NA" "NA" "" # AdditionalLauncherHelpLongArgument
   "NA" "NA" "NA" "" # AdditionalLauncherNoSplashArguments
@@ -176,8 +183,8 @@ applauncher_test_launcher_overwrite_settings_test_case(
   "1" # testcase_id
   "1" "2" "3" "3" # LauncherSplashScreenHideDelayMs
   "/home/path/image1.png" "/home/path/image2.png" "/home/path/image3.png" "/home/path/image3.png" # LauncherSplashImagePath
-  "Foo1Settings" "Foo2Settings" "Foo3Settings" "Foo3Settings" # UserAdditionalSettingsFileBaseName
-  "-h1" "-h2" "-h3" "-h3" # AdditionalLauncherHelpShortArgument
-  "--help1" "--help2" "--help3" "--help3" # AdditionalLauncherHelpLongArgument
-  "--foo1,-b1" "--foo2,-b2" "--foo3,-b3" "--foo3,-b3" # AdditionalLauncherNoSplashArguments
+  "Foo1Settings" "Foo2Settings" "Foo3Settings" "Foo1Settings" # UserAdditionalSettingsFileBaseName
+  "-h1" "-h2" "-h3" "-h1" # AdditionalLauncherHelpShortArgument
+  "--help1" "--help2" "--help3" "--help1" # AdditionalLauncherHelpLongArgument
+  "--foo1,-b1" "--foo2,-b2" "--foo3,-b3" "--foo1,-b1" # AdditionalLauncherNoSplashArguments
   )
