@@ -25,7 +25,7 @@ public:
   ~ctkAppLauncherSettingsPrivate(){}
   typedef ctkAppLauncherSettingsPrivate Self;
 
-  QString additionalSettingsDir()const;
+  QString userAdditionalSettingsDir()const;
   QString findUserAdditionalSettings()const;
 
   enum SettingsType

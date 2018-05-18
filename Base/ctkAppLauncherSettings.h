@@ -247,7 +247,7 @@ public:
   ///
   /// The location of the additional settings directory is expected to match the following
   /// path: \c path/to/settings/<organisationName|organizationDomain>/
-  QString additionalSettingsDir()const;
+  QString userAdditionalSettingsDir()const;
 
   /// \brief Set/Get launcher directory.
   ///

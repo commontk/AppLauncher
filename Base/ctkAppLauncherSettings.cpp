@@ -50,7 +50,7 @@ ctkAppLauncherSettingsPrivate::ctkAppLauncherSettingsPrivate(ctkAppLauncherSetti
 }
 
 // --------------------------------------------------------------------------
-QString ctkAppLauncherSettingsPrivate::additionalSettingsDir()const
+QString ctkAppLauncherSettingsPrivate::userAdditionalSettingsDir()const
 {
   QFileInfo fileInfo(QSettings().fileName());
   return fileInfo.path();
@@ -66,7 +66,7 @@ QString ctkAppLauncherSettingsPrivate::findUserAdditionalSettings()const
     suffix = "-" + this->ApplicationRevision;
     }
   QString fileName =
-      QDir(this->additionalSettingsDir()).filePath(QString("%1%2%3.ini").
+      QDir(this->userAdditionalSettingsDir()).filePath(QString("%1%2%3.ini").
                                                    arg(prefix).
                                                    arg(this->UserAdditionalSettingsFileBaseName).
                                                    arg(suffix));
@@ -288,10 +288,10 @@ QString ctkAppLauncherSettings::findUserAdditionalSettings()const
 }
 
 // --------------------------------------------------------------------------
-QString ctkAppLauncherSettings::additionalSettingsDir()const
+QString ctkAppLauncherSettings::userAdditionalSettingsDir()const
 {
   Q_D(const ctkAppLauncherSettings);
-  return d->additionalSettingsDir();
+  return d->userAdditionalSettingsDir();
 }
 
 // --------------------------------------------------------------------------
