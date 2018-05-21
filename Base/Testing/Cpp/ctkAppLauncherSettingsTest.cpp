@@ -15,6 +15,7 @@ private slots:
   void testDefaults();
   void testLauncherDir();
   void testLauncherName();
+  void testLauncherSettingsDir();
   void testReadSettingsError();
   void testPathSep();
   void testLibraryPathVariableName();
@@ -38,6 +39,16 @@ void ctkAppLauncherSettingsTester::testLauncherName()
 
   appLauncherSettings.setLauncherName("Foo");
   QCOMPARE(appLauncherSettings.launcherName(), QString("Foo"));
+}
+
+// ----------------------------------------------------------------------------
+void ctkAppLauncherSettingsTester::testLauncherSettingsDir()
+{
+  ctkAppLauncherSettings appLauncherSettings;
+  QCOMPARE(appLauncherSettings.launcherSettingsDir(), QString());
+
+  appLauncherSettings.setLauncherSettingsDir("/path/to");
+  QCOMPARE(appLauncherSettings.launcherSettingsDir(), QString("/path/to"));
 }
 
 // ----------------------------------------------------------------------------

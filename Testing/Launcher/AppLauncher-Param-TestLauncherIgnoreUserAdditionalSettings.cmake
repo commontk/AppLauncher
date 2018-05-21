@@ -28,15 +28,15 @@ size=1
 # --------------------------------------------------------------------------
 # Extract application settings directory
 
-extract_application_settings_value("AdditionalSettingsDir" additional_settings_dir)
-set(additional_settings_path "${additional_settings_dir}/${application_name}-${application_revision}.ini")
+extract_application_settings_value("UserAdditionalSettingsDir" user_additional_settings_dir)
+set(user_additional_settings_path "${user_additional_settings_dir}/${application_name}-${application_revision}.ini")
 
 # --------------------------------------------------------------------------
 # Configure user additional settings file
 set(additional_env_var_name_1 "USER_ADD_SOMETHING_NICE")
 set(additional_env_var_value_1 "Chocolate :)")
 
-file(WRITE ${additional_settings_path} "
+file(WRITE ${user_additional_settings_path} "
 [EnvironmentVariables]
 ${additional_env_var_name_1}=${additional_env_var_value_1}
 
@@ -124,4 +124,4 @@ foreach(unexpected_ov_line ${unexpected_ov_lines})
 endforeach()
 
 # Clean
-file(REMOVE ${additional_settings_path})
+file(REMOVE ${user_additional_settings_path})

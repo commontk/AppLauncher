@@ -50,7 +50,7 @@ ctkAppLauncherSettingsPrivate::ctkAppLauncherSettingsPrivate(ctkAppLauncherSetti
 }
 
 // --------------------------------------------------------------------------
-QString ctkAppLauncherSettingsPrivate::additionalSettingsDir()const
+QString ctkAppLauncherSettingsPrivate::userAdditionalSettingsDir()const
 {
   QFileInfo fileInfo(QSettings().fileName());
   return fileInfo.path();
@@ -66,7 +66,7 @@ QString ctkAppLauncherSettingsPrivate::findUserAdditionalSettings()const
     suffix = "-" + this->ApplicationRevision;
     }
   QString fileName =
-      QDir(this->additionalSettingsDir()).filePath(QString("%1%2%3.ini").
+      QDir(this->userAdditionalSettingsDir()).filePath(QString("%1%2%3.ini").
                                                    arg(prefix).
                                                    arg(this->UserAdditionalSettingsFileBaseName).
                                                    arg(suffix));
@@ -141,7 +141,7 @@ void ctkAppLauncherSettingsPrivate::readPathSettings(QSettings& settings)
     this->MapOfEnvVars.insert(envVarName, mapOfEnvVars[envVarName]);
     }
 
-  this->expandEnvVars();
+  this->expandEnvVars(mapOfEnvVars.keys());
 
   // Read PATHs
   this->ListOfPaths = ctk::readArrayValues(settings, "Paths", "path") + this->ListOfPaths;
@@ -203,6 +203,7 @@ QString ctkAppLauncherSettingsPrivate::expandPlaceHolders(const QString& value) 
   QHash<QString, QString> keyValueMap;
   keyValueMap["<APPLAUNCHER_DIR>"] = this->LauncherDir;
   keyValueMap["<APPLAUNCHER_NAME>"] = this->LauncherName;
+  keyValueMap["<APPLAUNCHER_SETTINGS_DIR>"] = this->LauncherSettingsDir;
   keyValueMap["<PATHSEP>"] = this->PathSep;
 
   QString updatedValue = value;
@@ -214,7 +215,7 @@ QString ctkAppLauncherSettingsPrivate::expandPlaceHolders(const QString& value) 
 }
 
 // --------------------------------------------------------------------------
-void ctkAppLauncherSettingsPrivate::expandEnvVars()
+void ctkAppLauncherSettingsPrivate::expandEnvVars(const QStringList& envVarNames)
 {
   QRegExp regex("\\<env\\:([a-zA-Z0-9\\-\\_]+)\\>");
 
@@ -255,7 +256,12 @@ void ctkAppLauncherSettingsPrivate::expandEnvVars()
       }
     expanded[key] = this->expandPlaceHolders(value);
     }
-  this->MapOfExpandedEnvVars = expanded;
+
+  // Update only variables explicitly listed in the settings
+  foreach(const QString& envVarName, envVarNames)
+    {
+    this->MapOfExpandedEnvVars[envVarName] = expanded[envVarName];
+    }
 }
 
 // --------------------------------------------------------------------------
@@ -287,10 +293,10 @@ QString ctkAppLauncherSettings::findUserAdditionalSettings()const
 }
 
 // --------------------------------------------------------------------------
-QString ctkAppLauncherSettings::additionalSettingsDir()const
+QString ctkAppLauncherSettings::userAdditionalSettingsDir()const
 {
   Q_D(const ctkAppLauncherSettings);
-  return d->additionalSettingsDir();
+  return d->userAdditionalSettingsDir();
 }
 
 // --------------------------------------------------------------------------
@@ -319,6 +325,20 @@ void ctkAppLauncherSettings::setLauncherName(const QString& name)
 {
   Q_D(ctkAppLauncherSettings);
   d->LauncherName = name;
+}
+
+// --------------------------------------------------------------------------
+QString ctkAppLauncherSettings::launcherSettingsDir() const
+{
+  Q_D(const ctkAppLauncherSettings);
+  return d->LauncherSettingsDir;
+}
+
+// --------------------------------------------------------------------------
+void ctkAppLauncherSettings::setLauncherSettingsDir(const QString& dir)
+{
+  Q_D(ctkAppLauncherSettings);
+  d->LauncherSettingsDir = dir;
 }
 
 // --------------------------------------------------------------------------

@@ -103,6 +103,24 @@ bool ctkAppLauncherPrivate::processScreenHideDelayMsArgument()
 }
 
 // --------------------------------------------------------------------------
+bool ctkAppLauncherPrivate::processAdditionalSettings()
+{
+  this->reportInfo(QString("AdditionalSettingsFilePath [%1]").arg(this->AdditionalSettingsFilePath));
+  if (this->AdditionalSettingsFilePath.isEmpty())
+    {
+    return true;
+    }
+  if (!QFile::exists(this->AdditionalSettingsFilePath))
+    {
+    this->reportError(QString("File specified using 'additionalSettingsFilePath' settings "
+                              "does NOT exist ! [%1]").arg(this->AdditionalSettingsFilePath));
+    return false;
+    }
+
+  return this->readSettings(this->AdditionalSettingsFilePath, Self::AdditionalSettings);
+}
+
+// --------------------------------------------------------------------------
 bool ctkAppLauncherPrivate::processAdditionalSettingsArgument()
 {
   if (!this->ParsedArgs.contains("launcher-additional-settings"))
@@ -422,6 +440,7 @@ void ctkAppLauncherPrivate::buildEnvironment(QProcessEnvironment &env)
 
   this->reportInfo(QString("<APPLAUNCHER_DIR> -> [%1]").arg(this->LauncherDir));
   this->reportInfo(QString("<APPLAUNCHER_NAME> -> [%1]").arg(this->LauncherName));
+  this->reportInfo(QString("<APPLAUNCHER_SETTINGS_DIR> -> [%1]").arg(this->LauncherSettingsDir));
   this->reportInfo(QString("<PATHSEP> -> [%1]").arg(this->PathSep));
 
   if(this->LoadEnvironment >= 0)
@@ -511,9 +530,11 @@ bool ctkAppLauncherPrivate::readSettings(const QString& fileName, int settingsTy
     {
     this->DefaultApplicationToLaunchArguments = applicationGroup["arguments"];
     }
-  // Read user additional settings info
+  // Read additional settings info
   if(settingsType == Self::RegularSettings)
     {
+    this->AdditionalSettingsFilePath = settings.value("additionalSettingsFilePath", "").toString();
+    this->AdditionalSettingsFilePath = this->expandValue(this->AdditionalSettingsFilePath);
     this->readUserAdditionalSettingsInfo(settings);
     }
 
@@ -940,10 +961,13 @@ int ctkAppLauncher::processArguments()
         QString("SettingsFileName [%1]").arg(this->findSettingsFile()));
 
     d->reportInfo(
-        QString("AdditionalSettingsDir [%1]").arg(d->additionalSettingsDir()));
+        QString("SettingsDir [%1]").arg(d->LauncherSettingsDir));
 
     d->reportInfo(
-        QString("AdditionalSettingsFileName [%1]").arg(this->findUserAdditionalSettings()));
+        QString("UserAdditionalSettingsDir [%1]").arg(d->userAdditionalSettingsDir()));
+
+    d->reportInfo(
+        QString("UserAdditionalSettingsFileName [%1]").arg(this->findUserAdditionalSettings()));
 
     d->reportInfo(
         QString("UserAdditionalSettingsFileBaseName [%1]").arg(d->UserAdditionalSettingsFileBaseName));
@@ -971,6 +995,11 @@ int ctkAppLauncher::processArguments()
     }
 
   if (!d->processUserAdditionalSettings())
+    {
+    return Self::ExitWithError;
+    }
+
+  if (!d->processAdditionalSettings())
     {
     return Self::ExitWithError;
     }
@@ -1231,6 +1260,10 @@ int ctkAppLauncher::configure()
     }
 
   QString settingFileName = this->findSettingsFile();
+  if (!settingFileName.isEmpty())
+    {
+    d->LauncherSettingsDir = QFileInfo(settingFileName).absoluteDir().absolutePath();
+    }
 
   d->ValidSettingsFile = d->readSettings(settingFileName, ctkAppLauncherPrivate::RegularSettings);
 
@@ -1250,6 +1283,7 @@ int ctkAppLauncher::configure()
       }
     }
 
+  // Process command line arguments and load additional settings files if any
   int status = this->processArguments();
   if (status == ctkAppLauncher::ExitWithError)
     {

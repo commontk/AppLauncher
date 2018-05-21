@@ -8,6 +8,7 @@ additionalLauncherNoSplashArguments=--no-splash
 additionalPathVariables=PYTHONPATH,QT_PLUGIN_PATH
 
 launcherLoadEnvironment=0
+additionalSettingsFilePath=@ctkapplauncher_dir@/additional-settings-build.ini
 
 [Application]
 path=<APPLAUNCHER_DIR>/bin/@launcher_build_subdir@/App4ConfigureLauncherTest-real@CMAKE_EXECUTABLE_SUFFIX@
@@ -27,7 +28,8 @@ size=1
 [Paths]
 1\path=<APPLAUNCHER_DIR>/dog
 2\path=<APPLAUNCHER_DIR>/cat
-size=2
+3\path=<APPLAUNCHER_SETTINGS_DIR>/frog
+size=3
 
 [EnvironmentVariables]
 BAR=NONE

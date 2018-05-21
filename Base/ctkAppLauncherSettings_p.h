@@ -25,14 +25,15 @@ public:
   ~ctkAppLauncherSettingsPrivate(){}
   typedef ctkAppLauncherSettingsPrivate Self;
 
-  QString additionalSettingsDir()const;
+  QString userAdditionalSettingsDir()const;
   QString findUserAdditionalSettings()const;
 
+  /// Different type of settings files.
   enum SettingsType
     {
-    RegularSettings = 0,
-    AdditionalSettings,
-    UserAdditionalSettings
+    RegularSettings = 0,    ///< Primary settings file associated with the launcher.
+    UserAdditionalSettings, ///< Settings file implicitly associated using application `name`, `organizationName`, `organizationDomain`, and optionally `revision`.
+    AdditionalSettings      ///< Settings file explicitly specified using command line argument.
     };
 
   /// \brief Expand setting \a value
@@ -41,6 +42,7 @@ public:
   /// <ul>
   ///  <li>&lt;APPLAUNCHER_DIR&gt; -> LauncherDir</li>
   ///  <li>&lt;APPLAUNCHER_NAME&gt; -> LauncherName</li>
+  ///  <li>&lt;APPLAUNCHER_SETTINGS_DIR&gt; -> LauncherSettingsDir</li>
   ///  <li>&lt;PATHSEP&gt; -> PathSep</li>
   ///  <li>&lt;env:VARNAME&gt; -> If any, expand to corresponding system environment variable</li>
   /// </ul>
@@ -50,7 +52,7 @@ public:
 
   QString expandPlaceHolders(const QString& value) const;
 
-  void expandEnvVars();
+  void expandEnvVars(const QStringList& envVarNames);
   QHash<QString, QString> MapOfExpandedEnvVars;
 
   bool checkSettings(const QString& fileName, int settingsType);
@@ -74,6 +76,7 @@ public:
 
   QString                         LauncherName;
   QString                         LauncherDir;
+  QString                         LauncherSettingsDir;
 //  QStringList                     LauncherSettingSubDirs;
 //  bool                            ValidSettingsFile;
   QString                         OrganizationName;
