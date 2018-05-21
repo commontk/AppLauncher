@@ -3,6 +3,20 @@ include(${TEST_SOURCE_DIR}/AppLauncherTestMacros.cmake)
 include(${TEST_BINARY_DIR}/AppLauncherTestPrerequisites.cmake)
 
 # --------------------------------------------------------------------------
+# Configure additional settings file used with "additionalSettingsFilePath" settings key
+set(settingskey_additional_settings_path "${launcher}AdditionalLauncherSettingsForSettingsKey.ini")
+set(settingskey_additional_env_var_name_1 "SETTINGSKEY_ADD_SOMETHING_NICE")
+set(settingskey_additional_env_var_value_1 "Smoked Salmon")
+set(settingskey_additional_env_var_name_2 "SETTINGSKEY_ENV_OVERWRITTEN_BY_CMDARG")
+set(settingskey_additional_env_var_value_2 "SettingsKeyValue")
+
+file(WRITE ${settingskey_additional_settings_path} "
+[EnvironmentVariables]
+${settingskey_additional_env_var_name_1}=${settingskey_additional_env_var_value_1}
+${settingskey_additional_env_var_name_2}=${settingskey_additional_env_var_value_2}
+")
+
+# --------------------------------------------------------------------------
 # Configure settings file
 set(organization_domain "www.commontk-${TEST_TREE_TYPE}.org")
 set(organization_name "Common ToolKit ${TEST_TREE_TYPE}")
@@ -27,6 +41,7 @@ set(common_env_var2_value_1 "Rocks")
 file(WRITE "${launcher}LauncherSettings.ini" "
 [General]
 additionalPathVariables=${regular_pathenv_var_name_1}
+additionalSettingsFilePath=<APPLAUNCHER_SETTINGS_DIR>/${launcher_name}AdditionalLauncherSettingsForSettingsKey.ini
 
 [Application]
 path=${application}
@@ -127,7 +142,7 @@ size=2
 
 # --------------------------------------------------------------------------
 # Configure additional settings file used with "--launcher-additional-settings"
-set(cmdarg_additional_settings_path "${launcher}AdditionalLauncherSettings.ini")
+set(cmdarg_additional_settings_path "${launcher}AdditionalLauncherSettingsForCmdArg.ini")
 set(cmdarg_additional_sys_env_var_name "CTKAPPLAUNCHER_TEST_ADDITIONAL_ENV_EXPRESSION")
 set(cmdarg_additional_sys_env_var_value "Powder as in snow")
 set(cmdarg_additional_env_var_name_1 "ADD_SOMETHING_NICE")
@@ -136,6 +151,8 @@ set(cmdarg_additional_env_var_name_2 "ADD_SOMETHING_AWESOME")
 set(cmdarg_additional_env_var_value_2 "Rock climbing ! :)")
 set(cmdarg_additional_env_var_name_3 "ADD_SOMETHING_GREAT")
 set(cmdarg_additional_env_var_value_3 "<env:${cmdarg_additional_sys_env_var_name}>")
+set(cmdarg_additional_env_var_name_4 "SETTINGSKEY_ENV_OVERWRITTEN_BY_CMDARG")
+set(cmdarg_additional_env_var_value_4 "CmdArgValue")
 set(cmdarg_additional_pathenv_var_value_1_1 "/farm/dog")
 set(cmdarg_additional_pathenv_var_value_1_2 "/farm/duck")
 set(cmdarg_additional_pathenv_var_value_2_1 "/user-farm/dog")
@@ -170,6 +187,7 @@ size=3
 ${cmdarg_additional_env_var_name_1}=${cmdarg_additional_env_var_value_1}
 ${cmdarg_additional_env_var_name_2}=${cmdarg_additional_env_var_value_2}
 ${cmdarg_additional_env_var_name_3}=${cmdarg_additional_env_var_value_3}
+${cmdarg_additional_env_var_name_4}=${cmdarg_additional_env_var_value_4}
 ${common_env_var_name}=<env:${common_env_var_name}>:${common_env_var_value_3}
 ${common_env_var2_name}=${common_env_var2_value_3}:<env:${common_env_var2_name}>
 
@@ -251,9 +269,11 @@ set(expected_ov_lines
   "${user_additional_env_var_name_3}=${expected_user_additional_env_var_value_3}"
   "${user_additional_env_var_name_2}=${user_additional_env_var_value_2}"
   "${user_additional_env_var_name_1}=${user_additional_env_var_value_1}"
+  "${cmdarg_additional_env_var_name_4}=${cmdarg_additional_env_var_value_4}"
   "${cmdarg_additional_env_var_name_3}=${expected_additional_env_var_value_3}"
   "${cmdarg_additional_env_var_name_2}=${cmdarg_additional_env_var_value_2}"
   "${cmdarg_additional_env_var_name_1}=${cmdarg_additional_env_var_value_1}"
+  "${settingskey_additional_env_var_name_1}=${settingskey_additional_env_var_value_1}"
   "${library_path_variable_name}=${cmdarg_additional_library_path}${pathsep}${user_additional_library_path}${pathsep}${regular_library_path_1}${pathsep}${regular_library_path_2}"
   "PATH=${cmdarg_additional_path_1}${pathsep}${cmdarg_additional_path_2}${pathsep}${expected_additional_path_3}${pathsep}${user_additional_path_1}${pathsep}${user_additional_path_2}${pathsep}${expected_user_additional_path_3}${pathsep}${regular_path_1}${pathsep}${regular_path_2}"
   "${regular_env_var_name_2}=${regular_env_var_value_2}\n"
@@ -269,9 +289,11 @@ if(WIN32)
     "${user_additional_env_var_name_3}=${expected_user_additional_env_var_value_3}"
     "${user_additional_env_var_name_2}=${user_additional_env_var_value_2}"
     "${user_additional_env_var_name_1}=${user_additional_env_var_value_1}"
+    "${cmdarg_additional_env_var_name_4}=${cmdarg_additional_env_var_value_4}"
     "${cmdarg_additional_env_var_name_3}=${expected_additional_env_var_value_3}"
     "${cmdarg_additional_env_var_name_2}=${cmdarg_additional_env_var_value_2}"
     "${cmdarg_additional_env_var_name_1}=${cmdarg_additional_env_var_value_1}"
+    "${settingskey_additional_env_var_name_1}=${settingskey_additional_env_var_value_1}"
     "Path=${cmdarg_additional_path_1}${pathsep}${cmdarg_additional_path_2}${pathsep}${expected_additional_path_3}${pathsep}${user_additional_path_1}${pathsep}${user_additional_path_2}${pathsep}${expected_user_additional_path_3}${pathsep}${regular_path_1}${pathsep}${regular_path_2}${pathsep}${additional_library_path}${pathsep}${user_additional_library_path}${pathsep}${regular_library_path_1}${pathsep}${regular_library_path_2}"
     "${regular_env_var_name_2}=${regular_env_var_value_2}\n"
     "${regular_env_var_name_1}=${regular_env_var_value_1}\n"

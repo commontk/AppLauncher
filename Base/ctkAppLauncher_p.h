@@ -48,6 +48,7 @@ public:
   bool processExtraApplicationToLaunchArgument(const QStringList& unparsedArgs);
   bool processSplashPathArgument();
   bool processScreenHideDelayMsArgument();
+  bool processAdditionalSettings();
   bool processAdditionalSettingsArgument();
 
   /// \sa ctkAppLauncherSettingsPrivate::findUserAdditionalSettings()
@@ -115,6 +116,7 @@ public:
   QString                         DefaultApplicationToLaunchArguments;
 //  QString                         LauncherName;
 //  QString                         LauncherDir;
+  QString                         AdditionalSettingsFilePath;
   QStringList                     LauncherSettingSubDirs;
   bool                            ValidSettingsFile;
 //  QString                         OrganizationName;

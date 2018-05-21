@@ -30,6 +30,19 @@ if(NOT DEFINED TEST_FUNCTION)
   message(FATAL_ERROR "Configuring with TEST_FUNCTION is mandatory.")
 endif()
 
+set(_dir ${CTKAPPLAUNCHER_DIR})
+if(WITH_CONFIG_FILE)
+  set(_dir ${CTKAppLauncher_DIR})
+endif()
+
+set(additional_settings_path_build "${_dir}/additional-settings-build.ini")
+file(WRITE ${additional_settings_path_build} "
+")
+
+set(additional_settings_path_installed "${_dir}/additional-settings-installed.ini")
+file(WRITE ${additional_settings_path_installed} "
+")
+
 set(arguments
   LAUNCHER_LOAD_ENVIRONMENT 0
   APPLICATION_DEFAULT_ARGUMENTS "--foo bar"
@@ -43,6 +56,8 @@ set(arguments
   HELP_SHORT_ARG "-h"
   HELP_LONG_ARG "--help"
   NOSPLASH_ARGS "--no-splash"
+  ADDITIONAL_SETTINGS_FILEPATH_BUILD "${additional_settings_path_build}"
+  ADDITIONAL_SETTINGS_FILEPATH_INSTALLED "<APPLAUNCHER_DIR>/additional-settings-installed.ini"
   PATHS_BUILD "<APPLAUNCHER_DIR>/dog;<APPLAUNCHER_DIR>/cat;<APPLAUNCHER_SETTINGS_DIR>/frog"
   PATHS_INSTALLED "<APPLAUNCHER_DIR>/cow;<APPLAUNCHER_DIR>/pig;<APPLAUNCHER_SETTINGS_DIR>/donkey;"
   LIBRARY_PATHS_BUILD "<APPLAUNCHER_DIR>/build/lib"

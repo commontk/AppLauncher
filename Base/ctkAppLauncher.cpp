@@ -103,6 +103,24 @@ bool ctkAppLauncherPrivate::processScreenHideDelayMsArgument()
 }
 
 // --------------------------------------------------------------------------
+bool ctkAppLauncherPrivate::processAdditionalSettings()
+{
+  this->reportInfo(QString("AdditionalSettingsFilePath [%1]").arg(this->AdditionalSettingsFilePath));
+  if (this->AdditionalSettingsFilePath.isEmpty())
+    {
+    return true;
+    }
+  if (!QFile::exists(this->AdditionalSettingsFilePath))
+    {
+    this->reportError(QString("File specified using 'additionalSettingsFilePath' settings "
+                              "does NOT exist ! [%1]").arg(this->AdditionalSettingsFilePath));
+    return false;
+    }
+
+  return this->readSettings(this->AdditionalSettingsFilePath, Self::AdditionalSettings);
+}
+
+// --------------------------------------------------------------------------
 bool ctkAppLauncherPrivate::processAdditionalSettingsArgument()
 {
   if (!this->ParsedArgs.contains("launcher-additional-settings"))
@@ -512,9 +530,11 @@ bool ctkAppLauncherPrivate::readSettings(const QString& fileName, int settingsTy
     {
     this->DefaultApplicationToLaunchArguments = applicationGroup["arguments"];
     }
-  // Read user additional settings info
+  // Read additional settings info
   if(settingsType == Self::RegularSettings)
     {
+    this->AdditionalSettingsFilePath = settings.value("additionalSettingsFilePath", "").toString();
+    this->AdditionalSettingsFilePath = this->expandValue(this->AdditionalSettingsFilePath);
     this->readUserAdditionalSettingsInfo(settings);
     }
 
@@ -979,6 +999,11 @@ int ctkAppLauncher::processArguments()
     return Self::ExitWithError;
     }
 
+  if (!d->processAdditionalSettings())
+    {
+    return Self::ExitWithError;
+    }
+
   if (!d->processAdditionalSettingsArgument())
     {
     return Self::ExitWithError;
@@ -1258,6 +1283,7 @@ int ctkAppLauncher::configure()
       }
     }
 
+  // Process command line arguments and load additional settings files if any
   int status = this->processArguments();
   if (status == ctkAppLauncher::ExitWithError)
     {

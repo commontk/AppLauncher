@@ -141,7 +141,7 @@ void ctkAppLauncherSettingsPrivate::readPathSettings(QSettings& settings)
     this->MapOfEnvVars.insert(envVarName, mapOfEnvVars[envVarName]);
     }
 
-  this->expandEnvVars();
+  this->expandEnvVars(mapOfEnvVars.keys());
 
   // Read PATHs
   this->ListOfPaths = ctk::readArrayValues(settings, "Paths", "path") + this->ListOfPaths;
@@ -215,7 +215,7 @@ QString ctkAppLauncherSettingsPrivate::expandPlaceHolders(const QString& value) 
 }
 
 // --------------------------------------------------------------------------
-void ctkAppLauncherSettingsPrivate::expandEnvVars()
+void ctkAppLauncherSettingsPrivate::expandEnvVars(const QStringList& envVarNames)
 {
   QRegExp regex("\\<env\\:([a-zA-Z0-9\\-\\_]+)\\>");
 
@@ -256,7 +256,12 @@ void ctkAppLauncherSettingsPrivate::expandEnvVars()
       }
     expanded[key] = this->expandPlaceHolders(value);
     }
-  this->MapOfExpandedEnvVars = expanded;
+
+  // Update only variables explicitly listed in the settings
+  foreach(const QString& envVarName, envVarNames)
+    {
+    this->MapOfExpandedEnvVars[envVarName] = expanded[envVarName];
+    }
 }
 
 // --------------------------------------------------------------------------

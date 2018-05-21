@@ -52,7 +52,7 @@ public:
 
   QString expandPlaceHolders(const QString& value) const;
 
-  void expandEnvVars();
+  void expandEnvVars(const QStringList& envVarNames);
   QHash<QString, QString> MapOfExpandedEnvVars;
 
   bool checkSettings(const QString& fileName, int settingsType);
