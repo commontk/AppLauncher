@@ -23,7 +23,7 @@ function(applauncher_test_launcher_overwrite_settings_test_case
 
   AdditionalLauncherHelpShortArgument
   user_additional_AdditionalLauncherHelpShortArgument
-  cmdarg_additional_AdditionalLauncherHelpShortArgumenth
+  cmdarg_additional_AdditionalLauncherHelpShortArgument
   expected_AdditionalLauncherHelpShortArgument
 
   AdditionalLauncherHelpLongArgument
@@ -144,9 +144,9 @@ applauncher_test_launcher_overwrite_settings_test_case(
   "1" "2" "3" "3" # LauncherSplashScreenHideDelayMs
   "/home/path/image1.png" "/home/path/image2.png" "/home/path/image3.png" "/home/path/image3.png" # LauncherSplashImagePath
   "Foo1Settings" "Foo2Settings" "Foo3Settings" "Foo1Settings" # UserAdditionalSettingsFileBaseName
-  "-h1" "-h2" "-h3" "-h1" # AdditionalLauncherHelpShortArgument
-  "--help1" "--help2" "--help3" "--help1" # AdditionalLauncherHelpLongArgument
-  "--foo1,-b1" "--foo2,-b2" "--foo3,-b3" "--foo1,-b1" # AdditionalLauncherNoSplashArguments
+  "-h1" "-h2" "-h3" "-h3" # AdditionalLauncherHelpShortArgument
+  "--help1" "--help2" "--help3" "--help3" # AdditionalLauncherHelpLongArgument
+  "--foo1,-b1" "--foo2,-b2" "--foo3,-b3" "--foo1,-b1,--foo2,-b2,--foo3,-b3" # AdditionalLauncherNoSplashArguments
   )
 
 applauncher_test_launcher_overwrite_settings_test_case(
@@ -154,9 +154,9 @@ applauncher_test_launcher_overwrite_settings_test_case(
   "1" "2" "NA" "2" # LauncherSplashScreenHideDelayMs
   "/home/path/image1.png" "/home/path/image2.png" "NA" "/home/path/image2.png" # LauncherSplashImagePath
   "Foo1Settings" "Foo2Settings" "NA" "Foo1Settings" # UserAdditionalSettingsFileBaseName
-  "-h1" "-h2" "NA" "-h1" # AdditionalLauncherHelpShortArgument
-  "--help1" "--help2" "NA" "--help1" # AdditionalLauncherHelpLongArgument
-  "--foo1,-b1" "--foo2,-b2" "NA" "--foo1,-b1" # AdditionalLauncherNoSplashArguments
+  "-h1" "-h2" "NA" "-h2" # AdditionalLauncherHelpShortArgument
+  "--help1" "--help2" "NA" "--help2" # AdditionalLauncherHelpLongArgument
+  "--foo1,-b1" "--foo2,-b2" "NA" "--foo1,-b1,--foo2,-b2" # AdditionalLauncherNoSplashArguments
   )
 
 applauncher_test_launcher_overwrite_settings_test_case(
@@ -177,14 +177,4 @@ applauncher_test_launcher_overwrite_settings_test_case(
   "NA" "NA" "NA" "" # AdditionalLauncherHelpShortArgument
   "NA" "NA" "NA" "" # AdditionalLauncherHelpLongArgument
   "NA" "NA" "NA" "" # AdditionalLauncherNoSplashArguments
-  )
-
-applauncher_test_launcher_overwrite_settings_test_case(
-  "1" # testcase_id
-  "1" "2" "3" "3" # LauncherSplashScreenHideDelayMs
-  "/home/path/image1.png" "/home/path/image2.png" "/home/path/image3.png" "/home/path/image3.png" # LauncherSplashImagePath
-  "Foo1Settings" "Foo2Settings" "Foo3Settings" "Foo1Settings" # UserAdditionalSettingsFileBaseName
-  "-h1" "-h2" "-h3" "-h1" # AdditionalLauncherHelpShortArgument
-  "--help1" "--help2" "--help3" "--help1" # AdditionalLauncherHelpLongArgument
-  "--foo1,-b1" "--foo2,-b2" "--foo3,-b3" "--foo1,-b1" # AdditionalLauncherNoSplashArguments
   )

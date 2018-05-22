@@ -937,6 +937,33 @@ int ctkAppLauncher::processArguments()
       || d->ParsedArgs.value("launcher-generate-template").toBool()
       || d->ParsedArgs.value("launcher-generate-exec-wrapper-script").toBool();
 
+  if (d->ParsedArgs.value("launcher-help").toBool())
+    {
+    this->displayHelp();
+    return Self::ExitWithSuccess;
+    }
+
+  if (d->ParsedArgs.value("launcher-version").toBool())
+    {
+    this->displayVersion();
+    return Self::ExitWithSuccess;
+    }
+
+  if (!d->processUserAdditionalSettings())
+    {
+    return Self::ExitWithError;
+    }
+
+  if (!d->processAdditionalSettings())
+    {
+    return Self::ExitWithError;
+    }
+
+  if (!d->processAdditionalSettingsArgument())
+    {
+    return Self::ExitWithError;
+    }
+
   if (reportInfo)
     {
     d->reportInfo(
@@ -980,33 +1007,6 @@ int ctkAppLauncher::processArguments()
 
     d->reportInfo(
         QString("AdditionalLauncherNoSplashArguments [%1]").arg(d->LauncherAdditionalNoSplashArguments.join(",")));
-    }
-
-  if (d->ParsedArgs.value("launcher-help").toBool())
-    {
-    this->displayHelp();
-    return Self::ExitWithSuccess;
-    }
-
-  if (d->ParsedArgs.value("launcher-version").toBool())
-    {
-    this->displayVersion();
-    return Self::ExitWithSuccess;
-    }
-
-  if (!d->processUserAdditionalSettings())
-    {
-    return Self::ExitWithError;
-    }
-
-  if (!d->processAdditionalSettings())
-    {
-    return Self::ExitWithError;
-    }
-
-  if (!d->processAdditionalSettingsArgument())
-    {
-    return Self::ExitWithError;
     }
 
   d->DetachApplicationToLaunch =
