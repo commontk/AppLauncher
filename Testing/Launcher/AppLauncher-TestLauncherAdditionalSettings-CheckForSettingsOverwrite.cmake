@@ -6,6 +6,11 @@ include(${TEST_BINARY_DIR}/AppLauncherTestPrerequisites.cmake)
 function(applauncher_test_launcher_overwrite_settings_test_case
   testcase_id
 
+  LauncherNoSplashScreen
+  user_additional_LauncherNoSplashScreen
+  cmdarg_additional_LauncherNoSplashScreen
+  expected_LauncherNoSplashScreen
+
   LauncherSplashScreenHideDelayMs
   user_additional_LauncherSplashScreenHideDelayMs
   cmdarg_additional_LauncherSplashScreenHideDelayMs
@@ -35,15 +40,22 @@ function(applauncher_test_launcher_overwrite_settings_test_case
   user_additional_AdditionalLauncherNoSplashArguments
   cmdarg_additional_AdditionalLauncherNoSplashArguments
   expected_AdditionalLauncherNoSplashArguments
+
+  AdditionalSettingsFilePath
+  user_additional_AdditionalSettingsFilePath
+  cmdarg_additional_AdditionalSettingsFilePath
+  expected_AdditionalSettingsFilePath
   )
 
   foreach(setting
+    LauncherNoSplashScreen
     LauncherSplashScreenHideDelayMs
     LauncherSplashImagePath
     UserAdditionalSettingsFileBaseName
     AdditionalLauncherHelpShortArgument
     AdditionalLauncherHelpLongArgument
     AdditionalLauncherNoSplashArguments
+    AdditionalSettingsFilePath
     )
 
     if(NOT ${setting} STREQUAL "NA")
@@ -66,12 +78,14 @@ function(applauncher_test_launcher_overwrite_settings_test_case
   set(launcherSplashScreenHideDelayMs "1")
   file(WRITE "${launcher}LauncherSettings.ini" "
 [General]
+${LauncherNoSplashScreen_set}
 ${LauncherSplashScreenHideDelayMs_set}
 ${LauncherSplashImagePath_set}
 ${UserAdditionalSettingsFileBaseName_set}
 ${AdditionalLauncherHelpShortArgument_set}
 ${AdditionalLauncherHelpLongArgument_set}
 ${AdditionalLauncherNoSplashArguments_set}
+${AdditionalSettingsFilePath_set}
 
 [Application]
 path=${application}
@@ -92,34 +106,40 @@ size=1
   # Configure user additional settings file
   file(WRITE ${user_additional_settings_path} "
 [General]
+${user_additional_LauncherNoSplashScreen_set}
 ${user_additional_LauncherSplashScreenHideDelayMs_set}
 ${user_additional_LauncherSplashImagePath_set}
 ${user_additional_UserAdditionalSettingsFileBaseName_set}
 ${user_additional_AdditionalLauncherHelpShortArgument_set}
 ${user_additional_AdditionalLauncherHelpLongArgument_set}
 ${user_additional_AdditionalLauncherNoSplashArguments_set}
+${user_additional_AdditionalSettingsFilePath_set}
 ")
 
   # Configure additional settings file
   set(cmdarg_additional_settings_path "${launcher}AdditionalLauncherSettings.ini")
   file(WRITE ${cmdarg_additional_settings_path} "
 [General]
+${cmdarg_additional_LauncherNoSplashScreen_set}
 ${cmdarg_additional_LauncherSplashScreenHideDelayMs_set}
 ${cmdarg_additional_LauncherSplashImagePath_set}
 ${cmdarg_additional_UserAdditionalSettingsFileBaseName_set}
 ${cmdarg_additional_AdditionalLauncherHelpShortArgument_set}
 ${cmdarg_additional_AdditionalLauncherHelpLongArgument_set}
 ${cmdarg_additional_AdditionalLauncherNoSplashArguments_set}
+${cmdarg_additional_AdditionalSettingsFilePath_set}
 ")
 
   # Check if launcher works as expected
   foreach(setting
+      LauncherNoSplashScreen
       LauncherSplashScreenHideDelayMs
       LauncherSplashImagePath
       UserAdditionalSettingsFileBaseName
       AdditionalLauncherHelpShortArgument
       AdditionalLauncherHelpLongArgument
       AdditionalLauncherNoSplashArguments
+      AdditionalSettingsFilePath
       )
 
     extract_application_settings_value("${setting}" current_${setting} --launcher-additional-settings ${cmdarg_additional_settings_path})
@@ -141,40 +161,48 @@ set(PRINT_COMMAND 0)
 
 applauncher_test_launcher_overwrite_settings_test_case(
   "1" # testcase_id
+  "1" "0" "NA" "0" # LauncherNoSplashScreen
   "1" "2" "3" "3" # LauncherSplashScreenHideDelayMs
   "/home/path/image1.png" "/home/path/image2.png" "/home/path/image3.png" "/home/path/image3.png" # LauncherSplashImagePath
   "Foo1Settings" "Foo2Settings" "Foo3Settings" "Foo1Settings" # UserAdditionalSettingsFileBaseName
   "-h1" "-h2" "-h3" "-h3" # AdditionalLauncherHelpShortArgument
   "--help1" "--help2" "--help3" "--help3" # AdditionalLauncherHelpLongArgument
   "--foo1,-b1" "--foo2,-b2" "--foo3,-b3" "--foo1,-b1,--foo2,-b2,--foo3,-b3" # AdditionalLauncherNoSplashArguments
+  "/home/path/setting1.ini" "/home/path/setting2.ini" "/home/path/setting3.ini" "/home/path/setting1.ini" # AdditionalSettingsFilePath
   )
 
 applauncher_test_launcher_overwrite_settings_test_case(
   "2" # testcase_id
+  "1" "0" "NA" "0" # LauncherNoSplashScreen
   "1" "2" "NA" "2" # LauncherSplashScreenHideDelayMs
   "/home/path/image1.png" "/home/path/image2.png" "NA" "/home/path/image2.png" # LauncherSplashImagePath
   "Foo1Settings" "Foo2Settings" "NA" "Foo1Settings" # UserAdditionalSettingsFileBaseName
   "-h1" "-h2" "NA" "-h2" # AdditionalLauncherHelpShortArgument
   "--help1" "--help2" "NA" "--help2" # AdditionalLauncherHelpLongArgument
   "--foo1,-b1" "--foo2,-b2" "NA" "--foo1,-b1,--foo2,-b2" # AdditionalLauncherNoSplashArguments
+  "/home/path/setting1.ini" "/home/path/setting2.ini" "NA" "/home/path/setting1.ini" # AdditionalSettingsFilePath
   )
 
 applauncher_test_launcher_overwrite_settings_test_case(
   "3" # testcase_id
+  "1" "NA" "NA" "1" # LauncherNoSplashScreen
   "1" "NA" "NA" "1" # LauncherSplashScreenHideDelayMs
   "/home/path/image1.png" "NA" "NA" "/home/path/image1.png" # LauncherSplashImagePath
   "Foo1Settings" "NA" "NA" "Foo1Settings" # UserAdditionalSettingsFileBaseName
   "-h1" "NA" "NA" "-h1" # AdditionalLauncherHelpShortArgument
   "--help1" "NA" "NA" "--help1" # AdditionalLauncherHelpLongArgument
   "--foo1,-b1" "NA" "NA" "--foo1,-b1" # AdditionalLauncherNoSplashArguments
+  "/home/path/setting1.ini" "NA" "NA" "/home/path/setting1.ini" # AdditionalSettingsFilePath
   )
 
 applauncher_test_launcher_overwrite_settings_test_case(
   "4" # testcase_id
+  "NA" "NA" "NA" "0" # LauncherNoSplashScreen
   "NA" "NA" "NA" "800" # LauncherSplashScreenHideDelayMs
   "NA" "NA" "NA" ":Images/ctk-splash.png" # LauncherSplashImagePath
   "NA" "NA" "NA" "" # UserAdditionalSettingsFileBaseName
   "NA" "NA" "NA" "" # AdditionalLauncherHelpShortArgument
   "NA" "NA" "NA" "" # AdditionalLauncherHelpLongArgument
   "NA" "NA" "NA" "" # AdditionalLauncherNoSplashArguments
+  "NA" "NA" "NA" "" # AdditionalSettingsFilePath
   )

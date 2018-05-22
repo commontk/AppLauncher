@@ -515,8 +515,10 @@ bool ctkAppLauncherPrivate::readSettings(const QString& fileName, int settingsTy
     this->DefaultLauncherSplashScreenHideDelayMs = splashScreenHideDelayMsVariant.toInt();
     }
 
-  bool noSplashScreen = settings.value("launcherNoSplashScreen", false).toBool();
-  this->LauncherNoSplashScreen = noSplashScreen;
+  if (settings.contains("launcherNoSplashScreen"))
+    {
+    this->LauncherNoSplashScreen = settings.value("launcherNoSplashScreen").toBool();
+    }
 
   this->LoadEnvironment = settings.value("launcherLoadEnvironment", -1).toInt();
 
@@ -530,9 +532,10 @@ bool ctkAppLauncherPrivate::readSettings(const QString& fileName, int settingsTy
     {
     this->DefaultApplicationToLaunchArguments = applicationGroup["arguments"];
     }
-  // Read additional settings info
+
   if(settingsType == Self::RegularSettings)
     {
+    // Read additional settings info
     this->AdditionalSettingsFilePath = settings.value("additionalSettingsFilePath", "").toString();
     this->AdditionalSettingsFilePath = this->expandValue(this->AdditionalSettingsFilePath);
     this->readUserAdditionalSettingsInfo(settings);
@@ -998,6 +1001,9 @@ int ctkAppLauncher::processArguments()
 
     d->reportInfo(
         QString("UserAdditionalSettingsFileBaseName [%1]").arg(d->UserAdditionalSettingsFileBaseName));
+
+    d->reportInfo(
+        QString("LauncherNoSplashScreen [%1]").arg(d->LauncherNoSplashScreen));
 
     d->reportInfo(
         QString("AdditionalLauncherHelpShortArgument [%1]").arg(d->LauncherAdditionalHelpShortArgument));
