@@ -112,9 +112,7 @@ bool ctkAppLauncherPrivate::processAdditionalSettings()
     }
   if (!QFile::exists(this->AdditionalSettingsFilePath))
     {
-    this->reportError(QString("File specified using 'additionalSettingsFilePath' settings "
-                              "does NOT exist ! [%1]").arg(this->AdditionalSettingsFilePath));
-    return false;
+    return true;
     }
 
   return this->readSettings(this->AdditionalSettingsFilePath, Self::AdditionalSettings);
