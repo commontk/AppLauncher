@@ -112,7 +112,6 @@ public:
   QString                         DefaultApplicationToLaunch;
   QString                         DefaultLauncherSplashImagePath;
   int                             DefaultLauncherSplashScreenHideDelayMs;
-  bool                            DefaultLauncherNoSplashScreen;
   QString                         DefaultApplicationToLaunchArguments;
 //  QString                         LauncherName;
 //  QString                         LauncherDir;

@@ -112,9 +112,7 @@ bool ctkAppLauncherPrivate::processAdditionalSettings()
     }
   if (!QFile::exists(this->AdditionalSettingsFilePath))
     {
-    this->reportError(QString("File specified using 'additionalSettingsFilePath' settings "
-                              "does NOT exist ! [%1]").arg(this->AdditionalSettingsFilePath));
-    return false;
+    return true;
     }
 
   return this->readSettings(this->AdditionalSettingsFilePath, Self::AdditionalSettings);
@@ -515,8 +513,10 @@ bool ctkAppLauncherPrivate::readSettings(const QString& fileName, int settingsTy
     this->DefaultLauncherSplashScreenHideDelayMs = splashScreenHideDelayMsVariant.toInt();
     }
 
-  bool noSplashScreen = settings.value("launcherNoSplashScreen", false).toBool();
-  this->LauncherNoSplashScreen = noSplashScreen;
+  if (settings.contains("launcherNoSplashScreen"))
+    {
+    this->LauncherNoSplashScreen = settings.value("launcherNoSplashScreen").toBool();
+    }
 
   this->LoadEnvironment = settings.value("launcherLoadEnvironment", -1).toInt();
 
@@ -530,9 +530,10 @@ bool ctkAppLauncherPrivate::readSettings(const QString& fileName, int settingsTy
     {
     this->DefaultApplicationToLaunchArguments = applicationGroup["arguments"];
     }
-  // Read additional settings info
+
   if(settingsType == Self::RegularSettings)
     {
+    // Read additional settings info
     this->AdditionalSettingsFilePath = settings.value("additionalSettingsFilePath", "").toString();
     this->AdditionalSettingsFilePath = this->expandValue(this->AdditionalSettingsFilePath);
     this->readUserAdditionalSettingsInfo(settings);
@@ -937,6 +938,33 @@ int ctkAppLauncher::processArguments()
       || d->ParsedArgs.value("launcher-generate-template").toBool()
       || d->ParsedArgs.value("launcher-generate-exec-wrapper-script").toBool();
 
+  if (d->ParsedArgs.value("launcher-help").toBool())
+    {
+    this->displayHelp();
+    return Self::ExitWithSuccess;
+    }
+
+  if (d->ParsedArgs.value("launcher-version").toBool())
+    {
+    this->displayVersion();
+    return Self::ExitWithSuccess;
+    }
+
+  if (!d->processUserAdditionalSettings())
+    {
+    return Self::ExitWithError;
+    }
+
+  if (!d->processAdditionalSettings())
+    {
+    return Self::ExitWithError;
+    }
+
+  if (!d->processAdditionalSettingsArgument())
+    {
+    return Self::ExitWithError;
+    }
+
   if (reportInfo)
     {
     d->reportInfo(
@@ -973,6 +1001,9 @@ int ctkAppLauncher::processArguments()
         QString("UserAdditionalSettingsFileBaseName [%1]").arg(d->UserAdditionalSettingsFileBaseName));
 
     d->reportInfo(
+        QString("LauncherNoSplashScreen [%1]").arg(d->LauncherNoSplashScreen));
+
+    d->reportInfo(
         QString("AdditionalLauncherHelpShortArgument [%1]").arg(d->LauncherAdditionalHelpShortArgument));
 
     d->reportInfo(
@@ -980,33 +1011,6 @@ int ctkAppLauncher::processArguments()
 
     d->reportInfo(
         QString("AdditionalLauncherNoSplashArguments [%1]").arg(d->LauncherAdditionalNoSplashArguments.join(",")));
-    }
-
-  if (d->ParsedArgs.value("launcher-help").toBool())
-    {
-    this->displayHelp();
-    return Self::ExitWithSuccess;
-    }
-
-  if (d->ParsedArgs.value("launcher-version").toBool())
-    {
-    this->displayVersion();
-    return Self::ExitWithSuccess;
-    }
-
-  if (!d->processUserAdditionalSettings())
-    {
-    return Self::ExitWithError;
-    }
-
-  if (!d->processAdditionalSettings())
-    {
-    return Self::ExitWithError;
-    }
-
-  if (!d->processAdditionalSettingsArgument())
-    {
-    return Self::ExitWithError;
     }
 
   d->DetachApplicationToLaunch =
