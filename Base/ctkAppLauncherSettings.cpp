@@ -132,37 +132,50 @@ void ctkAppLauncherSettingsPrivate::readUserAdditionalSettingsInfo(QSettings& se
 }
 
 // --------------------------------------------------------------------------
-void ctkAppLauncherSettingsPrivate::readPathSettings(QSettings& settings)
+void ctkAppLauncherSettingsPrivate::readPathSettings(QSettings& settings, const QStringList& excludeGroups)
 {
   // Read additional environment variables
-  QHash<QString, QString> mapOfEnvVars = ctk::readKeyValuePairs(settings, "EnvironmentVariables");
-  foreach(const QString& envVarName, mapOfEnvVars.keys())
+  QHash<QString, QString> mapOfEnvVars;
+  if (!excludeGroups.contains("EnvironmentVariables"))
     {
-    this->MapOfEnvVars.insert(envVarName, mapOfEnvVars[envVarName]);
+    mapOfEnvVars = ctk::readKeyValuePairs(settings, "EnvironmentVariables");
+    foreach(const QString& envVarName, mapOfEnvVars.keys())
+      {
+      this->MapOfEnvVars.insert(envVarName, mapOfEnvVars[envVarName]);
+      }
+
+    this->expandEnvVars(mapOfEnvVars.keys());
     }
 
-  this->expandEnvVars(mapOfEnvVars.keys());
-
   // Read PATHs
-  this->ListOfPaths = ctk::readArrayValues(settings, "Paths", "path") + this->ListOfPaths;
+  if (!excludeGroups.contains("Paths"))
+    {
+    this->ListOfPaths = ctk::readArrayValues(settings, "Paths", "path") + this->ListOfPaths;
+    }
 
   // Read LibraryPaths
-  this->ListOfLibraryPaths = ctk::readArrayValues(settings, "LibraryPaths", "path") + this->ListOfLibraryPaths;
+  if (!excludeGroups.contains("LibraryPaths"))
+    {
+    this->ListOfLibraryPaths = ctk::readArrayValues(settings, "LibraryPaths", "path") + this->ListOfLibraryPaths;
+    }
 
   // Read additional path environment variables
-  this->AdditionalPathVariables.unite(settings.value("additionalPathVariables").toStringList().toSet());
-  foreach(const QString& envVarName, this->AdditionalPathVariables)
+  if (!excludeGroups.contains("General")) // additionalPathVariables key is associated with the "General" group
     {
-    if (!envVarName.isEmpty())
+    this->AdditionalPathVariables.unite(settings.value("additionalPathVariables").toStringList().toSet());
+    foreach(const QString& envVarName, this->AdditionalPathVariables)
       {
-      QStringList paths = ctk::readArrayValues(settings, envVarName, "path");
-      if (!paths.empty())
+      if (!envVarName.isEmpty())
         {
-        if (this->MapOfPathVars.contains(envVarName))
+        QStringList paths = ctk::readArrayValues(settings, envVarName, "path");
+        if (!paths.empty())
           {
-          paths.append(this->MapOfPathVars[envVarName]);
+          if (this->MapOfPathVars.contains(envVarName))
+            {
+            paths.append(this->MapOfPathVars[envVarName]);
+            }
+          this->MapOfPathVars.insert(envVarName, paths);
           }
-        this->MapOfPathVars.insert(envVarName, paths);
         }
       }
     }

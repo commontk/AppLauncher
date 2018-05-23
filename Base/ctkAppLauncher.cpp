@@ -500,36 +500,7 @@ bool ctkAppLauncherPrivate::readSettings(const QString& fileName, int settingsTy
     }
   QSettings settings(fileName, QSettings::IniFormat);
 
-  // Read default launcher image path
-  QVariant splashImagePathVariant = settings.value("launcherSplashImagePath");
-  if (splashImagePathVariant.isValid() && !splashImagePathVariant.toString().isEmpty())
-    {
-    this->DefaultLauncherSplashImagePath = splashImagePathVariant.toString();
-    }
-
-  QVariant splashScreenHideDelayMsVariant = settings.value("launcherSplashScreenHideDelayMs");
-  if (splashScreenHideDelayMsVariant.isValid() && splashScreenHideDelayMsVariant.toInt() != 0)
-    {
-    this->DefaultLauncherSplashScreenHideDelayMs = splashScreenHideDelayMsVariant.toInt();
-    }
-
-  if (settings.contains("launcherNoSplashScreen"))
-    {
-    this->LauncherNoSplashScreen = settings.value("launcherNoSplashScreen").toBool();
-    }
-
   this->LoadEnvironment = settings.value("launcherLoadEnvironment", -1).toInt();
-
-  // Read default application to launch
-  QHash<QString, QString> applicationGroup = ctk::readKeyValuePairs(settings, "Application");
-  if (applicationGroup.contains("path"))
-    {
-    this->DefaultApplicationToLaunch = applicationGroup["path"];
-    }
-  if (applicationGroup.contains("arguments"))
-    {
-    this->DefaultApplicationToLaunchArguments = applicationGroup["arguments"];
-    }
 
   if(settingsType == Self::RegularSettings)
     {
@@ -537,33 +508,80 @@ bool ctkAppLauncherPrivate::readSettings(const QString& fileName, int settingsTy
     this->AdditionalSettingsFilePath = settings.value("additionalSettingsFilePath", "").toString();
     this->AdditionalSettingsFilePath = this->expandValue(this->AdditionalSettingsFilePath);
     this->readUserAdditionalSettingsInfo(settings);
+
+    // Read additional settings group to exclude
+    this->AdditionalSettingsExcludeGroups = settings.value("additionalSettingsExcludeGroups").toStringList();
     }
 
-  // Read additional launcher arguments
-  QString helpShortArgument = settings.value("additionalLauncherHelpShortArgument").toString();
-  if (!helpShortArgument.isEmpty())
+  QStringList excludeGroups;
+  if (settingsType != Self::RegularSettings)
     {
-    this->LauncherAdditionalHelpShortArgument = helpShortArgument;
+    excludeGroups = this->AdditionalSettingsExcludeGroups;
     }
-  QString helpLongArgument = settings.value("additionalLauncherHelpLongArgument").toString();
-  if (!helpLongArgument.isEmpty())
-    {
-    this->LauncherAdditionalHelpLongArgument = helpLongArgument;
-    }
-  this->LauncherAdditionalNoSplashArguments.append(
-        settings.value("additionalLauncherNoSplashArguments").toStringList());
 
-  // Read list of 'extra application to launch'
-  settings.beginGroup("ExtraApplicationToLaunch");
-  QStringList extraApplicationToLaunchLongArguments = settings.childGroups();
-  foreach(const QString& extraApplicationLongArgument, extraApplicationToLaunchLongArguments)
+  if (!excludeGroups.contains("General"))
     {
-    this->ExtraApplicationToLaunchList[extraApplicationLongArgument] =
-        ctk::readKeyValuePairs(settings, extraApplicationLongArgument);
-    }
-  settings.endGroup();
+    // Read default launcher image path
+    QVariant splashImagePathVariant = settings.value("launcherSplashImagePath");
+    if (splashImagePathVariant.isValid() && !splashImagePathVariant.toString().isEmpty())
+      {
+      this->DefaultLauncherSplashImagePath = splashImagePathVariant.toString();
+      }
 
-  this->Superclass::readPathSettings(settings);
+    QVariant splashScreenHideDelayMsVariant = settings.value("launcherSplashScreenHideDelayMs");
+    if (splashScreenHideDelayMsVariant.isValid() && splashScreenHideDelayMsVariant.toInt() != 0)
+      {
+      this->DefaultLauncherSplashScreenHideDelayMs = splashScreenHideDelayMsVariant.toInt();
+      }
+
+    if (settings.contains("launcherNoSplashScreen"))
+      {
+      this->LauncherNoSplashScreen = settings.value("launcherNoSplashScreen").toBool();
+      }
+
+    // Read additional launcher arguments
+    QString helpShortArgument = settings.value("additionalLauncherHelpShortArgument").toString();
+    if (!helpShortArgument.isEmpty())
+      {
+      this->LauncherAdditionalHelpShortArgument = helpShortArgument;
+      }
+    QString helpLongArgument = settings.value("additionalLauncherHelpLongArgument").toString();
+    if (!helpLongArgument.isEmpty())
+      {
+      this->LauncherAdditionalHelpLongArgument = helpLongArgument;
+      }
+    this->LauncherAdditionalNoSplashArguments.append(
+          settings.value("additionalLauncherNoSplashArguments").toStringList());
+    }
+
+  if (!excludeGroups.contains("Application"))
+    {
+    // Read default application to launch
+    QHash<QString, QString> applicationGroup = ctk::readKeyValuePairs(settings, "Application");
+    if (applicationGroup.contains("path"))
+      {
+      this->DefaultApplicationToLaunch = applicationGroup["path"];
+      }
+    if (applicationGroup.contains("arguments"))
+      {
+      this->DefaultApplicationToLaunchArguments = applicationGroup["arguments"];
+      }
+    }
+
+  if (!excludeGroups.contains("ExtraApplicationToLaunch"))
+    {
+    // Read list of 'extra application to launch'
+    settings.beginGroup("ExtraApplicationToLaunch");
+    QStringList extraApplicationToLaunchLongArguments = settings.childGroups();
+    foreach(const QString& extraApplicationLongArgument, extraApplicationToLaunchLongArguments)
+      {
+      this->ExtraApplicationToLaunchList[extraApplicationLongArgument] =
+          ctk::readKeyValuePairs(settings, extraApplicationLongArgument);
+      }
+    settings.endGroup();
+    }
+
+  this->Superclass::readPathSettings(settings, excludeGroups);
 
   return true;
 }
@@ -873,6 +891,9 @@ bool ctkAppLauncher::initialize(QString launcherFilePath)
                      "(i.e. using 'eval' in a POSIX shell), then exit");
   parser.addArgument("launcher-additional-settings", "", QVariant::String,
                      "Additional settings file to consider");
+  parser.addArgument("launcher-additional-settings-exclude-groups", "", QVariant::String,
+                     "Comma separated list of settings groups that should NOT be overwritten by values in User and Additional settings. "
+                     "For example: General,Application,ExtraApplicationToLaunch");
   parser.addArgument("launcher-ignore-user-additional-settings", "", QVariant::Bool,
                      "Ignore additional user settings");
   parser.addArgument("launcher-generate-exec-wrapper-script", "", QVariant::Bool,
@@ -950,6 +971,12 @@ int ctkAppLauncher::processArguments()
     return Self::ExitWithSuccess;
     }
 
+  // Read additional settings group to exclude
+  if (d->ParsedArgs.contains("launcher-additional-settings-exclude-groups"))
+    {
+    d->AdditionalSettingsExcludeGroups = d->ParsedArgs.value("launcher-additional-settings-exclude-groups").toString().split(",");
+    }
+
   if (!d->processUserAdditionalSettings())
     {
     return Self::ExitWithError;
@@ -999,6 +1026,9 @@ int ctkAppLauncher::processArguments()
 
     d->reportInfo(
         QString("UserAdditionalSettingsFileBaseName [%1]").arg(d->UserAdditionalSettingsFileBaseName));
+
+    d->reportInfo(
+        QString("AdditionalSettingsExcludeGroups [%1]").arg(d->AdditionalSettingsExcludeGroups.join(",")));
 
     d->reportInfo(
         QString("LauncherNoSplashScreen [%1]").arg(d->LauncherNoSplashScreen));

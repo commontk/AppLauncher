@@ -1,4 +1,3 @@
-
 include(${TEST_SOURCE_DIR}/AppLauncherTestMacros.cmake)
 include(${TEST_BINARY_DIR}/AppLauncherTestPrerequisites.cmake)
 
@@ -228,8 +227,22 @@ if(rv)
 endif()
 
 # --------------------------------------------------------------------------
-# Check if launcher works as expected
-set(command ${launcher_exe} --launcher-no-splash --launcher-dump-environment --launcher-additional-settings ${cmdarg_additional_settings_path})
+# Based on the value of "TEST_ADDITIONAL_SETTINGS_EXCLUDE_GROUPS":
+#
+# (1) if empty, execute launcher with "--launcher-dump-environment" and "--launcher-additional-settings"
+#     and check that setting are overwritten and/or expanded as expected.
+#
+# (2) if set to one or multiple groups, execute launcher with "--launcher-dump-environment", "--launcher-additional-settings"
+#     and "--launcher-additional-settings-exclude-groups=${TEST_ADDITIONAL_SETTINGS_EXCLUDE_GROUPS}" and check
+#
+#
+
+set(cmdarg_additional_settings_exclude_groups)
+if(NOT "${TEST_ADDITIONAL_SETTINGS_EXCLUDE_GROUPS}" STREQUAL "")
+  set(cmdarg_additional_settings_exclude_groups --launcher-additional-settings-exclude-groups "${TEST_ADDITIONAL_SETTINGS_EXCLUDE_GROUPS}")
+endif()
+
+set(command ${launcher_exe} --launcher-no-splash --launcher-dump-environment --launcher-additional-settings ${cmdarg_additional_settings_path} ${cmdarg_additional_settings_exclude_groups})
 execute_process(
   COMMAND ${command}
   WORKING_DIRECTORY ${launcher_binary_dir}
@@ -245,12 +258,47 @@ if(rv)
                       "directory [${launcher_binary_dir}]\n${ev}")
 endif()
 
-set(expected_pathenv_var_value_1
-  "${cmdarg_additional_pathenv_var_value_1_1}${pathsep}${cmdarg_additional_pathenv_var_value_1_2}")
-set(expected_pathenv_var_value_1
-  "${expected_pathenv_var_value_1}${pathsep}${user_additional_pathenv_var_value_1_1}${pathsep}${user_additional_pathenv_var_value_1_2}")
-set(expected_pathenv_var_value_1
-  "${expected_pathenv_var_value_1}${pathsep}${regular_pathenv_var_value_1_1}${pathsep}${regular_pathenv_var_value_1_2}")
+
+if("${TEST_ADDITIONAL_SETTINGS_EXCLUDE_GROUPS}" STREQUAL "")
+  set(with_additional_pathenv_var 1)
+  set(with_additional_env_var 1)
+  set(with_additional_path_librarypath 1)
+elseif("${TEST_ADDITIONAL_SETTINGS_EXCLUDE_GROUPS}" STREQUAL "General")
+  set(with_additional_pathenv_var 0)
+  set(with_additional_env_var 1)
+  set(with_additional_path_librarypath 1)
+elseif("${TEST_ADDITIONAL_SETTINGS_EXCLUDE_GROUPS}" STREQUAL "General,EnvironmentVariables")
+  set(with_additional_pathenv_var 0)
+  set(with_additional_env_var 0)
+  set(with_additional_path_librarypath 1)
+elseif("${TEST_ADDITIONAL_SETTINGS_EXCLUDE_GROUPS}" STREQUAL "General,EnvironmentVariables,Paths,LibraryPaths")
+  set(with_additional_pathenv_var 0)
+  set(with_additional_env_var 0)
+  set(with_additional_path_librarypath 0)
+endif()
+
+#
+# Set ivars used afterward to set "expected_*_lines" and "unexpected_*_lines" variables.
+#
+
+if(with_additional_pathenv_var)
+  set(expected_pathenv_var_value_1
+    "${cmdarg_additional_pathenv_var_value_1_1}${pathsep}${cmdarg_additional_pathenv_var_value_1_2}")
+  set(expected_pathenv_var_value_1
+    "${expected_pathenv_var_value_1}${pathsep}${user_additional_pathenv_var_value_1_1}${pathsep}${user_additional_pathenv_var_value_1_2}")
+  set(expected_pathenv_var_value_1
+    "${expected_pathenv_var_value_1}${pathsep}${regular_pathenv_var_value_1_1}${pathsep}${regular_pathenv_var_value_1_2}")
+else()
+  set(expected_pathenv_var_value_1 "${regular_pathenv_var_value_1_1}${pathsep}${regular_pathenv_var_value_1_2}")
+endif()
+
+if(with_additional_env_var)
+  set(expected_common_env_var_value "${common_env_var_value_1}:${user_common_env_var_value_2}:${cmdarg_additional_common_env_var_value_3}")
+  set(expected_common_env_var2_value "${cmdarg_additional_common_env_var2_value_3}:${user_common_env_var2_value_2}:${common_env_var2_value_1}")
+else()
+  set(expected_common_env_var_value "${common_env_var_value_1}")
+  set(expected_common_env_var2_value "${common_env_var2_value_1}")
+endif()
 
 set(expected_pathenv_var_value_2
   "${cmdarg_additional_pathenv_var_value_2_1}${pathsep}${cmdarg_additional_pathenv_var_value_2_2}")
@@ -265,7 +313,47 @@ set(expected_additional_env_var_value_3 ${cmdarg_additional_sys_env_var_value})
 set(expected_user_additional_path_3 "/home/user-additional/${user_sys_env_var_value}")
 set(expected_user_additional_env_var_value_3 ${user_sys_env_var_value})
 
-set(expected_ov_lines
+if(with_additional_path_librarypath)
+  if(WIN32)
+    set(expected_library_path_env)
+    set(expected_path_env "Path=${cmdarg_additional_path_1}${pathsep}${cmdarg_additional_path_2}${pathsep}${expected_additional_path_3}${pathsep}${user_additional_path_1}${pathsep}${user_additional_path_2}${pathsep}${expected_user_additional_path_3}${pathsep}${regular_path_1}${pathsep}${regular_path_2}${pathsep}${additional_library_path}${pathsep}${user_additional_library_path}${pathsep}${regular_library_path_1}${pathsep}${regular_library_path_2}")
+  else()
+    set(expected_library_path_env "${library_path_variable_name}=${cmdarg_additional_library_path}${pathsep}${user_additional_library_path}${pathsep}${regular_library_path_1}${pathsep}${regular_library_path_2}")
+    set(expected_path_env "PATH=${cmdarg_additional_path_1}${pathsep}${cmdarg_additional_path_2}${pathsep}${expected_additional_path_3}${pathsep}${user_additional_path_1}${pathsep}${user_additional_path_2}${pathsep}${expected_user_additional_path_3}${pathsep}${regular_path_1}${pathsep}${regular_path_2}")
+  endif()
+else()
+  if(WIN32)
+    set(expected_library_path_env)
+    set(expected_path_env "Path=${regular_path_1}${pathsep}${regular_path_2}${pathsep}${regular_library_path_1}${pathsep}${regular_library_path_2}")
+  else()
+    set(expected_library_path_env "${library_path_variable_name}=${regular_library_path_1}${pathsep}${regular_library_path_2}")
+    set(expected_path_env "PATH=${regular_path_1}${pathsep}${regular_path_2}")
+  endif()
+endif()
+
+#
+# Output lines expected independently of "AdditionalSettingsExcludeGroups" value
+#
+
+set(expected_env_var_lines
+  "${regular_env_var_name_2}=${regular_env_var_value_2}\n"
+  "${regular_env_var_name_1}=${regular_env_var_value_1}\n"
+  )
+
+set(expected_pathenv_var_lines
+  "${regular_pathenv_var_name_1}=${expected_pathenv_var_value_1}\n"
+  )
+
+set(expected_common_env_var_lines
+  "${common_env_var_name}=${expected_common_env_var_value}\n"
+  "${common_env_var2_name}=${expected_common_env_var2_value}\n"
+  )
+
+#
+# Output lines expected without excluding any settings group
+#
+
+set(expected_additional_env_var_lines_without_group_exclude
   "${user_additional_env_var_name_3}=${expected_user_additional_env_var_value_3}"
   "${user_additional_env_var_name_2}=${user_additional_env_var_value_2}"
   "${user_additional_env_var_name_1}=${user_additional_env_var_value_1}"
@@ -274,44 +362,64 @@ set(expected_ov_lines
   "${cmdarg_additional_env_var_name_2}=${cmdarg_additional_env_var_value_2}"
   "${cmdarg_additional_env_var_name_1}=${cmdarg_additional_env_var_value_1}"
   "${settingskey_additional_env_var_name_1}=${settingskey_additional_env_var_value_1}"
-  "${library_path_variable_name}=${cmdarg_additional_library_path}${pathsep}${user_additional_library_path}${pathsep}${regular_library_path_1}${pathsep}${regular_library_path_2}"
-  "PATH=${cmdarg_additional_path_1}${pathsep}${cmdarg_additional_path_2}${pathsep}${expected_additional_path_3}${pathsep}${user_additional_path_1}${pathsep}${user_additional_path_2}${pathsep}${expected_user_additional_path_3}${pathsep}${regular_path_1}${pathsep}${regular_path_2}"
-  "${regular_env_var_name_2}=${regular_env_var_value_2}\n"
-  "${regular_env_var_name_1}=${regular_env_var_value_1}\n"
-  "${regular_pathenv_var_name_1}=${expected_pathenv_var_value_1}\n"
+  )
+
+set(expected_additional_pathenv_var_lines_without_group_exclude
   "${user_additional_pathenv_var_name_2}=${expected_pathenv_var_value_2}\n"
   "${cmdarg_additional_pathenv_var_name_3}=${expected_pathenv_var_value_3}\n"
-  "${common_env_var_name}=${common_env_var_value_1}:${user_common_env_var_value_2}:${cmdarg_additional_common_env_var_value_3}\n"
-  "${common_env_var2_name}=${cmdarg_additional_common_env_var2_value_3}:${user_common_env_var2_value_2}:${common_env_var2_value_1}\n"
   )
-if(WIN32)
-  set(expected_ov_lines
-    "${user_additional_env_var_name_3}=${expected_user_additional_env_var_value_3}"
-    "${user_additional_env_var_name_2}=${user_additional_env_var_value_2}"
-    "${user_additional_env_var_name_1}=${user_additional_env_var_value_1}"
-    "${cmdarg_additional_env_var_name_4}=${cmdarg_additional_env_var_value_4}"
-    "${cmdarg_additional_env_var_name_3}=${expected_additional_env_var_value_3}"
-    "${cmdarg_additional_env_var_name_2}=${cmdarg_additional_env_var_value_2}"
-    "${cmdarg_additional_env_var_name_1}=${cmdarg_additional_env_var_value_1}"
-    "${settingskey_additional_env_var_name_1}=${settingskey_additional_env_var_value_1}"
-    "Path=${cmdarg_additional_path_1}${pathsep}${cmdarg_additional_path_2}${pathsep}${expected_additional_path_3}${pathsep}${user_additional_path_1}${pathsep}${user_additional_path_2}${pathsep}${expected_user_additional_path_3}${pathsep}${regular_path_1}${pathsep}${regular_path_2}${pathsep}${additional_library_path}${pathsep}${user_additional_library_path}${pathsep}${regular_library_path_1}${pathsep}${regular_library_path_2}"
-    "${regular_env_var_name_2}=${regular_env_var_value_2}\n"
-    "${regular_env_var_name_1}=${regular_env_var_value_1}\n"
-    "${regular_pathenv_var_name_1}=${expected_pathenv_var_value_1}\n"
-    "${user_additional_pathenv_var_name_2}=${expected_pathenv_var_value_2}\n"
-    "${cmdarg_additional_pathenv_var_name_3}=${expected_pathenv_var_value_3}\n"
-    "${common_env_var_name}=${common_env_var_value_1}:${user_common_env_var_value_2}:${cmdarg_additional_common_env_var_value_3}\n"
-    "${common_env_var2_name}=${cmdarg_additional_common_env_var2_value_3}:${user_common_env_var2_value_2}:${common_env_var2_value_1}\n"
+
+#
+# Set "expected_ov_lines" and "unexpected_ov_lines" list based on the
+# current test case.
+#
+
+set(expected_ov_lines
+  ${expected_env_var_lines}
+  ${expected_pathenv_var_lines}
+  ${expected_common_env_var_lines}
+  ${expected_library_path_env}
+  ${expected_path_env}
+  )
+
+set(unexpected_ov_lines)
+
+if("${TEST_ADDITIONAL_SETTINGS_EXCLUDE_GROUPS}" STREQUAL "")
+  list(APPEND expected_ov_lines
+    ${expected_additional_env_var_lines_without_group_exclude}
+    ${expected_additional_pathenv_var_lines_without_group_exclude}
+    )
+elseif("${TEST_ADDITIONAL_SETTINGS_EXCLUDE_GROUPS}" STREQUAL "General")
+  list(APPEND expected_ov_lines
+    ${expected_additional_env_var_lines_without_group_exclude}
+    )
+  list(APPEND unexpected_ov_lines
+    ${expected_additional_pathenv_var_lines_without_group_exclude}
+    )
+elseif("${TEST_ADDITIONAL_SETTINGS_EXCLUDE_GROUPS}" STREQUAL "General,EnvironmentVariables")
+  list(APPEND expected_ov_lines
+    )
+  list(APPEND unexpected_ov_lines
+    ${expected_additional_env_var_lines_without_group_exclude}
+    ${expected_additional_pathenv_var_lines_without_group_exclude}
+    )
+elseif("${TEST_ADDITIONAL_SETTINGS_EXCLUDE_GROUPS}" STREQUAL "General,EnvironmentVariables,Paths,LibraryPaths")
+  list(APPEND expected_ov_lines
+    )
+  list(APPEND unexpected_ov_lines
+    ${expected_additional_env_var_lines_without_group_exclude}
+    ${expected_additional_pathenv_var_lines_without_group_exclude}
     )
 endif()
 
 foreach(expected_ov_line ${expected_ov_lines})
-  string(FIND "${ov}" ${expected_ov_line} pos)
-  if(${pos} STREQUAL -1)
-    message(FATAL_ERROR "Problem with reading additional settings file - expected_ov_line:${expected_ov_line} "
-                        "not found in current_ov:${ov}")
-  endif()
+  check_expected_string("${ov}" "${expected_ov_line}" "reading additional settings file")
 endforeach()
+
+foreach(unexpected_ov_line ${unexpected_ov_lines})
+  check_unexpected_string("${ov}" "${unexpected_ov_line}" "reading additional settings file")
+endforeach()
+
 
 # Clean
 file(REMOVE ${user_additional_settings_path})
