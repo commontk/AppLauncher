@@ -25,9 +25,6 @@ set(common_env_var2_name "ANOTHER_THING_COMMON")
 set(common_env_var2_value_1 "Rocks")
 
 file(WRITE "${launcher}LauncherSettings.ini" "
-[General]
-additionalPathVariables=${regular_pathenv_var_name_1}
-
 [Application]
 path=${application}
 organizationDomain=${organization_domain}
@@ -44,6 +41,9 @@ size=2
 1\\path=${regular_path_1}
 2\\path=${regular_path_2}
 size=2
+
+[Environment]
+additionalPathVariables=${regular_pathenv_var_name_1}
 
 [EnvironmentVariables]
 ${regular_env_var_name_1}=${regular_env_var_value_1}
@@ -85,9 +85,6 @@ set(common_env_var_value_2 "Sun")
 set(common_env_var2_value_2 "Trees")
 
 file(WRITE ${user_additional_settings_path} "
-[General]
-additionalPathVariables=${additional_pathenv_var_name_2}
-
 [LibraryPaths]
 1\\path=${additional_library_path}
 size=1
@@ -96,6 +93,9 @@ size=1
 1\\path=${additional_path_1}
 2\\path=${additional_path_2}
 size=2
+
+[Environment]
+additionalPathVariables=${additional_pathenv_var_name_2}
 
 [EnvironmentVariables]
 ${additional_env_var_name_1}=${additional_env_var_value_1}

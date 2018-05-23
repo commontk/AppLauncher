@@ -6,6 +6,7 @@ include(${TEST_BINARY_DIR}/AppLauncherTestPrerequisites.cmake)
 # Debug flags - Set to True to display the command as string
 set(PRINT_COMMAND 0)
 
+# --------------------------------------------------------------------------
 if(WIN32)
   set(pathsep ";")
 else()
@@ -28,9 +29,6 @@ unset(ENV{${sys_env_var_name}})
 # --------------------------------------------------------------------------
 # Configure settings file
 file(WRITE "${launcher}LauncherSettings.ini" "
-[General]
-additionalPathVariables=SOME_PATH
-
 [Application]
 path=${application}
 arguments=--check-env
@@ -38,6 +36,9 @@ arguments=--check-env
 [LibraryPaths]
 1\\path=${library_path}
 size=1
+
+[Environment]
+additionalPathVariables=SOME_PATH
 
 [EnvironmentVariables]
 ${regular_env_var_name_1}=${regular_env_var_value_1}
@@ -86,5 +87,5 @@ ${expected_regular_env_var_name_4}=${expected_regular_env_var_value_4}
 string(REGEX MATCH "${expected_msg}" current_msg "${ov}")
 if(NOT "${expected_msg}" STREQUAL "${current_msg}")
   message(FATAL_ERROR "Failed to pass environment variable from ${launcher_name} "
-                      "to ${application_name}.\n${ov}")
+                      "to ${application_name} - expected_msg:${expected_msg} not found in text:\n${ov}")
 endif()
