@@ -102,8 +102,8 @@ set(user_additional_library_path "/path/to/user-additional/lib")
 set(user_additional_path_1 "/home/user-additional/app1")
 set(user_additional_path_2 "/home/user-additional/app2")
 set(user_additional_path_3 "/home/user-additional/<env:${user_sys_env_var_name}>")
-set(common_env_var_value_2 "Recycle")
-set(common_env_var2_value_2 "Energy")
+set(user_common_env_var_value_2 "Recycle")
+set(user_common_env_var2_value_2 "Energy")
 
 set(ENV{${user_sys_env_var_name}} ${user_sys_env_var_value})
 
@@ -125,8 +125,8 @@ size=3
 ${user_additional_env_var_name_1}=${user_additional_env_var_value_1}
 ${user_additional_env_var_name_2}=${user_additional_env_var_value_2}
 ${user_additional_env_var_name_3}=${user_additional_env_var_value_3}
-${common_env_var_name}=<env:${common_env_var_name}>:${common_env_var_value_2}
-${common_env_var2_name}=${common_env_var2_value_2}:<env:${common_env_var2_name}>
+${common_env_var_name}=<env:${common_env_var_name}>:${user_common_env_var_value_2}
+${common_env_var2_name}=${user_common_env_var2_value_2}:<env:${common_env_var2_name}>
 
 [${regular_pathenv_var_name_1}]
 1\\path=${user_additional_pathenv_var_value_1_1}
@@ -164,8 +164,8 @@ set(cmdarg_additional_library_path "/path/to/additional/lib")
 set(cmdarg_additional_path_1 "/home/additional/app1")
 set(cmdarg_additional_path_2 "/home/additional/app2")
 set(cmdarg_additional_path_3 "/home/additional/<env:${cmdarg_additional_sys_env_var_name}>")
-set(common_env_var_value_3 "Sun")
-set(common_env_var2_value_3 "Trees")
+set(cmdarg_additional_common_env_var_value_3 "Sun")
+set(cmdarg_additional_common_env_var2_value_3 "Trees")
 
 set(ENV{${cmdarg_additional_sys_env_var_name}} ${cmdarg_additional_sys_env_var_value})
 
@@ -188,8 +188,8 @@ ${cmdarg_additional_env_var_name_1}=${cmdarg_additional_env_var_value_1}
 ${cmdarg_additional_env_var_name_2}=${cmdarg_additional_env_var_value_2}
 ${cmdarg_additional_env_var_name_3}=${cmdarg_additional_env_var_value_3}
 ${cmdarg_additional_env_var_name_4}=${cmdarg_additional_env_var_value_4}
-${common_env_var_name}=<env:${common_env_var_name}>:${common_env_var_value_3}
-${common_env_var2_name}=${common_env_var2_value_3}:<env:${common_env_var2_name}>
+${common_env_var_name}=<env:${common_env_var_name}>:${cmdarg_additional_common_env_var_value_3}
+${common_env_var2_name}=${cmdarg_additional_common_env_var2_value_3}:<env:${common_env_var2_name}>
 
 [${regular_pathenv_var_name_1}]
 1\\path=${cmdarg_additional_pathenv_var_value_1_1}
@@ -281,8 +281,8 @@ set(expected_ov_lines
   "${regular_pathenv_var_name_1}=${expected_pathenv_var_value_1}\n"
   "${user_additional_pathenv_var_name_2}=${expected_pathenv_var_value_2}\n"
   "${cmdarg_additional_pathenv_var_name_3}=${expected_pathenv_var_value_3}\n"
-  "${common_env_var_name}=${common_env_var_value_1}:${common_env_var_value_2}:${common_env_var_value_3}\n"
-  "${common_env_var2_name}=${common_env_var2_value_3}:${common_env_var2_value_2}:${common_env_var2_value_1}\n"
+  "${common_env_var_name}=${common_env_var_value_1}:${user_common_env_var_value_2}:${cmdarg_additional_common_env_var_value_3}\n"
+  "${common_env_var2_name}=${cmdarg_additional_common_env_var2_value_3}:${user_common_env_var2_value_2}:${common_env_var2_value_1}\n"
   )
 if(WIN32)
   set(expected_ov_lines
@@ -300,8 +300,8 @@ if(WIN32)
     "${regular_pathenv_var_name_1}=${expected_pathenv_var_value_1}\n"
     "${user_additional_pathenv_var_name_2}=${expected_pathenv_var_value_2}\n"
     "${cmdarg_additional_pathenv_var_name_3}=${expected_pathenv_var_value_3}\n"
-    "${common_env_var_name}=${common_env_var_value_1}:${common_env_var_value_2}:${common_env_var_value_3}\n"
-    "${common_env_var2_name}=${common_env_var2_value_3}:${common_env_var2_value_2}:${common_env_var2_value_1}\n"
+    "${common_env_var_name}=${common_env_var_value_1}:${user_common_env_var_value_2}:${cmdarg_additional_common_env_var_value_3}\n"
+    "${common_env_var2_name}=${cmdarg_additional_common_env_var2_value_3}:${user_common_env_var2_value_2}:${common_env_var2_value_1}\n"
     )
 endif()
 
