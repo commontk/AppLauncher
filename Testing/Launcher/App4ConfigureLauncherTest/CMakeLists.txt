@@ -56,6 +56,7 @@ set(arguments
   HELP_SHORT_ARG "-h"
   HELP_LONG_ARG "--help"
   NOSPLASH_ARGS "--no-splash"
+  ADDITIONAL_SETTINGS_EXCLUDE_GROUPS "General,Application"
   ADDITIONAL_SETTINGS_FILEPATH_BUILD "${additional_settings_path_build}"
   ADDITIONAL_SETTINGS_FILEPATH_INSTALLED "<APPLAUNCHER_DIR>/additional-settings-installed.ini"
   PATHS_BUILD "<APPLAUNCHER_DIR>/dog;<APPLAUNCHER_DIR>/cat;<APPLAUNCHER_SETTINGS_DIR>/frog"

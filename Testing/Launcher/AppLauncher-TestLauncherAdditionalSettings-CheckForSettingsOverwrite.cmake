@@ -70,6 +70,10 @@ function(applauncher_test_launcher_overwrite_settings_test_case
 
   endforeach()
 
+  if(NOT DEFINED AdditionalSettingsExcludeGroups_set)
+    message(FATAL_ERROR "AdditionalSettingsExcludeGroups_set should be set")
+  endif()
+
   # Configure settings file
   set(organization_domain "www.commontk-${TEST_TREE_TYPE}.org")
   set(organization_name "Common ToolKit ${TEST_TREE_TYPE}")
@@ -86,6 +90,7 @@ ${AdditionalLauncherHelpShortArgument_set}
 ${AdditionalLauncherHelpLongArgument_set}
 ${AdditionalLauncherNoSplashArguments_set}
 ${AdditionalSettingsFilePath_set}
+${AdditionalSettingsExcludeGroups_set}
 
 [Application]
 path=${application}
@@ -159,9 +164,15 @@ endfunction()
 # Debug flags - Set to True to display the command as string
 set(PRINT_COMMAND 0)
 
+#
+# Without excluding additional settings groups
+#
+
+set(AdditionalSettingsExcludeGroups_set "")
+
 applauncher_test_launcher_overwrite_settings_test_case(
   "1" # testcase_id
-  "1" "0" "NA" "0" # LauncherNoSplashScreen
+  "1" "1" "0" "0" # LauncherNoSplashScreen
   "1" "2" "3" "3" # LauncherSplashScreenHideDelayMs
   "/home/path/image1.png" "/home/path/image2.png" "/home/path/image3.png" "/home/path/image3.png" # LauncherSplashImagePath
   "Foo1Settings" "Foo2Settings" "Foo3Settings" "Foo1Settings" # UserAdditionalSettingsFileBaseName
@@ -197,6 +208,60 @@ applauncher_test_launcher_overwrite_settings_test_case(
 
 applauncher_test_launcher_overwrite_settings_test_case(
   "4" # testcase_id
+  "NA" "NA" "NA" "0" # LauncherNoSplashScreen
+  "NA" "NA" "NA" "800" # LauncherSplashScreenHideDelayMs
+  "NA" "NA" "NA" ":Images/ctk-splash.png" # LauncherSplashImagePath
+  "NA" "NA" "NA" "" # UserAdditionalSettingsFileBaseName
+  "NA" "NA" "NA" "" # AdditionalLauncherHelpShortArgument
+  "NA" "NA" "NA" "" # AdditionalLauncherHelpLongArgument
+  "NA" "NA" "NA" "" # AdditionalLauncherNoSplashArguments
+  "NA" "NA" "NA" "" # AdditionalSettingsFilePath
+  )
+
+#
+# Excluding additional settings groups: General
+#
+
+set(AdditionalSettingsExcludeGroups_set "additionalSettingsExcludeGroups=General")
+
+applauncher_test_launcher_overwrite_settings_test_case(
+  "5" # testcase_id
+  "1" "1" "0" "1" # LauncherNoSplashScreen
+  "1" "2" "3" "1" # LauncherSplashScreenHideDelayMs
+  "/home/path/image1.png" "/home/path/image2.png" "/home/path/image3.png" "/home/path/image1.png" # LauncherSplashImagePath
+  "Foo1Settings" "Foo2Settings" "Foo3Settings" "Foo1Settings" # UserAdditionalSettingsFileBaseName
+  "-h1" "-h2" "-h3" "-h1" # AdditionalLauncherHelpShortArgument
+  "--help1" "--help2" "--help3" "--help1" # AdditionalLauncherHelpLongArgument
+  "--foo1,-b1" "--foo2,-b2" "--foo3,-b3" "--foo1,-b1" # AdditionalLauncherNoSplashArguments
+  "/home/path/setting1.ini" "/home/path/setting2.ini" "/home/path/setting3.ini" "/home/path/setting1.ini" # AdditionalSettingsFilePath
+  )
+
+applauncher_test_launcher_overwrite_settings_test_case(
+  "6" # testcase_id
+  "1" "0" "NA" "1" # LauncherNoSplashScreen
+  "1" "2" "NA" "1" # LauncherSplashScreenHideDelayMs
+  "/home/path/image1.png" "/home/path/image2.png" "NA" "/home/path/image1.png" # LauncherSplashImagePath
+  "Foo1Settings" "Foo2Settings" "NA" "Foo1Settings" # UserAdditionalSettingsFileBaseName
+  "-h1" "-h2" "NA" "-h1" # AdditionalLauncherHelpShortArgument
+  "--help1" "--help2" "NA" "--help1" # AdditionalLauncherHelpLongArgument
+  "--foo1,-b1" "--foo2,-b2" "NA" "--foo1,-b1" # AdditionalLauncherNoSplashArguments
+  "/home/path/setting1.ini" "/home/path/setting2.ini" "NA" "/home/path/setting1.ini" # AdditionalSettingsFilePath
+  )
+
+applauncher_test_launcher_overwrite_settings_test_case(
+  "7" # testcase_id
+  "1" "NA" "NA" "1" # LauncherNoSplashScreen
+  "1" "NA" "NA" "1" # LauncherSplashScreenHideDelayMs
+  "/home/path/image1.png" "NA" "NA" "/home/path/image1.png" # LauncherSplashImagePath
+  "Foo1Settings" "NA" "NA" "Foo1Settings" # UserAdditionalSettingsFileBaseName
+  "-h1" "NA" "NA" "-h1" # AdditionalLauncherHelpShortArgument
+  "--help1" "NA" "NA" "--help1" # AdditionalLauncherHelpLongArgument
+  "--foo1,-b1" "NA" "NA" "--foo1,-b1" # AdditionalLauncherNoSplashArguments
+  "/home/path/setting1.ini" "NA" "NA" "/home/path/setting1.ini" # AdditionalSettingsFilePath
+  )
+
+applauncher_test_launcher_overwrite_settings_test_case(
+  "8" # testcase_id
   "NA" "NA" "NA" "0" # LauncherNoSplashScreen
   "NA" "NA" "NA" "800" # LauncherSplashScreenHideDelayMs
   "NA" "NA" "NA" ":Images/ctk-splash.png" # LauncherSplashImagePath

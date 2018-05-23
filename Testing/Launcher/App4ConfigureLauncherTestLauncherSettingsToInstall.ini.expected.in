@@ -9,6 +9,7 @@ additionalPathVariables=PYTHONPATH,QT_PLUGIN_PATH
 
 launcherLoadEnvironment=0
 additionalSettingsFilePath=<APPLAUNCHER_DIR>/additional-settings-installed.ini
+additionalSettingsExcludeGroups=General,Application
 
 [Application]
 path=<APPLAUNCHER_DIR>/bin/App4ConfigureLauncherTest-real@CMAKE_EXECUTABLE_SUFFIX@

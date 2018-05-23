@@ -35,6 +35,11 @@ function(extract_application_settings_value settings_name settings_value_varname
 
   print_command_as_string("${command}")
 
+  if(rv)
+    message(FATAL_ERROR "[${launcher_exe}] failed to execute launcher from "
+                        "directory [${launcher_binary_dir}]\n${ev}")
+  endif()
+
   string(REGEX REPLACE "^.*\n?info\\: ${settings_name}[ ]+\\[([^\n]*)\\].*"
         "\\1" settings_value "${ov}")
 
