@@ -68,9 +68,5 @@ if(WIN32)
 endif()
 
 foreach(expected_ov_line ${expected_ov_lines})
-  string(FIND "${ov}" ${expected_ov_line} pos)
-  if(${pos} STREQUAL -1)
-    message(FATAL_ERROR "Problem with flag --launcher-dump-environment - expected_ov_line:${expected_ov_line} "
-                        "not found in current_ov:${ov}")
-  endif()
+  check_expected_string("${ov}" "${expected_ov_line}" "flag --launcher-dump-environment")
 endforeach()

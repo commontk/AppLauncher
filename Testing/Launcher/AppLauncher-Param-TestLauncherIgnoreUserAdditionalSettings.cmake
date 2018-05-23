@@ -85,11 +85,7 @@ set(expected_ov_lines
   )
 
 foreach(expected_ov_line ${expected_ov_lines})
-  string(FIND "${ov}" ${expected_ov_line} pos)
-  if(${pos} STREQUAL -1)
-    message(FATAL_ERROR "Problem with reading additional settings file - expected_ov_line:${expected_ov_line} "
-                        "not found in current_ov:${ov}")
-  endif()
+  check_expected_string("${ov}" "${expected_ov_line}" "reading additional settings file")
 endforeach()
 
 # --------------------------------------------------------------------------
@@ -116,11 +112,7 @@ set(unexpected_ov_lines
   )
 
 foreach(unexpected_ov_line ${unexpected_ov_lines})
-  string(FIND "${ov}" ${unexpected_ov_line} pos)
-  if(NOT ${pos} STREQUAL -1)
-    message(FATAL_ERROR "Problem with reading additional settings file - unexpected_ov_line:${unexpected_ov_line} "
-                        "found in current_ov:${ov}")
-  endif()
+  check_unexpected_string("${ov}" "${unexpected_ov_line}" "reading additional settings file")
 endforeach()
 
 # Clean
