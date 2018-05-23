@@ -160,9 +160,22 @@ void ctkAppLauncherSettingsPrivate::readPathSettings(QSettings& settings, const 
     }
 
   // Read additional path environment variables
-  if (!excludeGroups.contains("General")) // additionalPathVariables key is associated with the "General" group
+  if (!excludeGroups.contains("Environment") // additionalPathVariables key is associated with the "Environment" group
+      ||
+      !excludeGroups.contains("General") // XXX Deprecated: additionalPathVariables key used to be associated with the "General" group
+      )
     {
-    this->AdditionalPathVariables.unite(settings.value("additionalPathVariables").toStringList().toSet());
+    if (!excludeGroups.contains("General"))
+      {
+      this->AdditionalPathVariables.unite(settings.value("additionalPathVariables").toStringList().toSet()); // XXX Deprecated
+      }
+    if (!excludeGroups.contains("Environment"))
+      {
+      settings.beginGroup("Environment");
+      this->AdditionalPathVariables.unite(settings.value("additionalPathVariables").toStringList().toSet());
+      settings.endGroup();
+      }
+
     foreach(const QString& envVarName, this->AdditionalPathVariables)
       {
       if (!envVarName.isEmpty())

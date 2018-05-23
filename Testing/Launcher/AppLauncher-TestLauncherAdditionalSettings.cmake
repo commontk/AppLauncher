@@ -39,7 +39,6 @@ set(common_env_var2_value_1 "Rocks")
 
 file(WRITE "${launcher}LauncherSettings.ini" "
 [General]
-additionalPathVariables=${regular_pathenv_var_name_1}
 additionalSettingsFilePath=<APPLAUNCHER_SETTINGS_DIR>/${launcher_name}AdditionalLauncherSettingsForSettingsKey.ini
 
 [Application]
@@ -58,6 +57,9 @@ size=2
 1\\path=${regular_path_1}
 2\\path=${regular_path_2}
 size=2
+
+[Environment]
+additionalPathVariables=${regular_pathenv_var_name_1}
 
 [EnvironmentVariables]
 ${regular_env_var_name_1}=${regular_env_var_value_1}
@@ -107,9 +109,6 @@ set(user_common_env_var2_value_2 "Energy")
 set(ENV{${user_sys_env_var_name}} ${user_sys_env_var_value})
 
 file(WRITE ${user_additional_settings_path} "
-[General]
-additionalPathVariables=${user_additional_pathenv_var_name_2}
-
 [LibraryPaths]
 1\\path=${user_additional_library_path}
 size=1
@@ -119,6 +118,9 @@ size=1
 2\\path=${user_additional_path_2}
 3\\path=${user_additional_path_3}
 size=3
+
+[Environment]
+additionalPathVariables=${user_additional_pathenv_var_name_2}
 
 [EnvironmentVariables]
 ${user_additional_env_var_name_1}=${user_additional_env_var_value_1}
@@ -169,9 +171,6 @@ set(cmdarg_additional_common_env_var2_value_3 "Trees")
 set(ENV{${cmdarg_additional_sys_env_var_name}} ${cmdarg_additional_sys_env_var_value})
 
 file(WRITE ${cmdarg_additional_settings_path} "
-[General]
-additionalPathVariables=${cmdarg_additional_pathenv_var_name_3}
-
 [LibraryPaths]
 1\\path=${cmdarg_additional_library_path}
 size=1
@@ -181,6 +180,9 @@ size=1
 2\\path=${cmdarg_additional_path_2}
 3\\path=${cmdarg_additional_path_3}
 size=3
+
+[Environment]
+additionalPathVariables=${cmdarg_additional_pathenv_var_name_3}
 
 [EnvironmentVariables]
 ${cmdarg_additional_env_var_name_1}=${cmdarg_additional_env_var_value_1}
@@ -259,19 +261,20 @@ if(rv)
 endif()
 
 
-if("${TEST_ADDITIONAL_SETTINGS_EXCLUDE_GROUPS}" STREQUAL "")
+if("${TEST_ADDITIONAL_SETTINGS_EXCLUDE_GROUPS}" STREQUAL "" OR
+    "${TEST_ADDITIONAL_SETTINGS_EXCLUDE_GROUPS}" STREQUAL "General")
   set(with_additional_pathenv_var 1)
   set(with_additional_env_var 1)
   set(with_additional_path_librarypath 1)
-elseif("${TEST_ADDITIONAL_SETTINGS_EXCLUDE_GROUPS}" STREQUAL "General")
+elseif("${TEST_ADDITIONAL_SETTINGS_EXCLUDE_GROUPS}" STREQUAL "General,Environment")
   set(with_additional_pathenv_var 0)
   set(with_additional_env_var 1)
   set(with_additional_path_librarypath 1)
-elseif("${TEST_ADDITIONAL_SETTINGS_EXCLUDE_GROUPS}" STREQUAL "General,EnvironmentVariables")
+elseif("${TEST_ADDITIONAL_SETTINGS_EXCLUDE_GROUPS}" STREQUAL "General,Environment,EnvironmentVariables")
   set(with_additional_pathenv_var 0)
   set(with_additional_env_var 0)
   set(with_additional_path_librarypath 1)
-elseif("${TEST_ADDITIONAL_SETTINGS_EXCLUDE_GROUPS}" STREQUAL "General,EnvironmentVariables,Paths,LibraryPaths")
+elseif("${TEST_ADDITIONAL_SETTINGS_EXCLUDE_GROUPS}" STREQUAL "General,Environment,EnvironmentVariables,Paths,LibraryPaths")
   set(with_additional_pathenv_var 0)
   set(with_additional_env_var 0)
   set(with_additional_path_librarypath 0)
@@ -384,26 +387,27 @@ set(expected_ov_lines
 
 set(unexpected_ov_lines)
 
-if("${TEST_ADDITIONAL_SETTINGS_EXCLUDE_GROUPS}" STREQUAL "")
+if("${TEST_ADDITIONAL_SETTINGS_EXCLUDE_GROUPS}" STREQUAL "" OR
+    "${TEST_ADDITIONAL_SETTINGS_EXCLUDE_GROUPS}" STREQUAL "General")
   list(APPEND expected_ov_lines
     ${expected_additional_env_var_lines_without_group_exclude}
     ${expected_additional_pathenv_var_lines_without_group_exclude}
     )
-elseif("${TEST_ADDITIONAL_SETTINGS_EXCLUDE_GROUPS}" STREQUAL "General")
+elseif("${TEST_ADDITIONAL_SETTINGS_EXCLUDE_GROUPS}" STREQUAL "General,Environment")
   list(APPEND expected_ov_lines
     ${expected_additional_env_var_lines_without_group_exclude}
     )
   list(APPEND unexpected_ov_lines
     ${expected_additional_pathenv_var_lines_without_group_exclude}
     )
-elseif("${TEST_ADDITIONAL_SETTINGS_EXCLUDE_GROUPS}" STREQUAL "General,EnvironmentVariables")
+elseif("${TEST_ADDITIONAL_SETTINGS_EXCLUDE_GROUPS}" STREQUAL "General,Environment,EnvironmentVariables")
   list(APPEND expected_ov_lines
     )
   list(APPEND unexpected_ov_lines
     ${expected_additional_env_var_lines_without_group_exclude}
     ${expected_additional_pathenv_var_lines_without_group_exclude}
     )
-elseif("${TEST_ADDITIONAL_SETTINGS_EXCLUDE_GROUPS}" STREQUAL "General,EnvironmentVariables,Paths,LibraryPaths")
+elseif("${TEST_ADDITIONAL_SETTINGS_EXCLUDE_GROUPS}" STREQUAL "General,Environment,EnvironmentVariables,Paths,LibraryPaths")
   list(APPEND expected_ov_lines
     )
   list(APPEND unexpected_ov_lines

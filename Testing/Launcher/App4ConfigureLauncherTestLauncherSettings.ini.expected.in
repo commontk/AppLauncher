@@ -5,7 +5,6 @@ launcherSplashScreenHideDelayMs=
 additionalLauncherHelpShortArgument=-h
 additionalLauncherHelpLongArgument=--help
 additionalLauncherNoSplashArguments=--no-splash
-additionalPathVariables=PYTHONPATH,QT_PLUGIN_PATH
 
 launcherLoadEnvironment=0
 additionalSettingsFilePath=@ctkapplauncher_dir@/additional-settings-build.ini
@@ -21,6 +20,9 @@ organizationName=Kitware
 
 [ExtraApplicationToLaunch]
 
+
+[Environment]
+additionalPathVariables=PYTHONPATH,QT_PLUGIN_PATH
 
 [LibraryPaths]
 1\path=<APPLAUNCHER_DIR>/build/lib
