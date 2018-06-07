@@ -378,21 +378,21 @@ bool ctkAppLauncherSettings::readSettings(const QString& fileName)
     return false;
     }
   QSettings settings(fileName, QSettings::IniFormat);
-  d->readUserAdditionalSettingsInfo(settings);
+  d->readUserAdditionalSettingsInfo(settings); // Read info used by "findUserAdditionalSettings()"
   d->readPathSettings(settings);
 
   // Read user additional settings
-  QString additionalSettingsFileName = this->findUserAdditionalSettings();
-  if(additionalSettingsFileName.isEmpty())
+  QString userAdditionalSettingsFileName = this->findUserAdditionalSettings();
+  if(userAdditionalSettingsFileName.isEmpty())
     {
     return true;
     }
-  if (!d->checkSettings(additionalSettingsFileName, ctkAppLauncherSettingsPrivate::UserAdditionalSettings))
+  if (!d->checkSettings(userAdditionalSettingsFileName, ctkAppLauncherSettingsPrivate::UserAdditionalSettings))
     {
     return false;
     }
-  QSettings additionalSettings(additionalSettingsFileName, QSettings::IniFormat);
-  d->readPathSettings(additionalSettings);
+  QSettings userAdditionalSettings(userAdditionalSettingsFileName, QSettings::IniFormat);
+  d->readPathSettings(userAdditionalSettings);
 
   return true;
 }
