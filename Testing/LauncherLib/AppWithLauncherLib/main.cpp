@@ -620,25 +620,25 @@ int checkReadAdditionalSettingsWithExpand()
   QCoreApplication::setApplicationName("AwesomeApp");
 
   // Get additional settings directory
-  QDir additionalSettingsDir = QFileInfo(QSettings().fileName()).dir();
+  QDir userAdditionalSettingsDir = QFileInfo(QSettings().fileName()).dir();
 
   // Make setting directory
-  if (!QDir().mkpath(additionalSettingsDir.path()))
+  if (!QDir().mkpath(userAdditionalSettingsDir.path()))
     {
-    qWarning() << "Line" << __LINE__ << "- Failed to create directory" << additionalSettingsDir.path();
+    qWarning() << "Line" << __LINE__ << "- Failed to create directory" << userAdditionalSettingsDir.path();
     return EXIT_FAILURE;
     }
   // Generate temporary settings file
-  QTemporaryFile additionalSettingsFile(additionalSettingsDir.filePath("AwesomeAppXXXXXX-0.1.ini"));
-  if (!additionalSettingsFile.open())
+  QTemporaryFile userAdditionalSettingsFile(userAdditionalSettingsDir.filePath("AwesomeAppXXXXXX-0.1.ini"));
+  if (!userAdditionalSettingsFile.open())
     {
-    qWarning() << "Line" << __LINE__ << "- Failed to open temporary file" << additionalSettingsFile.fileName();
+    qWarning() << "Line" << __LINE__ << "- Failed to open temporary file" << userAdditionalSettingsFile.fileName();
     return EXIT_FAILURE;
     }
 
   // Extract unique application name of the form "AwesomeAppXXXXXX"
   QString appName =
-      QFileInfo(additionalSettingsFile.fileName()).fileName().split("-").at(0);
+      QFileInfo(userAdditionalSettingsFile.fileName()).fileName().split("-").at(0);
 
   // Update main settings replacing "AwesomeApp" with "AwesomeAppXXXXXX"
   QString mainSettingsFileName("launcher-settings.ini");
@@ -648,12 +648,12 @@ int checkReadAdditionalSettingsWithExpand()
   CHECK_EXIT_SUCCESS(writeFile(__LINE__, mainSettingsFileName, mainSettingsContent));
 
   // Generate additional settings
-  QString additionalSettingsFileName = "launcher-additional-settings.ini";
-  QString additionalSettingsContent = readFile(__LINE__, additionalSettingsFileName);
-  CHECK_QSTRING_NOT_NULL(additionalSettingsContent);
-  QTextStream outputStream(&additionalSettingsFile);
-  outputStream << additionalSettingsContent;
-  additionalSettingsFile.close();
+  QString userAdditionalSettingsFileName = "launcher-additional-settings.ini";
+  QString userAdditionalSettingsContent = readFile(__LINE__, userAdditionalSettingsFileName);
+  CHECK_QSTRING_NOT_NULL(userAdditionalSettingsContent);
+  QTextStream outputStream(&userAdditionalSettingsFile);
+  outputStream << userAdditionalSettingsContent;
+  userAdditionalSettingsFile.close();
 
   // Set unique application name used in the remaining of the test
   QCoreApplication::setApplicationName(appName);
