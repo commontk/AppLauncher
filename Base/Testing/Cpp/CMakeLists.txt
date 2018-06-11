@@ -1,5 +1,12 @@
 set(KIT ${PROJECT_NAME})
 
+add_library(CTKAppLauncherTestingHelper STATIC
+  ctkAppLauncherTestingHelper.cpp
+  ctkAppLauncherTestingHelper.h
+  ctkAppLauncherTestingHelper.txx
+  )
+target_link_libraries(CTKAppLauncherTestingHelper PUBLIC ${QT_LIBRARIES})
+
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 set(KIT_TEST_SRCS
   ctkAppLauncherEnvironmentTest.cpp
@@ -30,8 +37,12 @@ foreach(file IN ITEMS
 endforeach()
 
 add_executable(${KIT}CppTests ${Tests})
+target_include_directories(${KIT}CppTests PUBLIC
+  ${CMAKE_CURRENT_SOURCE_DIR}
+  )
 set(${KIT}CppTests_TARGET_LIBRARIES
   CTKAppLauncherBase
+  CTKAppLauncherTestingHelper
   )
 if(CTKAppLauncher_QT_VERSION VERSION_GREATER "4")
   list(APPEND ${KIT}CppTests_TARGET_LIBRARIES Qt5::Test)

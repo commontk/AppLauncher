@@ -1,5 +1,5 @@
 
-// CTK includes
+// CTKAppLauncher includes
 #include <ctkAppLauncherSettings.h>
 #include <ctkTest.h>
 
