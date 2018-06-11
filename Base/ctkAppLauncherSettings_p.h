@@ -87,6 +87,8 @@ public:
 //  QString                         LauncherAdditionalHelpShortArgument;
 //  QString                         LauncherAdditionalHelpLongArgument;
 //  QStringList                     LauncherAdditionalNoSplashArguments;
+  QString                         AdditionalSettingsFilePath;
+  QStringList                     AdditionalSettingsExcludeGroups;
   QStringList                     ListOfPaths;
   QStringList                     ListOfLibraryPaths;
   QSet<QString>                   AdditionalPathVariables;

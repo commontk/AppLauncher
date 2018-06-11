@@ -115,8 +115,8 @@ public:
   QString                         DefaultApplicationToLaunchArguments;
 //  QString                         LauncherName;
 //  QString                         LauncherDir;
-  QString                         AdditionalSettingsFilePath;
-  QStringList                     AdditionalSettingsExcludeGroups;
+//  QString                         AdditionalSettingsFilePath;
+//  QStringList                     AdditionalSettingsExcludeGroups;
   QStringList                     LauncherSettingSubDirs;
   bool                            ValidSettingsFile;
 //  QString                         OrganizationName;

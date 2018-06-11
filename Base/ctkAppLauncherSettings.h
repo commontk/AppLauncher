@@ -153,6 +153,12 @@ public:
   /// \sa readSettings()
   QString readSettingsError() const;
 
+  QString additionalSettingsFilePath() const;
+  void setAdditionalSettingsFilePath(const QString& filePath);
+
+  QStringList additionalSettingsExcludeGroups() const;
+  void setAdditionalSettingsExcludeGroups(const QStringList& excludeGroups);
+
   /// Get list of library paths associated with the \c LibraryPaths group.
   QStringList libraryPaths(bool expand = true)const;
 

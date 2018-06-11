@@ -404,6 +404,34 @@ QString ctkAppLauncherSettings::readSettingsError() const
 }
 
 // --------------------------------------------------------------------------
+QString ctkAppLauncherSettings::additionalSettingsFilePath() const
+{
+  Q_D(const ctkAppLauncherSettings);
+  return d->AdditionalSettingsFilePath;
+}
+
+// --------------------------------------------------------------------------
+void ctkAppLauncherSettings::setAdditionalSettingsFilePath(const QString& filePath)
+{
+  Q_D(ctkAppLauncherSettings);
+  d->AdditionalSettingsFilePath = filePath;
+}
+
+// --------------------------------------------------------------------------
+QStringList ctkAppLauncherSettings::additionalSettingsExcludeGroups() const
+{
+  Q_D(const ctkAppLauncherSettings);
+  return d->AdditionalSettingsExcludeGroups;
+}
+
+// --------------------------------------------------------------------------
+void ctkAppLauncherSettings::setAdditionalSettingsExcludeGroups(const QStringList& excludeGroups)
+{
+  Q_D(ctkAppLauncherSettings);
+  d->AdditionalSettingsExcludeGroups = excludeGroups;
+}
+
+// --------------------------------------------------------------------------
 QStringList ctkAppLauncherSettings::libraryPaths(bool expand /* = true */)const
 {
   Q_D(const ctkAppLauncherSettings);
