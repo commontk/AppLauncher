@@ -105,7 +105,6 @@ bool ctkAppLauncherPrivate::processScreenHideDelayMsArgument()
 // --------------------------------------------------------------------------
 bool ctkAppLauncherPrivate::processAdditionalSettings()
 {
-  this->reportInfo(QString("AdditionalSettingsFilePath [%1]").arg(this->AdditionalSettingsFilePath));
   if (this->AdditionalSettingsFilePath.isEmpty())
     {
     return true;
@@ -991,6 +990,8 @@ int ctkAppLauncher::processArguments()
     {
     return Self::ExitWithError;
     }
+
+  d->reportInfo(QString("AdditionalSettingsFilePath [%1]").arg(d->AdditionalSettingsFilePath));
 
   if (reportInfo)
     {
