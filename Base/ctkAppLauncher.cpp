@@ -352,7 +352,7 @@ QString ctkAppLauncherPrivate::searchPaths(const QString& executableName, const 
       QString executablePath = pathAsDir.filePath(executableNameWithExt);
       QString msg = QString("Checking if [%1] exists in [%2]").arg(executableNameWithExt).arg(expandedPath);
       this->reportInfo(msg);
-      if (QFile::exists(executablePath))
+      if (QFile::exists(executablePath) && QFileInfo(executablePath).isFile() && QFileInfo(executablePath).isExecutable())
         {
         this->reportInfo(msg + " - Found");
         return executablePath;
