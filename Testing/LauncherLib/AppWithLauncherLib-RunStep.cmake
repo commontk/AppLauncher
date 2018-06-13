@@ -19,7 +19,7 @@ set(PRINT_COMMAND 0)
 foreach(filename IN ITEMS
     settings.ini
     launcher-settings.ini
-    launcher-additional-settings.ini
+    launcher-user-additional-settings.ini
     )
   configure_file(
     ${APPLIB_SOURCE_DIR}/${filename}

@@ -51,6 +51,8 @@ public:
   bool processAdditionalSettings();
   bool processAdditionalSettingsArgument();
 
+  QString additionalSettingsDir() const;
+
   /// \sa ctkAppLauncherSettingsPrivate::findUserAdditionalSettings()
   bool processUserAdditionalSettings();
 

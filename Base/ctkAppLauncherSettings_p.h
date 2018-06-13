@@ -35,6 +35,11 @@ public:
     UserAdditionalSettings, ///< Settings file implicitly associated using application `name`, `organizationName`, `organizationDomain`, and optionally `revision`.
     AdditionalSettings      ///< Settings file explicitly specified using command line argument.
     };
+  static QString settingsTypeToString(const SettingsType& settingsType);
+
+  static QString settingsDirPlaceHolder(const SettingsType& settingsType);
+  static QString updateSettingDirPlaceHolder(const QString& value, const SettingsType& settingsType);
+  static QStringList updateSettingDirPlaceHolder(const QStringList& values, const SettingsType& settingsType);
 
   /// \brief Expand setting \a value
   ///
@@ -59,6 +64,8 @@ public:
 
   void readUserAdditionalSettingsInfo(QSettings& settings);
 
+  void readAdditionalSettingsInfo(QSettings& settings);
+
   void readPathSettings(QSettings& settings, const QStringList& excludeGroups=QStringList());
 
   QString ReadSettingsError;
@@ -74,9 +81,33 @@ public:
 //  bool                            DefaultLauncherNoSplashScreen;
 //  QString                         DefaultApplicationToLaunchArguments;
 
+
+  ///
+  /// \brief The ScopedLauncherSettingsDir class provides a convenient way
+  /// of selecting the value that should be returned by launcherSettingsDir()
+  /// based on the type of setting file being read.
+  ///
+  class ScopedLauncherSettingsDir
+  {
+  public:
+    ScopedLauncherSettingsDir(ctkAppLauncherSettingsPrivate* launcherSettingsPrivate, const SettingsType& launcherSettingsDirType)
+      : LauncherSettingsPrivate(launcherSettingsPrivate)
+    {
+      this->PreviousLauncherSettingsDirType = this->LauncherSettingsPrivate->LauncherSettingsDirType;
+      this->LauncherSettingsPrivate->LauncherSettingsDirType = launcherSettingsDirType;
+    }
+    ~ScopedLauncherSettingsDir()
+    {
+      this->LauncherSettingsPrivate->LauncherSettingsDirType = this->PreviousLauncherSettingsDirType;
+    }
+    ctkAppLauncherSettingsPrivate* LauncherSettingsPrivate;
+    SettingsType PreviousLauncherSettingsDirType;
+  };
+
   QString                         LauncherName;
   QString                         LauncherDir;
-  QString                         LauncherSettingsDir;
+  QHash<SettingsType, QString>    LauncherSettingsDirs;
+  SettingsType                    LauncherSettingsDirType;
 //  QStringList                     LauncherSettingSubDirs;
 //  bool                            ValidSettingsFile;
   QString                         OrganizationName;
