@@ -22,6 +22,8 @@ private slots:
   void testReadSettingsError();
   void testPathSep();
   void testLibraryPathVariableName();
+  void testAdditionalSettingsFilePath();
+  void testAdditionalSettingsExcludeGroups();
   void testReadSettings();
 };
 
@@ -104,6 +106,34 @@ void ctkAppLauncherSettingsTester::testLibraryPathVariableName()
 #else
   QFAIL("Platform not yet supported");
 #endif
+}
+
+// ----------------------------------------------------------------------------
+void ctkAppLauncherSettingsTester::testAdditionalSettingsFilePath()
+{
+  ctkAppLauncherSettings appLauncherSettings;
+
+  QCOMPARE(appLauncherSettings.additionalSettingsFilePath(), QString());
+
+  appLauncherSettings.setAdditionalSettingsFilePath("");
+  QCOMPARE(appLauncherSettings.additionalSettingsFilePath(), QString());
+
+  appLauncherSettings.setAdditionalSettingsFilePath("/path/to/additional-settings");
+  QCOMPARE(appLauncherSettings.additionalSettingsFilePath(), QString("/path/to/additional-settings"));
+}
+
+// ----------------------------------------------------------------------------
+void ctkAppLauncherSettingsTester::testAdditionalSettingsExcludeGroups()
+{
+  ctkAppLauncherSettings appLauncherSettings;
+
+  QCOMPARE_QSTRINGLIST(appLauncherSettings.additionalSettingsExcludeGroups(), QStringList());
+
+  appLauncherSettings.setAdditionalSettingsExcludeGroups(QStringList());
+  QCOMPARE_QSTRINGLIST(appLauncherSettings.additionalSettingsExcludeGroups(), QStringList());
+
+  appLauncherSettings.setAdditionalSettingsExcludeGroups(QStringList() << "General" << "Invalid");
+  QCOMPARE_QSTRINGLIST(appLauncherSettings.additionalSettingsExcludeGroups(), QStringList() << "General" << "Invalid");
 }
 
 // ----------------------------------------------------------------------------

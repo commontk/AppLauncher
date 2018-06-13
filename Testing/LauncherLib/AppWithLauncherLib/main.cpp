@@ -45,7 +45,7 @@ int main(int argc, char*[])
 //----------------------------------------------------------------------------
 int checkReadArrayValues()
 {
-  QSettings settings("settings.ini", QSettings::IniFormat);
+  QSettings settings("settings-for-read-array-values-test.ini", QSettings::IniFormat);
   if (!QFile(settings.fileName()).exists())
     {
     qWarning() << "Line" << __LINE__ << __FILE__ << "\n"
