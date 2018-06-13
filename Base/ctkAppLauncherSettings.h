@@ -62,10 +62,10 @@ class ctkAppLauncherSettingsPrivate;
 ///
 /// Special string                    | Description
 /// ----------------------------------|-------------------------------------------------------
-/// &lt;APPLAUNCHER_DIR&gt;           | Replace with value set using setLauncherDir()
-/// &lt;APPLAUNCHER_NAME&gt;          | Replace with value set using setLauncherName()
-/// &lt;APPLAUNCHER_SETTINGS_DIR&gt;  | Replace with value set using setLauncherSettingsDir()
-/// &lt;PATHSEP&gt;                   | Replace by ":" on unix and ";" on windows
+/// &lt;APPLAUNCHER_DIR&gt;           | Replaced with value set using setLauncherDir()
+/// &lt;APPLAUNCHER_NAME&gt;          | Replaced with value set using setLauncherName()
+/// &lt;APPLAUNCHER_SETTINGS_DIR&gt;  | Replaced with the absolute path of the settings file where the special string is used.
+/// &lt;PATHSEP&gt;                   | Replaced by ":" on unix and ";" on windows
 /// &lt;env:VARNAME&gt;               | If any, with corresponding system environment variable
 ///
 /// Additional User Settings
@@ -152,6 +152,12 @@ public:
   ///
   /// \sa readSettings()
   QString readSettingsError() const;
+
+  QString additionalSettingsFilePath() const;
+  void setAdditionalSettingsFilePath(const QString& filePath);
+
+  QStringList additionalSettingsExcludeGroups() const;
+  void setAdditionalSettingsExcludeGroups(const QStringList& excludeGroups);
 
   /// Get list of library paths associated with the \c LibraryPaths group.
   QStringList libraryPaths(bool expand = true)const;
@@ -256,12 +262,10 @@ public:
   QString launcherDir() const;
   void setLauncherDir(const QString& dir);
 
-  /// \brief Set/Get launcher settings directory.
+  /// \brief Get launcher settings directory.
   ///
-  /// This is used to replace \c &lt;APPLAUNCHER_SETTINGS_DIR&gt; with launcherSettingsDir()
-  /// when expanding variables.
+  /// Return the directory used to expand \c &lt;APPLAUNCHER_SETTINGS_DIR&gt; variable.
   QString launcherSettingsDir() const;
-  void setLauncherSettingsDir(const QString& dir);
 
   /// \brief Set/Get launcher name.
   ///

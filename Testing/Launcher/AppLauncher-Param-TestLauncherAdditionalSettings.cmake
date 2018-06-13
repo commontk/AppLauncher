@@ -39,7 +39,9 @@ ${common_env_var2_name}=${common_env_var2_value_1}
 
 # --------------------------------------------------------------------------
 # Configure additional settings file
-set(additional_settings_path "${launcher}AdditionalLauncherSettings.ini")
+set(launcher_additionalsettings_dir "${launcher_dir}/additionalsettings")
+file(MAKE_DIRECTORY "${launcher_additionalsettings_dir}")
+set(additional_settings_path "${launcher_additionalsettings_dir}/${launcher_name}AdditionalLauncherSettings.ini")
 set(additional_library_path "/path/to/additional/lib")
 set(additional_path_1 "/home/additional/app1")
 set(additional_path_2 "/home/additional/app2")
@@ -47,6 +49,8 @@ set(additional_env_var_name_1 "ADD_SOMETHING_NICE")
 set(additional_env_var_value_1 "Chocolate :)")
 set(additional_env_var_name_2 "ADD_SOMETHING_AWESOME")
 set(additional_env_var_value_2 "Rock climbing ! :)")
+set(additional_env_var_name_3 "APPLAUNCHER_SETTINGS_DIR_VALUE")
+set(additional_env_var_value_3 "<APPLAUNCHER_SETTINGS_DIR>")
 set(common_env_var_value_2 "Sun")
 set(common_env_var2_value_2 "Trees")
 file(WRITE ${additional_settings_path} "
@@ -62,6 +66,7 @@ size=2
 [EnvironmentVariables]
 ${additional_env_var_name_1}=${additional_env_var_value_1}
 ${additional_env_var_name_2}=${additional_env_var_value_2}
+${additional_env_var_name_3}=${additional_env_var_value_3}
 ${common_env_var_name}=<env:${common_env_var_name}>:${common_env_var_value_2}
 ${common_env_var2_name}=${common_env_var2_value_2}:<env:${common_env_var2_name}>
 
@@ -108,7 +113,10 @@ if(rv)
                       "directory [${launcher_binary_dir}]\n${ev}")
 endif()
 
+set(expected_additional_env_var_value_3 "${launcher_additionalsettings_dir}")
+
 set(expected_ov_lines
+  "${additional_env_var_name_3}=${expected_additional_env_var_value_3}"
   "${additional_env_var_name_2}=${additional_env_var_value_2}"
   "${additional_env_var_name_1}=${additional_env_var_value_1}"
   "${library_path_variable_name}=${additional_library_path}${pathsep}${regular_library_path_1}${pathsep}${regular_library_path_2}"
@@ -120,6 +128,7 @@ set(expected_ov_lines
   )
 if(WIN32)
   set(expected_ov_lines
+    "${additional_env_var_name_3}=${expected_additional_env_var_value_3}"
     "${additional_env_var_name_2}=${additional_env_var_value_2}"
     "${additional_env_var_name_1}=${additional_env_var_value_1}"
     "Path=${additional_path_1}${pathsep}${additional_path_2}${pathsep}${regular_path_1}${pathsep}${regular_path_2}${pathsep}${additional_library_path}${pathsep}${regular_library_path_1}${pathsep}${regular_library_path_2}"

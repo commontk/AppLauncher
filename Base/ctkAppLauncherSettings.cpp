@@ -47,6 +47,12 @@ ctkAppLauncherSettingsPrivate::ctkAppLauncherSettingsPrivate(ctkAppLauncherSetti
 
   this->PathVariableName = ctkAppLauncherEnvironment::casedVariableName(
         this->SystemEnvironmentKeys, this->PathVariableName);
+
+  this->LauncherSettingsDirType = Self::RegularSettings;
+
+  this->LauncherSettingsDirs[Self::RegularSettings] = "<APPLAUNCHER_SETTINGS_DIR-NOTFOUND>";
+  this->LauncherSettingsDirs[Self::UserAdditionalSettings] = "<APPLAUNCHER_SETTINGS_DIR-NOTFOUND>";
+  this->LauncherSettingsDirs[Self::AdditionalSettings] = "<APPLAUNCHER_SETTINGS_DIR-NOTFOUND>";
 }
 
 // --------------------------------------------------------------------------
@@ -75,6 +81,60 @@ QString ctkAppLauncherSettingsPrivate::findUserAdditionalSettings()const
     return fileName;
     }
   return QString();
+}
+
+// --------------------------------------------------------------------------
+QString ctkAppLauncherSettingsPrivate::settingsTypeToString(const SettingsType& settingsType)
+{
+  if (settingsType == Self::RegularSettings)
+    {
+    return QLatin1String("RegularSettings");
+    }
+  else if (settingsType == Self::UserAdditionalSettings)
+    {
+    return QLatin1String("UserAdditionalSettings");
+    }
+  else // if (settingsType == Self::AdditionalSettings)
+    {
+    return QLatin1String("AdditionalSettings");
+    }
+}
+
+// --------------------------------------------------------------------------
+QString ctkAppLauncherSettingsPrivate::settingsDirPlaceHolder(const SettingsType& settingsType)
+{
+  if (settingsType == Self::RegularSettings)
+    {
+    return QLatin1String("<APPLAUNCHER_REGULAR_SETTINGS_DIR>");
+    }
+  else if (settingsType == Self::UserAdditionalSettings)
+    {
+    return QLatin1String("<APPLAUNCHER_USER_ADDITIONAL_SETTINGS_DIR>");
+    }
+  else // if (settingsType == Self::AdditionalSettings)
+    {
+    return QLatin1String("<APPLAUNCHER_ADDITIONAL_SETTINGS_DIR>");
+    }
+}
+
+// --------------------------------------------------------------------------
+QString ctkAppLauncherSettingsPrivate::updateSettingDirPlaceHolder(
+    const QString& value, const ctkAppLauncherSettingsPrivate::SettingsType& settingsType)
+{
+  QString updatedValue = value;
+  return updatedValue.replace(QString("<APPLAUNCHER_SETTINGS_DIR>"), Self::settingsDirPlaceHolder(settingsType));
+}
+
+// --------------------------------------------------------------------------
+QStringList ctkAppLauncherSettingsPrivate::updateSettingDirPlaceHolder(
+    const QStringList& values, const ctkAppLauncherSettingsPrivate::SettingsType& settingsType)
+{
+  QStringList updatedValues;
+  foreach(const QString& value, values)
+    {
+    updatedValues.append(Self::updateSettingDirPlaceHolder(value, settingsType));
+    }
+  return updatedValues;
 }
 
 // --------------------------------------------------------------------------
@@ -132,6 +192,20 @@ void ctkAppLauncherSettingsPrivate::readUserAdditionalSettingsInfo(QSettings& se
 }
 
 // --------------------------------------------------------------------------
+void ctkAppLauncherSettingsPrivate::readAdditionalSettingsInfo(QSettings& settings)
+{
+  Q_Q(ctkAppLauncherSettings);
+  if (settings.contains("additionalSettingsFilePath"))
+    {
+    q->setAdditionalSettingsFilePath(this->expandValue(settings.value("additionalSettingsFilePath", "").toString()));
+    }
+  if (settings.contains("additionalSettingsExcludeGroups"))
+    {
+    this->AdditionalSettingsExcludeGroups = settings.value("additionalSettingsExcludeGroups").toStringList();
+    }
+}
+
+// --------------------------------------------------------------------------
 void ctkAppLauncherSettingsPrivate::readPathSettings(QSettings& settings, const QStringList& excludeGroups)
 {
   // Read additional environment variables
@@ -150,13 +224,15 @@ void ctkAppLauncherSettingsPrivate::readPathSettings(QSettings& settings, const 
   // Read PATHs
   if (!excludeGroups.contains("Paths"))
     {
-    this->ListOfPaths = ctk::readArrayValues(settings, "Paths", "path") + this->ListOfPaths;
+    this->ListOfPaths = Self::updateSettingDirPlaceHolder(
+          ctk::readArrayValues(settings, "Paths", "path"), this->LauncherSettingsDirType) + this->ListOfPaths;
     }
 
   // Read LibraryPaths
   if (!excludeGroups.contains("LibraryPaths"))
     {
-    this->ListOfLibraryPaths = ctk::readArrayValues(settings, "LibraryPaths", "path") + this->ListOfLibraryPaths;
+    this->ListOfLibraryPaths = Self::updateSettingDirPlaceHolder(
+          ctk::readArrayValues(settings, "LibraryPaths", "path"), this->LauncherSettingsDirType) + this->ListOfLibraryPaths;
     }
 
   // Read additional path environment variables
@@ -180,7 +256,8 @@ void ctkAppLauncherSettingsPrivate::readPathSettings(QSettings& settings, const 
       {
       if (!envVarName.isEmpty())
         {
-        QStringList paths = ctk::readArrayValues(settings, envVarName, "path");
+        QStringList paths = Self::updateSettingDirPlaceHolder(
+              ctk::readArrayValues(settings, envVarName, "path"), this->LauncherSettingsDirType);
         if (!paths.empty())
           {
           if (this->MapOfPathVars.contains(envVarName))
@@ -226,10 +303,14 @@ QString ctkAppLauncherSettingsPrivate::expandValue(const QString& value) const
 // --------------------------------------------------------------------------
 QString ctkAppLauncherSettingsPrivate::expandPlaceHolders(const QString& value) const
 {
+  Q_Q(const ctkAppLauncherSettings);
   QHash<QString, QString> keyValueMap;
   keyValueMap["<APPLAUNCHER_DIR>"] = this->LauncherDir;
   keyValueMap["<APPLAUNCHER_NAME>"] = this->LauncherName;
-  keyValueMap["<APPLAUNCHER_SETTINGS_DIR>"] = this->LauncherSettingsDir;
+  keyValueMap["<APPLAUNCHER_SETTINGS_DIR>"] = q->launcherSettingsDir();
+  keyValueMap[this->settingsDirPlaceHolder(Self::RegularSettings)] = this->LauncherSettingsDirs[Self::RegularSettings];
+  keyValueMap[this->settingsDirPlaceHolder(Self::UserAdditionalSettings)] = this->LauncherSettingsDirs[Self::UserAdditionalSettings];
+  keyValueMap[this->settingsDirPlaceHolder(Self::AdditionalSettings)] = this->LauncherSettingsDirs[Self::AdditionalSettings];
   keyValueMap["<PATHSEP>"] = this->PathSep;
 
   QString updatedValue = value;
@@ -357,14 +438,7 @@ void ctkAppLauncherSettings::setLauncherName(const QString& name)
 QString ctkAppLauncherSettings::launcherSettingsDir() const
 {
   Q_D(const ctkAppLauncherSettings);
-  return d->LauncherSettingsDir;
-}
-
-// --------------------------------------------------------------------------
-void ctkAppLauncherSettings::setLauncherSettingsDir(const QString& dir)
-{
-  Q_D(ctkAppLauncherSettings);
-  d->LauncherSettingsDir = dir;
+  return d->LauncherSettingsDirs[d->LauncherSettingsDirType];
 }
 
 // --------------------------------------------------------------------------
@@ -377,22 +451,41 @@ bool ctkAppLauncherSettings::readSettings(const QString& fileName)
     {
     return false;
     }
+
+  d->LauncherSettingsDirs[ctkAppLauncherSettingsPrivate::RegularSettings] = QFileInfo(fileName).absolutePath();
+
   QSettings settings(fileName, QSettings::IniFormat);
-  d->readUserAdditionalSettingsInfo(settings);
   d->readPathSettings(settings);
+  d->readUserAdditionalSettingsInfo(settings); // Read info used by "findUserAdditionalSettings()"
+  d->readAdditionalSettingsInfo(settings); // Read file path and exclude groups
 
   // Read user additional settings
-  QString additionalSettingsFileName = this->findUserAdditionalSettings();
-  if(additionalSettingsFileName.isEmpty())
+  QString userAdditionalSettingsFileName = this->findUserAdditionalSettings();
+  if(!userAdditionalSettingsFileName.isEmpty())
     {
-    return true;
+    if (!d->checkSettings(userAdditionalSettingsFileName, ctkAppLauncherSettingsPrivate::UserAdditionalSettings))
+      {
+      return false;
+      }
+    d->LauncherSettingsDirs[ctkAppLauncherSettingsPrivate::UserAdditionalSettings] = QFileInfo(userAdditionalSettingsFileName).absolutePath();
+    ctkAppLauncherSettingsPrivate::ScopedLauncherSettingsDir scopedLauncherSettingsDir(d, ctkAppLauncherSettingsPrivate::UserAdditionalSettings);
+    Q_UNUSED(scopedLauncherSettingsDir);
+    QSettings userAdditionalSettings(userAdditionalSettingsFileName, QSettings::IniFormat);
+    d->readPathSettings(userAdditionalSettings);
     }
-  if (!d->checkSettings(additionalSettingsFileName, ctkAppLauncherSettingsPrivate::UserAdditionalSettings))
+
+  // Read additional settings
+  if(!this->additionalSettingsFilePath().isEmpty())
     {
-    return false;
+    if (!d->checkSettings(this->additionalSettingsFilePath(), ctkAppLauncherSettingsPrivate::AdditionalSettings))
+      {
+      return false;
+      }
+    ctkAppLauncherSettingsPrivate::ScopedLauncherSettingsDir scopedLauncherSettingsDir(d, ctkAppLauncherSettingsPrivate::AdditionalSettings);
+    Q_UNUSED(scopedLauncherSettingsDir);
+    QSettings additionalSettings(this->additionalSettingsFilePath(), QSettings::IniFormat);
+    d->readPathSettings(additionalSettings, this->additionalSettingsExcludeGroups());
     }
-  QSettings additionalSettings(additionalSettingsFileName, QSettings::IniFormat);
-  d->readPathSettings(additionalSettings);
 
   return true;
 }
@@ -402,6 +495,35 @@ QString ctkAppLauncherSettings::readSettingsError() const
 {
   Q_D(const ctkAppLauncherSettings);
   return d->ReadSettingsError;
+}
+
+// --------------------------------------------------------------------------
+QString ctkAppLauncherSettings::additionalSettingsFilePath() const
+{
+  Q_D(const ctkAppLauncherSettings);
+  return d->AdditionalSettingsFilePath;
+}
+
+// --------------------------------------------------------------------------
+void ctkAppLauncherSettings::setAdditionalSettingsFilePath(const QString& filePath)
+{
+  Q_D(ctkAppLauncherSettings);
+  d->LauncherSettingsDirs[ctkAppLauncherSettingsPrivate::AdditionalSettings] = QFileInfo(filePath).absolutePath();
+  d->AdditionalSettingsFilePath = filePath;
+}
+
+// --------------------------------------------------------------------------
+QStringList ctkAppLauncherSettings::additionalSettingsExcludeGroups() const
+{
+  Q_D(const ctkAppLauncherSettings);
+  return d->AdditionalSettingsExcludeGroups;
+}
+
+// --------------------------------------------------------------------------
+void ctkAppLauncherSettings::setAdditionalSettingsExcludeGroups(const QStringList& excludeGroups)
+{
+  Q_D(ctkAppLauncherSettings);
+  d->AdditionalSettingsExcludeGroups = excludeGroups;
 }
 
 // --------------------------------------------------------------------------

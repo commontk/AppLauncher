@@ -1,74 +1,13 @@
 
-// CTK includes
+// CTKAppLauncher includes
 #include <ctkAppLauncherEnvironment.h>
 #include <ctkTest.h>
 
+// CTKAppLauncherTesting includes
+#include <ctkAppLauncherTestingHelper.h>
+
 // Qt includes
 #include <QProcessEnvironment>
-
-// STD includes
-#include <cstdlib>
-
-//----------------------------------------------------------------------------
-bool CheckStringList(int line, const QString& description,
-                     const QStringList& current, const QStringList& expected)
-{
-  QString testName("CheckStringList");
-  if (current.count() != expected.count())
-    {
-    QStringList shorterList(expected);
-    QStringList longerList(current);
-    QString status("contains extra");
-    if (current.count() < expected.count())
-      {
-      longerList = expected;
-      shorterList = current;
-      status = "is missing";
-      }
-    foreach (const QString& name, shorterList)
-      {
-      longerList.removeOne(name);
-      }
-    qWarning() << "\nLine " << line << " - " << description
-               << " : " << testName << " failed"
-               << "\nCompared lists have different sizes."
-               << "\n\tcurrent size :" << current.count()
-               << "\n\texpected size:" << expected.count()
-               << "\n\tcurrent list" << qPrintable(status) << "values:" << longerList;
-    return false;
-    }
-  QStringList sortedCurrent(current);
-  sortedCurrent.sort();
-
-  QStringList sortedExpected(expected);
-  sortedExpected.sort();
-
-  for (int idx = 0; idx < sortedCurrent.count(); ++idx)
-    {
-    if (sortedCurrent.at(idx) != sortedExpected.at(idx))
-      {
-      qWarning() << "\nLine " << line << " - " << description
-                 << " : " << testName << " failed"
-                 << "\nCompared lists differ at index " << idx
-                 << "\n\tcurrent[" << idx << "] :" << sortedCurrent.at(idx)
-                 << "\n\texpected[" << idx << "]:" << sortedExpected.at(idx);
-      return false;
-      }
-    }
-  return true;
-}
-
-//----------------------------------------------------------------------------
-/// Verifies if actual QStringList is the same as expected.
-#define CHECK_QSTRINGLIST(actual, expected) \
-  { \
-  QStringList a = (actual); \
-  QStringList e = (expected); \
-  if (!CheckStringList(__LINE__,#actual " != " #expected, a, e)) \
-    { \
-    QFAIL(""); \
-    } \
-  }
 
 // ----------------------------------------------------------------------------
 class ctkAppLauncherEnvironmentTester: public QObject
@@ -267,7 +206,7 @@ void ctkAppLauncherEnvironmentTester::testEnvironment()
   QProcessEnvironment requestedEnv =
       ctkAppLauncherEnvironment::environment(requestedLevel);
 
-  CHECK_QSTRINGLIST(requestedEnv.toStringList(), expectedEnv.toStringList())
+  QCOMPARE_QSTRINGLIST(requestedEnv.toStringList(), expectedEnv.toStringList())
 }
 
 // ----------------------------------------------------------------------------

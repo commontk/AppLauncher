@@ -59,7 +59,9 @@ TEST_APPLAUNCHER_SETTINGS_DIR_FROM_USER_ADDITIONAL_SETTINGS=<APPLAUNCHER_SETTING
 
 # --------------------------------------------------------------------------
 # Configure explicit additional settings file
-set(additional_settings_path "${launcher}AdditionalLauncherSettings.ini")
+set(additional_settings_dir "${launcher_dir}/additionalsettings")
+file(MAKE_DIRECTORY "${additional_settings_dir}")
+set(additional_settings_path "${additional_settings_dir}/${launcher_name}AdditionalLauncherSettings.ini")
 file(WRITE ${additional_settings_path} "
 [EnvironmentVariables]
 TEST_APPLAUNCHER_DIR_FROM_ADDITIONAL_SETTINGS=<APPLAUNCHER_DIR>/cat-from-additional-settings
@@ -87,10 +89,10 @@ check_expected_string("${ov}" "TEST_APPLAUNCHER_DIR=${launcher_dir}/cat" "<APPLA
 check_expected_string("${ov}" "TEST_APPLAUNCHER_SETTINGS_DIR=${launcher_settings_dir}/bob" "<APPLAUNCHER_SETTINGS_DIR> placeholder")
 
 check_expected_string("${ov}" "TEST_APPLAUNCHER_DIR_FROM_USER_ADDITIONAL_SETTINGS=${launcher_dir}/cat-from-user-additional-settings" "<APPLAUNCHER_DIR> placeholder")
-check_expected_string("${ov}" "TEST_APPLAUNCHER_SETTINGS_DIR_FROM_USER_ADDITIONAL_SETTINGS=${launcher_settings_dir}/bob-from-user-additional-settings" "<APPLAUNCHER_SETTINGS_DIR> placeholder")
+check_expected_string("${ov}" "TEST_APPLAUNCHER_SETTINGS_DIR_FROM_USER_ADDITIONAL_SETTINGS=${user_additional_settings_dir}/bob-from-user-additional-settings" "<APPLAUNCHER_SETTINGS_DIR> placeholder")
 
 check_expected_string("${ov}" "TEST_APPLAUNCHER_DIR_FROM_ADDITIONAL_SETTINGS=${launcher_dir}/cat-from-additional-settings" "<APPLAUNCHER_DIR> placeholder")
-check_expected_string("${ov}" "TEST_APPLAUNCHER_SETTINGS_DIR_FROM_ADDITIONAL_SETTINGS=${launcher_settings_dir}/bob-from-additional-settings" "<APPLAUNCHER_SETTINGS_DIR> placeholder")
+check_expected_string("${ov}" "TEST_APPLAUNCHER_SETTINGS_DIR_FROM_ADDITIONAL_SETTINGS=${additional_settings_dir}/bob-from-additional-settings" "<APPLAUNCHER_SETTINGS_DIR> placeholder")
 
 # Clean
 file(REMOVE "${launcher_settings_dir}/${launcher_name}LauncherSettings.ini")

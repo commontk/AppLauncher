@@ -10,7 +10,17 @@ endif()
 
 find_package(CTKAppLauncherLib REQUIRED)
 
-add_executable(${PROJECT_NAME} main.cpp)
+set(APPLAUNCHER_ROOT_DIR "${AppWithLauncherLib_SOURCE_DIR}/../../..")
+set(CTKAppLauncherTestingHelper_SOURCE_DIR "${APPLAUNCHER_ROOT_DIR}/Base/Testing/Cpp/")
+
+add_executable(${PROJECT_NAME} main.cpp
+  ${CTKAppLauncherTestingHelper_SOURCE_DIR}/ctkAppLauncherTestingHelper.cpp
+  ${CTKAppLauncherTestingHelper_SOURCE_DIR}/ctkAppLauncherTestingHelper.h
+  ${CTKAppLauncherTestingHelper_SOURCE_DIR}/ctkAppLauncherTestingHelper.txx
+  )
+target_include_directories(${PROJECT_NAME} PUBLIC
+  ${CTKAppLauncherTestingHelper_SOURCE_DIR}
+  )
 target_link_libraries(${PROJECT_NAME} PUBLIC
   ${CTKAppLauncherLib_LIBRARIES}
   )

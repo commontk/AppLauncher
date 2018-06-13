@@ -40,11 +40,6 @@ function(applauncher_test_launcher_overwrite_settings_test_case
   user_additional_AdditionalLauncherNoSplashArguments
   cmdarg_additional_AdditionalLauncherNoSplashArguments
   expected_AdditionalLauncherNoSplashArguments
-
-  AdditionalSettingsFilePath
-  user_additional_AdditionalSettingsFilePath
-  cmdarg_additional_AdditionalSettingsFilePath
-  expected_AdditionalSettingsFilePath
   )
 
   foreach(setting
@@ -55,7 +50,6 @@ function(applauncher_test_launcher_overwrite_settings_test_case
     AdditionalLauncherHelpShortArgument
     AdditionalLauncherHelpLongArgument
     AdditionalLauncherNoSplashArguments
-    AdditionalSettingsFilePath
     )
 
     if(NOT ${setting} STREQUAL "NA")
@@ -89,7 +83,6 @@ ${UserAdditionalSettingsFileBaseName_set}
 ${AdditionalLauncherHelpShortArgument_set}
 ${AdditionalLauncherHelpLongArgument_set}
 ${AdditionalLauncherNoSplashArguments_set}
-${AdditionalSettingsFilePath_set}
 ${AdditionalSettingsExcludeGroups_set}
 
 [Application]
@@ -118,7 +111,6 @@ ${user_additional_UserAdditionalSettingsFileBaseName_set}
 ${user_additional_AdditionalLauncherHelpShortArgument_set}
 ${user_additional_AdditionalLauncherHelpLongArgument_set}
 ${user_additional_AdditionalLauncherNoSplashArguments_set}
-${user_additional_AdditionalSettingsFilePath_set}
 ")
 
   # Configure additional settings file
@@ -132,7 +124,6 @@ ${cmdarg_additional_UserAdditionalSettingsFileBaseName_set}
 ${cmdarg_additional_AdditionalLauncherHelpShortArgument_set}
 ${cmdarg_additional_AdditionalLauncherHelpLongArgument_set}
 ${cmdarg_additional_AdditionalLauncherNoSplashArguments_set}
-${cmdarg_additional_AdditionalSettingsFilePath_set}
 ")
 
   # Check if launcher works as expected
@@ -144,7 +135,6 @@ ${cmdarg_additional_AdditionalSettingsFilePath_set}
       AdditionalLauncherHelpShortArgument
       AdditionalLauncherHelpLongArgument
       AdditionalLauncherNoSplashArguments
-      AdditionalSettingsFilePath
       )
 
     extract_application_settings_value("${setting}" current_${setting} --launcher-additional-settings ${cmdarg_additional_settings_path})
@@ -179,7 +169,6 @@ applauncher_test_launcher_overwrite_settings_test_case(
   "-h1" "-h2" "-h3" "-h3" # AdditionalLauncherHelpShortArgument
   "--help1" "--help2" "--help3" "--help3" # AdditionalLauncherHelpLongArgument
   "--foo1,-b1" "--foo2,-b2" "--foo3,-b3" "--foo1,-b1,--foo2,-b2,--foo3,-b3" # AdditionalLauncherNoSplashArguments
-  "/home/path/setting1.ini" "/home/path/setting2.ini" "/home/path/setting3.ini" "/home/path/setting1.ini" # AdditionalSettingsFilePath
   )
 
 applauncher_test_launcher_overwrite_settings_test_case(
@@ -191,7 +180,6 @@ applauncher_test_launcher_overwrite_settings_test_case(
   "-h1" "-h2" "NA" "-h2" # AdditionalLauncherHelpShortArgument
   "--help1" "--help2" "NA" "--help2" # AdditionalLauncherHelpLongArgument
   "--foo1,-b1" "--foo2,-b2" "NA" "--foo1,-b1,--foo2,-b2" # AdditionalLauncherNoSplashArguments
-  "/home/path/setting1.ini" "/home/path/setting2.ini" "NA" "/home/path/setting1.ini" # AdditionalSettingsFilePath
   )
 
 applauncher_test_launcher_overwrite_settings_test_case(
@@ -203,7 +191,6 @@ applauncher_test_launcher_overwrite_settings_test_case(
   "-h1" "NA" "NA" "-h1" # AdditionalLauncherHelpShortArgument
   "--help1" "NA" "NA" "--help1" # AdditionalLauncherHelpLongArgument
   "--foo1,-b1" "NA" "NA" "--foo1,-b1" # AdditionalLauncherNoSplashArguments
-  "/home/path/setting1.ini" "NA" "NA" "/home/path/setting1.ini" # AdditionalSettingsFilePath
   )
 
 applauncher_test_launcher_overwrite_settings_test_case(
@@ -215,7 +202,6 @@ applauncher_test_launcher_overwrite_settings_test_case(
   "NA" "NA" "NA" "" # AdditionalLauncherHelpShortArgument
   "NA" "NA" "NA" "" # AdditionalLauncherHelpLongArgument
   "NA" "NA" "NA" "" # AdditionalLauncherNoSplashArguments
-  "NA" "NA" "NA" "" # AdditionalSettingsFilePath
   )
 
 #
@@ -233,7 +219,6 @@ applauncher_test_launcher_overwrite_settings_test_case(
   "-h1" "-h2" "-h3" "-h1" # AdditionalLauncherHelpShortArgument
   "--help1" "--help2" "--help3" "--help1" # AdditionalLauncherHelpLongArgument
   "--foo1,-b1" "--foo2,-b2" "--foo3,-b3" "--foo1,-b1" # AdditionalLauncherNoSplashArguments
-  "/home/path/setting1.ini" "/home/path/setting2.ini" "/home/path/setting3.ini" "/home/path/setting1.ini" # AdditionalSettingsFilePath
   )
 
 applauncher_test_launcher_overwrite_settings_test_case(
@@ -245,7 +230,6 @@ applauncher_test_launcher_overwrite_settings_test_case(
   "-h1" "-h2" "NA" "-h1" # AdditionalLauncherHelpShortArgument
   "--help1" "--help2" "NA" "--help1" # AdditionalLauncherHelpLongArgument
   "--foo1,-b1" "--foo2,-b2" "NA" "--foo1,-b1" # AdditionalLauncherNoSplashArguments
-  "/home/path/setting1.ini" "/home/path/setting2.ini" "NA" "/home/path/setting1.ini" # AdditionalSettingsFilePath
   )
 
 applauncher_test_launcher_overwrite_settings_test_case(
@@ -257,7 +241,6 @@ applauncher_test_launcher_overwrite_settings_test_case(
   "-h1" "NA" "NA" "-h1" # AdditionalLauncherHelpShortArgument
   "--help1" "NA" "NA" "--help1" # AdditionalLauncherHelpLongArgument
   "--foo1,-b1" "NA" "NA" "--foo1,-b1" # AdditionalLauncherNoSplashArguments
-  "/home/path/setting1.ini" "NA" "NA" "/home/path/setting1.ini" # AdditionalSettingsFilePath
   )
 
 applauncher_test_launcher_overwrite_settings_test_case(
@@ -269,5 +252,4 @@ applauncher_test_launcher_overwrite_settings_test_case(
   "NA" "NA" "NA" "" # AdditionalLauncherHelpShortArgument
   "NA" "NA" "NA" "" # AdditionalLauncherHelpLongArgument
   "NA" "NA" "NA" "" # AdditionalLauncherNoSplashArguments
-  "NA" "NA" "NA" "" # AdditionalSettingsFilePath
   )

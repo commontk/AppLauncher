@@ -51,6 +51,8 @@ public:
   bool processAdditionalSettings();
   bool processAdditionalSettingsArgument();
 
+  QString additionalSettingsDir() const;
+
   /// \sa ctkAppLauncherSettingsPrivate::findUserAdditionalSettings()
   bool processUserAdditionalSettings();
 
@@ -66,6 +68,18 @@ public:
   /// build prepend expressions to environment variables, like \c FOO=...:$FOO.
   static QString shellQuote(bool posix, QString text, const QString& trailing = QString());
 
+  /// \brief Update the current process environment.
+  ///
+  /// Environment variables to set are retrieved using ctkAppLauncherSettings::envVars()
+  /// and ctkAppLauncherSettings::pathsEnvVars().
+  ///
+  /// If the internal variable \c LoadEnvironment was set to value >=0, environment
+  /// values are restored using ctkAppLauncherEnvironment::environment(int requestedLevel).
+  ///
+  /// Otherwise, the environment is saved using ctkAppLauncherEnvironment::saveEnvironment(const QProcessEnvironment& systemEnvironment, const QStringList& variables, QProcessEnvironment& env)
+  ///
+  /// \sa ctkAppLauncherEnvironment::environment(int requestedLevel), ctkAppLauncherEnvironment::saveEnvironment(const QProcessEnvironment& systemEnvironment, const QStringList& variables, QProcessEnvironment& env)
+  /// \sa ctkAppLauncherSettings::envVars(), ctkAppLauncherSettings::pathsEnvVars()
   void buildEnvironment(QProcessEnvironment&);
 
   QString invalidSettingsMessage()const;
@@ -115,8 +129,8 @@ public:
   QString                         DefaultApplicationToLaunchArguments;
 //  QString                         LauncherName;
 //  QString                         LauncherDir;
-  QString                         AdditionalSettingsFilePath;
-  QStringList                     AdditionalSettingsExcludeGroups;
+//  QString                         AdditionalSettingsFilePath;
+//  QStringList                     AdditionalSettingsExcludeGroups;
   QStringList                     LauncherSettingSubDirs;
   bool                            ValidSettingsFile;
 //  QString                         OrganizationName;
