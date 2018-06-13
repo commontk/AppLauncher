@@ -508,7 +508,10 @@ QString ctkAppLauncherSettings::additionalSettingsFilePath() const
 void ctkAppLauncherSettings::setAdditionalSettingsFilePath(const QString& filePath)
 {
   Q_D(ctkAppLauncherSettings);
-  d->LauncherSettingsDirs[ctkAppLauncherSettingsPrivate::AdditionalSettings] = QFileInfo(filePath).absolutePath();
+  if (!filePath.isEmpty())
+    {
+    d->LauncherSettingsDirs[ctkAppLauncherSettingsPrivate::AdditionalSettings] = QFileInfo(filePath).absolutePath();
+    }
   d->AdditionalSettingsFilePath = filePath;
 }
 
