@@ -17,7 +17,7 @@ set(PRINT_COMMAND 0)
 
 # --------------------------------------------------------------------------
 foreach(filename IN ITEMS
-    settings.ini
+    settings-for-read-array-values-test.ini
     launcher-settings.ini
     launcher-user-additional-settings.ini
     )
