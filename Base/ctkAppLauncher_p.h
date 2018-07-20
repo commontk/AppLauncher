@@ -21,6 +21,16 @@
 class QCoreApplication;
 
 // --------------------------------------------------------------------------
+class ctkInteractiveProcess : public QProcess
+{
+  static int StdinClone;
+public:
+  ctkInteractiveProcess(QObject *parent = 0);
+protected:
+  virtual void setupChildProcess();
+};
+
+// --------------------------------------------------------------------------
 class ctkAppLauncherPrivate : public ctkAppLauncherSettingsPrivate
 {
   Q_OBJECT
@@ -117,7 +127,7 @@ public:
   /// Variable used internally
   bool                            LauncherStarting;
   QStringList                     Arguments;
-  QProcess                        Process;
+  ctkInteractiveProcess           Process;
   ctkCommandLineParser            Parser;
   QString                         ShortArgPrefix;
   QString                         LongArgPrefix;
