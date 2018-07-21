@@ -42,6 +42,14 @@ function(applauncher_test_launcher_overwrite_settings_test_case
   expected_AdditionalLauncherNoSplashArguments
   )
 
+  set(key_LauncherNoSplashScreen "launcherNoSplashScreen")
+  set(key_LauncherSplashScreenHideDelayMs "launcherSplashScreenHideDelayMs")
+  set(key_LauncherSplashImagePath "launcherSplashImagePath")
+  set(key_UserAdditionalSettingsFileBaseName "userAdditionalSettingsFileBaseName")
+  set(key_AdditionalLauncherHelpShortArgument "additionalLauncherHelpShortArgument")
+  set(key_AdditionalLauncherHelpLongArgument "additionalLauncherHelpLongArgument")
+  set(key_AdditionalLauncherNoSplashArguments "additionalLauncherNoSplashArguments")
+
   foreach(setting
     LauncherNoSplashScreen
     LauncherSplashScreenHideDelayMs
@@ -53,13 +61,13 @@ function(applauncher_test_launcher_overwrite_settings_test_case
     )
 
     if(NOT ${setting} STREQUAL "NA")
-      set(${setting}_set "${setting}=${${setting}}")
+      set(${setting}_set "${key_${setting}}=${${setting}}")
     endif()
     if(NOT cmdarg_additional_${setting} STREQUAL "NA")
-      set(cmdarg_additional_${setting}_set "${setting}=${cmdarg_additional_${setting}}")
+      set(cmdarg_additional_${setting}_set "${key_${setting}}=${cmdarg_additional_${setting}}")
     endif()
     if(NOT user_additional_${setting} STREQUAL "NA")
-      set(user_additional_${setting}_set "${setting}=${user_additional_${setting}}")
+      set(user_additional_${setting}_set "${key_${setting}}=${user_additional_${setting}}")
     endif()
 
   endforeach()

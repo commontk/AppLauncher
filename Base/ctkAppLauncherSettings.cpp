@@ -153,7 +153,7 @@ bool ctkAppLauncherSettingsPrivate::checkSettings(const QString& fileName, int s
   this->ReadSettingsError = QString();
 
   // Check if settings file exists
-  if (!QFile::exists(fileName))
+  if (fileName.isEmpty() || !QFile::exists(fileName))
     {
     return false;
     }
