@@ -71,9 +71,6 @@ int appLauncherMain(int argc, char** argv)
 
   QString executableName = argv[0];
 #if defined Q_OS_WIN32
-
-  std::cout << executableName.toLatin1().constData() << std::endl;
-
   // Specifying .exe file extension is optional on Windows (executableName can be
   // "CTKAppLauncher.exe" or just "CTKAppLauncher"). Make sure here that executable
   // path includes file extension so that the file can be found.

@@ -198,6 +198,9 @@ if(UNIX)
   applauncher_add_test(AppLauncher-TestSymbolicLink)
   applauncher_add_test(AppLauncher-TestSymbolicLinkInPATH)
 endif()
+if (WIN32)
+  applauncher_add_test(AppLauncher-TestWithoutExeExtension)
+endif()
 
 #-----------------------------------------------------------------------------
 set(TEST_LABELS "CompilerRequired")
