@@ -647,6 +647,7 @@ bool ctkAppLauncherPrivate::readSettings(const QString& fileName, int settingsTy
 void ctkAppLauncherPrivate::runProcess()
 {
   this->Process.setProcessChannelMode(QProcess::ForwardedChannels);
+  this->Process.setInputChannelMode(QProcess::ForwardedInputChannel);
 
   QProcessEnvironment env = this->SystemEnvironment;
 
