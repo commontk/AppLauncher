@@ -69,7 +69,21 @@ int appLauncherMain(int argc, char** argv)
 #endif
         );
 
-  QFileInfo launcherFile(QDir::current(), QString(argv[0]));
+  QString executableName = argv[0];
+#if defined Q_OS_WIN32
+
+  std::cout << executableName.toLatin1().constData() << std::endl;
+
+  // Specifying .exe file extension is optional on Windows (executableName can be
+  // "CTKAppLauncher.exe" or just "CTKAppLauncher"). Make sure here that executable
+  // path includes file extension so that the file can be found.
+  if (!executableName.toLower().endsWith(".exe"))
+    {
+    executableName.append(".exe");
+    }
+#endif
+
+  QFileInfo launcherFile(QDir::current(), executableName);
   // Initialize resources in static libs
   Q_INIT_RESOURCE(CTKAppLauncherBase);
 
