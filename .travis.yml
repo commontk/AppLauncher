@@ -60,7 +60,7 @@ script:
 
 deploy:
   - provider: script
-    script: ci_addons publish_github_release commontk/applauncher --prerelease-packages CTKAppLauncher-*.tar.gz --prerelease-packages-clear-pattern "*macosx*" --prerelease-packages-keep-pattern "*<COMMIT_SHORT_SHA>*" --release-packages CTKAppLauncher-*.tar.gz
+    script: cd /Users/travis/build/commontk/AppLauncher && ci_addons publish_github_release commontk/applauncher --prerelease-packages build/CTKAppLauncher-*.tar.gz --prerelease-packages-clear-pattern "*macosx*" --prerelease-packages-keep-pattern "*<COMMIT_SHORT_SHA>*" --release-packages build/CTKAppLauncher-*.tar.gz
     skip_cleanup: true
     on:
       repo: commontk/AppLauncher
