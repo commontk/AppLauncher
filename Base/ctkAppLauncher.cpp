@@ -21,6 +21,41 @@
 // STD includes
 #include <iostream>
 #include <cstdlib>
+#ifdef Q_OS_WIN32
+# include <io.h>     // For _dup and _dup2
+#else
+# include <unistd.h> // For dup and dup2
+#endif
+
+// --------------------------------------------------------------------------
+// ctkInteractiveProcess
+
+// --------------------------------------------------------------------------
+int ctkInteractiveProcess::StdinClone = -1;
+
+// --------------------------------------------------------------------------
+ctkInteractiveProcess::ctkInteractiveProcess(QObject *parent)
+  : QProcess(parent)
+{
+  if (StdinClone == -1)
+  {
+#ifdef Q_OS_WIN32
+    StdinClone = ::_dup(fileno(stdin));
+#else
+    StdinClone = ::dup(fileno(stdin));
+#endif
+  }
+}
+
+// --------------------------------------------------------------------------
+void ctkInteractiveProcess::setupChildProcess()
+{
+#ifdef Q_OS_WIN32
+  ::_dup2(StdinClone, fileno(stdin));
+#else
+  ::dup2(StdinClone, fileno(stdin));
+#endif
+}
 
 // --------------------------------------------------------------------------
 // ctkAppLauncherPrivate methods
@@ -612,6 +647,10 @@ bool ctkAppLauncherPrivate::readSettings(const QString& fileName, int settingsTy
 void ctkAppLauncherPrivate::runProcess()
 {
   this->Process.setProcessChannelMode(QProcess::ForwardedChannels);
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 2, 0))
+  // This is required for forwarding standard input on Windows
+  this->Process.setInputChannelMode(QProcess::ForwardedInputChannel);
+#endif
 
   QProcessEnvironment env = this->SystemEnvironment;
 
