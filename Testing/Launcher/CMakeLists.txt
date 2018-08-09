@@ -208,21 +208,21 @@ set(TEST_LABELS "CompilerRequired")
 
 #-----------------------------------------------------------------------------
 set(TEST_SUFFIX "-Deprecated")
-applauncher_add_test(App4ConfigureLauncherTest-ConfigureStep -DWITH_CONFIG_FILE:BOOL=0 -DSCRIPT_MODE=Configure -DTEST_FUNCTION:STRING=Deprecated)
+applauncher_add_test(App4ConfigureLauncherTest-ConfigureStep -DWITH_CONFIG_FILE:BOOL=0 -DSCRIPT_MODE=Configure -DTEST_FUNCTION:STRING=Deprecated -DTEST_GENERATOR:STRING=DefaultGenerator)
 applauncher_add_test(App4ConfigureLauncherTest-BuildStep ${test_options})
 set_property(TEST "${testname}" APPEND PROPERTY DEPENDS "${previous_testname}")
 set(TEST_SUFFIX "")
 
 #-----------------------------------------------------------------------------
 set(TEST_SUFFIX "-WithConfigFile-Deprecated")
-applauncher_add_test(App4ConfigureLauncherTest-ConfigureStep -DWITH_CONFIG_FILE:BOOL=1 -DSCRIPT_MODE=Configure -DTEST_FUNCTION:STRING=Deprecated)
+applauncher_add_test(App4ConfigureLauncherTest-ConfigureStep -DWITH_CONFIG_FILE:BOOL=1 -DSCRIPT_MODE=Configure -DTEST_FUNCTION:STRING=Deprecated -DTEST_GENERATOR:STRING=DefaultGenerator)
 applauncher_add_test(App4ConfigureLauncherTest-BuildStep ${test_options})
 set_property(TEST "${testname}" APPEND PROPERTY DEPENDS "${previous_testname}")
 set(TEST_SUFFIX "")
 
 #-----------------------------------------------------------------------------
 set(TEST_SUFFIX "-WithConfigFile-ForTarget")
-applauncher_add_test(App4ConfigureLauncherTest-ConfigureStep -DWITH_CONFIG_FILE:BOOL=1 -DSCRIPT_MODE=Configure -DTEST_FUNCTION:STRING=ForTarget)
+applauncher_add_test(App4ConfigureLauncherTest-ConfigureStep -DWITH_CONFIG_FILE:BOOL=1 -DSCRIPT_MODE=Configure -DTEST_FUNCTION:STRING=ForTarget -DTEST_GENERATOR:STRING=DefaultGenerator)
 applauncher_add_test(App4ConfigureLauncherTest-BuildStep ${test_options})
 set_property(TEST "${testname}" APPEND PROPERTY DEPENDS "${previous_testname}")
 
@@ -233,8 +233,23 @@ set_property(TEST "${testname}" APPEND PROPERTY DEPENDS "${previous_testname}")
 set(TEST_SUFFIX "")
 
 #-----------------------------------------------------------------------------
+find_program(NINJA_EXECUTABLE ninja)
+if(UNIX AND NINJA_EXECUTABLE AND CMAKE_GENERATOR MATCHES "Ninja|Unix Makefiles")
+  set(TEST_SUFFIX "-ConfigureMode-WithConfigFile-ForTarget-NinjaGenerator")
+  applauncher_add_test(App4ConfigureLauncherTest-ConfigureStep -DWITH_CONFIG_FILE:BOOL=1 -DSCRIPT_MODE=Configure -DTEST_FUNCTION:STRING=ForTarget -DTEST_GENERATOR:STRING=NinjaGenerator)
+  applauncher_add_test(App4ConfigureLauncherTest-BuildStep ${test_options})
+  set_property(TEST "${testname}" APPEND PROPERTY DEPENDS "${previous_testname}")
+
+  applauncher_add_test(ConfiguredAppLauncher-ConfigurationContents ${test_options})
+  set_property(TEST ${testname} APPEND PROPERTY DEPENDS ${previous_testname})
+  applauncher_add_test(ConfiguredAppLauncher-LauncherExecutable ${test_options})
+  set_property(TEST "${testname}" APPEND PROPERTY DEPENDS "${previous_testname}")
+  set(TEST_SUFFIX "")
+endif()
+
+#-----------------------------------------------------------------------------
 set(TEST_SUFFIX "-ConfigureMode-WithConfigFile-ForExecutable")
-applauncher_add_test(App4ConfigureLauncherTest-ConfigureStep -DWITH_CONFIG_FILE:BOOL=1 -DSCRIPT_MODE=Configure -DTEST_FUNCTION:STRING=ForExecutable)
+applauncher_add_test(App4ConfigureLauncherTest-ConfigureStep -DWITH_CONFIG_FILE:BOOL=1 -DSCRIPT_MODE=Configure -DTEST_FUNCTION:STRING=ForExecutable -DTEST_GENERATOR:STRING=DefaultGenerator)
 applauncher_add_test(App4ConfigureLauncherTest-BuildStep ${test_options})
 set_property(TEST "${testname}" APPEND PROPERTY DEPENDS "${previous_testname}")
 
@@ -246,7 +261,7 @@ set(TEST_SUFFIX "")
 
 #-----------------------------------------------------------------------------
 set(TEST_SUFFIX "-ScriptMode-WithConfigFile-ForExecutable")
-applauncher_add_test(App4ConfigureLauncherTest-ConfigureStep -DWITH_CONFIG_FILE:BOOL=1 -DSCRIPT_MODE=Script -DTEST_FUNCTION:STRING=ForExecutable)
+applauncher_add_test(App4ConfigureLauncherTest-ConfigureStep -DWITH_CONFIG_FILE:BOOL=1 -DSCRIPT_MODE=Script -DTEST_FUNCTION:STRING=ForExecutable -DTEST_GENERATOR:STRING=DefaultGenerator)
 applauncher_add_test(App4ConfigureLauncherTest-BuildStep ${test_options})
 set_property(TEST "${testname}" APPEND PROPERTY DEPENDS "${previous_testname}")
 

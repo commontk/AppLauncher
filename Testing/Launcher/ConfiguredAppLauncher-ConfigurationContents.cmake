@@ -26,13 +26,16 @@ endfunction()
 
 # --------------------------------------------------------------------------
 # Check the generated launcher configurations against the expected content.
+
+set(app_name "App4ConfigureLauncherTest")
+
 compare_files(
-  ${app4configurelaunchertest_binary_dir}/CTKAppLauncher-App4ConfigureLauncherTest-real-build-settings.cmake
+  ${app4configurelaunchertest_binary_dir}/CTKAppLauncher-${app_name}-build-settings.cmake
   ${TEST_SOURCE_DIR}/App4ConfigureLauncherTest-expected-build-settings.cmake.in
   )
 
 compare_files(
-  ${app4configurelaunchertest_binary_dir}/CTKAppLauncher-App4ConfigureLauncherTest-real-install-settings.cmake
+  ${app4configurelaunchertest_binary_dir}/CTKAppLauncher-${app_name}-install-settings.cmake
   ${TEST_SOURCE_DIR}/App4ConfigureLauncherTest-expected-install-settings.cmake.in
   )
 
