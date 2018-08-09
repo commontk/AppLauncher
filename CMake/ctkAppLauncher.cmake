@@ -635,31 +635,45 @@ function(ctk_applauncher_configure)
 
   if(NOT DEFINED CMAKE_SCRIPT_MODE_FILE)
 
-    # Create command to copy the launcher and generate its configuration files
-    add_custom_command(
-      DEPENDS ${commands_depends}
-      OUTPUT
-        ${configured_launcher_executable}
-        ${configured_launcher_settings}
-        ${configured_launcher_settings_to_install}
-      COMMAND ${copy_command}
-      COMMAND ${configure_command}
-      WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-      COMMENT ${comment}
-      )
-
     set(all ALL)
     if(CTKAPPLAUNCHER_EXCLUDE_FROM_ALL)
       set(all)
     endif()
 
-    # Create target for launcher
-    add_custom_target(${CTKAPPLAUNCHER_APPLICATION_NAME}ConfigureLauncher ${all}
-      DEPENDS
-        ${configured_launcher_executable}
-        ${configured_launcher_settings}
-        ${configured_launcher_settings_to_install}
-      )
+    if(CMAKE_VERSION VERSION_LESS "3.13" AND CMAKE_GENERATOR MATCHES "Ninja")
+      # Create target for launcher, and add command to copy the launcher and
+      # generate its configuration files
+      # See https://gitlab.kitware.com/cmake/cmake/merge_requests/2276
+      # and https://issues.slicer.org/view.php?id=4595
+      add_custom_target(${CTKAPPLAUNCHER_APPLICATION_NAME}ConfigureLauncher ${all}
+        DEPENDS ${commands_depends}
+        COMMAND ${copy_command}
+        COMMAND ${configure_command}
+        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+        COMMENT ${comment}
+        )
+    else()
+      # Create command to copy the launcher and generate its configuration files
+      add_custom_command(
+        DEPENDS ${commands_depends}
+        OUTPUT
+          ${configured_launcher_executable}
+          ${configured_launcher_settings}
+          ${configured_launcher_settings_to_install}
+        COMMAND ${copy_command}
+        COMMAND ${configure_command}
+        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+        COMMENT ${comment}
+        )
+
+      # Create target for launcher
+      add_custom_target(${CTKAPPLAUNCHER_APPLICATION_NAME}ConfigureLauncher ${all}
+        DEPENDS
+          ${configured_launcher_executable}
+          ${configured_launcher_settings}
+          ${configured_launcher_settings_to_install}
+        )
+    endif()
   else()
 
     execute_process(

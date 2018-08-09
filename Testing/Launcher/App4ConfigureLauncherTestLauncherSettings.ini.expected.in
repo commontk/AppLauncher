@@ -11,7 +11,7 @@ additionalSettingsFilePath=@ctkapplauncher_dir@/additional-settings-build.ini
 additionalSettingsExcludeGroups=General,Application
 
 [Application]
-path=<APPLAUNCHER_DIR>/bin/@launcher_build_subdir@/App4ConfigureLauncherTest-real@CMAKE_EXECUTABLE_SUFFIX@
+path=<APPLAUNCHER_DIR>/bin/@launcher_build_subdir@/App4ConfigureLauncherTest@CMAKE_EXECUTABLE_SUFFIX@
 arguments=--foo bar
 name=App4ConfigureLauncherTest
 revision=0.1

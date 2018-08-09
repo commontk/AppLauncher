@@ -14,6 +14,7 @@ add_executable(${PROJECT_NAME}-real Main.cpp)
 set_target_properties(${PROJECT_NAME}-real PROPERTIES
   SKIP_BUILD_RPATH ON
   RUNTIME_OUTPUT_DIRECTORY ${${PROJECT_NAME}_BINARY_DIR}/bin
+  OUTPUT_NAME ${PROJECT_NAME}
   )
 
 set(TEST_PYTHONPATH_BUILD "<APPLAUNCHER_DIR>/build/lib/python/site-packages")
@@ -81,7 +82,7 @@ if(WITH_CONFIG_FILE)
   elseif(TEST_FUNCTION STREQUAL "ForExecutable")
     ctkAppLauncherConfigureForExecutable(
       APPLICATION_NAME ${PROJECT_NAME}
-      APPLICATION_EXECUTABLE ${${PROJECT_NAME}_BINARY_DIR}/bin/${PROJECT_NAME}-real${CMAKE_EXECUTABLE_SUFFIX}
+      APPLICATION_EXECUTABLE ${${PROJECT_NAME}_BINARY_DIR}/bin/${PROJECT_NAME}${CMAKE_EXECUTABLE_SUFFIX}
       ${arguments}
       )
   elseif(TEST_FUNCTION STREQUAL "Deprecated")
