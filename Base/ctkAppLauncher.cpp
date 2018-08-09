@@ -647,6 +647,10 @@ bool ctkAppLauncherPrivate::readSettings(const QString& fileName, int settingsTy
 void ctkAppLauncherPrivate::runProcess()
 {
   this->Process.setProcessChannelMode(QProcess::ForwardedChannels);
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 2, 0))
+  // This is required for forwarding standard input on Windows
+  this->Process.setInputChannelMode(QProcess::ForwardedInputChannel);
+#endif
 
   QProcessEnvironment env = this->SystemEnvironment;
 
