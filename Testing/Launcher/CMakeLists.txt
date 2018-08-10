@@ -52,17 +52,6 @@ configure_file(
   )
 
 #
-# Get Qt library directory
-#
-if(CTKAppLauncher_QT_VERSION VERSION_GREATER "4")
-  get_target_property(_imported_location "Qt5::Core" IMPORTED_LOCATION_RELEASE)
-  get_filename_component(QT_LIBRARY_DIR ${_imported_location} DIRECTORY)
-  if(WIN32)
-    set(QT_LIBRARY_DIR "${QT_LIBRARY_DIR}/../bin")
-  endif()
-endif()
-
-#
 # Helper function
 #
 function(applauncher_add_test name)

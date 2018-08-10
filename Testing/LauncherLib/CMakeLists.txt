@@ -30,6 +30,9 @@ function(applauncher_add_test testname)
   # Set labels
   set_property(TEST ${testname} PROPERTY LABELS "ctkAppLauncher" "CompilerRequired")
 
+  # Environment
+  set_property(TEST ${testname} PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${QT_LIBRARY_DIR}")
+
   set(testname ${testname} PARENT_SCOPE)
 endfunction()
 

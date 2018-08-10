@@ -12,6 +12,17 @@ applauncher_add_cmakescript_test(ctkAppLauncherListToQtSettingsArrayTest ctkAppL
 applauncher_add_cmakescript_test(ctkAppLauncherAppendExtraAppToLaunchToListTest ctkAppLauncher)
 applauncher_add_cmakescript_test(ctkAppLauncherExtraAppToLaunchListToQtSettingsTest ctkAppLauncher)
 
+# Get Qt library directory
+if(CTKAppLauncher_QT_VERSION VERSION_GREATER "4")
+  get_target_property(_imported_location "Qt5::Core" IMPORTED_LOCATION_RELEASE)
+  get_filename_component(QT_LIBRARY_DIR ${_imported_location} DIRECTORY)
+  if(WIN32)
+    set(QT_LIBRARY_DIR "${QT_LIBRARY_DIR}/../bin")
+  endif()
+else()
+  # QT_LIBRARY_DIR is already set by FindQt4.cmake
+endif()
+
 # Run tests against a build tree of CTKAppLauncher
 set(TEST_TREE_TYPE "BuildTree")
 set(LAUNCHER_BUILD_DIR ${CTKAppLauncher_BINARY_DIR})
