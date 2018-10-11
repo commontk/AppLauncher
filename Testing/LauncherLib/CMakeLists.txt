@@ -69,6 +69,11 @@ if(CTKAppLauncher_QT_VERSION VERSION_GREATER "4")
   list(APPEND test_args
     -DQt5_DIR:PATH=${Qt5_DIR}
     )
+  if(TEST_TREE_TYPE STREQUAL "InstallTree" AND CTKAppLauncher_QT_STATIC_LIBRARIES)
+    list(APPEND test_args
+      -DCTKAppLauncher_QT_STATIC_LIBRARIES:STRING=${CTKAppLauncher_QT_STATIC_LIBRARIES}
+      )
+  endif()
 else()
   list(APPEND test_args
     -DQT_QMAKE_EXECUTABLE:FILEPATH=${QT_QMAKE_EXECUTABLE}

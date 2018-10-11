@@ -375,6 +375,9 @@ set(CTKAppLauncherLib_QT_VERSION_CONFIG "${CTKAppLauncher_QT_VERSION}")
 include(CMakePackageConfigHelpers)
 set(CMAKE_DIR_CONFIG ${PROJECT_BINARY_DIR}/${CTK_INSTALL_CMAKE_DIR})
 set(CONFIG_DIR_CONFIG ${PROJECT_BINARY_DIR})
+set(CTKAppLauncher_CONFIG_CODE "####### Expanded from \@CTKAppLauncher_CONFIG_CODE\@ #######\n")
+set(CTKAppLauncher_CONFIG_CODE "${CTKAppLauncher_CONFIG_CODE}set(CTKAppLauncher_QT_STATIC_LIBRARIES \"${CTKAppLauncher_QT_STATIC_LIBRARIES}\")\n")
+set(CTKAppLauncher_CONFIG_CODE "${CTKAppLauncher_CONFIG_CODE}##################################################")
 set(launcherlib_config ${PROJECT_BINARY_DIR}/CTKAppLauncherLibConfig.cmake)
 configure_package_config_file(
     CMake/CTKAppLauncherLibConfig.cmake.in
@@ -387,6 +390,7 @@ configure_package_config_file(
 # Configure 'CTKAppLauncherLibConfig.cmake' for a install tree
 set(CMAKE_DIR_CONFIG ${CTK_INSTALL_CMAKE_DIR})
 set(CONFIG_DIR_CONFIG ${CTK_INSTALL_CONFIG_DIR})
+set(CTKAppLauncher_CONFIG_CODE "")
 set(launcherlib_install_config ${PROJECT_BINARY_DIR}/CMakeFiles/CTKAppLauncherLibConfig.cmake)
 configure_package_config_file(
     CMake/CTKAppLauncherLibConfig.cmake.in

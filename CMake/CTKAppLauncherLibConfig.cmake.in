@@ -11,6 +11,12 @@ endif()
 
 set(CTKAppLauncherLib_LIBRARIES "@CTKAppLauncherLib_TARGETS@")
 
+@CTKAppLauncher_CONFIG_CODE@
+
+if(CTKAppLauncher_QT_STATIC_LIBRARIES)
+  list(APPEND CTKAppLauncherLib_LIBRARIES ${CTKAppLauncher_QT_STATIC_LIBRARIES})
+endif()
+
 # Set expected list of Qt components
 set(CTKAppLauncherLib_QT_VERSION "@CTKAppLauncherLib_QT_VERSION_CONFIG@")
 if(CTKAppLauncherLib_QT_VERSION VERSION_GREATER "4")
