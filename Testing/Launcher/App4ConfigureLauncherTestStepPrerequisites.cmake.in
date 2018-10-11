@@ -14,10 +14,14 @@ set(APP4CONFIGURELAUNCHERTEST_ROOT_BINARY_DIR "@APP4CONFIGURELAUNCHERTEST_ROOT_B
 
 set(app4configurelaunchertest_source_dir "@APP4CONFIGURELAUNCHERTEST_SOURCE_DIR@")
 if(WITH_CONFIG_FILE)
-  set(app4configurelaunchertest_binary_dir "${APP4CONFIGURELAUNCHERTEST_ROOT_BINARY_DIR}/App4ConfigureLauncherTestWithConfigFile${SCRIPT_MODE}${TEST_FUNCTION}${TEST_GENERATOR}-build")
+  set(dirname "App4ConfigureLauncherTestWithConfigFile${SCRIPT_MODE}${TEST_FUNCTION}${TEST_GENERATOR}")
 else()
-  set(app4configurelaunchertest_binary_dir "${APP4CONFIGURELAUNCHERTEST_ROOT_BINARY_DIR}/App4ConfigureLauncherTest${SCRIPT_MODE}${TEST_FUNCTION}${TEST_GENERATOR}-build")
+  set(dirname "App4ConfigureLauncherTest${SCRIPT_MODE}${TEST_FUNCTION}${TEST_GENERATOR}")
 endif()
+string(SHA256 dirname_hashed ${dirname})
+string(SUBSTRING ${dirname_hashed} 0 7 dirname_hashed)
+file(WRITE "${APP4CONFIGURELAUNCHERTEST_ROOT_BINARY_DIR}/${dirname_hashed}-build - ${dirname}.txt" "")
+set(app4configurelaunchertest_binary_dir "${APP4CONFIGURELAUNCHERTEST_ROOT_BINARY_DIR}/${dirname_hashed}-build")
 set(app4configurelaunchertest_build_type "@APP4CONFIGURELAUNCHERTEST_BUILD_TYPE@")
 
 if(TEST_GENERATOR STREQUAL "NinjaGenerator")
