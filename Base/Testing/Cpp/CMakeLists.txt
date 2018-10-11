@@ -1,5 +1,12 @@
 set(KIT ${PROJECT_NAME})
 
+if(CTKAppLauncher_QT_VERSION VERSION_GREATER "4" AND WIN32)
+  set(CMAKE_TESTDRIVER_EXTRA_INCLUDES "${CMAKE_TESTDRIVER_EXTRA_INCLUDES}
+  #include <QtPlugin>
+  Q_IMPORT_PLUGIN(QWindowsIntegrationPlugin)
+  ")
+endif()
+
 add_library(CTKAppLauncherTestingHelper STATIC
   ctkAppLauncherTestingHelper.cpp
   ctkAppLauncherTestingHelper.h
@@ -49,7 +56,7 @@ if(CTKAppLauncher_QT_VERSION VERSION_GREATER "4")
 else()
   list(APPEND ${KIT}CppTests_TARGET_LIBRARIES Qt4::QtTest)
 endif()
-target_link_libraries(${KIT}CppTests PUBLIC ${${KIT}CppTests_TARGET_LIBRARIES})
+target_link_libraries(${KIT}CppTests PUBLIC ${${KIT}CppTests_TARGET_LIBRARIES} ${QT_LIBRARIES})
 
 if(QT_MAC_USE_COCOA)
   target_link_libraries(${KIT}CppTests PRIVATE "-framework cocoa -framework IOKit")

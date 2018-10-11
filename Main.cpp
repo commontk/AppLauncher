@@ -6,6 +6,7 @@
 #include <QFileInfo>
 #include <QStringList>
 #include <QTimer>
+#include <QtPlugin>
 
 // CTK includes
 #include "ctkAppArguments.h"
@@ -105,6 +106,10 @@ int appLauncherMain(int argc, char** argv)
     }
   else
     {
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0) && defined Q_OS_WIN32)
+    // Initialize platform plugin in static build
+    Q_IMPORT_PLUGIN(QWindowsIntegrationPlugin)
+#endif
     app.reset(new QApplication(
                 appArguments.argumentCount(ctkAppArguments::ARG_REGULAR_LIST),
                 appArguments.argumentValues(ctkAppArguments::ARG_REGULAR_LIST)));

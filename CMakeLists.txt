@@ -265,7 +265,8 @@ if(CTKAppLauncher_QT_VERSION VERSION_GREATER "4")
     list(APPEND CTKAppLauncher_QT5_COMPONENTS Test)
   endif()
   find_package(Qt5 COMPONENTS ${CTKAppLauncher_QT5_COMPONENTS} REQUIRED)
-  set(QT_LIBRARIES Qt5::Widgets)
+  set(QT_LIBRARIES Qt5::Widgets ${CTKAppLauncher_QT_STATIC_LIBRARIES})
+
 else()
   set(QT_USE_IMPORTED_TARGETS 1)
   find_package(Qt4 4.6 REQUIRED)
@@ -374,6 +375,9 @@ set(CTKAppLauncherLib_QT_VERSION_CONFIG "${CTKAppLauncher_QT_VERSION}")
 include(CMakePackageConfigHelpers)
 set(CMAKE_DIR_CONFIG ${PROJECT_BINARY_DIR}/${CTK_INSTALL_CMAKE_DIR})
 set(CONFIG_DIR_CONFIG ${PROJECT_BINARY_DIR})
+set(CTKAppLauncher_CONFIG_CODE "####### Expanded from \@CTKAppLauncher_CONFIG_CODE\@ #######\n")
+set(CTKAppLauncher_CONFIG_CODE "${CTKAppLauncher_CONFIG_CODE}set(CTKAppLauncher_QT_STATIC_LIBRARIES \"${CTKAppLauncher_QT_STATIC_LIBRARIES}\")\n")
+set(CTKAppLauncher_CONFIG_CODE "${CTKAppLauncher_CONFIG_CODE}##################################################")
 set(launcherlib_config ${PROJECT_BINARY_DIR}/CTKAppLauncherLibConfig.cmake)
 configure_package_config_file(
     CMake/CTKAppLauncherLibConfig.cmake.in
@@ -386,6 +390,7 @@ configure_package_config_file(
 # Configure 'CTKAppLauncherLibConfig.cmake' for a install tree
 set(CMAKE_DIR_CONFIG ${CTK_INSTALL_CMAKE_DIR})
 set(CONFIG_DIR_CONFIG ${CTK_INSTALL_CONFIG_DIR})
+set(CTKAppLauncher_CONFIG_CODE "")
 set(launcherlib_install_config ${PROJECT_BINARY_DIR}/CMakeFiles/CTKAppLauncherLibConfig.cmake)
 configure_package_config_file(
     CMake/CTKAppLauncherLibConfig.cmake.in
