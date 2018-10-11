@@ -52,11 +52,11 @@ set(qt_static_libraries
   # C++ runtime - See https://msdn.microsoft.com/en-us/library/abx4dbyh.aspx#Anchor_1
   LIBCPMT.lib
   )
-set(CMAKE_CXX_FLAGS "/MT /O2 /Ob2 /DNDEBUG")
+set(CMAKE_CXX_FLAGS_RELEASE "/MT /O2 /Ob2 /DNDEBUG")
 set(INITIAL_CACHE "
 ADDITIONAL_EXE_LINKER_FLAGS_RELEASE:STRING=/nodefaultlib
 BUILD_TESTING:BOOL=1
-CMAKE_CXX_FLAGS_RELEASE:STRING=${CMAKE_CXX_FLAGS}
+CMAKE_CXX_FLAGS_RELEASE:STRING=${CMAKE_CXX_FLAGS_RELEASE}
 CTKAppLauncher_QT_STATIC_LIBRARIES:STRING=${qt_static_libraries}
 Qt5_DIR:PATH=${Qt5_DIR}"
 )
