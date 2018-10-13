@@ -414,6 +414,7 @@ function(ctkAppLauncherConfigureForExecutable)
     APPLICATION_INSTALL_EXECUTABLE_NAME ${CTKAPPLAUNCHER_APPLICATION_INSTALL_EXECUTABLE_NAME}
     APPLICATION_BUILD_SUBDIR ${CTKAPPLAUNCHER_APPLICATION_BUILD_SUBDIR}
     DESTINATION_DIR ${CTKAPPLAUNCHER_DESTINATION_DIR}
+    IGNORE_CFG_INTDIR
     ${CTKAPPLAUNCHER_UNPARSED_ARGUMENTS}
     )
 
@@ -434,6 +435,7 @@ function(ctk_applauncher_configure)
     VERBOSE_CONFIG
     SPLASHSCREEN_DISABLED
     EXCLUDE_FROM_ALL
+    IGNORE_CFG_INTDIR
     )
   set(oneValueArgs
     LAUNCHER_LOAD_ENVIRONMENT
@@ -613,6 +615,11 @@ function(ctk_applauncher_configure)
   set(configured_launcher_settings_to_install
     ${CTKAPPLAUNCHER_DESTINATION_DIR}/${CTKAPPLAUNCHER_APPLICATION_NAME}LauncherSettingsToInstall.ini
     )
+  # Should we ignore the intermediate directory ?
+  set(cfg_intdir ${CMAKE_CFG_INTDIR})
+  if(CTKAPPLAUNCHER_IGNORE_CFG_INTDIR)
+    set(cfg_intdir ".")
+  endif()
 
   set(copy_command ${CMAKE_COMMAND} -E copy
     ${CTKAppLauncher_EXECUTABLE}
@@ -623,7 +630,7 @@ function(ctk_applauncher_configure)
     -DBUILD_SETTINGS_FILEPATH:FILEPATH=${configured_launcher_settings}
     -DINSTALL_SETTINGS_CONFIGURATION_FILEPATH:FILEPATH=${INSTALL_SETTINGS_CONFIGURATION_FILEPATH}
     -DINSTALL_SETTINGS_FILEPATH:FILEPATH=${configured_launcher_settings_to_install}
-    -DTARGET_SUBDIR:STRING=${CMAKE_CFG_INTDIR}
+    -DTARGET_SUBDIR:STRING=${cfg_intdir}
     -P ${CTKAppLauncher_DIR}/${CTK_INSTALL_CMAKE_DIR}/ctkAppLauncher-configure.cmake
     )
   set(commands_depends
