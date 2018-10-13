@@ -106,7 +106,7 @@ int appLauncherMain(int argc, char** argv)
     }
   else
     {
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0) && defined Q_OS_WIN32)
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0) && defined Q_OS_WIN32 && defined QT_STATIC)
     // Initialize platform plugin in static build
     Q_IMPORT_PLUGIN(QWindowsIntegrationPlugin)
 #endif
