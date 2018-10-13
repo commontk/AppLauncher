@@ -47,7 +47,7 @@ endif()
 # Configure settings file
 
 set(application_relative_dir "bin")
-if(WIN32)
+if(CMAKE_CONFIGURATION_TYPES)
   set(application_relative_dir ${application_relative_dir}/${app4test_build_type})
 endif()
 
