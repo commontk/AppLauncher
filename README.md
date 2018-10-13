@@ -42,49 +42,64 @@ maintainers: how to make a release ?
 
 *Follow step below after checking that all tests pass*
 
-1. Update [CMakeLists.txt][cmakelists]
 
-  * set `CTKAppLauncher_VERSION_IS_RELEASE` to `1`
-  * update `CTKAppLauncher_*_VERSION` variables
-
-2. Commit changes with message:
-
-    ```
-    CTKAppLauncher X.Y.Z
-    ```
-
-3. Tag the release. Requires a GPG key with signatures. For version *X.Y.Z*:
+1. List all tags sorted by version
 
     ```bash
-    git tag -s -m "CTKAppLauncher X.Y.Z" vX.Y.Z master
+    git fetch --tags && \
+    git tag -l | sort -V
     ```
 
-4. Publish the tag
+2. Choose the next release version number (without
 
     ```bash
-    git push origin vX.Y.Z
+    tag=vX.Y.Z
+
+    version_major=$(echo $tag | tr -d v | cut -d. -f1)
+    version_minor=$(echo $tag | tr -d v | cut -d. -f2)
+    version_patch=$(echo $tag | tr -d v | cut -d. -f3)
+    echo "version_major [$version_major] version_minor[$version_minor] version_patch[$version_patch]"
     ```
 
-5. Then publish the `master` branch to trigger the release build
+3. Update `CMakeLists.txt` setting `CTKAppLauncher_VERSION_IS_RELEASE` and `CTKAppLauncher_*_VERSION` variables
+
+    ```bash
+    sed -E "s/set\(CTKAppLauncher_VERSION_IS_RELEASE 0\)/set\(CTKAppLauncher_VERSION_IS_RELEASE 1\)/g" -i CMakeLists.txt && \
+    sed -E "s/set\(CTKAppLauncher_MAJOR_VERSION [0-9]+\)/set\(CTKAppLauncher_MAJOR_VERSION $version_major\)/g" -i CMakeLists.txt && \
+    sed -E "s/set\(CTKAppLauncher_MINOR_VERSION [0-9]+\)/set\(CTKAppLauncher_MINOR_VERSION $version_minor\)/g" -i CMakeLists.txt && \
+    sed -E "s/set\(CTKAppLauncher_BUILD_VERSION [0-9]+\)/set\(CTKAppLauncher_BUILD_VERSION $version_patch\)/g" -i CMakeLists.txt && \
+    git add CMakeLists.txt && \
+    git commit -m "CTKAppLauncher $tag" && \
+    git diff HEAD^
+    ```
+
+4. Tag the release. Requires a GPG key with signatures:
+
+    ```bash
+    git tag -s -m "CTKAppLauncher $tag" $tag master
+    ```
+
+5. Publish the tag and `master` branch to trigger the release build
+
+    ```bash
+    git push origin $tag && \
+    git push origin master
+    ```
+
+6. Update `CMakeLists.txt` setting `CTKAppLauncher_VERSION_IS_RELEASE` to `0`
+
+    ```bash
+    sed -E "s/set\(CTKAppLauncher_VERSION_IS_RELEASE 1\)/set\(CTKAppLauncher_VERSION_IS_RELEASE 0\)/g" -i CMakeLists.txt && \
+    git add CMakeLists.txt && \
+    git commit -m "Begin post-$tag development [ci skip]" && \
+    git diff HEAD^
+    ```
+
+7. Publish the changes:
 
     ```bash
     git push origin master
     ```
-
-6. Update [CMakeLists.txt][cmakelists] setting `CTKAppLauncher_VERSION_IS_RELEASE` to `0`
-
-7. Commit changes with message:
-
-    ```
-    Begin post-X.Y.Z development
-
-    [ci skip]
-    ```
-
-8. Publish the `master` branch
-
-
-[cmakelists]: https://github.com/commontk/AppLauncher/blob/29fb4b4db29356ea33b9be8f2a392f5683184bb8/CMakeLists.txt#L51-L54
 
 License
 -------
