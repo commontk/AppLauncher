@@ -3,6 +3,7 @@
 # This script was designed to be executed from the build directory:
 #
 #  cd build
+#  $env:APPLAUNCHER_CMAKE_GENERATOR="Visual Studio 15 2017" # or "Ninja"
 #  cmake -DQt5_DIR:PATH=$Qt5_DIR -DCTKAppLauncher_SOURCE_DIR:PATH=$pwd.Path + "\.." -P ..\msvc-static-configure.cmake
 #
 # Static build of Qt5 may be download from
@@ -15,6 +16,53 @@ if(NOT EXISTS "${Qt5_DIR}")
 endif()
 if(NOT EXISTS "${CTKAppLauncher_SOURCE_DIR}")
   message(FATAL_ERROR "CTKAppLauncher_SOURCE_DIR is set to a non-existent directory [${CTKAppLauncher_SOURCE_DIR}]")
+endif()
+if(NOT "$ENV{APPLAUNCHER_CMAKE_GENERATOR}" MATCHES "^Ninja|Visual Studio 15 2017$")
+  message(FATAL_ERROR "Env. variable APPLAUNCHER_CMAKE_GENERATOR is expected to match 'Ninja' or 'Visual Studio 15 2017' [$ENV{APPLAUNCHER_CMAKE_GENERATOR}]")
+endif()
+set(APPLAUNCHER_CMAKE_GENERATOR "$ENV{APPLAUNCHER_CMAKE_GENERATOR}")
+message(STATUS "Selected CMake Generator is '${APPLAUNCHER_CMAKE_GENERATOR}'")
+
+if(APPLAUNCHER_CMAKE_GENERATOR STREQUAL "Ninja")
+
+  # Download FindVcvars.cmake
+  set(dest_file "${CMAKE_CURRENT_BINARY_DIR}/FindVcvars.cmake")
+  set(expected_hash "b36aa3fb2ce86132e55a8d59f4513cf7d1e0b46bad214adccca8643fadec66d0")
+  set(url "https://raw.githubusercontent.com/scikit-build/cmake-FindVcvars/v1.2/FindVcvars.cmake")
+  if(NOT EXISTS ${dest_file})
+    file(DOWNLOAD ${url} ${dest_file} EXPECTED_HASH SHA256=${expected_hash})
+  else()
+    file(SHA256 ${dest_file} current_hash)
+    if(NOT ${current_hash} STREQUAL ${expected_hash})
+      file(DOWNLOAD ${url} ${dest_file} EXPECTED_HASH SHA256=${expected_hash})
+    endif()
+  endif()
+
+  list(INSERT CMAKE_MODULE_PATH 0 "${CMAKE_CURRENT_BINARY_DIR}")
+
+  # Lookup vcvars script
+  set(Vcvars_MSVC_ARCH 32)
+  set(Vcvars_MSVC_VERSION 1915)
+  find_package(Vcvars REQUIRED)
+
+  # Download ninja archive
+  set(archive_basename "ninja-1.8.2.g81279.kitware.dyndep-1.jobserver-1_i686-pc-windows-msvc")
+  set(dest_file "${CMAKE_CURRENT_BINARY_DIR}/${archive_basename}.zip")
+  set(expected_hash "eaa2a0f1b0d273a19a0a00365208e9ec8e3f6181771c7fb0adae93aaf24c32c6")
+  set(url "https://github.com/Kitware/ninja/releases/download/v1.8.2.g81279.kitware.dyndep-1.jobserver-1/${archive_basename}.zip")
+  if(NOT EXISTS ${dest_file})
+    file(DOWNLOAD ${url} ${dest_file} EXPECTED_HASH SHA256=${expected_hash})
+  else()
+    file(SHA256 ${dest_file} current_hash)
+    if(NOT ${current_hash} STREQUAL ${expected_hash})
+      file(DOWNLOAD ${url} ${dest_file} EXPECTED_HASH SHA256=${expected_hash})
+    endif()
+  endif()
+  # Then, extract archive
+  execute_process(COMMAND ${CMAKE_COMMAND} -E tar x ${dest_file})
+
+  # Finally, update PATH
+  set(ENV{PATH} "${CMAKE_CURRENT_BINARY_DIR}/${archive_basename};$ENV{PATH}")
 endif()
 
 set(QT_PREFIX_DIR "${Qt5_DIR}/../../../")
@@ -60,8 +108,13 @@ CMAKE_CXX_FLAGS_RELEASE:STRING=${CMAKE_CXX_FLAGS_RELEASE}
 CTKAppLauncher_QT_STATIC_LIBRARIES:STRING=${qt_static_libraries}
 Qt5_DIR:PATH=${Qt5_DIR}"
 )
+if(APPLAUNCHER_CMAKE_GENERATOR STREQUAL "Ninja")
+  set(INITIAL_CACHE "${INITIAL_CACHE}
+CMAKE_BUILD_TYPE:STRING=Release"
+)
+endif()
 file(WRITE CMakeCache.txt "${INITIAL_CACHE}")
 
 set(ENV{LDFLAGS} "/INCREMENTAL:NO /LTCG")
 
-execute_process(COMMAND ${CMAKE_COMMAND} -G "Visual Studio 15 2017" ${CTKAppLauncher_SOURCE_DIR})
+execute_process(COMMAND ${Vcvars_LAUNCHER} ${CMAKE_COMMAND} -G ${APPLAUNCHER_CMAKE_GENERATOR} ${CTKAppLauncher_SOURCE_DIR})

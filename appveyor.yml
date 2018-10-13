@@ -11,13 +11,19 @@ os:
   - Visual Studio 2017
 
 environment:
+  matrix:
+    - APPLAUNCHER_CMAKE_GENERATOR: "Ninja"
+      BLOCK: "0"
+
+    - APPLAUNCHER_CMAKE_GENERATOR: "Visual Studio 15 2017"
+      BLOCK: "0"
+
   PYTHON_DIR: "C:\\Python27-x64"
   PATH: "%PYTHON_DIR%;%PYTHON_DIR%\\Scripts;%PATH%"
   GITHUB_TOKEN:
     secure: 0D2ZkBwNKDnj7j9VNRaJlFCzmAYEHb3N+rzJdm+R4FDNh2P9HTqJ4NAtKm+9fXjw
   APPVEYOR_API_TOKEN:
     secure: U5fSDWJH39dwzLUfl7RZ0FwF+q7pK5tbAU8WGxO/1hc=
-  BLOCK: "0"
 
 install:
   # Downloads and extract Qt static build
