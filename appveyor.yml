@@ -51,14 +51,16 @@ build_script:
           -P ..\msvc-static-configure.cmake
   # Build and package
   - ps: |
-        $command="$env:APPLAUNCHER_BUILD_WRAPPER cmake --build . --config Release --target $env:APPLAUNCHER_PACKAGE_TARGET;$?"
-        Invoke-Expression $command
+        $command="$env:APPLAUNCHER_BUILD_WRAPPER cmake --build . --config Release --target $env:APPLAUNCHER_PACKAGE_TARGET"
+        Invoke-Expression -Command $command
+        $host.SetShouldExit($LastExitCode)
 
 test_script:
   # Run tests
   - ps: |
-        $command="$env:APPLAUNCHER_BUILD_WRAPPER ctest -C Release -j4 -VV;$?"
-        Invoke-Expression $command
+        $command="$env:APPLAUNCHER_BUILD_WRAPPER ctest -C Release -j4 -VV"
+        Invoke-Expression -Command $command
+        $host.SetShouldExit($LastExitCode)
   # Upload release and prerelease packages
   - ps: |
       pip install scikit-ci-addons==0.18.0
