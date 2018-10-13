@@ -51,13 +51,13 @@ build_script:
           -P ..\msvc-static-configure.cmake
   # Build and package
   - ps: |
-        $command="$env:APPLAUNCHER_BUILD_WRAPPER cmake --build . --config Release --target $env:APPLAUNCHER_PACKAGE_TARGET"
+        $command="$env:APPLAUNCHER_BUILD_WRAPPER cmake --build . --config Release --target $env:APPLAUNCHER_PACKAGE_TARGET;$?"
         Invoke-Expression $command
 
 test_script:
   # Run tests
   - ps: |
-        $command="$env:APPLAUNCHER_BUILD_WRAPPER ctest -C Release -j4 -VV"
+        $command="$env:APPLAUNCHER_BUILD_WRAPPER ctest -C Release -j4 -VV;$?"
         Invoke-Expression $command
   # Upload release and prerelease packages
   - ps: |
