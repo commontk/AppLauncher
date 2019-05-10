@@ -27,6 +27,7 @@ if("${CTKAppLauncher_BINARY_DIR}" STREQUAL "${CMAKE_BINARY_DIR}")
   endif()
   
   set(CPACK_MONOLITHIC_INSTALL ON)
+  set(CPACK_STRIP_SYMBOLS ON)
   set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "CTKAppLauncher - The Common Toolkit Application Launcher")
   set(CPACK_PACKAGE_VENDOR "Kitware, Inc.")
   #set(CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_CURRENT_SOURCE_DIR}/Copyright.txt")

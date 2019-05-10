@@ -20,11 +20,10 @@ cache:
   - $HOME/downloads
 
 before_install:
-- |
-  # work-around for issue https://github.com/travis-ci/travis-ci/issues/6307
-  # might not be necessary in the future
-  command curl -sSL https://rvm.io/mpapis.asc | gpg --import -
-  rvm get stable
+# work-around for issue https://github.com/travis-ci/travis-ci/issues/6307
+- curl -sSL https://rvm.io/mpapis.asc | gpg --import -
+- curl -sSL https://rvm.io/pkuczynski.asc | gpg --import -
+- rvm get stable
 
 before_script:
 # Downloads and extract Qt static build
