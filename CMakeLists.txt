@@ -42,8 +42,8 @@ endif()
 #
 set(CTKAppLauncher_MAJOR_VERSION 0)
 set(CTKAppLauncher_MINOR_VERSION 1)
-set(CTKAppLauncher_BUILD_VERSION 25)
-set(CTKAppLauncher_VERSION_IS_RELEASE 0)
+set(CTKAppLauncher_BUILD_VERSION 26)
+set(CTKAppLauncher_VERSION_IS_RELEASE 1)
 
 if(CTKAppLauncher_VERSION_IS_RELEASE)
   set(CTKAppLauncher_VERSION_SOURCE "")
