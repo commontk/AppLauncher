@@ -5,6 +5,9 @@
 #include <QObject>
 #include <QHash>
 
+// CTK includes
+#include "CTKAppLauncherLibExport.h"
+
 class ctkAppLauncherSettingsPrivate;
 
 ///
@@ -130,7 +133,7 @@ class ctkAppLauncherSettingsPrivate;
 /// qDebug() << appLauncherSettings.envVars().value("FOO");
 /// \endcode
 ///
-class ctkAppLauncherSettings : public QObject
+class CTKAPPLAUNCHERLIB_EXPORT ctkAppLauncherSettings : public QObject
 {
   Q_OBJECT
 public:
