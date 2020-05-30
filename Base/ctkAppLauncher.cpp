@@ -40,7 +40,7 @@ ctkInteractiveProcess::ctkInteractiveProcess(QObject *parent)
   if (StdinClone == -1)
   {
 #ifdef Q_OS_WIN32
-    StdinClone = ::_dup(fileno(stdin));
+    StdinClone = ::_dup(_fileno(stdin));
 #else
     StdinClone = ::dup(fileno(stdin));
 #endif
@@ -51,7 +51,7 @@ ctkInteractiveProcess::ctkInteractiveProcess(QObject *parent)
 void ctkInteractiveProcess::setupChildProcess()
 {
 #ifdef Q_OS_WIN32
-  ::_dup2(StdinClone, fileno(stdin));
+  ::_dup2(StdinClone, _fileno(stdin));
 #else
   ::dup2(StdinClone, fileno(stdin));
 #endif
@@ -271,15 +271,25 @@ bool ctkAppLauncherPrivate::processApplicationToLaunchArgument()
 
   if (!this->ExtraApplicationToLaunchArguments.isEmpty())
     {
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
+    this->ApplicationToLaunchArguments =
+        this->ExtraApplicationToLaunchArguments.split(" ", Qt::SkipEmptyParts);
+#else
     this->ApplicationToLaunchArguments =
         this->ExtraApplicationToLaunchArguments.split(" ", QString::SkipEmptyParts);
+#endif
     }
 
   // Set ApplicationToLaunchArguments with the value read from the settings file
   if (this->ApplicationToLaunchArguments.empty())
     {
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
+    this->ApplicationToLaunchArguments =
+        this->DefaultApplicationToLaunchArguments.split(" ", Qt::SkipEmptyParts);
+#else
     this->ApplicationToLaunchArguments =
         this->DefaultApplicationToLaunchArguments.split(" ", QString::SkipEmptyParts);
+#endif
     }
 
   this->reportInfo(QString("ApplicationToLaunchArguments [%1]").
@@ -534,10 +544,17 @@ void ctkAppLauncherPrivate::buildEnvironment(QProcessEnvironment &env)
     return;
     }
 
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
+  QSet<QString> variables =
+      QSet<QString> (q->envVars().keys().begin(), q->envVars().keys().end()) +
+      QSet<QString> (q->pathsEnvVars().keys().begin(), q->pathsEnvVars().keys().end()) +
+      QSet<QString> (this->SystemEnvironmentKeys.begin(), this->SystemEnvironmentKeys.end());
+#else
   QSet<QString> variables =
       q->envVars().keys().toSet() +
       q->pathsEnvVars().keys().toSet() +
       this->SystemEnvironmentKeys.toSet();
+#endif
 
   ctkAppLauncherEnvironment::saveEnvironment(
         this->SystemEnvironment, variables.values(), env);

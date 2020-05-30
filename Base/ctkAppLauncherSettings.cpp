@@ -5,6 +5,7 @@
 #include <QHash>
 #include <QFile>
 #include <QFileInfo>
+#include <QSet>
 #include <QSettings>
 
 // CTK includes
@@ -243,12 +244,24 @@ void ctkAppLauncherSettingsPrivate::readPathSettings(QSettings& settings, const 
     {
     if (!excludeGroups.contains("General"))
       {
-      this->AdditionalPathVariables.unite(settings.value("additionalPathVariables").toStringList().toSet()); // XXX Deprecated
+      #if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
+      QStringList additionalPathVariablesList = settings.value("additionalPathVariables").toStringList();
+      QSet<QString> additionalPathVariablesSet = QSet<QString> (additionalPathVariablesList.begin(), additionalPathVariablesList.end());
+      #else
+      QSet<QString> additionalPathVariablesSet = settings.value("additionalPathVariables").toStringList().toSet();
+      #endif
+      this->AdditionalPathVariables.unite(additionalPathVariablesSet); // XXX Deprecated
       }
     if (!excludeGroups.contains("Environment"))
       {
       settings.beginGroup("Environment");
-      this->AdditionalPathVariables.unite(settings.value("additionalPathVariables").toStringList().toSet());
+      #if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
+      QStringList additionalPathVariablesList = settings.value("additionalPathVariables").toStringList();
+      QSet<QString> additionalPathVariablesSet = QSet<QString> (additionalPathVariablesList.begin(), additionalPathVariablesList.end());
+      #else
+      QSet<QString> additionalPathVariablesSet = settings.value("additionalPathVariables").toStringList().toSet();
+      #endif
+      this->AdditionalPathVariables.unite(additionalPathVariablesSet);
       settings.endGroup();
       }
 
