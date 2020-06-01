@@ -102,9 +102,17 @@ QProcessEnvironment ctkAppLauncherEnvironment::environment(int requestedLevel)
 
   // Remove variables that are present in current environment but not
   // associated with the requested saved level.
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
+  QSet<QString> variablesToRemove =
+      QSet<QString> (ctkAppLauncherEnvironment::excludeReservedVariableNames(currentEnvKeys).begin(),
+          ctkAppLauncherEnvironment::excludeReservedVariableNames(currentEnvKeys).end())
+      - QSet<QString> (ctkAppLauncherEnvironment::excludeReservedVariableNames(requestedEnvKeys).begin(),
+                          ctkAppLauncherEnvironment::excludeReservedVariableNames(requestedEnvKeys).end());
+#else
   QSet<QString> variablesToRemove =
       ctkAppLauncherEnvironment::excludeReservedVariableNames(currentEnvKeys).toSet()
       - ctkAppLauncherEnvironment::excludeReservedVariableNames(requestedEnvKeys).toSet();
+#endif
   foreach(const QString& varname, variablesToRemove.values())
     {
     env.remove(varname);
@@ -150,7 +158,11 @@ void ctkAppLauncherEnvironment::updateCurrentEnvironment(const QProcessEnvironme
   QStringList curKeys = Self::envKeys(curEnv);
 
   // Unset variables not found in the provided environment
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
+  QStringList variablesToUnset = (QSet<QString> (curKeys.begin(), curKeys.end()) - QSet<QString> (envKeys.begin(), envKeys.end())).values();
+#else
   QStringList variablesToUnset = (curKeys.toSet() - envKeys.toSet()).toList();
+#endif
   foreach(const QString& varName, variablesToUnset)
     {
 #if defined(Q_OS_WIN32)
