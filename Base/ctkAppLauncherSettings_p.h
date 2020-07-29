@@ -25,7 +25,6 @@ public:
   ~ctkAppLauncherSettingsPrivate(){}
   typedef ctkAppLauncherSettingsPrivate Self;
 
-  QString userAdditionalSettingsDir()const;
   QString findUserAdditionalSettings()const;
 
   /// Different type of settings files.

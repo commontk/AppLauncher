@@ -23,7 +23,8 @@ class ctkAppLauncherPrivate;
 /// The ctkAppLauncher can be configured using setting files and/or command
 /// line arguments. It relies on ctkAppLauncherSettings to parse settings file
 /// and define the particular environment to set before executing
-/// the selected application.
+/// the selected application. Relative paths are resolved using the launcher
+/// directory as the base.
 ///
 /// Command line arguments
 /// ----------------------

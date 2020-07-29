@@ -73,15 +73,18 @@ class ctkAppLauncherSettingsPrivate;
 ///
 /// If a group named `Application` having at least the keys `organizationDomain`,
 /// `organizationName`, `name` is found in the main setting file given to readSettings(const QString&),
-/// then an additional setting file located in the Qt user specific settings directory is automatically parsed.
+/// then an additional setting file is automatically parsed.
 ///
 /// An optional `revision` key can also be specified.
 ///
-/// Location of additional setting file:
+/// First the launcher looks for the user settings file within &lt;APPLAUNCHER_DIR&gt;:
+///
+///   <APPLAUNCHER_DIR>/<organisationName|organizationDomain>/<ApplicationName>(-<revision>).ini
+///
+/// If the file is not found there then the launcher looks for it in the Qt user specific settings directory
+/// (corresponding to \c QSettings::UserScope):
 ///
 ///   /path/to/user/settings/<organisationName|organizationDomain>/<ApplicationName>(-<revision>).ini
-///
-/// The location of the additional settings file corresponds to \c QSettings::UserScope.
 ///
 /// Settings values found in the additional settings file are merged with the
 /// one already found in the main settings. For `Paths`, `LibraryPaths` or any
