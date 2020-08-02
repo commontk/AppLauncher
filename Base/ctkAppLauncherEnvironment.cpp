@@ -105,8 +105,8 @@ QProcessEnvironment ctkAppLauncherEnvironment::environment(int requestedLevel)
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
   QStringList currentStrings = ctkAppLauncherEnvironment::excludeReservedVariableNames(currentEnvKeys);
   QStringList requestedStrings = ctkAppLauncherEnvironment::excludeReservedVariableNames(requestedEnvKeys);
-  auto currentSet = QSet<QString> (currentStrings.begin(), currentStrings.end());
-  auto requestedSet = QSet<QString> (requestedStrings.begin(), requestedStrings.end());
+  QSet<QString> currentSet(currentStrings.begin(), currentStrings.end());
+  QSet<QString> requestedSet(requestedStrings.begin(), requestedStrings.end());
   auto variablesToRemove = currentSet - requestedSet;
 #else
   QSet<QString> variablesToRemove =
