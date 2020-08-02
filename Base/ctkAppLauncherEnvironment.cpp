@@ -103,11 +103,11 @@ QProcessEnvironment ctkAppLauncherEnvironment::environment(int requestedLevel)
   // Remove variables that are present in current environment but not
   // associated with the requested saved level.
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
-  QSet<QString> variablesToRemove =
-      QSet<QString> (ctkAppLauncherEnvironment::excludeReservedVariableNames(currentEnvKeys).begin(),
-          ctkAppLauncherEnvironment::excludeReservedVariableNames(currentEnvKeys).end())
-      - QSet<QString> (ctkAppLauncherEnvironment::excludeReservedVariableNames(requestedEnvKeys).begin(),
-                          ctkAppLauncherEnvironment::excludeReservedVariableNames(requestedEnvKeys).end());
+  QStringList currentStrings = ctkAppLauncherEnvironment::excludeReservedVariableNames(currentEnvKeys);
+  QStringList requestedStrings = ctkAppLauncherEnvironment::excludeReservedVariableNames(requestedEnvKeys);
+  QSet<QString> currentSet(currentStrings.begin(), currentStrings.end());
+  QSet<QString> requestedSet(requestedStrings.begin(), requestedStrings.end());
+  auto variablesToRemove = currentSet - requestedSet;
 #else
   QSet<QString> variablesToRemove =
       ctkAppLauncherEnvironment::excludeReservedVariableNames(currentEnvKeys).toSet()
