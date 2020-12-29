@@ -70,22 +70,10 @@ QString ctkAppLauncherSettingsPrivate::findUserAdditionalSettings()const
 
   QStringList candidateUserAdditionalSettingsDirs;
 
-  // Settings stored in launcher/organization folder
-  // (logic for deciding between using organizatioDoman or organizationName is
-  // adopted from qtbase\src\corelib\io\qsettings.cpp)
-  QString organizationDir =
-  #ifdef Q_OS_DARWIN
-    QCoreApplication::organizationDomain().isEmpty()
-      ? QCoreApplication::organizationName()
-      : QCoreApplication::organizationDomain();
-  #else
-    QCoreApplication::organizationName().isEmpty()
-      ? QCoreApplication::organizationDomain()
-      : QCoreApplication::organizationName();
-  #endif
-  candidateUserAdditionalSettingsDirs << QDir(q->launcherDir()).filePath(organizationDir);
+  // Settings may be stored in launcherDir/organizationDir:
+  candidateUserAdditionalSettingsDirs << QDir(q->launcherDir()).filePath(q->organizationDir());
 
-  // Settings stored in user profile folder
+  // Settings may be stored in path/to/settings/organizationDir:
   QFileInfo fileInfo(QSettings().fileName());
   candidateUserAdditionalSettingsDirs << fileInfo.path();
 
@@ -682,4 +670,22 @@ QString ctkAppLauncherSettings::pathVariableName() const
 {
   Q_D(const ctkAppLauncherSettings);
   return d->PathVariableName;
+}
+
+// --------------------------------------------------------------------------
+QString ctkAppLauncherSettings::organizationDir()const
+{
+  // Logic for deciding between using organizatioDoman or organizationName is
+  // adopted from qtbase\src\corelib\io\qsettings.cpp.
+  QString dir =
+#ifdef Q_OS_DARWIN
+    QCoreApplication::organizationDomain().isEmpty()
+    ? QCoreApplication::organizationName()
+    : QCoreApplication::organizationDomain();
+#else
+    QCoreApplication::organizationName().isEmpty()
+    ? QCoreApplication::organizationDomain()
+    : QCoreApplication::organizationName();
+#endif
+  return dir;
 }
