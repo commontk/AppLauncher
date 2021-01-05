@@ -17,13 +17,24 @@ endif()
 if(NOT EXISTS "${CTKAppLauncher_SOURCE_DIR}")
   message(FATAL_ERROR "CTKAppLauncher_SOURCE_DIR is set to a non-existent directory [${CTKAppLauncher_SOURCE_DIR}]")
 endif()
-if(NOT "$ENV{APPLAUNCHER_CMAKE_GENERATOR}" MATCHES "^Ninja|Visual Studio 15 2017$")
-  message(FATAL_ERROR "Env. variable APPLAUNCHER_CMAKE_GENERATOR is expected to match 'Ninja' or 'Visual Studio 15 2017' [$ENV{APPLAUNCHER_CMAKE_GENERATOR}]")
+if ("$ENV{APPLAUNCHER_CMAKE_GENERATOR}" STREQUAL "Ninja")
+  # For dashboard build with Visual Studio 2017 and old CMake
+  set(APPLAUNCHER_CMAKE_GENERATOR -G Ninja)
+  set(APPLAUNCHER_USE_NINJA ON)
+elseif ("$ENV{APPLAUNCHER_CMAKE_GENERATOR}" STREQUAL "Visual Studio 15 2017")
+  # For dashboard build with Visual Studio 2017 and old CMake
+  set(APPLAUNCHER_CMAKE_GENERATOR -G "Visual Studio 15 2017")
+  set(APPLAUNCHER_USE_NINJA OFF)
+elseif ("$ENV{APPLAUNCHER_CMAKE_GENERATOR}" STREQUAL "Visual Studio 16 2019")
+  # For local build with Visual Studio 2019 with modern CMake
+  set(APPLAUNCHER_CMAKE_GENERATOR -G "Visual Studio 16 2019" -T v141 -A Win32)
+  set(APPLAUNCHER_USE_NINJA OFF)
+else()
+  message(FATAL_ERROR "Env. variable APPLAUNCHER_CMAKE_GENERATOR is expected to match 'Ninja' or 'Visual Studio 15 2017' or 'Visual Studio 16 2019' [$ENV{APPLAUNCHER_CMAKE_GENERATOR}]")
 endif()
-set(APPLAUNCHER_CMAKE_GENERATOR "$ENV{APPLAUNCHER_CMAKE_GENERATOR}")
 message(STATUS "Selected CMake Generator is '${APPLAUNCHER_CMAKE_GENERATOR}'")
 
-if(APPLAUNCHER_CMAKE_GENERATOR STREQUAL "Ninja")
+if(APPLAUNCHER_USE_NINJA)
 
   # Download FindVcvars.cmake
   set(dest_file "${CMAKE_CURRENT_BINARY_DIR}/FindVcvars.cmake")
@@ -108,7 +119,7 @@ CMAKE_CXX_FLAGS_RELEASE:STRING=${CMAKE_CXX_FLAGS_RELEASE}
 CTKAppLauncher_QT_STATIC_LIBRARIES:STRING=${qt_static_libraries}
 Qt5_DIR:PATH=${Qt5_DIR}"
 )
-if(APPLAUNCHER_CMAKE_GENERATOR STREQUAL "Ninja")
+if(APPLAUNCHER_USE_NINJA)
   set(INITIAL_CACHE "${INITIAL_CACHE}
 CMAKE_BUILD_TYPE:STRING=Release"
 )
@@ -117,4 +128,4 @@ file(WRITE CMakeCache.txt "${INITIAL_CACHE}")
 
 set(ENV{LDFLAGS} "/INCREMENTAL:NO /LTCG")
 
-execute_process(COMMAND ${Vcvars_LAUNCHER} ${CMAKE_COMMAND} -G ${APPLAUNCHER_CMAKE_GENERATOR} ${CTKAppLauncher_SOURCE_DIR})
+execute_process(COMMAND ${Vcvars_LAUNCHER} ${CMAKE_COMMAND} ${APPLAUNCHER_CMAKE_GENERATOR} ${CTKAppLauncher_SOURCE_DIR})

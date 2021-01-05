@@ -57,30 +57,38 @@ ctkAppLauncherSettingsPrivate::ctkAppLauncherSettingsPrivate(ctkAppLauncherSetti
 }
 
 // --------------------------------------------------------------------------
-QString ctkAppLauncherSettingsPrivate::userAdditionalSettingsDir()const
-{
-  QFileInfo fileInfo(QSettings().fileName());
-  return fileInfo.path();
-}
-
-// --------------------------------------------------------------------------
 QString ctkAppLauncherSettingsPrivate::findUserAdditionalSettings()const
 {
+  Q_Q(const ctkAppLauncherSettings);
+
   QString prefix = QFileInfo(QSettings().fileName()).completeBaseName();
   QString suffix;
   if (!this->ApplicationRevision.isEmpty())
     {
     suffix = "-" + this->ApplicationRevision;
     }
-  QString fileName =
-      QDir(this->userAdditionalSettingsDir()).filePath(QString("%1%2%3.ini").
-                                                   arg(prefix).
-                                                   arg(this->UserAdditionalSettingsFileBaseName).
-                                                   arg(suffix));
-  if (QFile::exists(fileName))
+
+  QStringList candidateUserAdditionalSettingsDirs;
+
+  // Settings may be stored in launcherDir/organizationDir:
+  candidateUserAdditionalSettingsDirs << QDir(q->launcherDir()).filePath(q->organizationDir());
+
+  // Settings may be stored in path/to/settings/organizationDir:
+  QFileInfo fileInfo(QSettings().fileName());
+  candidateUserAdditionalSettingsDirs << fileInfo.path();
+
+  foreach(QString candidateUserAdditionalSettingsDir, candidateUserAdditionalSettingsDirs)
     {
-    return fileName;
+    QString fileName = QDir(candidateUserAdditionalSettingsDir).filePath(QString("%1%2%3.ini").
+        arg(prefix).
+        arg(this->UserAdditionalSettingsFileBaseName).
+        arg(suffix));
+    if (QFile::exists(fileName))
+      {
+      return fileName;
+      }
     }
+
   return QString();
 }
 
@@ -416,7 +424,17 @@ QString ctkAppLauncherSettings::findUserAdditionalSettings()const
 QString ctkAppLauncherSettings::userAdditionalSettingsDir()const
 {
   Q_D(const ctkAppLauncherSettings);
-  return d->userAdditionalSettingsDir();
+  QString userAdditionalSettingsFileName = d->findUserAdditionalSettings();
+  if (!userAdditionalSettingsFileName.isEmpty())
+    {
+    return QFileInfo(userAdditionalSettingsFileName).absolutePath();
+    }
+  else
+    {
+    // No user settings file is found, return default location
+    QFileInfo fileInfo(QSettings().fileName());
+    return fileInfo.path();
+    }
 }
 
 // --------------------------------------------------------------------------
@@ -652,4 +670,22 @@ QString ctkAppLauncherSettings::pathVariableName() const
 {
   Q_D(const ctkAppLauncherSettings);
   return d->PathVariableName;
+}
+
+// --------------------------------------------------------------------------
+QString ctkAppLauncherSettings::organizationDir()const
+{
+  // Logic for deciding between using organizationDoman or organizationName is
+  // adopted from qtbase\src\corelib\io\qsettings.cpp.
+  QString dir =
+#ifdef Q_OS_DARWIN
+    QCoreApplication::organizationDomain().isEmpty()
+    ? QCoreApplication::organizationName()
+    : QCoreApplication::organizationDomain();
+#else
+    QCoreApplication::organizationName().isEmpty()
+    ? QCoreApplication::organizationDomain()
+    : QCoreApplication::organizationName();
+#endif
+  return dir;
 }

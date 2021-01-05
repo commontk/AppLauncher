@@ -73,15 +73,18 @@ class ctkAppLauncherSettingsPrivate;
 ///
 /// If a group named `Application` having at least the keys `organizationDomain`,
 /// `organizationName`, `name` is found in the main setting file given to readSettings(const QString&),
-/// then an additional setting file located in the Qt user specific settings directory is automatically parsed.
+/// then an additional setting file is automatically parsed.
 ///
 /// An optional `revision` key can also be specified.
 ///
-/// Location of additional setting file:
+/// First the launcher looks for the user settings file within &lt;APPLAUNCHER_DIR&gt;:
 ///
-///   /path/to/user/settings/<organisationName|organizationDomain>/<ApplicationName>(-<revision>).ini
+///   <APPLAUNCHER_DIR>/<organizationDir>/<ApplicationName>(-<revision>).ini
 ///
-/// The location of the additional settings file corresponds to \c QSettings::UserScope.
+/// If the file is not found there then the launcher looks for it in the Qt user specific settings directory
+/// (corresponding to \c QSettings::UserScope):
+///
+///   /path/to/user/settings/<organizationDir>/<ApplicationName>(-<revision>).ini
 ///
 /// Settings values found in the additional settings file are merged with the
 /// one already found in the main settings. For `Paths`, `LibraryPaths` or any
@@ -233,27 +236,34 @@ public:
   ///
   QString libraryPathVariableName() const;
 
-  ///  \brief Get path variable name.
+  /// \brief Get path variable name.
   QString pathVariableName() const;
 
-  /// Return user specific additional settings file associated with the \c ApplicationOrganization,
-  /// \c ApplicationName and \c ApplicationRevision read from the main settings using
-  /// readSettings(const QString&).
+  /// \brief Return location of the existing user specific additional settings file.
   ///
-  /// The location of the additional settings file is expected to match the following name
-  /// and path: \c path/to/settings/<organisationName|organizationDomain>/<ApplicationName>(-<revision>).ini
+  /// The location of the additional settings file is first looked for at path:
+  /// \c <APPLAUNCHER_DIR>/<organizationDir>/<ApplicationName>(-<revision>).ini
+  /// and if it is not found there then at path:
+  /// \c path/to/settings/<organizationDir>/<ApplicationName>(-<revision>).ini
   /// If the settings file does NOT exist, an empty string will be returned.
   ///
   /// \sa readSettings(const QString&)
   /// \sa additionalSettingsDir()
   QString findUserAdditionalSettings()const;
 
-  /// Return additional settings directory associated with the \a ApplicationOrganization
-  /// read from the main settings.
+  /// \brief Return location of user specific additional settings directory.
   ///
-  /// The location of the additional settings directory is expected to match the following
-  /// path: \c path/to/settings/<organisationName|organizationDomain>/
+  /// The directory is the location where an existing user specific additional settings file
+  /// is found using findUserAdditionalSettings(). If no such file is found then
+  /// default location is returned: \c path/to/settings/<organizationDir>
   QString userAdditionalSettingsDir()const;
+
+  /// \brief Get organization subdirectory name determined from organization domain
+  /// or name determined according to QSettings conventions.
+  ///
+  /// On Windows and Linux: QCoreApplication::organizationName() (if undefined then QCoreApplication::organizationDomain()).
+  /// On macOS: QCoreApplication::organizationDomain() (if undefined then QCoreApplication::organizationName()).
+  QString organizationDir()const;
 
   /// \brief Set/Get launcher directory.
   ///
