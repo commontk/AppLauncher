@@ -10,7 +10,7 @@ os:
 
 env:
   global:
-  - secure: "hsLaLewTuzBbghctH4bDfpzGPwdGlzfW0BS0zBbRRuEeqC9I4HrpSvxfj8YuBbuVvqzqXuGODrOx07mvwec3KyIS8NvXwqYufBoxlbpFH9MTmyEFZdDoqyx0TKborl4m2iVotUzQXls6jnFuK0kcFMArKdnhipKPKmn6xnS8mNA="
+  - secure: "gc6JxERCuHuv1/JHxXg/VWva0GT5HxqjAiNozVmbh5r9TYeDEewAgEIKeGnCxoPsjr4lgdiJn9lK04L/clSItSPvLDhwpV5STkzQqcO3ZlXwWR5htvGS9xfujmD1zbK3ithzyLcI6+04lb+6Mb7p1QFXMTWQgOYhEUKMvQahxOQ="
 
 compiler:
 - clang
