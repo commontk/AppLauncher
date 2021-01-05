@@ -675,7 +675,7 @@ QString ctkAppLauncherSettings::pathVariableName() const
 // --------------------------------------------------------------------------
 QString ctkAppLauncherSettings::organizationDir()const
 {
-  // Logic for deciding between using organizatioDoman or organizationName is
+  // Logic for deciding between using organizationDoman or organizationName is
   // adopted from qtbase\src\corelib\io\qsettings.cpp.
   QString dir =
 #ifdef Q_OS_DARWIN
