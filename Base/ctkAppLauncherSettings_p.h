@@ -40,6 +40,11 @@ public:
   static QString updateSettingDirPlaceHolder(const QString& value, const SettingsType& settingsType);
   static QStringList updateSettingDirPlaceHolder(const QStringList& values, const SettingsType& settingsType);
 
+  /// \brief Relative path is resolved against the launcher directory.
+  ///
+  /// If the launcher directory is empty, returns \a path.
+  QString resolvePath(const QString& path) const;
+
   /// \brief Expand setting \a value
   ///
   /// The following placeholder strings will be updated:

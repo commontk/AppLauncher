@@ -169,27 +169,33 @@ public:
 
   /// Get list of paths associated with the \c Paths group.
   ///
-  /// By default, placeholder strings are expanded.
+  /// By default, placeholder strings are expanded and relative paths are updated
+  /// prepending the launcher directory.
   ///
   /// \sa ctkAppLauncherSettingsPrivate::expandValue(const QString& value)
+  /// \sa launcherDir()
   QStringList paths(bool expand = true)const;
 
   /// Get environment variable value associated with \c EnvironmentVariables
   /// group.
   ///
-  /// By default, placeholder strings are expanded.
+  /// By default, placeholder strings are expanded and relative paths are updated
+  /// prepending the launcher directory.
   ///
   /// \sa envVars(bool expand)
   /// \sa ctkAppLauncherSettingsPrivate::expandValue(const QString& value)
+  /// \sa launcherDir()
   QString envVar(const QString& variableName, bool expand = true) const;
 
   /// Get list of environment variables associated with \c EnvironmentVariables
   /// group.
   ///
-  /// By default, placeholder strings are expanded.
+  /// By default, placeholder strings are expanded and relative paths are updated
+  /// prepending the launcher directory.
   ///
   /// \sa envVar(const QString& variableName, bool expand)
   /// \sa ctkAppLauncherSettingsPrivate::expandValue(const QString& value)
+  /// \sa launcherDir()
   QHash<QString, QString> envVars(bool expand = true) const;
 
   /// \brief Get dictionnary of all list of paths.
@@ -211,9 +217,11 @@ public:
   /// `DYLD_LIBRARY_PATH`   | NA              | libraryPaths()  | NA                       |
   /// `PATH`                | paths()         | paths()         | paths() + libraryPaths() |
   ///
-  /// By default, placeholder strings are expanded.
+  /// By default, placeholder strings are expanded and relative paths are updated
+  /// prepending the launcher directory.
   ///
   /// \sa ctkAppLauncherSettingsPrivate::expandValue(const QString& value)
+  /// \sa launcherDir()
   /// \sa additionalPathsVars(bool expand)
   /// \sa libraryPaths(bool expand)
   /// \sa paths(bool expand)
@@ -226,17 +234,21 @@ public:
   /// The returned list corresponds to the path list identified by one of
   /// the variable associated with \c General/additionalPathVariables.
   ///
-  /// By default, placeholder strings are expanded.
+  /// By default, placeholder strings are expanded and relative paths are updated
+  /// prepending the launcher directory.
   ///
   /// \sa ctkAppLauncherSettingsPrivate::expandValue(const QString& value)
+  /// \sa launcherDir()
   QStringList additionalPaths(const QString& variableName, bool expand = true) const;
 
   /// \brief Get dictionnary of path list associated with \c General/additionalPathVariables.
   ///
-  /// By default, placeholder strings are expanded.
+  /// By default, placeholder strings are expanded and relative paths are updated
+  /// prepending the launcher directory.
   ///
   /// \sa additionalPaths(const QString& variableName, bool expand)
   /// \sa ctkAppLauncherSettingsPrivate::expandValue(const QString& value)
+  /// \sa launcherDir()
   QHash<QString, QStringList> additionalPathsVars(bool expand = true) const;
 
   /// \brief Get current platform path separator.

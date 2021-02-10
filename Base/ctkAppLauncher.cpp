@@ -529,28 +529,8 @@ void ctkAppLauncherPrivate::buildEnvironment(QProcessEnvironment &env)
   QHash<QString, QStringList> pathsEnvVars = q->pathsEnvVars();
   foreach(const QString& key, pathsEnvVars.keys())
     {
-    // Relative paths are resolved against the launcher directory.
-    QStringList absolutePaths;
     const QStringList& paths = pathsEnvVars[key];
-    foreach(const QString& path, paths)
-      {
-      if (path.isEmpty())
-        {
-        continue;
-        }
-      QFileInfo fileInfo(path);
-      if (fileInfo.isRelative())
-        {
-        // make absolute path by appending to SlicerHome
-        absolutePaths << QDir(q->launcherDir()).filePath(path);
-        }
-      else
-        {
-        // already absolute path
-        absolutePaths << path;
-        } 
-      }
-    QString value = absolutePaths.join(this->PathSep);
+    QString value = paths.join(this->PathSep);
     this->reportInfo(QString("Setting env. variable [%1]:%2").arg(key, value));
     if (env.contains(key))
       {
