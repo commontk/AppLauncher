@@ -293,6 +293,20 @@ void ctkAppLauncherSettingsPrivate::readPathSettings(QSettings& settings, const 
 }
 
 // --------------------------------------------------------------------------
+QString ctkAppLauncherSettingsPrivate::resolvePath(const QString& path) const
+{
+  QFileInfo fileInfo(path);
+  if (!this->LauncherDir.isEmpty() && fileInfo.isRelative())
+    {
+    return QDir(this->LauncherDir).filePath(path);
+    }
+  else
+    {
+    return path;
+    }
+}
+
+// --------------------------------------------------------------------------
 QString ctkAppLauncherSettingsPrivate::expandValue(const QString& value) const
 {
   QString updatedValue = this->expandPlaceHolders(value);
@@ -567,7 +581,7 @@ QStringList ctkAppLauncherSettings::libraryPaths(bool expand /* = true */)const
   QStringList expanded;
   foreach(const QString& path, d->ListOfLibraryPaths)
     {
-    expanded << (expand ? d->expandValue(path) : path);
+    expanded << (expand ? d->resolvePath(d->expandValue(path)) : path);
     }
   return expanded;
 }
@@ -579,7 +593,7 @@ QStringList ctkAppLauncherSettings::paths(bool expand /* = true */)const
   QStringList expanded;
   foreach(const QString& path, d->ListOfPaths)
     {
-    expanded << (expand ? d->expandValue(path) : path);
+    expanded << (expand ? d->resolvePath(d->expandValue(path)) : path);
     }
   return expanded;
 }
@@ -634,7 +648,7 @@ QStringList ctkAppLauncherSettings::additionalPaths(const QString& variableName,
   QStringList expanded;
   foreach(const QString& path, d->MapOfPathVars.value(variableName))
     {
-    expanded << (expand ? d->expandValue(path) : path);
+    expanded << (expand ? d->resolvePath(d->expandValue(path)) : path);
     }
   return expanded;
 }
