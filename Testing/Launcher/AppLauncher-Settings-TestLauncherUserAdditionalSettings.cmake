@@ -69,9 +69,11 @@ set(user_additional_settings_path "${user_additional_settings_dir}/${application
 
 # --------------------------------------------------------------------------
 # Configure user additional settings file
-set(additional_library_path "/path/to/user-additional/lib")
+set(additional_library_path_1 "/path/to/user-additional/lib")
+set(additional_library_path_2 "relative-path/to/user-additional/lib")
 set(additional_path_1 "/home/user-additional/app1")
 set(additional_path_2 "/home/user-additional/app2")
+set(additional_path_3 "relative-user-additional/app3")
 set(additional_env_var_name_1 "USER_ADD_SOMETHING_NICE")
 set(additional_env_var_value_1 "Chocolate :)")
 set(additional_env_var_name_2 "USER_ADD_SOMETHING_AWESOME")
@@ -86,13 +88,15 @@ set(common_env_var2_value_2 "Trees")
 
 file(WRITE ${user_additional_settings_path} "
 [LibraryPaths]
-1\\path=${additional_library_path}
-size=1
+1\\path=${additional_library_path_1}
+2\\path=${additional_library_path_2}
+size=2
 
 [Paths]
 1\\path=${additional_path_1}
 2\\path=${additional_path_2}
-size=2
+3\\path=${additional_path_3}
+size=3
 
 [Environment]
 additionalPathVariables=${additional_pathenv_var_name_2}
@@ -160,11 +164,14 @@ set(expected_pathenv_var_value_1
 set(expected_pathenv_var_value_2
   "${additional_pathenv_var_value_2_1}${pathsep}${additional_pathenv_var_value_2_2}")
 
+set(expected_additional_library_path_2 "${launcher_dir}/${additional_library_path_2}")
+set(expected_additional_path_3 "${launcher_dir}/${additional_path_3}")
+
 set(expected_ov_lines
   "${additional_env_var_name_2}=${additional_env_var_value_2}"
   "${additional_env_var_name_1}=${additional_env_var_value_1}"
-  "${library_path_variable_name}=${additional_library_path}${pathsep}${regular_library_path_1}${pathsep}${regular_library_path_2}"
-  "PATH=${additional_path_1}${pathsep}${additional_path_2}${pathsep}${regular_path_1}${pathsep}${regular_path_2}"
+  "${library_path_variable_name}=${additional_library_path_1}${pathsep}${expected_additional_library_path_2}${pathsep}${regular_library_path_1}${pathsep}${regular_library_path_2}"
+  "PATH=${additional_path_1}${pathsep}${additional_path_2}${pathsep}${expected_additional_path_3}${pathsep}${regular_path_1}${pathsep}${regular_path_2}"
   "${regular_env_var_name_2}=${regular_env_var_value_2}\n"
   "${regular_env_var_name_1}=${regular_env_var_value_1}\n"
   "${regular_pathenv_var_name_1}=${expected_pathenv_var_value_1}\n"
@@ -176,7 +183,7 @@ if(WIN32)
   set(expected_ov_lines
     "${additional_env_var_name_2}=${additional_env_var_value_2}"
     "${additional_env_var_name_1}=${additional_env_var_value_1}"
-    "Path=${additional_path_1}${pathsep}${additional_path_2}${pathsep}${regular_path_1}${pathsep}${regular_path_2}${pathsep}${additional_library_path}${pathsep}${regular_library_path_1}${pathsep}${regular_library_path_2}"
+    "Path=${additional_path_1}${pathsep}${additional_path_2}${pathsep}${expected_additional_path_3}${pathsep}${regular_path_1}${pathsep}${regular_path_2}${pathsep}${additional_library_path_1}${pathsep}${expected_additional_library_path_2}${pathsep}${regular_library_path_1}${pathsep}${regular_library_path_2}"
     "${regular_env_var_name_2}=${regular_env_var_value_2}\n"
     "${regular_env_var_name_1}=${regular_env_var_value_1}\n"
     "${regular_pathenv_var_name_1}=${expected_pathenv_var_value_1}\n"
