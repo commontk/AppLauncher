@@ -23,8 +23,10 @@ set(application_name "AppLauncher")
 set(application_revision "4810")
 set(regular_library_path_1 ${library_path})
 set(regular_library_path_2 "/path/to/regular/libtwo")
+set(regular_library_path_3 "relative-path/to/regular/libthree")
 set(regular_path_1 "/path/to/regular/stuff")
 set(regular_path_2 "/path/to/regular/otherstuff")
+set(regular_path_3 "relative-path/to/regular/otherstuff")
 set(regular_env_var_name_1 "SOMETHING_NICE")
 set(regular_env_var_value_1 "Chocolate")
 set(regular_env_var_name_2 "SOMETHING_AWESOME")
@@ -32,6 +34,7 @@ set(regular_env_var_value_2 "Rock climbing !")
 set(regular_pathenv_var_name_1 "SOME_PATH")
 set(regular_pathenv_var_value_1_1 "/farm/cow")
 set(regular_pathenv_var_value_1_2 "/farm/pig")
+set(regular_pathenv_var_value_1_3 "relative-farm/pig")
 set(common_env_var_name "SOMETHING_COMMON")
 set(common_env_var_value_1 "Snow")
 set(common_env_var2_name "ANOTHER_THING_COMMON")
@@ -51,12 +54,14 @@ revision=${application_revision}
 [LibraryPaths]
 1\\path=${regular_library_path_1}
 2\\path=${regular_library_path_2}
-size=2
+3\\path=${regular_library_path_3}
+size=3
 
 [Paths]
 1\\path=${regular_path_1}
 2\\path=${regular_path_2}
-size=2
+3\\path=${regular_path_3}
+size=3
 
 [Environment]
 additionalPathVariables=${regular_pathenv_var_name_1}
@@ -70,7 +75,8 @@ ${common_env_var2_name}=${common_env_var2_value_1}
 [${regular_pathenv_var_name_1}]
 1\\path=${regular_pathenv_var_value_1_1}
 2\\path=${regular_pathenv_var_value_1_2}
-size=2
+3\\path=${regular_pathenv_var_value_1_3}
+size=3
 
 ")
 
@@ -99,10 +105,12 @@ set(user_additional_pathenv_var_value_1_2 "/farm/chicken")
 set(user_additional_pathenv_var_name_2 "USER_SOME_PATH")
 set(user_additional_pathenv_var_value_2_1 "/user-farm/cow")
 set(user_additional_pathenv_var_value_2_2 "/user-farm/pig")
-set(user_additional_library_path "/path/to/user-additional/lib")
+set(user_additional_library_path_1 "/path/to/user-additional/lib")
+set(user_additional_library_path_2 "relative-path/to/user-additional/lib")
 set(user_additional_path_1 "/home/user-additional/app1")
 set(user_additional_path_2 "/home/user-additional/app2")
 set(user_additional_path_3 "/home/user-additional/<env:${user_sys_env_var_name}>")
+set(user_additional_path_4 "relative-user-additional/app4")
 set(user_common_env_var_value_2 "Recycle")
 set(user_common_env_var2_value_2 "Energy")
 
@@ -110,14 +118,16 @@ set(ENV{${user_sys_env_var_name}} ${user_sys_env_var_value})
 
 file(WRITE ${user_additional_settings_path} "
 [LibraryPaths]
-1\\path=${user_additional_library_path}
-size=1
+1\\path=${user_additional_library_path_1}
+2\\path=${user_additional_library_path_2}
+size=2
 
 [Paths]
 1\\path=${user_additional_path_1}
 2\\path=${user_additional_path_2}
 3\\path=${user_additional_path_3}
-size=3
+4\\path=${user_additional_path_4}
+size=4
 
 [Environment]
 additionalPathVariables=${user_additional_pathenv_var_name_2}
@@ -284,15 +294,17 @@ endif()
 # Set ivars used afterward to set "expected_*_lines" and "unexpected_*_lines" variables.
 #
 
+set(expected_regular_pathenv_var_value_1_3 "${launcher_dir}/${regular_pathenv_var_value_1_3}")
+
 if(with_additional_pathenv_var)
   set(expected_pathenv_var_value_1
     "${cmdarg_additional_pathenv_var_value_1_1}${pathsep}${cmdarg_additional_pathenv_var_value_1_2}")
   set(expected_pathenv_var_value_1
     "${expected_pathenv_var_value_1}${pathsep}${user_additional_pathenv_var_value_1_1}${pathsep}${user_additional_pathenv_var_value_1_2}")
   set(expected_pathenv_var_value_1
-    "${expected_pathenv_var_value_1}${pathsep}${regular_pathenv_var_value_1_1}${pathsep}${regular_pathenv_var_value_1_2}")
+    "${expected_pathenv_var_value_1}${pathsep}${regular_pathenv_var_value_1_1}${pathsep}${regular_pathenv_var_value_1_2}${pathsep}${expected_regular_pathenv_var_value_1_3}")
 else()
-  set(expected_pathenv_var_value_1 "${regular_pathenv_var_value_1_1}${pathsep}${regular_pathenv_var_value_1_2}")
+  set(expected_pathenv_var_value_1 "${regular_pathenv_var_value_1_1}${pathsep}${regular_pathenv_var_value_1_2}${pathsep}${expected_regular_pathenv_var_value_1_3}")
 endif()
 
 if(with_additional_env_var)
@@ -316,21 +328,26 @@ set(expected_additional_env_var_value_3 ${cmdarg_additional_sys_env_var_value})
 set(expected_user_additional_path_3 "/home/user-additional/${user_sys_env_var_value}")
 set(expected_user_additional_env_var_value_3 ${user_sys_env_var_value})
 
+set(expected_regular_library_path_3 "${launcher_dir}/${regular_library_path_3}")
+set(expected_regular_path_3 "${launcher_dir}/${regular_path_3}")
+set(expected_user_additional_library_path_2 "${launcher_dir}/${user_additional_library_path_2}")
+set(expected_user_additional_path_4 "${launcher_dir}/${user_additional_path_4}")
+
 if(with_additional_path_librarypath)
   if(WIN32)
     set(expected_library_path_env)
-    set(expected_path_env "Path=${cmdarg_additional_path_1}${pathsep}${cmdarg_additional_path_2}${pathsep}${expected_additional_path_3}${pathsep}${user_additional_path_1}${pathsep}${user_additional_path_2}${pathsep}${expected_user_additional_path_3}${pathsep}${regular_path_1}${pathsep}${regular_path_2}${pathsep}${additional_library_path}${pathsep}${user_additional_library_path}${pathsep}${regular_library_path_1}${pathsep}${regular_library_path_2}")
+    set(expected_path_env "Path=${cmdarg_additional_path_1}${pathsep}${cmdarg_additional_path_2}${pathsep}${expected_additional_path_3}${pathsep}${user_additional_path_1}${pathsep}${user_additional_path_2}${pathsep}${expected_user_additional_path_3}${pathsep}${expected_user_additional_path_4}${pathsep}${regular_path_1}${pathsep}${regular_path_2}${pathsep}${pathsep}${expected_regular_path_3}${additional_library_path}${pathsep}${user_additional_library_path_1}${pathsep}${expected_user_additional_library_path_2}${pathsep}${regular_library_path_1}${pathsep}${regular_library_path_2}${pathsep}${expected_regular_library_path_3}")
   else()
-    set(expected_library_path_env "${library_path_variable_name}=${cmdarg_additional_library_path}${pathsep}${user_additional_library_path}${pathsep}${regular_library_path_1}${pathsep}${regular_library_path_2}")
-    set(expected_path_env "PATH=${cmdarg_additional_path_1}${pathsep}${cmdarg_additional_path_2}${pathsep}${expected_additional_path_3}${pathsep}${user_additional_path_1}${pathsep}${user_additional_path_2}${pathsep}${expected_user_additional_path_3}${pathsep}${regular_path_1}${pathsep}${regular_path_2}")
+    set(expected_library_path_env "${library_path_variable_name}=${cmdarg_additional_library_path}${pathsep}${user_additional_library_path_1}${pathsep}${expected_user_additional_library_path_2}${pathsep}${regular_library_path_1}${pathsep}${regular_library_path_2}${pathsep}${expected_regular_library_path_3}")
+    set(expected_path_env "PATH=${cmdarg_additional_path_1}${pathsep}${cmdarg_additional_path_2}${pathsep}${expected_additional_path_3}${pathsep}${user_additional_path_1}${pathsep}${user_additional_path_2}${pathsep}${expected_user_additional_path_3}${pathsep}${expected_user_additional_path_4}${pathsep}${regular_path_1}${pathsep}${regular_path_2}${pathsep}${expected_regular_path_3}")
   endif()
 else()
   if(WIN32)
     set(expected_library_path_env)
-    set(expected_path_env "Path=${regular_path_1}${pathsep}${regular_path_2}${pathsep}${regular_library_path_1}${pathsep}${regular_library_path_2}")
+    set(expected_path_env "Path=${regular_path_1}${pathsep}${regular_path_2}${pathsep}${expected_regular_path_3}${pathsep}${regular_library_path_1}${pathsep}${regular_library_path_2}${pathsep}${expected_regular_library_path_3}")
   else()
-    set(expected_library_path_env "${library_path_variable_name}=${regular_library_path_1}${pathsep}${regular_library_path_2}")
-    set(expected_path_env "PATH=${regular_path_1}${pathsep}${regular_path_2}")
+    set(expected_library_path_env "${library_path_variable_name}=${regular_library_path_1}${pathsep}${regular_library_path_2}${pathsep}${expected_regular_library_path_3}")
+    set(expected_path_env "PATH=${regular_path_1}${pathsep}${regular_path_2}${pathsep}${expected_regular_path_3}")
   endif()
 endif()
 
