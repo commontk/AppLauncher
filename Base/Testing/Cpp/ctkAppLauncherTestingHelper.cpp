@@ -55,6 +55,9 @@ bool CheckStringList(int line, const QString& description,
                  << "\nCompared lists differ at index " << idx
                  << "\n\tcurrent[" << idx << "] :" << sortedCurrent.at(idx)
                  << "\n\texpected[" << idx << "]:" << sortedExpected.at(idx);
+      qWarning().nospace()
+                 << "\n\tcurrent list values:\n\t\t" << sortedCurrent.join("\n\t\t")
+                 << "\n\texpected list values:\n\t\t" << sortedExpected.join("\n\t\t");
       return false;
       }
     }
