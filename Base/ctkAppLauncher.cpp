@@ -546,9 +546,11 @@ void ctkAppLauncherPrivate::buildEnvironment(QProcessEnvironment &env)
     }
 
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
+  QStringList envVarNames = q->envVars().keys();
+  QStringList pathsEnvVarNames = q->envVars().keys();
   QSet<QString> variables =
-      QSet<QString> (q->envVars().keys().begin(), q->envVars().keys().end()) +
-      QSet<QString> (q->pathsEnvVars().keys().begin(), q->pathsEnvVars().keys().end()) +
+      QSet<QString> (envVarNames.begin(), envVarNames.end()) +
+      QSet<QString> (pathsEnvVarNames.begin(), pathsEnvVarNames.end()) +
       QSet<QString> (this->SystemEnvironmentKeys.begin(), this->SystemEnvironmentKeys.end());
 #else
   QSet<QString> variables =
