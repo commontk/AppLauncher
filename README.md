@@ -86,6 +86,8 @@ maintainers: how to make a release ?
     git push origin master
     ```
 
+_**Important:** Until issue [scikit-build/scikit-ci-addons/issues/96](https://github.com/scikit-build/scikit-ci-addons/issues/96) is addressed, macOS release package should be manually downloaded from the GitHub Actions artifact and uploaded as a GitHub release asset._
+
 6. Update `CMakeLists.txt` setting `CTKAppLauncher_VERSION_IS_RELEASE` to `0`
 
     ```bash

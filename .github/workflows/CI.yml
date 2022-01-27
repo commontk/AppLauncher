@@ -72,14 +72,21 @@ jobs:
         ctest -LE XDisplayRequired -VV
 
     - name: Publish packages
-      run: |
-        cd src
-        ci_addons publish_github_release commontk/applauncher \
-          --exit-success-if-missing-token \
-          --prerelease-packages ../build/CTKAppLauncher-*.tar.gz \
-          --prerelease-packages-clear-pattern "*macosx*" \
-          --prerelease-packages-keep-pattern "*<COMMIT_SHORT_SHA>*" \
-          --release-packages build/CTKAppLauncher-*.tar.gz
-      env:
-        GITHUB_TOKEN: secrets.COMMONTKBOT_GITHUB_TOKEN
+      uses: actions/upload-artifact@v2
+      with:
+        name: macos-packages
+        path: build/CTKAppLauncher-*.tar.gz
+
+    # See https://github.com/scikit-build/scikit-ci-addons/issues/96
+    #- name: Publish packages
+    #  run: |
+    #    cd src
+    #    ci_addons publish_github_release commontk/applauncher \
+    #      --exit-success-if-missing-token \
+    #      --prerelease-packages ../build/CTKAppLauncher-*.tar.gz \
+    #      --prerelease-packages-clear-pattern "*macosx*" \
+    #      --prerelease-packages-keep-pattern "*<COMMIT_SHORT_SHA>*" \
+    #      --release-packages build/CTKAppLauncher-*.tar.gz
+    #  env:
+    #    GITHUB_TOKEN: secrets.COMMONTKBOT_GITHUB_TOKEN
 
