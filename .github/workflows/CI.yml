@@ -5,6 +5,8 @@ on:
   push:
     branches:
     - master
+    tags:
+    - 'v*'
 
 jobs:
   tests:
@@ -24,7 +26,7 @@ jobs:
     - name: Setup python
       uses: actions/setup-python@v2.3.1
       with:
-        python-version: '3.x'
+        python-version: '3.7'
 
     - name: Install scikit-ci-addons
       run: pip install -U scikit-ci-addons
@@ -64,8 +66,27 @@ jobs:
         cmake --build build --target package
 
     # Exclude tests requiring X Display
-    - name: Test
-      run: |
-        cd build
-        ctest -LE XDisplayRequired -VV
+    #- name: Test
+    #  run: |
+    #    cd build
+    #    ctest -LE XDisplayRequired -VV
+
+    - name: Publish packages
+      uses: actions/upload-artifact@v2
+      with:
+        name: macos-packages
+        path: ../build/CTKAppLauncher-*.tar.gz
+
+    # See https://github.com/scikit-build/scikit-ci-addons/issues/96
+    #- name: Publish packages
+    #  run: |
+    #    cd src
+    #    ci_addons publish_github_release commontk/applauncher \
+    #      --exit-success-if-missing-token \
+    #      --prerelease-packages ../build/CTKAppLauncher-*.tar.gz \
+    #      --prerelease-packages-clear-pattern "*macosx*" \
+    #      --prerelease-packages-keep-pattern "*<COMMIT_SHORT_SHA>*" \
+    #      --release-packages build/CTKAppLauncher-*.tar.gz
+    #  env:
+    #    GITHUB_TOKEN: secrets.COMMONTKBOT_GITHUB_TOKEN
 
