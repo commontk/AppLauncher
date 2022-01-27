@@ -6,16 +6,16 @@ Overview
 
 CTK Application launcher is a lightweight open-source utility allowing to set environment before starting a real application.
 
-The launcher is available on Linux, Windows and MacOSX.
+The launcher is available on Linux, Windows and macOS.
 
 Read the [wiki](http://www.commontk.org/index.php/Tools:_Application_launcher) for more details.
 
 Build Status
 ------------
 
-| Linux                          | MacOSX                        | Windows                       |
+| Linux                          | macOS                         | Windows                       |
 |--------------------------------|-------------------------------|-------------------------------|
-| [![][circleci]][circleci-lnk]  | [![][travisci]][travisci-lnk] | [![][appveyor]][appveyor-lnk] |
+| [![][circleci]][circleci-lnk]  | [![][gha]][gha-lnk]           | [![][appveyor]][appveyor-lnk] |
 
 
 [appveyor]: https://ci.appveyor.com/api/projects/status/s6jen6mde8n72o8u/branch/master?svg=true
@@ -24,8 +24,8 @@ Build Status
 [circleci]: https://circleci.com/gh/commontk/AppLauncher.svg?style=svg
 [circleci-lnk]: https://circleci.com/gh/commontk/AppLauncher
 
-[travisci]: https://travis-ci.org/commontk/AppLauncher.svg?branch=master
-[travisci-lnk]: https://travis-ci.org/commontk/AppLauncher
+[gha]: https://github.com/commontk/AppLauncher/actions/workflows/CI.yml/badge.svg?branch=master
+[gha-lnk]: https://github.com/commontk/AppLauncher/actions/workflows/CI.yml
 
 contributing
 ------------

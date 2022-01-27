@@ -1,0 +1,71 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+    - master
+
+jobs:
+  tests:
+    runs-on: macos-10.15
+    name: macos-10.15
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+        path: src
+
+    - name: Setup cmake
+      uses: jwlawson/actions-setup-cmake@v1.12
+      with:
+        cmake-version: 3.22.2
+
+    - name: Setup python
+      uses: actions/setup-python@v2.3.1
+      with:
+        python-version: '3.x'
+
+    - name: Install scikit-ci-addons
+      run: pip install -U scikit-ci-addons
+
+    - name: Specific XCode version
+      run: sudo xcode-select -s "/Applications/Xcode_11.7.app"
+
+    - name: Download Qt archive
+      uses: carlosperate/download-file-action@v1.1.1
+      with:
+        file-url: 'https://github.com/jcfr/qt-static-build/releases/download/qt-5.15.2-macosx10.13-static-x86_64/qt-5.15.2-macosx10.13-static-x86_64.tar.bz2'
+        sha256: '13a1df0c939c22618fb979072c3c16191cb42f7759ea3d8ec344aa229a04bca0'
+
+    - name: Extract Qt archive
+      run: |
+        tar -xjvf qt-5.15.2-macosx10.13-static-x86_64.tar.bz2
+        mv qt-5.15.2-macosx10.13-static-x86_64 qt
+
+    - name: Configure
+      run: |
+        cmake \
+          -DQt5_DIR:DIR=$(pwd)/qt/lib/cmake/Qt5 \
+          -DCMAKE_BUILD_TYPE:STRING=Release \
+          -DCMAKE_OSX_DEPLOYMENT_TARGET:STRING=10.13 \
+          -DCMAKE_OSX_ARCHITECTURES:STRING=x86_64 \
+          -B build -S src
+      env:
+        CC: clang
+        CXX: clang++
+
+    - name: Build
+      run: |
+        cmake --build build -- -j4
+
+    - name: Package
+      run: |
+        cmake --build build --target package
+
+    # Exclude tests requiring X Display
+    - name: Test
+      run: |
+        cd build
+        ctest -LE XDisplayRequired -VV
+
