@@ -993,7 +993,7 @@ void ctkAppLauncher::setApplication(const QCoreApplication& app)
 {
   Q_D(ctkAppLauncher);
   d->Application = app.instance();
-  if (d->Application)
+  if (d->Application && d->Arguments.empty())
     {
     this->setArguments(d->Application->arguments());
     }
