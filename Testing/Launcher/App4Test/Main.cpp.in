@@ -80,6 +80,22 @@ int check_unexpected_env_var(const char* varname)
   return EXIT_SUCCESS;
 }
 
+void display_arguments(std::ostream& stream, int argc, char* argv[])
+{
+  // Since tests are expecting the argument to be displayed as ""Argument passed: [arg1 [...]]", changing
+  // the following may require to update the tests.
+  stream << "Argument passed:";
+  if (argc >= 2)
+    {
+    stream << argv[1]; // argName
+    }
+  for(int idx=2; idx < argc; idx++)
+    {
+    stream << " " << argv[idx];
+    }
+  stream << std::endl;
+}
+
 int main(int argc, char** argv)
 {
   //std::cout << "Hello World !" << std::endl;
@@ -91,12 +107,8 @@ int main(int argc, char** argv)
     std::string argName(argv[1]);
     if (argName == "--foo")
       {
-      std::cout << "Argument count: " << argc << " - Argument passed:" << argName;
-      for(int i=2; i < argc; i++)
-        {
-        std::cout << " " << argv[i];
-        }
-      std::cout << std::endl;
+      std::cout << "Argument count: " << argc << " - ";
+      display_arguments(std::cout, argc, argv);
       }
     else if (argName == "--test-timeout")
       {
