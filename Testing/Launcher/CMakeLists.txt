@@ -147,6 +147,7 @@ applauncher_add_test(AppLauncher-Param-TestLauncherTimeout)
 applauncher_add_test(AppLauncher-Param-TestLauncherVerbose)
 applauncher_add_test(AppLauncher-Param-TestLauncherVersion)
 applauncher_add_test(AppLauncher-Param-TestQtReservedArgs)
+set_property(TEST "${testname}" APPEND PROPERTY LABELS "XDisplayRequired")
 
 applauncher_add_test(AppLauncher-Settings-TestApplicationArguments)
 applauncher_add_test(AppLauncher-Settings-TestApplicationPath)

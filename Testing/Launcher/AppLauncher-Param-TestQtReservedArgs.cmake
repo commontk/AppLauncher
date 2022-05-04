@@ -18,8 +18,9 @@ size=1
 set(PRINT_COMMAND 0)
 
 # --------------------------------------------------------------------------
-# Make sure the launcher do not consider Qt reserved argument
-set(command ${launcher_exe} -widgetcount --launcher-no-splash)
+# Make sure that (1) the launcher do not consider Qt reserved argument
+# and (2) the launched application consider Qt reserved argument
+set(command ${launcher_exe} --check-reserved-argument -widgetcount)
 execute_process(
   COMMAND ${command}
   WORKING_DIRECTORY ${launcher_binary_dir}
@@ -39,3 +40,6 @@ if("${ev}" MATCHES "Widgets left.*")
   message(FATAL_ERROR "error_variable [${ev}] shouldn't contain 'Widgets left'")
 endif()
 
+if(NOT "${ov}" MATCHES "-widgetcount argument passed")
+  message(FATAL_ERROR "output_variable [${ov}] should contain '-widgetcount argument passed'")
+endif()

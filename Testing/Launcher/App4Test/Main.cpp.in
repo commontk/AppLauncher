@@ -220,6 +220,36 @@ int main(int argc, char** argv)
         return EXIT_FAILURE;
         }
       }
+    else if (argName == "--check-reserved-argument")
+      {
+      std::string expectedArgName2("-widgetcount");
+      int expectedArgCount = 3;
+      if (argc != expectedArgCount)
+        {
+        std::cerr << "Unexpected number of arguments"
+                  << "\n\texpected: " << expectedArgCount
+                  << "\n\t current: " << argc
+                  << std::endl;
+        std::cerr << "Argument passed:" << argName;
+        for(int i=2; i < argc; i++)
+          {
+          std::cerr << " " << argv[i];
+          }
+        std::cerr << std::endl;
+        return EXIT_FAILURE;
+        }
+      std::string argName2(argv[2]);
+      if (argName2 != expectedArgName2)
+        {
+        std::cerr << "Unexpected argument #2:"
+          << "\n\texpected: " << expectedArgName2
+          << "\n\t current: " << argName2
+          << std::endl;
+        display_arguments(std::cerr, argc, argv);
+        return EXIT_FAILURE;
+        }
+      std::cout << expectedArgName2 << " argument passed" << std::endl;
+      }
     }
   else if (argc == 1)
     {
