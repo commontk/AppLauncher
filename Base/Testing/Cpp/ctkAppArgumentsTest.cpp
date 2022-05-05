@@ -63,7 +63,9 @@ void ctkAppArgumentsTester::initTestCase()
       << "-rarg7=rargvalue7"
       << "-rarg8" << "rargvalue8"
       << "-rarg8=rargvalue8"
-      << "--rarg9";
+      << "--rarg9"
+      << "-rarg10" << "windows:dialogs=xp,fontengine=freetype"
+      << "-rarg11" << "windows:dpiawareness=0,1,2";
 
   this->RegularArguments = QStringList()
       << "-s" << "1"
@@ -80,7 +82,9 @@ void ctkAppArgumentsTester::initTestCase()
       << "-rarg7=rargvalue7"
       << "-rarg8" << "rargvalue8"
       << "-rarg8=rargvalue8"
-      << "--rarg9";
+      << "--rarg9"
+      << "-rarg10" << "windows:dialogs=xp,fontengine=freetype"
+      << "-rarg11" << "windows:dpiawareness=0,1,2";
 
   ArgToFilterListType argToFilterList = ArgToFilterListType()
       << ArgToFilterType("--rarg1", ctkAppArguments::ARG_TO_FILTER_SPACE_VALUE)
@@ -95,13 +99,17 @@ void ctkAppArgumentsTester::initTestCase()
   this->ArgToFilterList = ArgToFilterListType()
       << argToFilterList
       << ArgToFilterType("-rarg8", ctkAppArguments::ARG_TO_FILTER_SPACE_VALUE | ctkAppArguments::ARG_TO_FILTER_EQUAL_VALUE)
-      << ArgToFilterType("--rarg9");
+      << ArgToFilterType("--rarg9")
+      << ArgToFilterType("-rarg10", ctkAppArguments::ARG_TO_FILTER_SPACE_VALUE)
+      << ArgToFilterType("-rarg11", ctkAppArguments::ARG_TO_FILTER_SPACE_VALUE);
 
   this->ExpectedArgToFilterList = ArgToFilterListType()
       << argToFilterList
       << ArgToFilterType("-rarg8", ctkAppArguments::ARG_TO_FILTER_EQUAL_VALUE)
       << ArgToFilterType("-rarg8", ctkAppArguments::ARG_TO_FILTER_SPACE_VALUE)
-      << ArgToFilterType("--rarg9", ctkAppArguments::ARG_TO_FILTER_NO_VALUE);
+      << ArgToFilterType("--rarg9", ctkAppArguments::ARG_TO_FILTER_NO_VALUE)
+      << ArgToFilterType("-rarg10", ctkAppArguments::ARG_TO_FILTER_SPACE_VALUE)
+      << ArgToFilterType("-rarg11", ctkAppArguments::ARG_TO_FILTER_SPACE_VALUE);
 }
 
 // ----------------------------------------------------------------------------
