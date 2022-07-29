@@ -29,6 +29,10 @@ elseif ("$ENV{APPLAUNCHER_CMAKE_GENERATOR}" STREQUAL "Visual Studio 16 2019")
   # For local build with Visual Studio 2019 with modern CMake
   set(APPLAUNCHER_CMAKE_GENERATOR -G "Visual Studio 16 2019" -T v141 -A Win32)
   set(APPLAUNCHER_USE_NINJA OFF)
+elseif ("$ENV{APPLAUNCHER_CMAKE_GENERATOR}" STREQUAL "Visual Studio 17 2022")
+  # For local build with Visual Studio 2019 with modern CMake
+  set(APPLAUNCHER_CMAKE_GENERATOR -G "Visual Studio 17 2022" -T v143 -A Win32)
+  set(APPLAUNCHER_USE_NINJA OFF)
 else()
   message(FATAL_ERROR "Env. variable APPLAUNCHER_CMAKE_GENERATOR is expected to match 'Ninja' or 'Visual Studio 15 2017' or 'Visual Studio 16 2019' [$ENV{APPLAUNCHER_CMAKE_GENERATOR}]")
 endif()
