@@ -166,9 +166,9 @@ void ctkAppLauncherEnvironment::updateCurrentEnvironment(const QProcessEnvironme
   foreach(const QString& varName, variablesToUnset)
     {
 #if defined(Q_OS_WIN32)
-    bool success = qputenv(varName.toLatin1(), QString("").toLatin1());
+    bool success = qputenv(varName.toLocal8Bit(), QString().toLocal8Bit());
 #else
-    bool success = unsetenv(varName.toLatin1()) == EXIT_SUCCESS;
+    bool success = unsetenv(varName.toLocal8Bit()) == EXIT_SUCCESS;
 #endif
     if (!success)
       {
@@ -180,7 +180,7 @@ void ctkAppLauncherEnvironment::updateCurrentEnvironment(const QProcessEnvironme
   foreach(const QString& varName, envKeys)
     {
     QString varValue = environment.value(varName);
-    bool success = qputenv(varName.toLatin1(), varValue.toLatin1());
+    bool success = qputenv(varName.toLocal8Bit(), varValue.toLocal8Bit());
     if (!success)
       {
       qWarning() << "Failed to set environment variable"

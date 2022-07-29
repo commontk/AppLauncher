@@ -52,14 +52,14 @@ void ctkAppLauncherEnvironmentTester::cleanup()
   QStringList originalEnvKeys = ctkAppLauncherEnvironment::envKeys(this->OriginalEnv);
   foreach(const QString& varName, originalEnvKeys)
     {
-    qputenv(varName.toLatin1(), this->OriginalEnv.value(varName).toLatin1());
+    qputenv(varName.toLocal8Bit(), this->OriginalEnv.value(varName).toLocal8Bit());
     }
 }
 
 // ----------------------------------------------------------------------------
 void ctkAppLauncherEnvironmentTester::setEnv(const QString& name, const QString& value)
 {
-  qputenv(name.toLatin1(), value.toLatin1());
+  qputenv(name.toLocal8Bit(), value.toLocal8Bit());
   this->VariableNames.insert(name);
 }
 
@@ -67,9 +67,9 @@ void ctkAppLauncherEnvironmentTester::setEnv(const QString& name, const QString&
 void ctkAppLauncherEnvironmentTester::unsetEnv(const QString& name)
 {
 #if defined(_MSC_VER)
-  qputenv(name.toLatin1(), QString("").toLatin1());
+  qputenv(name.toLocal8Bit(), QString().toLocal8Bit());
 #else
-  unsetenv(name.toLatin1());
+  unsetenv(name.toLocal8Bit());
 #endif
 }
 
