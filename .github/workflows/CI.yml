@@ -83,6 +83,7 @@ jobs:
     #    cd src
     #    ci_addons publish_github_release commontk/applauncher \
     #      --exit-success-if-missing-token \
+    #      --prerelease-sha main \
     #      --prerelease-packages ../build/CTKAppLauncher-*.tar.gz \
     #      --prerelease-packages-clear-pattern "*macosx*" \
     #      --prerelease-packages-keep-pattern "*<COMMIT_SHORT_SHA>*" \
