@@ -54,7 +54,7 @@ jobs:
       - run:
          name: Upload release and prerelease packages
          command: |
-           if [[ "${CIRCLE_BRANCH}" == "master" ]]; then
+           if [[ "${CIRCLE_BRANCH}" == "main" ]]; then
              pip install -U scikit-ci-addons
              cd /usr/src/AppLauncher
              ci_addons publish_github_release commontk/applauncher \

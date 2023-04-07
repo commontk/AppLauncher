@@ -1,7 +1,7 @@
 
 branches:
  only:
- - master
+ - main
 skip_tags: true
 
 shallow_clone: false

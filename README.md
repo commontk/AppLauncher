@@ -18,13 +18,13 @@ Build Status
 | [![][circleci]][circleci-lnk]  | [![][gha]][gha-lnk]           | [![][appveyor]][appveyor-lnk] |
 
 
-[appveyor]: https://ci.appveyor.com/api/projects/status/s6jen6mde8n72o8u/branch/master?svg=true
+[appveyor]: https://ci.appveyor.com/api/projects/status/s6jen6mde8n72o8u/branch/main?svg=true
 [appveyor-lnk]: https://ci.appveyor.com/project/commontk/AppLauncher
 
 [circleci]: https://circleci.com/gh/commontk/AppLauncher.svg?style=svg
 [circleci-lnk]: https://circleci.com/gh/commontk/AppLauncher
 
-[gha]: https://github.com/commontk/AppLauncher/actions/workflows/CI.yml/badge.svg?branch=master
+[gha]: https://github.com/commontk/AppLauncher/actions/workflows/CI.yml/badge.svg?branch=main
 [gha-lnk]: https://github.com/commontk/AppLauncher/actions/workflows/CI.yml
 
 contributing
@@ -35,7 +35,7 @@ little bit helps, and credit will always be given.
 
 See [CONTRIBUTING.md][contributing] for more details.
 
-[contributing]: https://github.com/commontk/AppLauncher/blob/master/CONTRIBUTING.md
+[contributing]: https://github.com/commontk/AppLauncher/blob/main/CONTRIBUTING.md
 
 maintainers: how to make a release ?
 ------------------------------------
@@ -76,14 +76,14 @@ maintainers: how to make a release ?
 4. Tag the release. Requires a GPG key with signatures:
 
     ```bash
-    git tag -s -m "CTKAppLauncher $tag" $tag master
+    git tag -s -m "CTKAppLauncher $tag" $tag main
     ```
 
-5. Publish the tag and `master` branch to trigger the release build
+5. Publish the tag and `main` branch to trigger the release build
 
     ```bash
     git push origin $tag && \
-    git push origin master
+    git push origin main
     ```
 
 _**Important:** Until issue [scikit-build/scikit-ci-addons/issues/96](https://github.com/scikit-build/scikit-ci-addons/issues/96) is addressed, macOS release package should be manually downloaded from the GitHub Actions artifact and uploaded as a GitHub release asset._
@@ -100,7 +100,7 @@ _**Important:** Until issue [scikit-build/scikit-ci-addons/issues/96](https://gi
 7. Publish the changes:
 
     ```bash
-    git push origin master
+    git push origin main
     ```
 
 License
