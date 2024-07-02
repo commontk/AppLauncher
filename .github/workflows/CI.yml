@@ -10,8 +10,8 @@ on:
 
 jobs:
   tests:
-    runs-on: macos-10.15
-    name: macos-10.15
+    runs-on: macos-12
+    name: macos-12
     steps:
     - uses: actions/checkout@v2
       with:
@@ -30,9 +30,6 @@ jobs:
 
     - name: Install scikit-ci-addons
       run: pip install -U scikit-ci-addons
-
-    - name: Specific XCode version
-      run: sudo xcode-select -s "/Applications/Xcode_11.7.app"
 
     - name: Download Qt archive
       uses: carlosperate/download-file-action@v1.1.1
