@@ -18,10 +18,7 @@
 #
 ###########################################################################
 
-#
-# Depends on:
-#  <SOURCE>/CMake/ctkMacroParseArguments.cmake
-#
+include(GenerateExportHeader)
 
 macro(ctkMacroBuildLib)
   set(prefix ${PROJECT_NAME})
@@ -29,7 +26,7 @@ macro(ctkMacroBuildLib)
     message(SEND_ERROR "prefix should NOT be empty !")
   endif()
   set(options)
-  set(oneValueArgs NAME EXPORT_DIRECTIVE LIBRARY_TYPE LABEL)
+  set(oneValueArgs NAME LIBRARY_TYPE LABEL)
   set(multiValueArgs
     SRCS
     MOC_SRCS
@@ -51,30 +48,11 @@ macro(ctkMacroBuildLib)
   if(NOT DEFINED ${prefix}_LABEL)
     set(${prefix}_LABEL ${${prefix}_NAME})
   endif()
-  if(NOT DEFINED ${prefix}_EXPORT_DIRECTIVE)
-    if(${prefix}_LIBRARY_TYPE STREQUAL "SHARED")
-      message(SEND_ERROR "EXPORT_DIRECTIVE is mandatory")
-    endif()
-  endif()
 
   # Define library name
   set(lib_name ${${prefix}_NAME})
 
   # --------------------------------------------------------------------------
-  set(dynamicHeaders)
-  if(${prefix}_LIBRARY_TYPE STREQUAL "SHARED")
-    set(MY_LIBRARY_EXPORT_DIRECTIVE ${${prefix}_EXPORT_DIRECTIVE})
-    set(MY_EXPORT_HEADER_PREFIX ${${prefix}_NAME})
-    set(MY_LIBNAME ${lib_name})
-
-    configure_file(
-      ${CTK_SOURCE_DIR}/Libs/CTKExport.h.in
-      ${CMAKE_CURRENT_BINARY_DIR}/${MY_EXPORT_HEADER_PREFIX}Export.h
-      )
-    set(dynamicHeaders
-      "${dynamicHeaders};${CMAKE_CURRENT_BINARY_DIR}/${MY_EXPORT_HEADER_PREFIX}Export.h")
-  endif()
-
   # Make sure variable are cleared
   set(${prefix}_MOC_CXX)
   set(${prefix}_UI_CXX)
@@ -137,6 +115,15 @@ macro(ctkMacroBuildLib)
       $<INSTALL_INTERFACE:${_include_dir}>
       )
   endforeach()
+
+  # Export header
+  generate_export_header(${lib_name}
+    BASE_NAME ${lib_name}
+    EXPORT_FILE_NAME ${lib_name}Export.h
+    )
+  set(dynamicHeaders
+    ${CMAKE_CURRENT_BINARY_DIR}/${lib_name}Export.h
+    )
 
   # Install headers
   if(CTKAppLauncher_INSTALL_LauncherLibrary)
