@@ -43,7 +43,7 @@ jobs:
 
   upload:
     docker:
-      - image: dockbuild/centos7-devtoolset4-gcc5:latest
+      - image: cimg/python:3.10
     steps:
       - restore_cache:
           keys:
@@ -54,8 +54,11 @@ jobs:
       - run:
          name: Upload release and prerelease packages
          command: |
+           pip install -U scikit-ci-addons
+           # Test if python environment provides at least OpenSSL >= 1.1.1
+           # See https://urllib3.readthedocs.io/en/latest/v2-migration-guide.html#ssl-module-is-compiled-with-openssl-1-0-2-k-fips
+           python -c "import requests"
            if [[ "${CIRCLE_BRANCH}" == "main" ]]; then
-             pip install -U scikit-ci-addons
              cd /usr/src/AppLauncher
              ci_addons publish_github_release commontk/applauncher \
                --exit-success-if-missing-token                     \
