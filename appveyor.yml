@@ -23,7 +23,7 @@ environment:
       APPLAUNCHER_BUILD_WRAPPER: ""
       BLOCK: "0"
 
-  PYTHON_DIR: "C:\\Python27-x64"
+  PYTHON_DIR: "C:\\Python38-x64"
   PATH: "%PYTHON_DIR%;%PYTHON_DIR%\\Scripts;%PATH%"
   GITHUB_TOKEN:
     secure: tBrUc3IczNjD3kBiOYQ0bYF9tDXv7jQU33G3vZhhhbSDtxWVNeZo7iKmEuXyDbkw
