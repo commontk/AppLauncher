@@ -1,22 +1,23 @@
 version: 2
 jobs:
   build-package-test:
-    working_directory: /usr/src/AppLauncher
+    working_directory: /home/circleci/project/AppLauncher
     docker:
       - image: commontk/qt-static:4.8.6-centos-5.5
     steps:
       - checkout
       - run:
          command: |
-           /usr/src/AppLauncher/docker-build-package.sh
+           /home/circleci/project/AppLauncher/docker-build-package.sh
       - save_cache:
           key: applauncher-src-{{ .Revision }}
-          paths: /usr/src/AppLauncher
+          paths: /home/circleci/project/AppLauncher
       - save_cache:
           key: applauncher-build-{{ .Revision }}
-          paths: /usr/src/AppLauncher-build
+          paths: /home/circleci/project/AppLauncher-build
 
   test:
+    working_directory: /home/circleci/project/AppLauncher
     docker:
       - image: thewtex/opengl:debian
     steps:
@@ -36,12 +37,13 @@ jobs:
 
       - run:
          command: |
-           export APP="sudo chown -R user.user /usr/src/AppLauncher-build && cd /usr/src/AppLauncher-build && ctest -LE 'CompilerRequired' -VV"
+           export APP="sudo chown -R user.user /home/circleci/project/AppLauncher-build && cd /home/circleci/project/AppLauncher-build && ctest -LE 'CompilerRequired' -VV"
            /usr/bin/supervisord -c /etc/supervisor/supervisord.conf
            [ "$(cat /tmp/graphical-app.return_code)" = 0 ]
 
 
   upload:
+    working_directory: /home/circleci/project/AppLauncher
     docker:
       - image: cimg/python:3.10
     steps:
@@ -59,14 +61,14 @@ jobs:
            # See https://urllib3.readthedocs.io/en/latest/v2-migration-guide.html#ssl-module-is-compiled-with-openssl-1-0-2-k-fips
            python -c "import requests"
            if [[ "${CIRCLE_BRANCH}" == "main" ]]; then
-             cd /usr/src/AppLauncher
+             cd /home/circleci/project/AppLauncher
              ci_addons publish_github_release commontk/applauncher \
                --exit-success-if-missing-token                     \
                --prerelease-sha main \
-               --prerelease-packages /usr/src/AppLauncher-build/CTKAppLauncher-*.tar.gz \
+               --prerelease-packages /home/circleci/project/AppLauncher-build/CTKAppLauncher-*.tar.gz \
                --prerelease-packages-clear-pattern "*linux*"                     \
                --prerelease-packages-keep-pattern "*<COMMIT_SHORT_SHA>*" \
-               --release-packages /usr/src/AppLauncher-build/CTKAppLauncher-*.tar.gz
+               --release-packages /home/circleci/project/AppLauncher-build/CTKAppLauncher-*.tar.gz
            fi
 workflows:
   version: 2
