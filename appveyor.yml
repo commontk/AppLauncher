@@ -26,7 +26,7 @@ environment:
   PYTHON_DIR: "C:\\Python38-x64"
   PATH: "%PYTHON_DIR%;%PYTHON_DIR%\\Scripts;%PATH%"
   GITHUB_TOKEN:
-    secure: tBrUc3IczNjD3kBiOYQ0bYF9tDXv7jQU33G3vZhhhbSDtxWVNeZo7iKmEuXyDbkw
+    secure: flP1v3MokRo5vfouDv3owIVA9LQWCK0/fZLD3QWAT+aIt2Ce8UdzMyXtpkHz4Wqj
   APPVEYOR_API_TOKEN:
     secure: U5fSDWJH39dwzLUfl7RZ0FwF+q7pK5tbAU8WGxO/1hc=
 
