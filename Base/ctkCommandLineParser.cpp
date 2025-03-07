@@ -819,106 +819,70 @@ void ctkCommandLineParser::setStrictModeEnabled(bool strictMode)
   this->Internal->StrictMode = strictMode;
 }
 
+#if defined (_WIN32)
 // --------------------------------------------------------------------------
 void ctkCommandLineParser::convertWindowsCommandLineToUnixArguments(
-  const char *cmd_line, int *argc, char ***argv)
+  PWSTR cmd_line, int* argc, char*** argv)
 {
   if (!cmd_line || !argc || !argv)
     {
     return;
     }
+  *argc = 0;
+  *argv = nullptr;
 
-  // A space delimites an argument except when it is inside a quote
-
-  (*argc) = 1;
-
-  size_t cmd_line_len = strlen(cmd_line);
-
-  size_t i;
-  for (i = 0; i < cmd_line_len; i++)
+  // Split the command line to separate arguments
+  int numArgs = 0;
+  LPWSTR* wideArgs = nullptr;
+  // If cmd_line is an empty string then CommandLineToArgvW function returns the path to the current executable file,
+  // so we need to check if the string is empty.
+  if (lstrlenW(cmd_line) > 0)
+  {
+    wideArgs = CommandLineToArgvW(cmd_line, &numArgs);
+    if (wideArgs == nullptr)
     {
-    while (isspace(cmd_line[i]) && i < cmd_line_len)
-      {
-      i++;
-      }
-    if (i < cmd_line_len)
-      {
-      if (cmd_line[i] == '\"')
-        {
-        i++;
-        while (cmd_line[i] != '\"' && i < cmd_line_len)
-          {
-          i++;
-          }
-        (*argc)++;
-        }
-      else
-        {
-        while (!isspace(cmd_line[i]) && i < cmd_line_len)
-          {
-          i++;
-          }
-        (*argc)++;
-        }
-      }
+      return;
     }
+  }
 
-  (*argv) = new char* [(*argc) + 1];
-  (*argv)[(*argc)] = NULL;
+  // Allocate space for pointers in argv
+  (*argc) = numArgs + 1; // +1 because the first argument is the executable name
+  (*argv) = new char* [numArgs + 1];
+  for (int i = 0; i < numArgs + 1; i++)
+  {
+    (*argv)[i] = nullptr;
+  }
 
-  // Set the first arg to be the exec name
-
-  (*argv)[0] = new char [1024];
-#ifdef _WIN32
-  ::GetModuleFileName(0, (*argv)[0], 1024);
-#else
-  (*argv)[0][0] = '\0';
-#endif
-
-  // Allocate the others
-
-  int j;
-  for (j = 1; j < (*argc); j++)
+  if (wideArgs)
+  {
+    // Convert each argument to UTF8 and save it in argv
+    for (int i = 0; i < numArgs; ++i)
     {
-    (*argv)[j] = new char [cmd_line_len + 10];
-    }
-
-  // Grab the args
-
-  size_t pos;
-  int argc_idx = 1;
-
-  for (i = 0; i < cmd_line_len; i++)
-    {
-    while (isspace(cmd_line[i]) && i < cmd_line_len)
+      BOOL lpUsedDefaultChar = false;
+      // Get length
+      int utf8length = WideCharToMultiByte(CP_UTF8, 0, wideArgs[i], -1, NULL, 0, NULL, &lpUsedDefaultChar);
+      char* utf8buffer = new char[utf8length + 1];
+      int retval = WideCharToMultiByte(CP_UTF8, 0, wideArgs[i], -1, utf8buffer, utf8length, NULL, &lpUsedDefaultChar);
+      if (!SUCCEEDED(retval))
       {
-      i++;
+        // set to empty string in case of encoding error
+        utf8buffer[0] = '\0';
+        continue;
       }
-    if (i < cmd_line_len)
-      {
-      if (cmd_line[i] == '\"')
-        {
-        i++;
-        pos = i;
-        while (cmd_line[i] != '\"' && i < cmd_line_len)
-          {
-          i++;
-          }
-        memcpy((*argv)[argc_idx], &cmd_line[pos], i - pos);
-        (*argv)[argc_idx][i - pos] = '\0';
-        argc_idx++;
-        }
-      else
-        {
-        pos = i;
-        while (!isspace(cmd_line[i]) && i < cmd_line_len)
-          {
-          i++;
-          }
-        memcpy((*argv)[argc_idx], &cmd_line[pos], i - pos);
-        (*argv)[argc_idx][i - pos] = '\0';
-        argc_idx++;
-        }
-      }
+      utf8buffer[utf8length] = '\0'; // Make sure the string is null-terminated
+      (*argv)[i + 1] = utf8buffer; // +1 because the first argument is the executable name
     }
+    LocalFree(wideArgs);
+  }
+
+  // Get the application name
+  wchar_t wideBuffer[MAX_PATH];
+  DWORD wideLength = GetModuleFileNameW(NULL, wideBuffer, MAX_PATH);
+  // Convert the wide string to UTF-8
+  int utf8length = WideCharToMultiByte(CP_UTF8, 0, wideBuffer, wideLength, NULL, 0, NULL, NULL);
+  char* utf8buffer = new char[utf8length + 1];
+  WideCharToMultiByte(CP_UTF8, 0, wideBuffer, wideLength, utf8buffer, utf8length, NULL, NULL);
+  utf8buffer[utf8length] = '\0'; // Make sure the string is null-terminated
+  (*argv)[0] = utf8buffer;
  }
+#endif
