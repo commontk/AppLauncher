@@ -186,15 +186,23 @@ int appLauncherMain(int argc, char** argv)
 
 // --------------------------------------------------------------------------
 #ifndef CTKAPPLAUNCHER_WITHOUT_CONSOLE_IO_SUPPORT
+// NOTE: On Windows, wmain should be used to allow non-ASCII characters in command-line arguments
 int main(int argc, char *argv[])
 {
+  // Uncomment the next two lines to stop at application start (to give a chance to connect with a debugger)
+  // std::cout << "Attach debugger and hit Enter" << std::endl;
+  // std::cin.get();
+
   return appLauncherMain(argc, argv);
 }
 #elif defined Q_OS_WIN32
-int __stdcall WinMain(HINSTANCE hInstance,
+int __stdcall wWinMain(HINSTANCE hInstance,
                       HINSTANCE hPrevInstance,
-                      LPSTR lpCmdLine, int nShowCmd)
+                      PWSTR lpCmdLine, int nShowCmd)
 {
+  // Uncomment the next line to stop at application start (to give a chance to connect with a debugger)
+  // int msgboxID = MessageBox(NULL, "Attach your debugger", "Debug", MB_ICONWARNING);
+
   Q_UNUSED(hInstance);
   Q_UNUSED(hPrevInstance);
   Q_UNUSED(nShowCmd);
