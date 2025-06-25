@@ -1,6 +1,10 @@
 #ifndef __ctkCommandLineParser_h
 #define __ctkCommandLineParser_h
 
+#if defined (_WIN32)
+#include <windows.h>
+#endif
+
 // Qt includes
 #include <QString>
 #include <QStringList>
@@ -383,14 +387,18 @@ public:
     */
   void setStrictModeEnabled(bool strictMode);
 
+#if defined (_WIN32)
   /**
    * Convert windows-style arguments given as a command-line string
    * into more traditional argc/argv arguments.
+   * If an argument is failed to be retrieved (for example, due to character encoding error)
+   * then the corresponding argv pointer is set to point to an empty string.
    *
    * @note argv[0] will be assigned the executable name using the ::GetModuleFileName function.
    */
   static void convertWindowsCommandLineToUnixArguments(
-    const char *cmd_line, int *argc, char ***argv);
+    PWSTR cmd_line, int* argc, char*** argv);
+#endif
 
 private:
   class ctkInternal;
