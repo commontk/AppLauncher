@@ -5,7 +5,7 @@
 #include <QFile>
 #include <QFileInfo>
 #include <QProcessEnvironment>
-#include <QRegExp>
+#include <QRegularExpression>
 #include <QTemporaryFile>
 #include <QTimer>
 
@@ -482,7 +482,7 @@ QString ctkAppLauncherPrivate::shellQuote(bool posix, QString text, const QStrin
 #ifdef Q_OS_WIN32
   if (!posix)
   {
-    static QRegExp reSpecialCharacters("([\"^])");
+    static QRegularExpression reSpecialCharacters("([\"^])");
     text.replace(reSpecialCharacters, "^\\1");
     text.replace("\n", "^\n\n");
     return text + trailing;
@@ -491,7 +491,7 @@ QString ctkAppLauncherPrivate::shellQuote(bool posix, QString text, const QStrin
   Q_UNUSED(posix)
 #endif
 
-  static QRegExp reSpecialCharacters("([`$\"!\\\\])");
+  static QRegularExpression reSpecialCharacters("([`$\"!\\\\])");
   text.replace(reSpecialCharacters, "\\\\1");
   return QString("\"%1%2\"").arg(text, trailing);
 }

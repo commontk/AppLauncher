@@ -28,6 +28,7 @@
 #include <QDebug>
 #include <QSettings>
 #include <QPointer>
+#include <QRegularExpression>
 
 // CTK includes
 #include "ctkCommandLineParser.h"
@@ -126,8 +127,8 @@ bool CommandLineParserArgumentDescription::addParameter(const QString& value)
   if (!RegularExpression.isEmpty())
   {
     // Validate value
-    QRegExp regexp(this->RegularExpression);
-    if (!regexp.exactMatch(value))
+    QRegularExpression regexp(this->RegularExpression);
+    if (!regexp.match(value).hasMatch())
     {
       return false;
     }
@@ -725,7 +726,12 @@ bool ctkCommandLineParser::setExactMatchRegularExpression(
   {
     return false;
   }
-  argDesc->RegularExpression = expression;
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
+  argDesc->RegularExpression = QRegularExpression::anchoredPattern(expression);
+#else
+  QString anchoredExpr = QLatin1String("\\A(?:") + expression + QLatin1String(")\\z");
+  argDesc->RegularExpression = anchoredExpr;
+#endif
   argDesc->ExactMatchFailedMessage = exactMatchFailedMessage;
   return true;
 }
