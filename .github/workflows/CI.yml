@@ -10,8 +10,8 @@ on:
 
 jobs:
   tests:
-    runs-on: macos-12
-    name: macos-12
+    runs-on: macos-13
+    name: macos-13
     steps:
     - uses: actions/checkout@v4
       with:
