@@ -13,7 +13,7 @@ jobs:
     runs-on: macos-12
     name: macos-12
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
       with:
         fetch-depth: 0
         path: src
@@ -24,9 +24,9 @@ jobs:
         cmake-version: 3.22.2
 
     - name: Setup python
-      uses: actions/setup-python@v2.3.1
+      uses: actions/setup-python@v5
       with:
-        python-version: '3.7'
+        python-version: '3.12'
 
     - name: Install scikit-ci-addons
       run: pip install -U scikit-ci-addons
@@ -69,7 +69,7 @@ jobs:
         ctest -LE XDisplayRequired -VV
 
     - name: Publish packages
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: macos-packages
         path: build/CTKAppLauncher-*.tar.gz
