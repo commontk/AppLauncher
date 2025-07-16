@@ -10,6 +10,17 @@ version: 0.0.{build}
 os:
   - Visual Studio 2017
 
+init:
+  - ps: |
+      $cmakeVersion = "3.27.9"
+      $cmakeUrl = "https://github.com/Kitware/CMake/releases/download/v$cmakeVersion/cmake-$cmakeVersion-windows-x86_64.zip"
+      Invoke-WebRequest $cmakeUrl -OutFile "cmake.zip"
+      Expand-Archive cmake.zip -DestinationPath "$env:USERPROFILE\cmake"
+      $cmakeBin = "$env:USERPROFILE\cmake\cmake-$cmakeVersion-windows-x86_64\bin"
+      $env:PATH = "$cmakeBin;$env:PATH"
+      [System.Environment]::SetEnvironmentVariable("PATH", $env:PATH, "Process")
+      cmake --version
+
 environment:
   matrix:
     - APPLAUNCHER_CMAKE_GENERATOR: "Ninja"
