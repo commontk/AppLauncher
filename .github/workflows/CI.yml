@@ -32,7 +32,7 @@ jobs:
       run: pip install -U scikit-ci-addons
 
     - name: Download Qt archive
-      uses: carlosperate/download-file-action@v1.1.1
+      uses: carlosperate/download-file-action@v2.0.2
       with:
         file-url: 'https://github.com/jcfr/qt-static-build/releases/download/qt-5.15.2-macosx10.13-static-x86_64/qt-5.15.2-macosx10.13-static-x86_64.tar.bz2'
         sha256: '13a1df0c939c22618fb979072c3c16191cb42f7759ea3d8ec344aa229a04bca0'
