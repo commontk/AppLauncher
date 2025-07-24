@@ -42,8 +42,8 @@ if(APPLAUNCHER_USE_NINJA)
 
   # Download FindVcvars.cmake
   set(dest_file "${CMAKE_CURRENT_BINARY_DIR}/FindVcvars.cmake")
-  set(expected_hash "b36aa3fb2ce86132e55a8d59f4513cf7d1e0b46bad214adccca8643fadec66d0")
-  set(url "https://raw.githubusercontent.com/scikit-build/cmake-FindVcvars/v1.2/FindVcvars.cmake")
+  set(expected_hash "0fd1104a5e0f91f89b64dd700ce57ab9f7d7356fcabe9c895e62aca32386008e")
+  set(url "https://raw.githubusercontent.com/scikit-build/cmake-FindVcvars/v1.6/FindVcvars.cmake")
   if(NOT EXISTS ${dest_file})
     file(DOWNLOAD ${url} ${dest_file} EXPECTED_HASH SHA256=${expected_hash})
   else()
