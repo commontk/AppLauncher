@@ -85,6 +85,7 @@ foreach(varname IN ITEMS
     CMAKE_OSX_SYSROOT
     CMAKE_GENERATOR_PLATFORM
     CMAKE_GENERATOR_TOOLSET
+    CMAKE_MSVC_RUNTIME_LIBRARY
     )
   if(DEFINED ${varname})
     list(APPEND test_args
