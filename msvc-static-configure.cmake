@@ -74,7 +74,6 @@ if(APPLAUNCHER_USE_NINJA)
   else()
     message(FATAL_ERROR "Unsupported platform '${APPLAUNCHER_CMAKE_GENERATOR_PLATFORM}' for Ninja generator")
   endif()
-  set(Vcvars_MSVC_VERSION 1915)
   find_package(Vcvars REQUIRED)
 
   # Download ninja archive
