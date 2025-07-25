@@ -77,9 +77,9 @@ if(APPLAUNCHER_USE_NINJA)
   find_package(Vcvars REQUIRED)
 
   # Download ninja archive
-  set(archive_basename "ninja-1.11.1.g95dee.kitware.jobserver-1_arm64-pc-windows-msvc")
+  set(archive_basename "ninja-1.11.1.g95dee.kitware.jobserver-1_x86_64-pc-windows-msvc")
   set(dest_file "${CMAKE_CURRENT_BINARY_DIR}/${archive_basename}.zip")
-  set(expected_hash "ebd25bd02299ae67ffd624f181e0b873f074817dffbd371ad70a5c9fc5b1fe56")
+  set(expected_hash "b4bfde704f7ca90891cad0bddacdb8289eb9775cec29704705b7ec7311901003")
   set(url "https://github.com/Kitware/ninja/releases/download/v1.11.1.g95dee.kitware.jobserver-1/${archive_basename}.zip")
   if(NOT EXISTS ${dest_file})
     file(DOWNLOAD ${url} ${dest_file} EXPECTED_HASH SHA256=${expected_hash})
