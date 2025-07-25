@@ -17,24 +17,35 @@ endif()
 if(NOT EXISTS "${CTKAppLauncher_SOURCE_DIR}")
   message(FATAL_ERROR "CTKAppLauncher_SOURCE_DIR is set to a non-existent directory [${CTKAppLauncher_SOURCE_DIR}]")
 endif()
+
+# Define default values to match static Qt5 built with VS2017 (v141, Win32)
+if(NOT DEFINED APPLAUNCHER_CMAKE_GENERATOR_TOOLSET)
+  set(APPLAUNCHER_CMAKE_GENERATOR_TOOLSET "v141")
+endif()
+message(STATUS "Selected CMake Generator Toolset: '${APPLAUNCHER_CMAKE_GENERATOR_TOOLSET}'")
+
+if(NOT DEFINED APPLAUNCHER_CMAKE_GENERATOR_PLATFORM)
+  set(APPLAUNCHER_CMAKE_GENERATOR_PLATFORM "Win32")
+endif()
+message(STATUS "Selected CMake Generator Platform: '${APPLAUNCHER_CMAKE_GENERATOR_PLATFORM}'")
+
+
 if ("$ENV{APPLAUNCHER_CMAKE_GENERATOR}" STREQUAL "Ninja")
-  # For dashboard build with Visual Studio 2017 and old CMake
   set(APPLAUNCHER_CMAKE_GENERATOR -G Ninja)
   set(APPLAUNCHER_USE_NINJA ON)
-elseif ("$ENV{APPLAUNCHER_CMAKE_GENERATOR}" STREQUAL "Visual Studio 15 2017")
-  # For dashboard build with Visual Studio 2017 and old CMake
-  set(APPLAUNCHER_CMAKE_GENERATOR -G "Visual Studio 15 2017")
-  set(APPLAUNCHER_USE_NINJA OFF)
-elseif ("$ENV{APPLAUNCHER_CMAKE_GENERATOR}" STREQUAL "Visual Studio 16 2019")
-  # For local build with Visual Studio 2019 with modern CMake
-  set(APPLAUNCHER_CMAKE_GENERATOR -G "Visual Studio 16 2019" -T v141 -A Win32)
-  set(APPLAUNCHER_USE_NINJA OFF)
-elseif ("$ENV{APPLAUNCHER_CMAKE_GENERATOR}" STREQUAL "Visual Studio 17 2022")
-  # For local build with Visual Studio 2019 with modern CMake
-  set(APPLAUNCHER_CMAKE_GENERATOR -G "Visual Studio 17 2022" -T v143 -A Win32)
+elseif ("$ENV{APPLAUNCHER_CMAKE_GENERATOR}" MATCHES "^Visual Studio (15 2017|16 2019|17 2022)$")
+  set(APPLAUNCHER_CMAKE_GENERATOR
+    -G "$ENV{APPLAUNCHER_CMAKE_GENERATOR}"
+    -T "${APPLAUNCHER_CMAKE_GENERATOR_TOOLSET}"
+    -A "${APPLAUNCHER_CMAKE_GENERATOR_PLATFORM}"
+    )
   set(APPLAUNCHER_USE_NINJA OFF)
 else()
-  message(FATAL_ERROR "Env. variable APPLAUNCHER_CMAKE_GENERATOR is expected to match 'Ninja' or 'Visual Studio 15 2017' or 'Visual Studio 16 2019' [$ENV{APPLAUNCHER_CMAKE_GENERATOR}]")
+  message(FATAL_ERROR
+    "Env. variable APPLAUNCHER_CMAKE_GENERATOR must match one of: "
+    "'Ninja', 'Visual Studio 15 2017', 'Visual Studio 16 2019', or 'Visual Studio 17 2022'. "
+    "Got: [$ENV{APPLAUNCHER_CMAKE_GENERATOR}]"
+  )
 endif()
 message(STATUS "Selected CMake Generator is '${APPLAUNCHER_CMAKE_GENERATOR}'")
 
@@ -56,7 +67,13 @@ if(APPLAUNCHER_USE_NINJA)
   list(INSERT CMAKE_MODULE_PATH 0 "${CMAKE_CURRENT_BINARY_DIR}")
 
   # Lookup vcvars script
-  set(Vcvars_MSVC_ARCH 32)
+  if(APPLAUNCHER_CMAKE_GENERATOR_PLATFORM STREQUAL "Win32")
+    set(Vcvars_MSVC_ARCH 32)
+  elseif(APPLAUNCHER_CMAKE_GENERATOR_PLATFORM STREQUAL "x64")
+    set(Vcvars_MSVC_ARCH 64)
+  else()
+    message(FATAL_ERROR "Unsupported platform '${APPLAUNCHER_CMAKE_GENERATOR_PLATFORM}' for Ninja generator")
+  endif()
   set(Vcvars_MSVC_VERSION 1915)
   find_package(Vcvars REQUIRED)
 
