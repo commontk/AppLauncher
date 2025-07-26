@@ -85,6 +85,7 @@ jobs:
         $host.SetShouldExit($LastExitCode)
 
     - name: Publish packages
+      if: matrix.APPLAUNCHER_CMAKE_GENERATOR == 'Visual Studio 17 2022'
       uses: actions/upload-artifact@v4
       with:
         name: win-packages
