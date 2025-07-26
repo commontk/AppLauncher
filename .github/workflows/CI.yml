@@ -51,6 +51,23 @@ jobs:
       run: |
         7z x qt-5.11.2-static-ltcg-msvc2017-x86.zip -oC:\Qt-static\
 
+    # Since only the latest VC build tools are installed on the wnidows-2022 runner,
+    # this explicitly installs the component providing v141 toolset matching the one
+    # used to build "qt-5.11.2-static-ltcg-msvc2017-x86.zip".
+    # See https://github.com/actions/runner-images/issues/9701
+    - name: Install Visual Studio components
+      run: |
+        Set-Location "C:\Program Files (x86)\Microsoft Visual Studio\Installer\"
+        $InstallPath = "C:\Program Files\Microsoft Visual Studio\2022\Enterprise"
+        $componentsToAdd= @(
+          "Microsoft.VisualStudio.Component.VC.v141.x86.x64"
+        )
+        [string]$workloadArgs = $componentsToAdd | ForEach-Object {" --add " +  $_}
+        $Arguments = ('/c', "vs_installer.exe", 'modify', '--installPath', "`"$InstallPath`"",$workloadArgs, '--quiet', '--norestart', '--nocache')
+        # should be run twice
+        $process = Start-Process -FilePath cmd.exe -ArgumentList $Arguments -Wait -PassThru -WindowStyle Hidden
+        $process = Start-Process -FilePath cmd.exe -ArgumentList $Arguments -Wait -PassThru -WindowStyle Hidden
+
     - name: Configure
       shell: pwsh
       run: |
@@ -63,7 +80,7 @@ jobs:
         cmake `
           -DQt5_DIR:FILEPATH=$Qt5_DIR `
           -DCTKAppLauncher_SOURCE_DIR:PATH=$CTKAppLauncher_SOURCE_DIR `
-          -DAPPLAUNCHER_CMAKE_GENERATOR_TOOLSET:STRING=v142 `
+          -DAPPLAUNCHER_CMAKE_GENERATOR_TOOLSET:STRING=v141 `
           -P ..\src\msvc-static-configure.cmake
       env:
         APPLAUNCHER_CMAKE_GENERATOR: ${{ matrix.APPLAUNCHER_CMAKE_GENERATOR }}
