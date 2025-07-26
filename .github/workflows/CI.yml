@@ -80,6 +80,7 @@ jobs:
         cmake `
           -DQt5_DIR:FILEPATH=$Qt5_DIR `
           -DCTKAppLauncher_SOURCE_DIR:PATH=$CTKAppLauncher_SOURCE_DIR `
+          -DAPPLAUNCHER_CMAKE_GENERATOR_PLATFORM:STRING=Win32 `
           -DAPPLAUNCHER_CMAKE_GENERATOR_TOOLSET:STRING=v141 `
           -P ..\src\msvc-static-configure.cmake
       env:

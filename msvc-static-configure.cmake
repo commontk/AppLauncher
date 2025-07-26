@@ -18,14 +18,13 @@ if(NOT EXISTS "${CTKAppLauncher_SOURCE_DIR}")
   message(FATAL_ERROR "CTKAppLauncher_SOURCE_DIR is set to a non-existent directory [${CTKAppLauncher_SOURCE_DIR}]")
 endif()
 
-# Define default values to match static Qt5 built with VS2017 (v141, Win32)
 if(NOT DEFINED APPLAUNCHER_CMAKE_GENERATOR_TOOLSET)
-  set(APPLAUNCHER_CMAKE_GENERATOR_TOOLSET "v141")
+  message(FATAL_ERROR "APPLAUNCHER_CMAKE_GENERATOR_TOOLSET is not set")
 endif()
 message(STATUS "Selected CMake Generator Toolset: '${APPLAUNCHER_CMAKE_GENERATOR_TOOLSET}'")
 
 if(NOT DEFINED APPLAUNCHER_CMAKE_GENERATOR_PLATFORM)
-  set(APPLAUNCHER_CMAKE_GENERATOR_PLATFORM "Win32")
+  message(FATAL_ERROR "APPLAUNCHER_CMAKE_GENERATOR_PLATFORM is not set")
 endif()
 message(STATUS "Selected CMake Generator Platform: '${APPLAUNCHER_CMAKE_GENERATOR_PLATFORM}'")
 
