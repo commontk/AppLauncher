@@ -21,6 +21,9 @@ endif()
 if(NOT DEFINED APPLAUNCHER_CMAKE_GENERATOR_TOOLSET)
   message(FATAL_ERROR "APPLAUNCHER_CMAKE_GENERATOR_TOOLSET is not set")
 endif()
+if(NOT APPLAUNCHER_CMAKE_GENERATOR_TOOLSET MATCHES "^(v[0-9]+)$")
+  message(FATAL_ERROR "APPLAUNCHER_CMAKE_GENERATOR_TOOLSET must be specified as v140, v141, ...")
+endif()
 message(STATUS "Selected CMake Generator Toolset: '${APPLAUNCHER_CMAKE_GENERATOR_TOOLSET}'")
 
 if(NOT DEFINED APPLAUNCHER_CMAKE_GENERATOR_PLATFORM)
@@ -73,6 +76,22 @@ if(APPLAUNCHER_USE_NINJA)
   else()
     message(FATAL_ERROR "Unsupported platform '${APPLAUNCHER_CMAKE_GENERATOR_PLATFORM}' for Ninja generator")
   endif()
+
+  # Extract toolset version number (e.g., 143 from v143)
+  string(REGEX REPLACE "^v([0-9]+)$" "\\1" toolset_number "${APPLAUNCHER_CMAKE_GENERATOR_TOOLSET}")
+  message(STATUS "Extracted toolset number is '${toolset_number}'")
+
+  # Convert numeric form (e.g., 143) to dotted form (e.g., 14.3)
+  if(toolset_number MATCHES "^([0-9][0-9])([0-9])$")
+    set(Vcvars_PLATFORM_TOOLSET_VERSION "${CMAKE_MATCH_1}.${CMAKE_MATCH_2}")
+  else()
+    message(FATAL_ERROR "Unexpected toolset format '${toolset_number}'; expected a 3-digit number like '143'")
+  endif()
+  message(STATUS "Setting Vcvars_PLATFORM_TOOLSET_VERSION to '${Vcvars_PLATFORM_TOOLSET_VERSION}'")
+  message(STATUS "")
+
+  # Find Vcvars with toolset version
+  set(Vcvars_FIND_VCVARSALL ON)
   find_package(Vcvars REQUIRED)
 
   # Download ninja archive
