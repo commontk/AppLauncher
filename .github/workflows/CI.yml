@@ -4,9 +4,9 @@ on:
   pull_request:
   push:
     branches:
-    - main
+      - main
     tags:
-    - 'v*'
+      - "v*"
 
 jobs:
   win-tests:
@@ -25,89 +25,89 @@ jobs:
 
     name: windows-2022
     steps:
-    - uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
-        path: src
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          path: src
 
-    - name: Setup CMake
-      uses: jwlawson/actions-setup-cmake@v1.12
-      with:
-        cmake-version: 3.22.2
+      - name: Setup CMake
+        uses: jwlawson/actions-setup-cmake@v1.12
+        with:
+          cmake-version: 3.22.2
 
-    - name: Create directories
-      run: |
-        mkdir C:\Qt-static
-        mkdir build
+      - name: Create directories
+        run: |
+          mkdir C:\Qt-static
+          mkdir build
 
-    - name: Download Qt archive
-      uses: carlosperate/download-file-action@v2.0.2
-      with:
-        file-url: 'https://github.com/jcfr/qt-static-build/releases/download/applauncher-5.11.2-vs2017/qt-5.11.2-static-ltcg-msvc2017-x86.zip'
-        sha256: 'e2531150a00d68624257d7b40c5b9d7c07feab55fbf98f7cda31f08b74b71c01'
+      - name: Download Qt archive
+        uses: carlosperate/download-file-action@v2.0.2
+        with:
+          file-url: "https://github.com/jcfr/qt-static-build/releases/download/applauncher-5.11.2-vs2017/qt-5.11.2-static-ltcg-msvc2017-x86.zip"
+          sha256: "e2531150a00d68624257d7b40c5b9d7c07feab55fbf98f7cda31f08b74b71c01"
 
-    - name: Extract Qt archive
-      shell: pwsh
-      run: |
-        7z x qt-5.11.2-static-ltcg-msvc2017-x86.zip -oC:\Qt-static\
+      - name: Extract Qt archive
+        shell: pwsh
+        run: |
+          7z x qt-5.11.2-static-ltcg-msvc2017-x86.zip -oC:\Qt-static\
 
-    # Since only the latest VC build tools are installed on the wnidows-2022 runner,
-    # this explicitly installs the component providing v141 toolset matching the one
-    # used to build "qt-5.11.2-static-ltcg-msvc2017-x86.zip".
-    # See https://github.com/actions/runner-images/issues/9701
-    - name: Install Visual Studio components
-      run: |
-        Set-Location "C:\Program Files (x86)\Microsoft Visual Studio\Installer\"
-        $InstallPath = "C:\Program Files\Microsoft Visual Studio\2022\Enterprise"
-        $componentsToAdd= @(
-          "Microsoft.VisualStudio.Component.VC.v141.x86.x64"
-        )
-        [string]$workloadArgs = $componentsToAdd | ForEach-Object {" --add " +  $_}
-        $Arguments = ('/c', "vs_installer.exe", 'modify', '--installPath', "`"$InstallPath`"",$workloadArgs, '--quiet', '--norestart', '--nocache')
-        # should be run twice
-        $process = Start-Process -FilePath cmd.exe -ArgumentList $Arguments -Wait -PassThru -WindowStyle Hidden
-        $process = Start-Process -FilePath cmd.exe -ArgumentList $Arguments -Wait -PassThru -WindowStyle Hidden
+      # Since only the latest VC build tools are installed on the wnidows-2022 runner,
+      # this explicitly installs the component providing v141 toolset matching the one
+      # used to build "qt-5.11.2-static-ltcg-msvc2017-x86.zip".
+      # See https://github.com/actions/runner-images/issues/9701
+      - name: Install Visual Studio components
+        run: |
+          Set-Location "C:\Program Files (x86)\Microsoft Visual Studio\Installer\"
+          $InstallPath = "C:\Program Files\Microsoft Visual Studio\2022\Enterprise"
+          $componentsToAdd= @(
+            "Microsoft.VisualStudio.Component.VC.v141.x86.x64"
+          )
+          [string]$workloadArgs = $componentsToAdd | ForEach-Object {" --add " +  $_}
+          $Arguments = ('/c', "vs_installer.exe", 'modify', '--installPath', "`"$InstallPath`"",$workloadArgs, '--quiet', '--norestart', '--nocache')
+          # should be run twice
+          $process = Start-Process -FilePath cmd.exe -ArgumentList $Arguments -Wait -PassThru -WindowStyle Hidden
+          $process = Start-Process -FilePath cmd.exe -ArgumentList $Arguments -Wait -PassThru -WindowStyle Hidden
 
-    - name: Configure
-      shell: pwsh
-      run: |
+      - name: Configure
+        shell: pwsh
+        run: |
 
-        $Qt5_DIR="C:\Qt-static\qt-5.11.2-static-ltcg-msvc2017-x86\lib\cmake\Qt5"
-        $CTKAppLauncher_SOURCE_DIR="${{ github.workspace }}\src"
+          $Qt5_DIR="C:\Qt-static\qt-5.11.2-static-ltcg-msvc2017-x86\lib\cmake\Qt5"
+          $CTKAppLauncher_SOURCE_DIR="${{ github.workspace }}\src"
 
-        cd build
+          cd build
 
-        cmake `
-          -DQt5_DIR:FILEPATH=$Qt5_DIR `
-          -DCTKAppLauncher_SOURCE_DIR:PATH=$CTKAppLauncher_SOURCE_DIR `
-          -DAPPLAUNCHER_CMAKE_GENERATOR_PLATFORM:STRING=Win32 `
-          -DAPPLAUNCHER_CMAKE_GENERATOR_TOOLSET:STRING=v141 `
-          -P ..\src\msvc-static-configure.cmake
-      env:
-        APPLAUNCHER_CMAKE_GENERATOR: ${{ matrix.APPLAUNCHER_CMAKE_GENERATOR }}
+          cmake `
+            -DQt5_DIR:FILEPATH=$Qt5_DIR `
+            -DCTKAppLauncher_SOURCE_DIR:PATH=$CTKAppLauncher_SOURCE_DIR `
+            -DAPPLAUNCHER_CMAKE_GENERATOR_PLATFORM:STRING=Win32 `
+            -DAPPLAUNCHER_CMAKE_GENERATOR_TOOLSET:STRING=v141 `
+            -P ..\src\msvc-static-configure.cmake
+        env:
+          APPLAUNCHER_CMAKE_GENERATOR: ${{ matrix.APPLAUNCHER_CMAKE_GENERATOR }}
 
-    - name: Build and package
-      shell: pwsh
-      run: |
-        cd build
-        $cmd = "${{ matrix.APPLAUNCHER_BUILD_WRAPPER }} cmake --build . --config Release --target ${{ matrix.APPLAUNCHER_PACKAGE_TARGET }}"
-        Invoke-Expression $cmd
-        $host.SetShouldExit($LastExitCode)
+      - name: Build and package
+        shell: pwsh
+        run: |
+          cd build
+          $cmd = "${{ matrix.APPLAUNCHER_BUILD_WRAPPER }} cmake --build . --config Release --target ${{ matrix.APPLAUNCHER_PACKAGE_TARGET }}"
+          Invoke-Expression $cmd
+          $host.SetShouldExit($LastExitCode)
 
-    - name: Test
-      shell: pwsh
-      run: |
-        cd build
-        $cmd = "${{ matrix.APPLAUNCHER_BUILD_WRAPPER }} ctest -C Release -j4 -VV"
-        Invoke-Expression $cmd
-        $host.SetShouldExit($LastExitCode)
+      - name: Test
+        shell: pwsh
+        run: |
+          cd build
+          $cmd = "${{ matrix.APPLAUNCHER_BUILD_WRAPPER }} ctest -C Release -j4 -VV"
+          Invoke-Expression $cmd
+          $host.SetShouldExit($LastExitCode)
 
-    - name: Publish packages
-      if: matrix.APPLAUNCHER_CMAKE_GENERATOR == 'Visual Studio 17 2022'
-      uses: actions/upload-artifact@v4
-      with:
-        name: win-packages
-        path: build/CTKAppLauncher-*.tar.gz
+      - name: Publish packages
+        if: matrix.APPLAUNCHER_CMAKE_GENERATOR == 'Visual Studio 17 2022'
+        uses: actions/upload-artifact@v4
+        with:
+          name: win-packages
+          path: build/CTKAppLauncher-*.tar.gz
 
     #- name: Setup Python
     #  uses: actions/setup-python@v5
@@ -136,58 +136,58 @@ jobs:
     runs-on: macos-13
     name: macos-13
     steps:
-    - uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
-        path: src
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          path: src
 
-    - name: Setup CMake
-      uses: jwlawson/actions-setup-cmake@v1.12
-      with:
-        cmake-version: 3.22.2
+      - name: Setup CMake
+        uses: jwlawson/actions-setup-cmake@v1.12
+        with:
+          cmake-version: 3.22.2
 
-    - name: Download Qt archive
-      uses: carlosperate/download-file-action@v2.0.2
-      with:
-        file-url: 'https://github.com/jcfr/qt-static-build/releases/download/qt-5.15.2-macosx10.13-static-x86_64/qt-5.15.2-macosx10.13-static-x86_64.tar.bz2'
-        sha256: '13a1df0c939c22618fb979072c3c16191cb42f7759ea3d8ec344aa229a04bca0'
+      - name: Download Qt archive
+        uses: carlosperate/download-file-action@v2.0.2
+        with:
+          file-url: "https://github.com/jcfr/qt-static-build/releases/download/qt-5.15.2-macosx10.13-static-x86_64/qt-5.15.2-macosx10.13-static-x86_64.tar.bz2"
+          sha256: "13a1df0c939c22618fb979072c3c16191cb42f7759ea3d8ec344aa229a04bca0"
 
-    - name: Extract Qt archive
-      run: |
-        tar -xjvf qt-5.15.2-macosx10.13-static-x86_64.tar.bz2
-        mv qt-5.15.2-macosx10.13-static-x86_64 qt
+      - name: Extract Qt archive
+        run: |
+          tar -xjvf qt-5.15.2-macosx10.13-static-x86_64.tar.bz2
+          mv qt-5.15.2-macosx10.13-static-x86_64 qt
 
-    - name: Configure
-      run: |
-        cmake \
-          -DQt5_DIR:DIR=$(pwd)/qt/lib/cmake/Qt5 \
-          -DCMAKE_BUILD_TYPE:STRING=Release \
-          -DCMAKE_OSX_DEPLOYMENT_TARGET:STRING=10.13 \
-          -DCMAKE_OSX_ARCHITECTURES:STRING=x86_64 \
-          -B build -S src
-      env:
-        CC: clang
-        CXX: clang++
+      - name: Configure
+        run: |
+          cmake \
+            -DQt5_DIR:DIR=$(pwd)/qt/lib/cmake/Qt5 \
+            -DCMAKE_BUILD_TYPE:STRING=Release \
+            -DCMAKE_OSX_DEPLOYMENT_TARGET:STRING=10.13 \
+            -DCMAKE_OSX_ARCHITECTURES:STRING=x86_64 \
+            -B build -S src
+        env:
+          CC: clang
+          CXX: clang++
 
-    - name: Build
-      run: |
-        cmake --build build -- -j4
+      - name: Build
+        run: |
+          cmake --build build -- -j4
 
-    - name: Package
-      run: |
-        cmake --build build --target package
+      - name: Package
+        run: |
+          cmake --build build --target package
 
-    # Exclude tests requiring X Display
-    - name: Test
-      run: |
-        cd build
-        ctest -LE XDisplayRequired -VV
+      # Exclude tests requiring X Display
+      - name: Test
+        run: |
+          cd build
+          ctest -LE XDisplayRequired -VV
 
-    - name: Publish packages
-      uses: actions/upload-artifact@v4
-      with:
-        name: macos-packages
-        path: build/CTKAppLauncher-*.tar.gz
+      - name: Publish packages
+        uses: actions/upload-artifact@v4
+        with:
+          name: macos-packages
+          path: build/CTKAppLauncher-*.tar.gz
 
     #- name: Setup Python
     #  uses: actions/setup-python@v5
@@ -210,4 +210,3 @@ jobs:
     #      --release-packages build/CTKAppLauncher-*.tar.gz
     #  env:
     #    GITHUB_TOKEN: secrets.COMMONTKBOT_GITHUB_TOKEN
-
