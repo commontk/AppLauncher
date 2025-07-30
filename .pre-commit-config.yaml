@@ -1,0 +1,22 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: "v5.0.0"
+    hooks:
+      - id: check-added-large-files
+      - id: check-case-conflict
+      - id: check-merge-conflict
+      - id: check-symlinks
+      - id: check-yaml
+      - id: mixed-line-ending
+
+  - repo: https://github.com/rbubley/mirrors-prettier
+    rev: "v3.6.2"
+    hooks:
+      - id: prettier
+        types_or: [yaml]
+        args: [--prose-wrap=always]
+
+  - repo: https://github.com/python-jsonschema/check-jsonschema
+    rev: "0.33.2"
+    hooks:
+      - id: check-github-workflows
