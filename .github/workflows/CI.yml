@@ -130,6 +130,92 @@ jobs:
     #  env:
     #    GITHUB_TOKEN: secrets.COMMONTKBOT_GITHUB_TOKEN
 
+  linux-tests:
+    runs-on: ubuntu-latest
+    env:
+      qt_archive_basename: qt-5.15.2-manylinux2.28-static-x86_64
+      qt_archive_sha256: e5e9a19a18a3e1e896691173dd23a668781d7154238d2e6fdd4996ca30b1f1e3
+      dockbuild_image: almalinux8-devtoolset14-gcc14
+      dockbuild_script: ./dockbuild-almalinux8-devtoolset14-gcc14-latest
+    name: ubuntu-latest [almalinux8-devtoolset14-gcc14]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          path: src
+
+      - name: Download Qt archive
+        uses: carlosperate/download-file-action@v2.0.2
+        with:
+          file-url:
+            "https://github.com/jcfr/qt-static-build/releases/download/${{
+            env.qt_archive_basename }}/${{ env.qt_archive_basename }}.tar.zst"
+          sha256: "${{ env.qt_archive_sha256 }}"
+
+      - name: Extract Qt archive
+        run: |
+          mkdir -p $qt_archive_basename
+          tar --zstd -xvf ${qt_archive_basename}.tar.zst -C ${qt_archive_basename}
+
+      - name: Pull build enviromment
+        run: |
+          docker pull dockbuild/${dockbuild_image}:latest
+          docker run --rm dockbuild/${dockbuild_image}:latest > ${dockbuild_script}
+          chmod u+x ${dockbuild_script}
+
+      - name: Configure
+        run: |
+          ${dockbuild_script} \
+            cmake \
+              -G Ninja \
+              -DQt5_DIR:PATH=/work/${qt_archive_basename}/lib/cmake/Qt5 \
+              -DCMAKE_BUILD_TYPE:STRING=Release \
+              -DBUILD_TESTING:BOOL=ON \
+              -S src \
+              -B build
+
+      - name: Build
+        run: |
+          ${dockbuild_script} \
+            cmake --build build
+
+      - name: Test
+        run: |
+          ${dockbuild_script} \
+            ./src/.github/scripts/dockbuild_xvfb_wrapper.sh \
+               ctest \
+                 --test-dir build \
+                 --build-config Release \
+                 --parallel $(nproc)
+
+      - name: Publish packages
+        uses: actions/upload-artifact@v4
+        with:
+          name: linux-packages
+          path: build/CTKAppLauncher-*.tar.gz
+
+    #- name: Setup Python
+    #  uses: actions/setup-python@v5
+    #  with:
+    #    python-version: '3.12'
+
+    #- name: Install scikit-ci-addons
+    #  run: pip install -U scikit-ci-addons
+
+    # See https://github.com/scikit-build/scikit-ci-addons/issues/96
+    #- name: Publish packages
+    #  run: |
+    #    cd src
+    #    ci_addons publish_github_release commontk/applauncher \
+    #      --exit-success-if-missing-token \
+    #      --prerelease-sha main \
+    #      --prerelease-packages ../build/CTKAppLauncher-*.tar.gz \
+    #      --prerelease-packages-clear-pattern "*linux*" \
+    #      --prerelease-packages-keep-pattern "*<COMMIT_SHORT_SHA>*" \
+    #      --release-packages build/CTKAppLauncher-*.tar.gz
+    #  env:
+    #    GITHUB_TOKEN: secrets.COMMONTKBOT_GITHUB_TOKEN
+
   macos-tests:
     runs-on: macos-13
     name: macos-13
