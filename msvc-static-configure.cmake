@@ -1,22 +1,53 @@
-
 #
-# This script was designed to be executed from the build directory:
+# Configure the AppLauncher project using a statically built Qt and an MSVC-based environment.
 #
-#  cd build
-#  $env:APPLAUNCHER_CMAKE_GENERATOR="Visual Studio 15 2017" # or "Ninja"
-#  cmake -DQt5_DIR:PATH=$Qt5_DIR -DCTKAppLauncher_SOURCE_DIR:PATH=$pwd.Path + "\.." -P ..\msvc-static-configure.cmake
+# This script sets up the required Windows build environment (e.g., vcvars, Ninja, MSVC runtime),
+# generates an initial CMake cache, and runs `cmake` to configure the project in a given build directory.
 #
-# Static build of Qt5 may be download from
+# Usage (PowerShell):
 #
-#  https://github.com/jcfr/qt-static-build/releases/tag/applauncher-5.11.2-vs2017
+#   $env:APPLAUNCHER_CMAKE_GENERATOR = "Visual Studio 17 2022"  # or "Ninja"
+#   $env:APPLAUNCHER_CMAKE_GENERATOR_TOOLSET = "v143"
+#   $env:APPLAUNCHER_CMAKE_GENERATOR_PLATFORM = "x64"
 #
+#   cmake `
+#     -DQt5_DIR:PATH=C:\path\to\Qt\lib\cmake\Qt5 `
+#     -DCTKAppLauncher_BUILD_DIR:PATH=C:\path\to\build `
+#     -DCTKAppLauncher_SOURCE_DIR:PATH=C:\path\to\src `
+#     -P C:\path\to\msvc-static-configure.cmake
+#
+# Required variables:
+# - Qt5_DIR: Path to the static Qt installation's CMake config
+# - CTKAppLauncher_BUILD_DIR: Destination directory for the CMake build
+# - APPLAUNCHER_CMAKE_GENERATOR: One of "Ninja", "Visual Studio 15 2017", etc.
+# - APPLAUNCHER_CMAKE_GENERATOR_TOOLSET: Toolset version string (e.g., "v143")
+# - APPLAUNCHER_CMAKE_GENERATOR_PLATFORM: "Win32" or "x64"
+#
+# Optional:
+# - CTKAppLauncher_SOURCE_DIR: If not set, defaults to ${CMAKE_CURRENT_SOURCE_DIR}
+#
+# Prebuilt static Qt archives can be found at:
+#   https://github.com/jcfr/qt-static-build
 
 if(NOT EXISTS "${Qt5_DIR}")
   message(FATAL_ERROR "Qt5_DIR is set to a non-existent directory [${Qt5_DIR}]")
 endif()
+
+if(NOT DEFINED CTKAppLauncher_SOURCE_DIR)
+  set(CTKAppLauncher_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
+endif()
 if(NOT EXISTS "${CTKAppLauncher_SOURCE_DIR}")
   message(FATAL_ERROR "CTKAppLauncher_SOURCE_DIR is set to a non-existent directory [${CTKAppLauncher_SOURCE_DIR}]")
 endif()
+message(STATUS "Setting CTKAppLauncher_SOURCE_DIR: ${CTKAppLauncher_SOURCE_DIR}")
+
+if(NOT DEFINED CTKAppLauncher_BUILD_DIR)
+  message(FATAL_ERROR "CTKAppLauncher_BUILD_DIR is not set")
+endif()
+if(NOT EXISTS "${CTKAppLauncher_BUILD_DIR}")
+  message(FATAL_ERROR "CTKAppLauncher_BUILD_DIR is set to a non-existent directory [${CTKAppLauncher_BUILD_DIR}]")
+endif()
+message(STATUS "Setting CTKAppLauncher_BUILD_DIR: ${CTKAppLauncher_BUILD_DIR}")
 
 if(NOT DEFINED APPLAUNCHER_CMAKE_GENERATOR_TOOLSET)
   message(FATAL_ERROR "APPLAUNCHER_CMAKE_GENERATOR_TOOLSET is not set")
@@ -162,8 +193,14 @@ if(APPLAUNCHER_USE_NINJA)
 CMAKE_BUILD_TYPE:STRING=Release"
 )
 endif()
-file(WRITE CMakeCache.txt "${INITIAL_CACHE}")
+file(WRITE ${CTKAppLauncher_BUILD_DIR}/CMakeCache.txt "${INITIAL_CACHE}")
 
 set(ENV{LDFLAGS} "/INCREMENTAL:NO /LTCG")
 
-execute_process(COMMAND ${Vcvars_LAUNCHER} ${CMAKE_COMMAND} ${APPLAUNCHER_CMAKE_GENERATOR} ${CTKAppLauncher_SOURCE_DIR})
+execute_process(COMMAND
+  ${Vcvars_LAUNCHER}
+    ${CMAKE_COMMAND}
+      ${APPLAUNCHER_CMAKE_GENERATOR}
+      -S ${CTKAppLauncher_SOURCE_DIR}
+      -B ${CTKAppLauncher_BUILD_DIR}
+  )
