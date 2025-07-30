@@ -74,31 +74,29 @@ jobs:
 
           $Qt5_DIR="C:\Qt-static\qt-5.11.2-static-ltcg-msvc2017-x86\lib\cmake\Qt5"
           $CTKAppLauncher_SOURCE_DIR="${{ github.workspace }}\src"
-
-          cd build
+          $CTKAppLauncher_BUILD_DIR="${{ github.workspace }}\build"
 
           cmake `
             -DQt5_DIR:FILEPATH=$Qt5_DIR `
             -DCTKAppLauncher_SOURCE_DIR:PATH=$CTKAppLauncher_SOURCE_DIR `
+            -DCTKAppLauncher_BUILD_DIR:PATH=$CTKAppLauncher_BUILD_DIR `
             -DAPPLAUNCHER_CMAKE_GENERATOR_PLATFORM:STRING=Win32 `
             -DAPPLAUNCHER_CMAKE_GENERATOR_TOOLSET:STRING=v141 `
-            -P ..\src\msvc-static-configure.cmake
+            -P src\msvc-static-configure.cmake
         env:
           APPLAUNCHER_CMAKE_GENERATOR: ${{ matrix.APPLAUNCHER_CMAKE_GENERATOR }}
 
       - name: Build and package
         shell: pwsh
         run: |
-          cd build
-          $cmd = "${{ matrix.APPLAUNCHER_BUILD_WRAPPER }} cmake --build . --config Release --target ${{ matrix.APPLAUNCHER_PACKAGE_TARGET }}"
+          $cmd = "${{ matrix.APPLAUNCHER_BUILD_WRAPPER }} cmake --build build --config Release --target ${{ matrix.APPLAUNCHER_PACKAGE_TARGET }}"
           Invoke-Expression $cmd
           $host.SetShouldExit($LastExitCode)
 
       - name: Test
         shell: pwsh
         run: |
-          cd build
-          $cmd = "${{ matrix.APPLAUNCHER_BUILD_WRAPPER }} ctest -C Release -j4 -VV"
+          $cmd = "${{ matrix.APPLAUNCHER_BUILD_WRAPPER }} ctest -C Release --test-dir build -j4 -VV"
           Invoke-Expression $cmd
           $host.SetShouldExit($LastExitCode)
 
