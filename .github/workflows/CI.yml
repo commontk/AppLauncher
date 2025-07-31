@@ -165,24 +165,25 @@ jobs:
 
       - name: Configure
         run: |
+          mkdir -p build
           ${dockbuild_script} \
-            cmake \
-              -G Ninja \
-              -DQt5_DIR:PATH=/work/${qt_archive_basename}/lib/cmake/Qt5 \
-              -DCMAKE_BUILD_TYPE:STRING=Release \
-              -DBUILD_TESTING:BOOL=ON \
-              -S src \
-              -B build
+            src/.github/scripts/dockbuild_with_qt_env.sh "${qt_archive_basename}" \
+              cmake \
+                -DQt5_DIR:PATH=/work/${qt_archive_basename}/lib/cmake/Qt5 \
+                -DCTKAppLauncher_BUILD_DIR:PATH=build \
+                -P src/linux-static-configure.cmake
 
       - name: Build
         run: |
           ${dockbuild_script} \
-            cmake --build build
+            src/.github/scripts/dockbuild_with_qt_env.sh "${qt_archive_basename}" \
+              cmake --build build
 
       - name: Test
         run: |
           ${dockbuild_script} \
-            ./src/.github/scripts/dockbuild_xvfb_wrapper.sh \
+            src/.github/scripts/dockbuild_with_qt_env.sh "${qt_archive_basename}" \
+            src/.github/scripts/dockbuild_xvfb_wrapper.sh \
                ctest \
                  --test-dir build \
                  --build-config Release \

@@ -7,6 +7,13 @@ if(CTKAppLauncher_QT_VERSION VERSION_GREATER "4" AND WIN32)
   ")
 endif()
 
+if(CTKAppLauncher_QT_VERSION VERSION_GREATER "4" AND UNIX AND NOT APPLE)
+  set(CMAKE_TESTDRIVER_EXTRA_INCLUDES "${CMAKE_TESTDRIVER_EXTRA_INCLUDES}
+  #include <QtPlugin>
+  Q_IMPORT_PLUGIN(QXcbIntegrationPlugin)
+  ")
+endif()
+
 add_library(CTKAppLauncherTestingHelper STATIC
   ctkAppLauncherTestingHelper.cpp
   ctkAppLauncherTestingHelper.h
