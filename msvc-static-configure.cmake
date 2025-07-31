@@ -34,7 +34,7 @@ if(NOT EXISTS "${Qt5_DIR}")
 endif()
 
 if(NOT DEFINED CTKAppLauncher_SOURCE_DIR)
-  set(CTKAppLauncher_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
+  set(CTKAppLauncher_SOURCE_DIR "${CMAKE_CURRENT_LIST_DIR}")
 endif()
 if(NOT EXISTS "${CTKAppLauncher_SOURCE_DIR}")
   message(FATAL_ERROR "CTKAppLauncher_SOURCE_DIR is set to a non-existent directory [${CTKAppLauncher_SOURCE_DIR}]")
@@ -145,6 +145,7 @@ if(APPLAUNCHER_USE_NINJA)
   set(ENV{PATH} "${CMAKE_CURRENT_BINARY_DIR}/${archive_basename};$ENV{PATH}")
 endif()
 
+# Set QT_PREFIX_DIR assuming standard static Qt layout
 set(QT_PREFIX_DIR "${Qt5_DIR}/../../../")
 get_filename_component(QT_PREFIX_DIR ${QT_PREFIX_DIR} ABSOLUTE)
 message(STATUS "Setting QT_PREFIX_DIR: ${QT_PREFIX_DIR}")
