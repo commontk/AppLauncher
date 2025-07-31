@@ -155,10 +155,14 @@ int appLauncherMain(int argc, char** argv)
     }
   else
     {
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0) && defined Q_OS_WIN32 && defined QT_STATIC)
     // Initialize platform plugin in static build
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0) && defined Q_OS_WIN32 && defined QT_STATIC)
     Q_IMPORT_PLUGIN(QWindowsIntegrationPlugin)
 #endif
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0) && defined Q_OS_LINUX && defined QT_STATIC)
+    Q_IMPORT_PLUGIN(QXcbIntegrationPlugin)
+#endif
+
     app.reset(new QApplication(
                 appArguments.argumentCount(ctkAppArguments::ARG_REGULAR_LIST),
                 appArguments.argumentValues(ctkAppArguments::ARG_REGULAR_LIST)));
