@@ -96,7 +96,7 @@ jobs:
       - name: Test
         shell: pwsh
         run: |
-          $cmd = "${{ matrix.APPLAUNCHER_BUILD_WRAPPER }} ctest -C Release --test-dir build -j4 -VV"
+          $cmd = "${{ matrix.APPLAUNCHER_BUILD_WRAPPER }} ctest -C Release --test-dir build --output-on-failure -j4"
           Invoke-Expression $cmd
           $host.SetShouldExit($LastExitCode)
 
@@ -187,6 +187,7 @@ jobs:
                ctest \
                  --test-dir build \
                  --build-config Release \
+                 --output-on-failure \
                  --parallel $(nproc)
 
       - name: Publish packages
@@ -266,7 +267,7 @@ jobs:
       - name: Test
         run: |
           cd build
-          ctest -LE XDisplayRequired -VV
+          ctest -LE XDisplayRequired --output-on-failure
 
       - name: Publish packages
         uses: actions/upload-artifact@v4
