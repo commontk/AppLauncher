@@ -63,6 +63,7 @@ function(applauncher_add_test name)
     -DTEST_SOURCE_DIR:PATH=${CMAKE_CURRENT_SOURCE_DIR}
     -DTEST_BINARY_DIR:PATH=${CMAKE_CURRENT_BINARY_DIR}
     -DTEST_CONFIGURATION:STRING=$<CONFIG>
+    -DTEST_NAME:STRING=${name}
     ${options}
     -P ${CMAKE_CURRENT_SOURCE_DIR}/${testscript}.cmake)
   # Current test depends on all previous tests
