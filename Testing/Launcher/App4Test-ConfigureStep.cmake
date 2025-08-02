@@ -26,7 +26,7 @@ execute_process(
 execute_process(
   COMMAND ${CMAKE_COMMAND} -E make_directory ${app4test_binary_dir}
   )
-  
+
 # --------------------------------------------------------------------------
 # Debug flags - Set to True to display the command as string
 set(PRINT_COMMAND 0)
