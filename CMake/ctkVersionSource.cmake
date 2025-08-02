@@ -33,4 +33,3 @@ if(GIT_EXECUTABLE)
 else()
   message(WARNING "GIT_EXECUTABLE not found. CTKAppLauncher_VERSION_SOURCE default to 'unknown'.")
 endif()
-

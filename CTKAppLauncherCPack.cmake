@@ -38,4 +38,3 @@ if("${CTKAppLauncher_BINARY_DIR}" STREQUAL "${CMAKE_BINARY_DIR}")
   set(CPACK_GENERATOR "TGZ")
   include(CPack)
 endif()
-
