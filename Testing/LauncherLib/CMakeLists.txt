@@ -106,9 +106,10 @@ set(build_step_testname ${testname})
 
 applauncher_add_test(AppWithLauncherLib-RunStep ${test_args})
 set_property(TEST ${testname} APPEND PROPERTY DEPENDS ${build_step_testname})
+set(run_step_testname ${testname})
 
 applauncher_add_test(AppWithLauncherLib-RunWithLauncherStep ${test_args})
-set_property(TEST ${testname} APPEND PROPERTY DEPENDS ${build_step_testname})
+set_property(TEST ${testname} APPEND PROPERTY DEPENDS ${run_step_testname})
 
 set_property(TEST ${testname} PROPERTY LABELS "ctkAppLauncher") # Remove "CompilerRequired" label
 if(TEST_TREE_TYPE STREQUAL "InstallTree")
