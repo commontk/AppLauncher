@@ -73,4 +73,3 @@ execute_process(COMMAND
     -S ${CTKAppLauncher_SOURCE_DIR}
     -B ${CTKAppLauncher_BUILD_DIR}
 )
-

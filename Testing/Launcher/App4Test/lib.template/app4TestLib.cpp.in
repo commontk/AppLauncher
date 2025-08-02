@@ -31,4 +31,3 @@ app4TestLib@LIBSUFFIX@::app4TestLib@LIBSUFFIX@(bool verbose)
 app4TestLib@LIBSUFFIX@::~app4TestLib@LIBSUFFIX@()
 {
 }
-

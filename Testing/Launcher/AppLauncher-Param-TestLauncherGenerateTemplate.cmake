@@ -40,4 +40,3 @@ if(NOT EXISTS ${launcher}LauncherSettings.ini.template)
    message(FATAL_ERROR "Problem with flag --launcher-generate-template."
                        "Failed to generate template settings file: ${launcher}LauncherSettings.ini.template")
 endif()
-

@@ -31,4 +31,3 @@ if(NOT "${ev}" STREQUAL "${expected_error_msg}")
                       "\n  expected_error_msg:${expected_error_msg}"
                       "\n  current_error_msg:${ev}")
 endif()
-

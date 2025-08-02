@@ -39,4 +39,3 @@ if(NOT ${expected_msg} STREQUAL ${ov})
                       "\n expected_msg:\n [${expected_msg}]"
                       "\n current_msg:\n [${ov}]")
 endif()
-
