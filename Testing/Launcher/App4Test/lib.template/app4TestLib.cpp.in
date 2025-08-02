@@ -22,7 +22,7 @@ app4TestLib@LIBSUFFIX@::app4TestLib@LIBSUFFIX@(bool verbose)
 {
   if (verbose)
     {
-    std::cout<<"Instanciate " << "app4TestLib@LIBSUFFIX@" << std::endl;
+    std::cout<<"Instantiate " << "app4TestLib@LIBSUFFIX@" << std::endl;
     }
   app4TestLib::wait(0.02);
 }

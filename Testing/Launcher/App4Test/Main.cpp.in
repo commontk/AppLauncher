@@ -256,7 +256,7 @@ int main(int argc, char** argv)
     std::cout << "No argument provided" << std::endl;
     }
 
-  // Instanciate library objects
+  // Instantiate library objects
 @LIB_INSTANCIATES@
 
   return EXIT_SUCCESS;

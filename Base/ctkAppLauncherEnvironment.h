@@ -109,7 +109,7 @@ public:
   /// Returns variable names associated with \c env.
   ///
   /// Since QProcessEnvironment::keys() was introduced in Qt 4.8, this function
-  /// implements a falback for older version of Qt.
+  /// implements a fallback for older version of Qt.
   static QStringList envKeys(const QProcessEnvironment& env);
 
   /// Return an updated list of names excluding AppLauncher reserved variable names.
