@@ -21,7 +21,7 @@ file(WRITE "${launcher_settings_dir}/${launcher_name}LauncherSettings.ini" "
 organizationDomain=${organization_domain}
 organizationName=${organization_name}
 name=${application_name}
-  
+
 [EnvironmentVariables]
 TEST_APPLAUNCHER_DIR=<APPLAUNCHER_DIR>/cat
 TEST_APPLAUNCHER_SETTINGS_DIR=<APPLAUNCHER_SETTINGS_DIR>/bob
