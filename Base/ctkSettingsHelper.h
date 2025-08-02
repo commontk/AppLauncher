@@ -27,4 +27,3 @@ void writeKeyValuePairs(QSettings& settings,
 } // end of ctk namespace
 
 #endif
-

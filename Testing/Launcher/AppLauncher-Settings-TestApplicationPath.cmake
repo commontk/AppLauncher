@@ -37,4 +37,3 @@ print_command_as_string("${command}")
 if(rv)
   message(FATAL_ERROR "Failed to start [${application}]")
 endif()
-

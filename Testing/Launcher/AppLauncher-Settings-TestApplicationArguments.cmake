@@ -47,4 +47,3 @@ if(NOT "${expected_msg}" STREQUAL "${current_msg}")
                       "  expected_msg:${expected_msg}\n"
                       "    output_msg:${ov}")
 endif()
-

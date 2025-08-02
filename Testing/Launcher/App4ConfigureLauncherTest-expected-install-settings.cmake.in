@@ -40,4 +40,3 @@ size=1
 [QT_PLUGIN_PATH]
 1\\path=<APPLAUNCHER_DIR>/libexec/qt
 size=1")
-

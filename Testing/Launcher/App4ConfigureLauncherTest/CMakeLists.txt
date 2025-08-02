@@ -8,7 +8,7 @@ if(MSVC90)
   add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 endif()
 
-# Add excutable
+# Add executable
 add_executable(${PROJECT_NAME}-real Main.cpp)
 
 set_target_properties(${PROJECT_NAME}-real PROPERTIES
