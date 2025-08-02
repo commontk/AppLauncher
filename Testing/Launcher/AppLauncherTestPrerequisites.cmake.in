@@ -75,7 +75,6 @@ endif()
 # --------------------------------------------------------------------------
 # Isolate launcher instances to prevent file access conflicts across parallel tests.
 # Each test gets a uniquely named copy of the launcher executable.
-
 set(original_launcher_name ${launcher_name})
 set(original_launcher ${launcher})
 set(original_launcher_exe ${launcher_exe})
@@ -91,10 +90,15 @@ set(launcher ${launcher_dir}/${launcher_name})
 set(launcher_exe ${launcher}${CMAKE_EXECUTABLE_SUFFIX})
 
 # copy launcher
-if(CMAKE_VERSION VERSION_GREATER_EQUAL "3.21")
-  file(COPY_FILE ${original_launcher_exe} ${launcher_exe})
-else()
-  configure_file("${original_launcher_exe}" "${launcher_exe}" COPYONLY)
+if(NOT DEFINED AppLauncherTestPrerequisites_COPY_LAUNCHER)
+  set(AppLauncherTestPrerequisites_COPY_LAUNCHER 1)
+endif()
+if(AppLauncherTestPrerequisites_COPY_LAUNCHER)
+  if(CMAKE_VERSION VERSION_GREATER_EQUAL "3.21")
+    file(COPY_FILE ${original_launcher_exe} ${launcher_exe})
+  else()
+    configure_file("${original_launcher_exe}" "${launcher_exe}" COPYONLY)
+  endif()
 endif()
 message(STATUS "Using unique launcher: ${launcher_exe}")
 

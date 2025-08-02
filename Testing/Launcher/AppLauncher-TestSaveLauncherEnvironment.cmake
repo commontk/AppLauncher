@@ -36,6 +36,7 @@ function(run_laucher expected_level)
     -DTEST_BINARY_DIR:PATH=${TEST_BINARY_DIR}
     -DEXPECTED_LEVEL:BOOL=${expected_level}
     -DTEST_NAME:STRING=${testname}
+    -DAppLauncherTestPrerequisites_COPY_LAUNCHER:BOOL=FALSE
     -P ${CMAKE_CURRENT_LIST_FILE}
     )
   print_command_as_string("${command}")
