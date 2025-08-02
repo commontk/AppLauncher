@@ -106,7 +106,7 @@ int checkReadSettingsWithoutExpand()
         appLauncherSettings.envVar("PLACEHOLDER", /* expand= */ false),
         "<APPLAUNCHER_DIR>-<APPLAUNCHER_NAME>"
         );
-  
+
   CHECK_QSTRING(
         appLauncherSettings.envVar("SETTINGSPLACEHOLDER", /* expand= */ false),
         "<APPLAUNCHER_SETTINGS_DIR>-<APPLAUNCHER_NAME>"
@@ -283,7 +283,7 @@ int checkReadSettingsWithExpand()
         appLauncherSettings.envVar("PLACEHOLDER"),
         "/awesome/path/to-AwesomeApp"
         );
-  
+
   CHECK_QSTRING(
         appLauncherSettings.envVar("SETTINGSPLACEHOLDER"),
         QString("%1-AwesomeApp").arg(regularSettingsDir)

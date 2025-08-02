@@ -19,13 +19,13 @@ set(LIB_INSTANCIATES)
 foreach(LIBSUFFIX RANGE 1 3)
 
   set(lib_subdir lib${LIBSUFFIX})
-  
+
   # Create directory
   execute_process(
     COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_CURRENT_BINARY_DIR}/${lib_subdir}
     )
-  
-  # configure 
+
+  # configure
   configure_file(
     ${CMAKE_CURRENT_SOURCE_DIR}/lib.template/CMakeLists.txt.in
     ${CMAKE_CURRENT_BINARY_DIR}/${lib_subdir}/CMakeLists.txt
@@ -43,9 +43,9 @@ foreach(LIBSUFFIX RANGE 1 3)
     )
   set(LIB_INCLUDES "${LIB_INCLUDES}\#include \"app4TestLib${LIBSUFFIX}.h\"\n")
   set(LIB_INSTANCIATES "${LIB_INSTANCIATES}  new app4TestLib${LIBSUFFIX}(verboseLibInstantiation);\n")
-  
+
   add_subdirectory(
-    ${CMAKE_CURRENT_BINARY_DIR}/${lib_subdir} 
+    ${CMAKE_CURRENT_BINARY_DIR}/${lib_subdir}
     ${CMAKE_CURRENT_BINARY_DIR}/${lib_subdir}-build)
 endforeach()
 
@@ -54,13 +54,13 @@ configure_file(
   ${CMAKE_CURRENT_BINARY_DIR}/Main.cpp
   @ONLY
   )
-  
+
 include_directories(
   ${CMAKE_CURRENT_SOURCE_DIR}
   ${CMAKE_CURRENT_BINARY_DIR}
   ${APP4TEST_INCLUDE_DIRS}
   )
-  
+
 # Add excutable
 add_executable(${PROJECT_NAME}
   ${CMAKE_CURRENT_BINARY_DIR}/Main.cpp

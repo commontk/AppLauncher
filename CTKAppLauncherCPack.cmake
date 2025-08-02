@@ -25,7 +25,7 @@ if("${CTKAppLauncher_BINARY_DIR}" STREQUAL "${CMAKE_BINARY_DIR}")
       endif()
     endif()
   endif()
-  
+
   set(CPACK_MONOLITHIC_INSTALL ON)
   set(CPACK_STRIP_FILES ON)
   set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "CTKAppLauncher - The Common Toolkit Application Launcher")
