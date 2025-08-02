@@ -61,7 +61,7 @@ include_directories(
   ${APP4TEST_INCLUDE_DIRS}
   )
 
-# Add excutable
+# Add executable
 add_executable(${PROJECT_NAME}
   ${CMAKE_CURRENT_BINARY_DIR}/Main.cpp
   )

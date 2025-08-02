@@ -475,7 +475,7 @@ function(ctk_applauncher_configure)
     SPLASH_IMAGE_PATH
     SPLASH_IMAGE_INSTALL_SUBDIR
 
-    # Comma seperated list of arguments that should NOT be associated with the spash screen
+    # Comma separated list of arguments that should NOT be associated with the splash screen
     NOSPLASH_ARGS
 
     DEFAULT_APPLICATION_ARGUMENT

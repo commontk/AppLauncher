@@ -18,7 +18,7 @@ if [[ ! -d "$Qt5_DIR" ]]; then
   die "Qt5_DIR env. variable is set to nonexistent directory: '${Qt5_DIR}'"
 fi
 
-# Rename "Qt5Gui_QVncIntegrationPlugin.cmake" to workaround the follwowing error:
+# Rename "Qt5Gui_QVncIntegrationPlugin.cmake" to workaround the following error:
 #
 # CMake Error at /work/qt-5.15.2-manylinux2.28-static-x86_64/lib/cmake/Qt5Gui/Qt5Gui_QVncIntegrationPlugin.cmake:8 (find_package):
 #   Could not find a package configuration file provided by "Qt5Network"

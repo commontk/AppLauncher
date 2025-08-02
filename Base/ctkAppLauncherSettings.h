@@ -113,7 +113,7 @@ class ctkAppLauncherSettingsPrivate;
 ///
 /// ctkAppLauncherSettings appLauncherSettings;
 ///
-/// // Set launcher directory and name to ensure the expension of special strings
+/// // Set launcher directory and name to ensure the expansion of special strings
 /// // work as expected.
 /// appLauncherSettings.setLauncherDir("/path/to");
 /// appLauncherSettings.setLauncherName("AwesomeApp");
@@ -198,7 +198,7 @@ public:
   /// \sa launcherDir()
   QHash<QString, QString> envVars(bool expand = true) const;
 
-  /// \brief Get dictionnary of all list of paths.
+  /// \brief Get dictionary of all list of paths.
   ///
   /// These include list of paths associated with:
   ///
@@ -241,7 +241,7 @@ public:
   /// \sa launcherDir()
   QStringList additionalPaths(const QString& variableName, bool expand = true) const;
 
-  /// \brief Get dictionnary of path list associated with \c General/additionalPathVariables.
+  /// \brief Get dictionary of path list associated with \c General/additionalPathVariables.
   ///
   /// By default, placeholder strings are expanded and relative paths are updated
   /// prepending the launcher directory.

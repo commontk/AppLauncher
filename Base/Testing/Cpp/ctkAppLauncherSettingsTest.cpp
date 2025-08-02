@@ -251,7 +251,7 @@ void ctkAppLauncherSettingsTester::testReadSettings()
 
   }
 
-  // write additonal settings
+  // write additional settings
   {
     QTextStream outputStream(&additionalSettingFile);
     outputStream
