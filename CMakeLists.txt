@@ -245,11 +245,7 @@ endif()
 # Qt
 #
 
-set(default_qt_version "4")
-if(DEFINED Qt5_DIR)
-  set(default_qt_version "5")
-endif()
-
+set(default_qt_version "5")
 set(CTKAppLauncher_QT_VERSION "${default_qt_version}" CACHE STRING "Expected Qt version")
 mark_as_advanced(CTKAppLauncher_QT_VERSION)
 
