@@ -30,7 +30,7 @@ if(rv)
                       "directory [${launcher_binary_dir}]\n${ev}")
 endif()
 
-set(expected_msg "CTKAppLauncher launcher version ${launcher_version}
+set(expected_msg "${launcher_name} launcher version ${launcher_version}
 ")
 
 if(NOT ${expected_msg} STREQUAL ${ov})
