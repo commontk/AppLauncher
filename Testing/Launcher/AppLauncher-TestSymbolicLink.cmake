@@ -83,4 +83,3 @@ if(NOT "${expected_msg}" STREQUAL "${current_msg}")
   message(FATAL_ERROR "Working directory associated with ${application_name} is incorrect ! "
                       "ExpectedWorkingDirectory:${cwd}\n${ov}")
 endif()
-

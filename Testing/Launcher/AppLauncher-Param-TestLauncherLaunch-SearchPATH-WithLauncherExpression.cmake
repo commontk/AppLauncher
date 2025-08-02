@@ -56,4 +56,3 @@ if("${current_msg}" STREQUAL "")
                       "  expected_msg:${expected_msg}\n"
                       "  current_msg:${ov}")
 endif()
-

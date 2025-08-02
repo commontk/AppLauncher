@@ -41,4 +41,3 @@ string(REGEX MATCH ${regex} current_msg ${ov})
 if("${current_msg}" STREQUAL "")
   message(FATAL_ERROR "Problem with flag --launcher-verbose")
 endif()
-

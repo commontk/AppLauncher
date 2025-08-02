@@ -110,4 +110,3 @@ if(NOT "${current_msg}" STREQUAL "")
   message(FATAL_ERROR "unexpected_msg:${unexpected_msg}, "
                       "current_msg:${ov}")
 endif()
-

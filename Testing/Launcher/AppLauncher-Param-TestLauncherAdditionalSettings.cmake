@@ -155,4 +155,3 @@ endif()
 foreach(expected_ov_line ${expected_ov_lines})
   check_expected_string("${ov}" "${expected_ov_line}" "reading additional settings file")
 endforeach()
-

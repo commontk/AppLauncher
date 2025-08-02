@@ -42,4 +42,3 @@ if("${current_msg}" STREQUAL "")
   message(FATAL_ERROR "expected_msg:${expected_msg}, "
                       "current_msg:${ov}")
 endif()
-
