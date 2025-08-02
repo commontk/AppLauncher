@@ -142,7 +142,7 @@ function(check_env level)
   endforeach()
 
   # Check that variables used to save an environment are excluded from
-  # enviroment save operations.
+  # environment save operations.
   if(level GREATER 1)
     set(prefix "")
     foreach(idx RANGE 1 ${level})

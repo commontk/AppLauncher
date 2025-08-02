@@ -133,7 +133,7 @@ public:
    * Returns a detailed error description if a call to <code>parseArguments()</code>
    * failed.
    *
-   * @return The error description, empty if no error occured.
+   * @return The error description, empty if no error occurred.
    * @see parseArguments(const QStringList&, bool*)
    */
   QString errorString() const;
@@ -240,7 +240,7 @@ public:
    * <code>errorString()</code> can be used the get the last error description.
    *
    * @param argument The previously added long or short argument name.
-   * @param expression A regular expression which the arugment parameters must match.
+   * @param expression A regular expression which the argument parameters must match.
    * @param exactMatchFailedMessage An error message explaining why the parameter did
    *        not match.
    *
@@ -353,7 +353,7 @@ public:
                       const QString& disableShortArg = "");
 
   /**
-   * Controlls the merging behavior of user values and QSettings values.
+   * Controls the merging behavior of user values and QSettings values.
    *
    * If merging is on (the default), user supplied values for an argument
    * which can take more than one parameter are merged with values stored
