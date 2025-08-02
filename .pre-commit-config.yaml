@@ -18,6 +18,12 @@ repos:
         types_or: [yaml]
         args: [--prose-wrap=always]
 
+  - repo: https://github.com/codespell-project/codespell
+    rev: "v2.4.1"
+    hooks:
+      - id: codespell
+        args: [--ignore-words=.codespellignore, --write-changes]
+
   - repo: https://github.com/python-jsonschema/check-jsonschema
     rev: "0.33.2"
     hooks:
