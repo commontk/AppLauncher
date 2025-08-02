@@ -3,14 +3,18 @@ set(KIT ${PROJECT_NAME})
 if(CTKAppLauncher_QT_VERSION VERSION_GREATER "4" AND WIN32)
   set(CMAKE_TESTDRIVER_EXTRA_INCLUDES "${CMAKE_TESTDRIVER_EXTRA_INCLUDES}
   #include <QtPlugin>
+  #if (defined QT_STATIC)
   Q_IMPORT_PLUGIN(QWindowsIntegrationPlugin)
+  #endif
   ")
 endif()
 
 if(CTKAppLauncher_QT_VERSION VERSION_GREATER "4" AND UNIX AND NOT APPLE)
   set(CMAKE_TESTDRIVER_EXTRA_INCLUDES "${CMAKE_TESTDRIVER_EXTRA_INCLUDES}
   #include <QtPlugin>
+  #if (defined QT_STATIC)
   Q_IMPORT_PLUGIN(QXcbIntegrationPlugin)
+  #endif
   ")
 endif()
 
