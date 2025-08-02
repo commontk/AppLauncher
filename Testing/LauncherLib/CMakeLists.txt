@@ -112,5 +112,5 @@ set_property(TEST ${testname} APPEND PROPERTY DEPENDS ${build_step_testname})
 
 set_property(TEST ${testname} PROPERTY LABELS "ctkAppLauncher") # Remove "CompilerRequired" label
 if(TEST_TREE_TYPE STREQUAL "InstallTree")
-  set_tests_properties(${testname} PROPERTIES DEPENDS "InstallTree_AppLauncher-Install")
+  set_property(TEST ${testname} APPEND PROPERTY DEPENDS "InstallTree_AppLauncher-Install")
 endif()
