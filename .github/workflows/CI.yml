@@ -2,11 +2,17 @@ name: CI
 
 on:
   pull_request:
+    paths-ignore:
+      - "README.md"
+      - "Docs/**"
   push:
     branches:
       - main
     tags:
       - "v*"
+    paths-ignore:
+      - "README.md"
+      - "Docs/**"
 
 jobs:
   win-tests:
