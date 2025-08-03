@@ -100,7 +100,11 @@ if(AppLauncherTestPrerequisites_COPY_LAUNCHER)
     configure_file("${original_launcher_exe}" "${launcher_exe}" COPYONLY)
   endif()
 endif()
-message(STATUS "Using unique launcher: ${launcher_exe}")
+message(STATUS "Launcher isolation details:")
+message(STATUS "  TEST_NAME            = ${TEST_NAME}")
+message(STATUS "  Hashed suffix        = ${launcher_suffix}")
+message(STATUS "  Original launcher    = ${original_launcher_exe}")
+message(STATUS "  Isolated launcher    = ${launcher_exe}")
 
 # --------------------------------------------------------------------------
 # Remove settings file if any
