@@ -1,0 +1,5 @@
+changelog:
+  exclude:
+    authors:
+      # Excludes automated dependency updates for GitHub workflows, as these are not Slicer dependencies and are not relevant for the changelog.
+      - dependabot
