@@ -47,11 +47,11 @@ int checkReadArrayValues()
 {
   QSettings settings("settings-for-read-array-values-test.ini", QSettings::IniFormat);
   if (!QFile(settings.fileName()).exists())
-    {
+  {
     qWarning() << "Line" << __LINE__ << __FILE__ << "\n"
                << "Settings file" << settings.fileName() << "does not exist";
     return EXIT_FAILURE;
-    }
+  }
 
   CHECK_QSTRINGLIST(
         ctk::readArrayValues(settings, "Paths", "path"),
@@ -220,14 +220,14 @@ int checkReadSettingsWithoutExpand()
   int expectedPathsEnvVarsCount = 4;
 #endif
   if (pathsEnvVars.count() != expectedPathsEnvVarsCount)
-    {
+  {
     qWarning() << "Line" << __LINE__ << __FILE__ << "\n"
                << "pathsEnvVars has not the expected number of entries\n"
                << "current:" << pathsEnvVars.count() << "\n"
                << "expected:" << expectedPathsEnvVarsCount << "\n"
                << "current list:" << pathsEnvVars;
     return EXIT_FAILURE;
-    }
+  }
 
   return EXIT_SUCCESS;
 }
@@ -415,14 +415,14 @@ int checkReadSettingsWithExpand()
   int expectedPathsEnvVarsCount = 4;
 #endif
   if (pathsEnvVars.count() != expectedPathsEnvVarsCount)
-    {
+  {
     qWarning() << "Line" << __LINE__ << __FILE__ << "\n"
                << "pathsEnvVars has not the expected number of entries\n"
                << "current:" << pathsEnvVars.count() << "\n"
                << "expected:" << expectedPathsEnvVarsCount << "\n"
                << "current list:" << pathsEnvVars;
     return EXIT_FAILURE;
-    }
+  }
 
   return EXIT_SUCCESS;
 }
@@ -442,9 +442,9 @@ int checkReadAdditionalSettingsWithExpand()
   QString userAdditionalSettingsFileName =
       createUserAdditionalLauncherSettings("AwesomeAppXXXXXX-0.1", appName, success);
   if (!success)
-    {
+  {
     return EXIT_FAILURE;
-    }
+  }
 
   // Update main settings replacing "AwesomeApp" with "AwesomeAppXXXXXX"
   QString mainSettingsFileName("launcher-settings.ini");
@@ -456,9 +456,9 @@ int checkReadAdditionalSettingsWithExpand()
   // Generate user additional settings
   QFile userAdditionalSettingsFile(userAdditionalSettingsFileName);
   if (!userAdditionalSettingsFile.open(QIODevice::WriteOnly))
-    {
+  {
     qWarning() << "Line" << __LINE__ << "- Failed to open user additional settings file" << userAdditionalSettingsFileName;
-    }
+  }
   QString userAdditionalSettingsContent = readFile(__LINE__, "launcher-user-additional-settings.ini");
   CHECK_QSTRING_NOT_NULL(userAdditionalSettingsContent);
   QTextStream outputStream(&userAdditionalSettingsFile);
@@ -574,15 +574,15 @@ int checkEnvironment(bool withLauncher)
   CHECK_BOOL(systemEnvironment.contains("APPLAUNCHER_LEVEL"), withLauncher);
 
   if (withLauncher)
-    {
+  {
     CHECK_INT(ctkAppLauncherEnvironment::currentLevel(), 1);
     CHECK_QSTRING(systemEnvironment.value("APPWITHLAUNCHER_ENV_VAR", ""), "set-from-launcher-settings");
-    }
+  }
   else
-    {
+  {
     CHECK_INT(ctkAppLauncherEnvironment::currentLevel(), 0);
     CHECK_QSTRING(systemEnvironment.value("APPWITHLAUNCHER_ENV_VAR", ""), "");
-    }
+  }
 
   qputenv("APPWITHLAUNCHER_ENV_VAR_ONLY_FROM_EXECUTABLE", "set-only-from-executable");
   qputenv("APPWITHLAUNCHER_ENV_VAR", "set-from-executable");
@@ -591,21 +591,21 @@ int checkEnvironment(bool withLauncher)
   CHECK_QSTRING(systemEnvironment.value("APPWITHLAUNCHER_ENV_VAR", ""), "set-from-executable");
 
   if (withLauncher)
-    {
+  {
     CHECK_QSTRING(ctkAppLauncherEnvironment::environment(0).value("APPWITHLAUNCHER_ENV_VAR", ""), "set-from-launcher-env");
     CHECK_QSTRING(ctkAppLauncherEnvironment::environment(0).value("APPWITHLAUNCHER_ENV_VAR_ONLY_FROM_EXECUTABLE", ""), "");
 
     CHECK_QSTRING(ctkAppLauncherEnvironment::environment(1).value("APPWITHLAUNCHER_ENV_VAR", ""), "set-from-executable");
     CHECK_QSTRING(ctkAppLauncherEnvironment::environment(1).value("APPWITHLAUNCHER_ENV_VAR_ONLY_FROM_EXECUTABLE", ""), "set-only-from-executable");
-    }
+  }
   else
-    {
+  {
     CHECK_QSTRING(ctkAppLauncherEnvironment::environment(0).value("APPWITHLAUNCHER_ENV_VAR", ""), "set-from-executable");
     CHECK_QSTRING(ctkAppLauncherEnvironment::environment(0).value("APPWITHLAUNCHER_ENV_VAR_ONLY_FROM_EXECUTABLE", ""), "set-only-from-executable");
 
     CHECK_QSTRING(ctkAppLauncherEnvironment::environment(1).value("APPWITHLAUNCHER_ENV_VAR", ""), "");
     CHECK_QSTRING(ctkAppLauncherEnvironment::environment(1).value("APPWITHLAUNCHER_ENV_VAR_ONLY_FROM_EXECUTABLE", ""), "");
-    }
+  }
 
   return EXIT_SUCCESS;
 }

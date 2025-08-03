@@ -39,9 +39,9 @@ void ctkAppLauncherTest1er::testSetArguments()
   ctkAppLauncher appLauncher(*qApp);
 
   if (shouldSetArguments)
-    {
+  {
     appLauncher.setArguments(argumentsToSet);
-    }
+  }
 
   QCOMPARE(appLauncher.arguments(), expectedArguments);
 }

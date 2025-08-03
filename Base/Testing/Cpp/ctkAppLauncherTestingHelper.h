@@ -38,9 +38,9 @@ QString createUserAdditionalLauncherSettings(const QString& appNameTemplate, QSt
   QStringList a = (actual); \
   QStringList e = (expected); \
   if (!CheckStringList(__LINE__,#actual " != " #expected, a, e)) \
-    { \
+  { \
     return EXIT_FAILURE; \
-    } \
+  } \
   }
 
 //----------------------------------------------------------------------------
@@ -50,9 +50,9 @@ QString createUserAdditionalLauncherSettings(const QString& appNameTemplate, QSt
   QStringList a = (actual); \
   QStringList e = (expected); \
   if (!CheckStringList(__LINE__,#actual " != " #expected, a, e)) \
-    { \
+  { \
     QFAIL(""); \
-    } \
+  } \
   }
 
 //----------------------------------------------------------------------------
@@ -62,9 +62,9 @@ QString createUserAdditionalLauncherSettings(const QString& appNameTemplate, QSt
   QString a = (actual); \
   QString e = (expected); \
   if (!CheckString(__LINE__,#actual " != " #expected, qPrintable(a), qPrintable(e))) \
-    { \
+  { \
     return EXIT_FAILURE; \
-    } \
+  } \
   }
 
 //----------------------------------------------------------------------------
@@ -72,9 +72,9 @@ QString createUserAdditionalLauncherSettings(const QString& appNameTemplate, QSt
 #define CHECK_INT(actual, expected) \
   { \
   if (!CheckInt(__LINE__,#actual " != " #expected, (actual), (expected))) \
-    { \
+  { \
     return EXIT_FAILURE; \
-    } \
+  } \
   }
 
 //----------------------------------------------------------------------------
@@ -82,9 +82,9 @@ QString createUserAdditionalLauncherSettings(const QString& appNameTemplate, QSt
 #define CHECK_BOOL(actual, expected) \
   { \
   if (!CheckInt(__LINE__,#actual " != " #expected, (actual)?1:0, (expected)?1:0)) \
-    { \
+  { \
     return EXIT_FAILURE; \
-    } \
+  } \
   }
 
 //----------------------------------------------------------------------------
@@ -92,11 +92,11 @@ QString createUserAdditionalLauncherSettings(const QString& appNameTemplate, QSt
   { \
   int a = (actual); \
   if (a != EXIT_SUCCESS) \
-    { \
+  { \
     qWarning() << "\nLine " << __LINE__ << " - " << #actual " != EXIT_SUCCESS" \
              << " : " << "CheckExitSuccess" << "  failed"; \
     return EXIT_FAILURE; \
-    } \
+  } \
   }
 
 //----------------------------------------------------------------------------
@@ -104,11 +104,11 @@ QString createUserAdditionalLauncherSettings(const QString& appNameTemplate, QSt
   { \
   QString a = (actual); \
   if (a.isNull()) \
-    { \
+  { \
     qWarning() << "\nLine " << __LINE__ << " - " << #actual " is Null" \
              << " : " << "CheckQStringNotNull" << "  failed"; \
     return EXIT_FAILURE; \
-    } \
+  } \
   }
 
 #include "ctkAppLauncherTestingHelper.txx"

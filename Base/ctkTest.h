@@ -70,10 +70,10 @@ static void mouseEvent(QTest::MouseAction action, QWidget *widget, Qt::MouseButt
                        Qt::KeyboardModifiers stateKey, QPoint pos, int delay=-1)
 {
   if (action != QTest::MouseMove)
-    {
+  {
     QTest::mouseEvent(action, widget, button, stateKey, pos, delay);
     return;
-    }
+  }
   QTEST_ASSERT(widget);
   //extern int Q_TESTLIB_EXPORT defaultMouseDelay();
   //if (delay == -1 || delay < defaultMouseDelay())
@@ -94,12 +94,12 @@ static void mouseEvent(QTest::MouseAction action, QWidget *widget, Qt::MouseButt
   me = QMouseEvent(QEvent::MouseMove, pos, widget->mapToGlobal(pos), button, button, stateKey);
   QSpontaneKeyEvent::setSpontaneous(&me);
   if (!qApp->notify(widget, &me))
-    {
+  {
     static const char *mouseActionNames[] =
         { "MousePress", "MouseRelease", "MouseClick", "MouseDClick", "MouseMove" };
     QString warning = QLatin1String("Mouse event \"%1\" not accepted by receiving widget");
     QTest::qWarn(warning.arg(QLatin1String(mouseActionNames[static_cast<int>(action)])).toLocal8Bit());
-    }
+  }
 }
 
 inline void mouseMove(QWidget *widget, Qt::MouseButton button, Qt::KeyboardModifiers stateKey = 0,

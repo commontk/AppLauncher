@@ -29,11 +29,11 @@ public:
 
   /// Different type of settings files.
   enum SettingsType
-    {
+  {
     RegularSettings = 0,    ///< Primary settings file associated with the launcher.
     UserAdditionalSettings, ///< Settings file implicitly associated using application `name`, `organizationName`, `organizationDomain`, and optionally `revision`.
     AdditionalSettings      ///< Settings file explicitly specified using command line argument.
-    };
+  };
   static QString settingsTypeToString(const SettingsType& settingsType);
 
   static QString settingsDirPlaceHolder(const SettingsType& settingsType);

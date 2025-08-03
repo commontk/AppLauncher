@@ -90,38 +90,38 @@ void ctkAppLauncherPrivate::reportError(const QString& msg) const
 void ctkAppLauncherPrivate::reportInfo(const QString& msg, bool force) const
 {
   if (this->verbose() || force)
-    {
+  {
     std::cout << "info: " << qPrintable(msg) << std::endl;
-    }
+  }
 }
 
 // --------------------------------------------------------------------------
 void ctkAppLauncherPrivate::exit(int exitCode)
 {
   if (this->Application)
-    {
+  {
     this->Application->exit(exitCode);
-    }
+  }
 }
 
 // --------------------------------------------------------------------------
 bool ctkAppLauncherPrivate::processSplashPathArgument()
 {
   if (this->LauncherSplashImagePath.isEmpty())
-    {
+  {
     this->LauncherSplashImagePath = this->DefaultLauncherSplashImagePath;
-    }
+  }
   this->LauncherSplashImagePath = this->expandValue(this->LauncherSplashImagePath);
   this->reportInfo(QString("LauncherSplashImagePath [%1]").arg(this->LauncherSplashImagePath));
 
   // Make sure the splash image exists if a splashscreen is used
   if (!QFile::exists(this->LauncherSplashImagePath)
       && !this->disableSplash() )
-    {
+  {
     this->reportError(
       QString("SplashImage does NOT exist [%1]").arg(this->LauncherSplashImagePath));
     return false;
-    }
+  }
   return true;
 }
 
@@ -129,9 +129,9 @@ bool ctkAppLauncherPrivate::processSplashPathArgument()
 bool ctkAppLauncherPrivate::processScreenHideDelayMsArgument()
 {
   if (this->LauncherSplashScreenHideDelayMs == -1)
-    {
+  {
     this->LauncherSplashScreenHideDelayMs = this->DefaultLauncherSplashScreenHideDelayMs;
-    }
+  }
   this->reportInfo(QString("LauncherSplashScreenHideDelayMs [%1]").arg(this->LauncherSplashScreenHideDelayMs));
 
   return true;
@@ -141,13 +141,13 @@ bool ctkAppLauncherPrivate::processScreenHideDelayMsArgument()
 bool ctkAppLauncherPrivate::processAdditionalSettings()
 {
   if (this->AdditionalSettingsFilePath.isEmpty())
-    {
+  {
     return true;
-    }
+  }
   if (!QFile::exists(this->AdditionalSettingsFilePath))
-    {
+  {
     return true;
-    }
+  }
 
   ctkAppLauncherPrivate::ScopedLauncherSettingsDir scopedLauncherSettingsDir(this, Self::AdditionalSettings);
   Q_UNUSED(scopedLauncherSettingsDir);
@@ -159,16 +159,16 @@ bool ctkAppLauncherPrivate::processAdditionalSettingsArgument()
 {
   Q_Q(ctkAppLauncher);
   if (!this->ParsedArgs.contains("launcher-additional-settings"))
-    {
+  {
     return true;
-    }
+  }
   QString additionalSettings = this->ParsedArgs.value("launcher-additional-settings").toString();
   if (!QFile::exists(additionalSettings))
-    {
+  {
     this->reportError(QString("File specified using --launcher-additional-settings argument "
                               "does NOT exist ! [%1]").arg(additionalSettings));
     return false;
-    }
+  }
 
   q->setAdditionalSettingsFilePath(additionalSettings);
 
@@ -181,9 +181,9 @@ bool ctkAppLauncherPrivate::processAdditionalSettingsArgument()
 QString ctkAppLauncherPrivate::additionalSettingsDir() const
 {
   if (this->AdditionalSettingsFilePath.isEmpty())
-    {
+  {
     return QString();
-    }
+  }
   QFileInfo fileInfo(this->AdditionalSettingsFilePath);
   return fileInfo.path();
 }
@@ -192,15 +192,15 @@ QString ctkAppLauncherPrivate::additionalSettingsDir() const
 bool ctkAppLauncherPrivate::processUserAdditionalSettings()
 {
   if (this->ParsedArgs.value("launcher-ignore-user-additional-settings").toBool())
-    {
+  {
     return true;
-    }
+  }
 
   QString additionalSettings = this->findUserAdditionalSettings();
   if(additionalSettings.isEmpty())
-    {
+  {
     return true;
-    }
+  }
   this->LauncherSettingsDirs[Self::UserAdditionalSettings] = QFileInfo(additionalSettings).absolutePath();
   ctkAppLauncherPrivate::ScopedLauncherSettingsDir scopedLauncherSettingsDir(this, Self::UserAdditionalSettings);
   Q_UNUSED(scopedLauncherSettingsDir);
@@ -214,63 +214,63 @@ bool ctkAppLauncherPrivate::processApplicationToLaunchArgument()
   this->ApplicationToLaunch = this->ParsedArgs.value("launch").toString();
 
   if (!this->ExtraApplicationToLaunch.isEmpty())
-    {
+  {
     this->ApplicationToLaunch = this->ExtraApplicationToLaunch;
-    }
+  }
 
   if (this->ApplicationToLaunch.isEmpty())
-    {
+  {
     this->ApplicationToLaunch = this->DefaultApplicationToLaunch;
-    }
+  }
 
   this->ApplicationToLaunch = this->expandValue(this->ApplicationToLaunch);
 
   if (!this->ApplicationToLaunch.isEmpty())
-    {
+  {
     QFileInfo applicationToLaunchInfo(this->ApplicationToLaunch);
     if (applicationToLaunchInfo.isRelative())
-      {
+    {
       QString path = applicationToLaunchInfo.path() + "/" + applicationToLaunchInfo.baseName();
       QString extension = applicationToLaunchInfo.completeSuffix();
 #ifdef Q_OS_WIN32
       if (extension.isEmpty())
-        {
+      {
         extension = "exe";
-        }
+      }
 #endif
       QString resolvedApplicationToLaunch = this->searchPaths(path, QStringList() << extension);
       if (!resolvedApplicationToLaunch.isEmpty())
-        {
+      {
         this->ApplicationToLaunch = resolvedApplicationToLaunch;
-        }
       }
     }
+  }
 
   this->reportInfo(QString("ApplicationToLaunch [%1]").arg(this->ApplicationToLaunch));
 
   // Make sure the program to launch exists
   if (this->ApplicationToLaunch.isEmpty() || !QFile::exists(this->ApplicationToLaunch))
-    {
+  {
     this->reportError(
       QString("Application does NOT exists [%1]").arg(this->ApplicationToLaunch));
 
     if (!this->ParsedArgs.contains("launch") && !this->ValidSettingsFile)
-      {
+    {
       this->reportError("--launch argument has NOT been specified");
-      }
-    return false;
     }
+    return false;
+  }
 
   // ... and is executable
   if (!(QFile::permissions(this->ApplicationToLaunch) & QFile::ExeUser))
-    {
+  {
     this->reportError(
       QString("Application is NOT executable [%1]").arg(this->ApplicationToLaunch));
     return false;
-    }
+  }
 
   if (!this->ExtraApplicationToLaunchArguments.isEmpty())
-    {
+  {
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
     this->ApplicationToLaunchArguments =
         this->ExtraApplicationToLaunchArguments.split(" ", Qt::SkipEmptyParts);
@@ -278,11 +278,11 @@ bool ctkAppLauncherPrivate::processApplicationToLaunchArgument()
     this->ApplicationToLaunchArguments =
         this->ExtraApplicationToLaunchArguments.split(" ", QString::SkipEmptyParts);
 #endif
-    }
+  }
 
   // Set ApplicationToLaunchArguments with the value read from the settings file
   if (this->ApplicationToLaunchArguments.empty())
-    {
+  {
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
     this->ApplicationToLaunchArguments =
         this->DefaultApplicationToLaunchArguments.split(" ", Qt::SkipEmptyParts);
@@ -290,7 +290,7 @@ bool ctkAppLauncherPrivate::processApplicationToLaunchArgument()
     this->ApplicationToLaunchArguments =
         this->DefaultApplicationToLaunchArguments.split(" ", QString::SkipEmptyParts);
 #endif
-    }
+  }
 
   this->reportInfo(QString("ApplicationToLaunchArguments [%1]").
                    arg(this->ApplicationToLaunchArguments.join(" ")));
@@ -302,24 +302,24 @@ bool ctkAppLauncherPrivate::processApplicationToLaunchArgument()
 bool ctkAppLauncherPrivate::processExtraApplicationToLaunchArgument(const QStringList& unparsedArgs)
 {
   foreach(const QString& extraAppLongArgument, this->ExtraApplicationToLaunchList.keys())
-    {
+  {
     ctkAppLauncherPrivate::ExtraApplicationToLaunchProperty extraAppToLaunchProperty =
         this->ExtraApplicationToLaunchList[extraAppLongArgument];
     QString extraAppShortArgument = extraAppToLaunchProperty.value("shortArgument");
     bool hasShortArgument = false;
     if (!extraAppShortArgument.isEmpty())
-      {
+    {
       hasShortArgument = unparsedArgs.contains(this->Parser.shortPrefix() + extraAppShortArgument);
-      }
+    }
     if (unparsedArgs.contains(this->Parser.longPrefix() + extraAppLongArgument) || hasShortArgument)
-      {
+    {
       this->ExtraApplicationToLaunchLongArgument = extraAppLongArgument;
       this->ExtraApplicationToLaunchShortArgument = extraAppToLaunchProperty.value("shortArgument");
       this->ExtraApplicationToLaunch = extraAppToLaunchProperty.value("path");
       this->ExtraApplicationToLaunchArguments = extraAppToLaunchProperty.value("arguments");
       break;
-      }
     }
+  }
   return true;
 }
 
@@ -329,9 +329,9 @@ QString ctkAppLauncherPrivate::invalidSettingsMessage() const
   QString msg = QString("Launcher setting file [%1LauncherSettings.ini] does NOT exist in "
                         "any of these directories:\n").arg(this->LauncherName);
   foreach(const QString& subdir, this->LauncherSettingSubDirs)
-    {
+  {
     msg.append(QString("%1/%2\n").arg(this->LauncherDir).arg(subdir));
-    }
+  }
   return msg;
 }
 
@@ -345,9 +345,9 @@ bool ctkAppLauncherPrivate::verbose() const
 QString ctkAppLauncherPrivate::splashImagePath()const
 {
   if (!this->Initialized)
-    {
+  {
     return this->DefaultLauncherSplashImagePath;
-    }
+  }
 
   return this->LauncherSplashImagePath;
 }
@@ -357,24 +357,24 @@ bool ctkAppLauncherPrivate::disableSplash() const
 {
   bool hasNoSplashArgument = false;
   foreach(const QString& arg, this->LauncherAdditionalNoSplashArguments)
-    {
+  {
 
     if (this->Parser.unparsedArguments().contains(arg) ||
         this->ParsedArgs.contains(this->trimArgumentPrefix(arg))
         )
-      {
+    {
       hasNoSplashArgument = true;
       break;
-      }
     }
+  }
   if (this->ParsedArgs.value("launcher-no-splash").toBool()
       || hasNoSplashArgument
       || !this->ExtraApplicationToLaunch.isEmpty()
       || this->LauncherNoSplashScreen
       || !this->ParsedArgs.value("launch").toString().isEmpty())
-    {
+  {
     return true;
-    }
+  }
   return false;
 }
 
@@ -384,30 +384,30 @@ QString ctkAppLauncherPrivate::searchPaths(const QString& executableName, const 
   QStringList paths = this->SystemEnvironment.value(this->PathVariableName).split(this->PathSep);
   paths = this->ListOfPaths + paths;
   foreach(const QString& path, paths)
-    {
+  {
     QString expandedPath = this->expandValue(path);
     foreach(const QString& extension, extensions)
-      {
+    {
       QString executableNameWithExt = executableName;
       if (!extension.isEmpty())
-        {
+      {
         executableNameWithExt.append("." + extension);
-        }
+      }
       QDir pathAsDir(expandedPath);
       QString executablePath = pathAsDir.filePath(executableNameWithExt);
       QString msg = QString("Checking if [%1] exists in [%2]").arg(executableNameWithExt).arg(expandedPath);
       this->reportInfo(msg);
       if (QFile::exists(executablePath) && QFileInfo(executablePath).isFile() && QFileInfo(executablePath).isExecutable())
-        {
+      {
         this->reportInfo(msg + " - Found");
         return executablePath;
-        }
+      }
       else
-        {
+      {
         this->reportInfo(msg + " - Not found");
-        }
       }
     }
+  }
   return QString();
 }
 
@@ -416,13 +416,13 @@ QString ctkAppLauncherPrivate::trimArgumentPrefix(const QString& argument) const
 {
   QString trimmedArgument = argument;
   if (trimmedArgument.startsWith(this->LongArgPrefix))
-    {
+  {
     trimmedArgument.remove(0, this->LongArgPrefix.length());
-    }
+  }
   else if (trimmedArgument.startsWith(this->ShortArgPrefix))
-    {
+  {
     trimmedArgument.remove(0, this->ShortArgPrefix.length());
-    }
+  }
   return trimmedArgument;
 }
 
@@ -433,39 +433,39 @@ bool ctkAppLauncherPrivate::extractLauncherNameAndDir(const QString& application
 
   // In case a symlink to the launcher is available from the PATH, resolve its location.
   if (!fileInfo.exists())
-    {
+  {
     QStringList paths = this->SystemEnvironment.value(this->PathVariableName).split(this->PathSep);
     foreach(const QString& path, paths)
-      {
+    {
       QString executablePath = QDir(path).filePath(fileInfo.fileName());
       QString msg = QString("Checking if [%1] exists in [%2]").arg(fileInfo.fileName()).arg(path);
       this->reportInfo(msg);
       if (QFile::exists(executablePath))
-        {
+      {
         this->reportInfo(msg + " - Found");
         fileInfo = QFileInfo(executablePath);
         break;
-        }
+      }
       else
-        {
+      {
         this->reportInfo(msg + " - Not found");
-        }
       }
     }
+  }
 
   // Follow symlink if it applies
   if (fileInfo.isSymLink())
-    {
+  {
     // symLinkTarget() handles links pointing to symlinks.
     fileInfo = QFileInfo(fileInfo.symLinkTarget());
-    }
+  }
 
   // Make sure the obtained target exists and is a "file"
   if (!fileInfo.exists() && !fileInfo.isFile())
-    {
+  {
     this->reportError("Failed to obtain launcher executable name !");
     return false;
-    }
+  }
 
   // Obtain executable name
   this->LauncherName = fileInfo.baseName();
@@ -481,12 +481,12 @@ QString ctkAppLauncherPrivate::shellQuote(bool posix, QString text, const QStrin
 {
 #ifdef Q_OS_WIN32
   if (!posix)
-    {
+  {
     static QRegExp reSpecialCharacters("([\"^])");
     text.replace(reSpecialCharacters, "^\\1");
     text.replace("\n", "^\n\n");
     return text + trailing;
-    }
+  }
 #else
   Q_UNUSED(posix)
 #endif
@@ -504,46 +504,46 @@ void ctkAppLauncherPrivate::buildEnvironment(QProcessEnvironment &env)
   this->reportInfo(QString("<APPLAUNCHER_DIR> -> [%1]").arg(this->LauncherDir));
   this->reportInfo(QString("<APPLAUNCHER_NAME> -> [%1]").arg(this->LauncherName));
   foreach(const Self::SettingsType& settingsType, this->LauncherSettingsDirs.keys())
-    {
+  {
     ScopedLauncherSettingsDir scopedLauncherSettingsDir(this, settingsType);
     Q_UNUSED(scopedLauncherSettingsDir);
     this->reportInfo(
           QString("<APPLAUNCHER_SETTINGS_DIR> (%1) -> [%2]").arg(Self::settingsTypeToString(settingsType)).arg(q->launcherSettingsDir()));
-    }
+  }
   this->reportInfo(QString("<PATHSEP> -> [%1]").arg(this->PathSep));
 
   if(this->LoadEnvironment >= 0)
-    {
+  {
     env = ctkAppLauncherEnvironment::environment(this->LoadEnvironment);
-    }
+  }
 
   // Regular environment variables
   QHash<QString, QString> envVars = q->envVars();
   foreach(const QString& key, envVars.keys())
-    {
+  {
     this->reportInfo(QString("Setting env. variable [%1]:%2").arg(key, envVars[key]));
     env.insert(key, envVars[key]);
-    }
+  }
 
   // Path environment variables
   QHash<QString, QStringList> pathsEnvVars = q->pathsEnvVars();
   foreach(const QString& key, pathsEnvVars.keys())
-    {
+  {
     const QStringList& paths = pathsEnvVars[key];
     QString value = paths.join(this->PathSep);
     this->reportInfo(QString("Setting env. variable [%1]:%2").arg(key, value));
     if (env.contains(key))
-      {
+    {
       value = QString("%1%2%3").arg(value, this->PathSep, env.value(key));
-      }
-    env.insert(key, value);
     }
+    env.insert(key, value);
+  }
 
   // Do not save environment if one should be loaded
   if(this->LoadEnvironment >= 0)
-    {
+  {
     return;
-    }
+  }
 
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
   QStringList envVarNames = q->envVars().keys();
@@ -567,96 +567,96 @@ void ctkAppLauncherPrivate::buildEnvironment(QProcessEnvironment &env)
 bool ctkAppLauncherPrivate::readSettings(const QString& fileName, int settingsType)
 {
   if (!this->Initialized)
-    {
+  {
     return false;
-    }
+  }
 
   if (!this->checkSettings(fileName, settingsType))
-    {
+  {
     if (!this->ReadSettingsError.isEmpty())
-      {
+    {
       this->reportError(this->ReadSettingsError);
-      }
-    return false;
     }
+    return false;
+  }
   QSettings settings(fileName, QSettings::IniFormat);
 
   this->LoadEnvironment = settings.value("launcherLoadEnvironment", -1).toInt();
 
   if(settingsType == Self::RegularSettings)
-    {
+  {
     // Read "user additional settings" and "additional settings" info
     this->readUserAdditionalSettingsInfo(settings);
     this->readAdditionalSettingsInfo(settings);
-    }
+  }
 
   QStringList excludeGroups;
   if (settingsType != Self::RegularSettings)
-    {
+  {
     excludeGroups = this->AdditionalSettingsExcludeGroups;
-    }
+  }
 
   if (!excludeGroups.contains("General"))
-    {
+  {
     // Read default launcher image path
     QVariant splashImagePathVariant = settings.value("launcherSplashImagePath");
     if (splashImagePathVariant.isValid() && !splashImagePathVariant.toString().isEmpty())
-      {
+    {
       this->DefaultLauncherSplashImagePath = splashImagePathVariant.toString();
-      }
+    }
 
     QVariant splashScreenHideDelayMsVariant = settings.value("launcherSplashScreenHideDelayMs");
     if (splashScreenHideDelayMsVariant.isValid() && splashScreenHideDelayMsVariant.toInt() != 0)
-      {
+    {
       this->DefaultLauncherSplashScreenHideDelayMs = splashScreenHideDelayMsVariant.toInt();
-      }
+    }
 
     if (settings.contains("launcherNoSplashScreen"))
-      {
+    {
       this->LauncherNoSplashScreen = settings.value("launcherNoSplashScreen").toBool();
-      }
+    }
 
     // Read additional launcher arguments
     QString helpShortArgument = settings.value("additionalLauncherHelpShortArgument").toString();
     if (!helpShortArgument.isEmpty())
-      {
+    {
       this->LauncherAdditionalHelpShortArgument = helpShortArgument;
-      }
+    }
     QString helpLongArgument = settings.value("additionalLauncherHelpLongArgument").toString();
     if (!helpLongArgument.isEmpty())
-      {
+    {
       this->LauncherAdditionalHelpLongArgument = helpLongArgument;
-      }
+    }
     this->LauncherAdditionalNoSplashArguments.append(
           settings.value("additionalLauncherNoSplashArguments").toStringList());
-    }
+  }
 
   if (!excludeGroups.contains("Application"))
-    {
+  {
     // Read default application to launch
     QHash<QString, QString> applicationGroup = ctk::readKeyValuePairs(settings, "Application");
     if (applicationGroup.contains("path"))
-      {
+    {
       this->DefaultApplicationToLaunch = applicationGroup["path"];
-      }
-    if (applicationGroup.contains("arguments"))
-      {
-      this->DefaultApplicationToLaunchArguments = applicationGroup["arguments"];
-      }
     }
+    if (applicationGroup.contains("arguments"))
+    {
+      this->DefaultApplicationToLaunchArguments = applicationGroup["arguments"];
+    }
+  }
 
   if (!excludeGroups.contains("ExtraApplicationToLaunch"))
-    {
+  {
     // Read list of 'extra application to launch'
     settings.beginGroup("ExtraApplicationToLaunch");
     QStringList extraApplicationToLaunchLongArguments = settings.childGroups();
     foreach(const QString& extraApplicationLongArgument, extraApplicationToLaunchLongArguments)
-      {
+    {
       this->ExtraApplicationToLaunchList[extraApplicationLongArgument] =
           ctk::readKeyValuePairs(settings, extraApplicationLongArgument);
-      }
-    settings.endGroup();
     }
+    settings.endGroup();
+  }
 
   this->Superclass::readPathSettings(settings, excludeGroups);
 
@@ -680,33 +680,33 @@ void ctkAppLauncherPrivate::runProcess()
 
   this->reportInfo(QString("Starting [%1]").arg(this->ApplicationToLaunch));
   if (this->verbose())
-    {
+  {
     foreach(const QString& argument, this->ApplicationToLaunchArguments)
-      {
+    {
       this->reportInfo(QString("argument [%1]").arg(argument));
-      }
     }
+  }
 
   connect(&this->Process, SIGNAL(finished(int, QProcess::ExitStatus)),
           this, SLOT(applicationFinished(int, QProcess::ExitStatus)));
   connect(&this->Process, SIGNAL(started()), this, SLOT(applicationStarted()));
 
   if (!this->DetachApplicationToLaunch)
-    {
+  {
     this->Process.start(this->ApplicationToLaunch, this->ApplicationToLaunchArguments);
     int timeoutInMs = this->ParsedArgs.value("launcher-timeout").toInt() * 1000;
     this->reportInfo(QString("launcher-timeout (ms) [%1]").arg(timeoutInMs));
     if (timeoutInMs > 0)
-      {
-      QTimer::singleShot(timeoutInMs, this, SLOT(terminateProcess()));
-      }
-    }
-  else
     {
+      QTimer::singleShot(timeoutInMs, this, SLOT(terminateProcess()));
+    }
+  }
+  else
+  {
     this->Process.startDetached(
       this->ApplicationToLaunch, this->ApplicationToLaunchArguments);
     this->exit(EXIT_SUCCESS);
-    }
+  }
 }
 
 // --------------------------------------------------------------------------
@@ -719,16 +719,16 @@ void ctkAppLauncherPrivate::terminateProcess()
 void ctkAppLauncherPrivate::applicationFinished(int exitCode, QProcess::ExitStatus  exitStatus)
 {
   if (exitStatus == QProcess::NormalExit)
-    {
+  {
     this->exit(exitCode);
-    }
+  }
   else if (exitStatus == QProcess::CrashExit)
-    {
+  {
     this->reportError(
       QString("[%1] exit abnormally - Report the problem.").
         arg(this->ApplicationToLaunch));
     this->exit(EXIT_FAILURE);
-    }
+  }
 }
 
 // --------------------------------------------------------------------------
@@ -737,7 +737,7 @@ void ctkAppLauncherPrivate::applicationStarted()
   this->reportInfo(
     QString("DisableSplash [%1]").arg(this->disableSplash()));
   if(!this->disableSplash())
-    {
+  {
     this->SplashPixmap.reset(
       new QPixmap(this->splashImagePath()));
     this->SplashScreen = QSharedPointer<QSplashScreen>(
@@ -745,7 +745,7 @@ void ctkAppLauncherPrivate::applicationStarted()
     this->SplashScreen->show();
     QTimer::singleShot(this->LauncherSplashScreenHideDelayMs,
                        this->SplashScreen.data(), SLOT(hide()));
-    }
+  }
 }
 
 // --------------------------------------------------------------------------
@@ -774,21 +774,21 @@ void ctkAppLauncher::displayEnvironment(std::ostream &output)
 {
   Q_D(ctkAppLauncher);
   if (d->LauncherName.isEmpty())
-    {
+  {
     return;
-    }
+  }
   QProcessEnvironment env;
   d->buildEnvironment(env);
   QStringList envAsList = env.toStringList();
   envAsList.sort();
   foreach (const QString& envArg, envAsList)
-    {
+  {
     output << qPrintable(envArg) << std::endl;
-    }
+  }
   if(envAsList.isEmpty())
-    {
+  {
     output << "(No environment to display)" << std::endl;
-    }
+  }
 }
 
 // --------------------------------------------------------------------------
@@ -796,9 +796,9 @@ void ctkAppLauncher::generateEnvironmentScript(QTextStream &output, bool posix)
 {
   Q_D(ctkAppLauncher);
   if (d->LauncherName.isEmpty())
-    {
+  {
     return;
-    }
+  }
 
   QProcessEnvironment env;
 
@@ -822,18 +822,18 @@ void ctkAppLauncher::generateEnvironmentScript(QTextStream &output, bool posix)
 #endif
 
   foreach(const QString& key, envKeys)
-    {
+  {
     const QString pair = QString("%1=%2").arg(key, env.value(key));
     if (appendVars.contains(key))
-      {
+    {
       const QString trailing = appendFormat.arg(key, d->PathSep);
       output << exportFormat.arg(d->shellQuote(posix, pair, trailing)) << '\n';
-      }
-    else
-      {
-      output << exportFormat.arg(d->shellQuote(posix, pair)) << '\n';
-      }
     }
+    else
+    {
+      output << exportFormat.arg(d->shellQuote(posix, pair)) << '\n';
+    }
+  }
 }
 
 // --------------------------------------------------------------------------
@@ -841,9 +841,9 @@ bool ctkAppLauncher::generateExecWrapperScript()
 {
   Q_D(ctkAppLauncher);
   if (d->LauncherName.isEmpty())
-    {
+  {
     return false;
-    }
+  }
 
 #ifdef Q_OS_WIN32
   const QString scriptComment("::");
@@ -856,10 +856,10 @@ bool ctkAppLauncher::generateExecWrapperScript()
   QTemporaryFile launcherScript(QDir::temp().filePath("Slicer-XXXXXX.%1").arg(scriptExtension));
   launcherScript.setAutoRemove(false);
   if (!launcherScript.open())
-    {
+  {
     d->reportError("Failed to generate executable wrapper script.");
     return false;
-    }
+  }
   QTextStream out(&launcherScript);
 
 #ifndef Q_OS_WIN32
@@ -891,19 +891,19 @@ void ctkAppLauncher::displayHelp(std::ostream &output)
 {
   Q_D(ctkAppLauncher);
   if (d->LauncherName.isEmpty())
-    {
+  {
     return;
-    }
+  }
 
   // Add "extra application to launch" arguments so that helpText() consider them.
   foreach(const QString& extraAppLongArgument, d->ExtraApplicationToLaunchList.keys())
-    {
+  {
     ctkAppLauncherPrivate::ExtraApplicationToLaunchProperty extraAppToLaunchProperty =
         d->ExtraApplicationToLaunchList[extraAppLongArgument];
     QString extraAppShortArgument = extraAppToLaunchProperty.value("shortArgument");
     d->Parser.addArgument(extraAppLongArgument, extraAppShortArgument, QVariant::Bool,
                                        extraAppToLaunchProperty.value("help"));
-    }
+  }
 
   output << "Usage\n";
   output << "  " << qPrintable(d->LauncherName) << " [options]\n\n";
@@ -916,9 +916,9 @@ void ctkAppLauncher::displayVersion(std::ostream &output)
 {
   Q_D(ctkAppLauncher);
   if (d->LauncherName.isEmpty())
-    {
+  {
     return;
-    }
+  }
   output << qPrintable(d->LauncherName) << " launcher version " CTKAppLauncher_VERSION << "\n";
 }
 
@@ -927,9 +927,9 @@ bool ctkAppLauncher::initialize(QString launcherFilePath)
 {
   Q_D(ctkAppLauncher);
   if (d->Initialized)
-    {
+  {
     return true;
-    }
+  }
 
   // Set verbose flags now so that call to "reportInfo" in "initialize" method properly
   // display information.
@@ -937,13 +937,13 @@ bool ctkAppLauncher::initialize(QString launcherFilePath)
         "launcher-verbose", QVariant(d->Arguments.contains("--launcher-verbose")));
 
   if (launcherFilePath.isEmpty() && d->Application)
-    {
+  {
     launcherFilePath = d->Application->applicationFilePath();
-    }
+  }
   if (!d->extractLauncherNameAndDir(launcherFilePath))
-    {
+  {
     return false;
-    }
+  }
 
   ctkCommandLineParser & parser = d->Parser;
   parser.setArgumentPrefix(d->LongArgPrefix, d->ShortArgPrefix);
@@ -994,9 +994,9 @@ void ctkAppLauncher::setApplication(const QCoreApplication& app)
   Q_D(ctkAppLauncher);
   d->Application = app.instance();
   if (d->Application && d->Arguments.empty())
-    {
+  {
     this->setArguments(d->Application->arguments());
-    }
+  }
 }
 
 // --------------------------------------------------------------------------
@@ -1018,19 +1018,19 @@ int ctkAppLauncher::processArguments()
 {
   Q_D(ctkAppLauncher);
   if (!d->Initialized)
-    {
+  {
     return Self::ExitWithError;
-    }
+  }
 
   bool ok = false;
   d->ParsedArgs =
       d->Parser.parseArguments(d->Arguments, &ok);
   if (!ok)
-    {
+  {
     std::cerr << "Error\n  "
               << qPrintable(d->Parser.errorString()) << "\n" << std::endl;
     return Self::ExitWithError;
-    }
+  }
 
   bool reportInfo = d->LauncherStarting
       || d->ParsedArgs.value("launcher-help").toBool()
@@ -1041,44 +1041,44 @@ int ctkAppLauncher::processArguments()
       || d->ParsedArgs.value("launcher-generate-exec-wrapper-script").toBool();
 
   if (d->ParsedArgs.value("launcher-help").toBool())
-    {
+  {
     this->displayHelp();
     return Self::ExitWithSuccess;
-    }
+  }
 
   if (d->ParsedArgs.value("launcher-version").toBool())
-    {
+  {
     this->displayVersion();
     return Self::ExitWithSuccess;
-    }
+  }
 
   // Read additional settings group to exclude
   if (d->ParsedArgs.contains("launcher-additional-settings-exclude-groups"))
-    {
+  {
     d->AdditionalSettingsExcludeGroups = d->ParsedArgs.value("launcher-additional-settings-exclude-groups").toString().split(",");
-    }
+  }
 
   // Regular settings are parsed before calling this function in ctkAppLauncher::configure()
 
   if (!d->processUserAdditionalSettings())
-    {
+  {
     return Self::ExitWithError;
-    }
+  }
 
   if (!d->processAdditionalSettings())
-    {
+  {
     return Self::ExitWithError;
-    }
+  }
 
   if (!d->processAdditionalSettingsArgument())
-    {
+  {
     return Self::ExitWithError;
-    }
+  }
 
   d->reportInfo(QString("AdditionalSettingsFilePath [%1]").arg(d->AdditionalSettingsFilePath));
 
   if (reportInfo)
-    {
+  {
     d->reportInfo(
         QString("LauncherDir [%1]").arg(d->LauncherDir));
 
@@ -1129,82 +1129,82 @@ int ctkAppLauncher::processArguments()
 
     d->reportInfo(
         QString("AdditionalLauncherNoSplashArguments [%1]").arg(d->LauncherAdditionalNoSplashArguments.join(",")));
-    }
+  }
 
   d->DetachApplicationToLaunch =
       d->ParsedArgs.value("launcher-detach").toBool();
   if (d->LauncherStarting)
-    {
+  {
     d->reportInfo(
         QString("DetachApplicationToLaunch [%1]").arg(d->DetachApplicationToLaunch));
-    }
+  }
 
   if (d->ParsedArgs.contains("launcher-load-environment"))
-    {
+  {
     d->LoadEnvironment =
         d->ParsedArgs.value("launcher-load-environment").toInt();
-    }
+  }
   if (reportInfo)
-    {
+  {
     d->reportInfo(
         QString("LoadEnvironment [%1]").arg(d->LoadEnvironment));
-    }
+  }
 
   QStringList unparsedArgs = d->Parser.unparsedArguments();
 
   if (!d->processExtraApplicationToLaunchArgument(unparsedArgs))
-    {
+  {
     return Self::ExitWithError;
-    }
+  }
 
   if (unparsedArgs.contains(d->LauncherAdditionalHelpShortArgument) ||
       unparsedArgs.contains(d->LauncherAdditionalHelpLongArgument))
-    {
+  {
     if (d->LauncherStarting && d->ExtraApplicationToLaunch.isEmpty())
-      {
+    {
       this->displayHelp();
-      }
     }
+  }
 
   if (d->ParsedArgs.value("launcher-generate-template").toBool())
-    {
+  {
     bool success = this->generateTemplate();
     return success ? Self::ExitWithSuccess : Self::ExitWithError;
-    }
+  }
 
   if (!d->processSplashPathArgument())
-    {
+  {
     return Self::ExitWithError;
-    }
+  }
 
   if (!d->processScreenHideDelayMsArgument())
-    {
+  {
     return Self::ExitWithError;
-    }
+  }
 
   if (d->ParsedArgs.value("launcher-show-set-environment-commands").toBool())
-    {
+  {
     QTextStream out(stdout);
     this->generateEnvironmentScript(out, true);
     return Self::ExitWithSuccess;
-    }
+  }
 
   if (d->ParsedArgs.value("launcher-generate-exec-wrapper-script").toBool())
-    {
+  {
     bool success = this->generateExecWrapperScript();
     return success ? Self::ExitWithSuccess : Self::ExitWithError;
-    }
+  }
 
   if (d->ParsedArgs.value("launcher-dump-environment").toBool())
-    {
+  {
     this->displayEnvironment();
     return Self::ExitWithSuccess;
-    }
+  }
 
   if (!d->processApplicationToLaunchArgument())
-    {
+  {
     return Self::ExitWithError;
-    }
+  }
 
   return Self::Continue;
 }
@@ -1214,20 +1214,20 @@ QString ctkAppLauncher::findSettingsFile()const
 {
   Q_D(const ctkAppLauncher);
   if (!d->Initialized)
-    {
+  {
     return QString();
-    }
+  }
 
   foreach(const QString& subdir, d->LauncherSettingSubDirs)
-    {
+  {
     QString fileName = QString("%1/%2/%3LauncherSettings.ini").
                        arg(d->LauncherDir).arg(subdir).
                        arg(d->LauncherName);
     if (QFile::exists(fileName))
-      {
+    {
       return fileName;
-      }
     }
+  }
   return QString();
 }
 
@@ -1235,18 +1235,18 @@ bool ctkAppLauncher::writeSettings(const QString& outputFilePath)
 {
   Q_D(ctkAppLauncher);
   if (!d->Initialized)
-    {
+  {
     return false;
-    }
+  }
 
   // Create or open settings file ...
   QSettings settings(outputFilePath, QSettings::IniFormat);
   if (settings.status() != QSettings::NoError)
-    {
+  {
     d->reportError(
       QString("Failed to open setting file [%1]").arg(outputFilePath));
     return false;
-    }
+  }
 
   // Clear settings
   settings.clear();
@@ -1265,11 +1265,11 @@ bool ctkAppLauncher::writeSettings(const QString& outputFilePath)
 
   settings.beginGroup("ExtraApplicationToLaunch");
   foreach(const QString& extraAppLongArgument, d->ExtraApplicationToLaunchList.keys())
-    {
+  {
     ctkAppLauncherPrivate::ExtraApplicationToLaunchProperty extraAppToLaunchProperty =
         d->ExtraApplicationToLaunchList.value(extraAppLongArgument);
     ctk::writeKeyValuePairs(settings, extraAppToLaunchProperty, extraAppLongArgument);
-    }
+  }
   settings.endGroup();
 
   ctk::writeArrayValues(settings, d->ListOfPaths, "Paths", "path");
@@ -1298,9 +1298,9 @@ int ctkAppLauncher::splashScreenHideDelayMs()const
 {
   Q_D(const ctkAppLauncher);
   if (!d->Initialized)
-    {
+  {
     return d->DefaultLauncherSplashScreenHideDelayMs;
-    }
+  }
 
   return d->LauncherSplashScreenHideDelayMs;
 }
@@ -1324,9 +1324,9 @@ void ctkAppLauncher::startApplication()
 {
   Q_D(ctkAppLauncher);
   if (!d->Initialized)
-    {
+  {
     return;
-    }
+  }
   QTimer::singleShot(0, d, SLOT(runProcess()));
 }
 
@@ -1376,65 +1376,65 @@ int ctkAppLauncher::configure()
 {
   Q_D(ctkAppLauncher);
   if (!this->initialize())
-    {
+  {
     d->exit(EXIT_FAILURE);
     return ctkAppLauncher::ExitWithError;
-    }
+  }
 
   QString settingFileName = this->findSettingsFile();
   if (!settingFileName.isEmpty())
-    {
+  {
     d->LauncherSettingsDirs[ctkAppLauncherPrivate::RegularSettings] = QFileInfo(settingFileName).absoluteDir().absolutePath();
-    }
+  }
 
   d->ValidSettingsFile = d->readSettings(settingFileName, ctkAppLauncherPrivate::RegularSettings);
 
   if (d->ValidSettingsFile)
-    {
+  {
     if (!d->OrganizationName.isEmpty())
-      {
+    {
       qApp->setOrganizationName(d->OrganizationName);
-      }
-    if (!d->OrganizationDomain.isEmpty())
-      {
-      qApp->setOrganizationDomain(d->OrganizationDomain);
-      }
-    if (!d->ApplicationName.isEmpty())
-      {
-      qApp->setApplicationName(d->ApplicationName);
-      }
     }
+    if (!d->OrganizationDomain.isEmpty())
+    {
+      qApp->setOrganizationDomain(d->OrganizationDomain);
+    }
+    if (!d->ApplicationName.isEmpty())
+    {
+      qApp->setApplicationName(d->ApplicationName);
+    }
+  }
 
   // Process command line arguments and load additional settings files if any
   int status = this->processArguments();
   if (status == ctkAppLauncher::ExitWithError)
-    {
+  {
     if (!d->ValidSettingsFile)
-      {
+    {
       d->reportError(d->invalidSettingsMessage());
-      }
+    }
     this->displayHelp(std::cerr);
     d->exit(EXIT_FAILURE);
     return status;
-    }
+  }
   else if (status == ctkAppLauncher::ExitWithSuccess)
-    {
+  {
     d->exit(EXIT_SUCCESS);
     return status;
-    }
+  }
 
   // Append 'unparsed arguments' to list of arguments that will be used to start the application.
   // If it applies, extra 'application to launch' short and long arguments should be
   // removed from that list.
   QStringList unparsedArguments = d->Parser.unparsedArguments();
   if (!d->ExtraApplicationToLaunchShortArgument.isEmpty())
-    {
+  {
     unparsedArguments.removeAll(d->Parser.shortPrefix() + d->ExtraApplicationToLaunchShortArgument);
-    }
+  }
   if (!d->ExtraApplicationToLaunchLongArgument.isEmpty())
-    {
+  {
     unparsedArguments.removeAll(d->Parser.longPrefix() + d->ExtraApplicationToLaunchLongArgument);
-    }
+  }
 
   d->ApplicationToLaunchArguments.append(unparsedArguments);
   return status;
@@ -1447,8 +1447,8 @@ void ctkAppLauncher::startLauncher()
   d->LauncherStarting = true;
   int res = this->configure();
   if (res != Self::Continue)
-    {
+  {
     return;
-    }
+  }
   this->startApplication();
 }

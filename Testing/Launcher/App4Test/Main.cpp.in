@@ -21,10 +21,10 @@ inline std::string currentWorkingDirectory()
   char * currentPath = _getcwd(NULL, 0);
   std::string currentPathAsStr;
   if (currentPath)
-    {
+  {
     currentPathAsStr = std::string(currentPath);
     free(currentPath);
-    }
+  }
   std::replace(currentPathAsStr.begin(), currentPathAsStr.end(), '\\', '/');
   return currentPathAsStr;
 }
@@ -40,10 +40,10 @@ inline std::string currentWorkingDirectory()
   char * currentPath = getcwd(NULL, 0);
   std::string currentPathAsStr;
   if (currentPath)
-    {
+  {
     currentPathAsStr = std::string(currentPath);
     free(currentPath);
-    }
+  }
   return currentPathAsStr;
 }
 #endif
@@ -52,20 +52,20 @@ int check_env_var(const char* varname, const char* expected_value)
 {
   char * varStr = getenv(varname);
   if (!varStr)
-    {
+  {
     std::cout << "Failed to retrieve '" << varname << "' env. variable !" << std::endl;
     return EXIT_FAILURE;
-    }
+  }
   std::string var(varStr);
   std::string expectedVar(expected_value);
   if (var != expectedVar)
-    {
+  {
     std::cout << "Failed to load the saved environment:"
               << "\n\texpected: " << expectedVar
               << "\n\t current: " << var
               << std::endl;
     return EXIT_FAILURE;
-    }
+  }
   return EXIT_SUCCESS;
 }
 
@@ -73,10 +73,10 @@ int check_unexpected_env_var(const char* varname)
 {
   char * varStr = getenv(varname);
   if (varStr)
-    {
+  {
     std::cout << "Environment variable '" << varname << "' with value [" << varStr << "] is unexpected !" << std::endl;
     return EXIT_FAILURE;
-    }
+  }
   return EXIT_SUCCESS;
 }
 
@@ -86,13 +86,13 @@ void display_arguments(std::ostream& stream, int argc, char* argv[])
   // the following may require to update the tests.
   stream << "Argument passed:";
   if (argc >= 2)
-    {
+  {
     stream << argv[1]; // argName
-    }
+  }
   for(int idx=2; idx < argc; idx++)
-    {
+  {
     stream << " " << argv[idx];
-    }
+  }
   stream << std::endl;
 }
 
@@ -103,15 +103,15 @@ int main(int argc, char** argv)
   bool verboseLibInstantiation = true;
 
   if (argc > 1)
-    {
+  {
     std::string argName(argv[1]);
     if (argName == "--foo")
-      {
+    {
       std::cout << "Argument count: " << argc << " - ";
       display_arguments(std::cout, argc, argv);
-      }
+    }
     else if (argName == "--test-timeout")
-      {
+    {
       int timeout = 3;
       std::cout << "App4Test will exit in " << timeout
                 << " seconds with error_code=" << timeout << std::endl;
@@ -128,19 +128,19 @@ int main(int argc, char** argv)
       timeoutFile.close();
       std::cout << "Generated: " << filename << std::endl;
       return timeout;
-      }
+    }
     else if (argName == "--forever")
-      {
+    {
       std::cout << "App4Test - Forever" << std::endl;
       while(true){}
-      }
+    }
     else if (argName == "--check-path")
-      {
+    {
       char * path = getenv("PATH");
       std::cout << "PATH=" << (path ? path : "NULL") << std::endl;
-      }
+    }
     else if (argName == "--check-env")
-      {
+    {
       std::cout << std::endl;
       char * env1 = getenv("SOMETHING_NICE");
       std::cout << "SOMETHING_NICE=" << (env1 ? env1 : "NULL") << std::endl;
@@ -150,111 +150,111 @@ int main(int argc, char** argv)
       std::cout << "SOMETHING_GREAT=" << (env3 ? env3 : "NULL") << std::endl;
       char * env4 = getenv("SOME_PATH");
       std::cout << "SOME_PATH=" << (env4 ? env4 : "NULL") << std::endl;
-      }
+    }
     else if (argName == "--print-current-working-directory")
-      {
+    {
       std::cout << "currentWorkingDirectory=" << currentWorkingDirectory() << std::endl;
-      }
+    }
     else if (argName == "--print-hello-world")
-      {
+    {
       std::cout << "Hello world !" << std::endl;
-      }
+    }
     else if (argName == "--exit-failure")
-      {
+    {
       std::cout << "Exit failure !" << std::endl;
       return EXIT_FAILURE;
-      }
+    }
     else if (argName == "--long-help")
-      {
+    {
       verboseLibInstantiation = false;
       std::cout << "This is the long help" << std::endl;
-      }
+    }
     else if (argName == "-sh")
-      {
+    {
       verboseLibInstantiation = false;
       std::cout << "This is the short help" << std::endl;
-      }
+    }
     else if (argName == "--check-environment-load")
-      {
+    {
       verboseLibInstantiation = false;
       if (check_env_var(
             /* varname= */ "VAR_FOR_ENV_LOAD_TEST",
             /* expected_value= */ "set-from-level-0") != EXIT_SUCCESS)
-        {
+      {
         return EXIT_FAILURE;
-        }
+      }
       if (check_env_var(
             /* varname= */ "VAR_FROM_SETTINGS",
             /* expected_value= */ "set-from-settings") != EXIT_SUCCESS)
-        {
+      {
         return EXIT_FAILURE;
-        }
+      }
 
       // Check that the loaded environment is also saved
       if (check_unexpected_env_var(
             /* varname= */ "APPLAUNCHER_LEVEL") != EXIT_SUCCESS)
-        {
-        return EXIT_FAILURE;
-        }
-      }
-    else if (argName == "--check-environment-load-level1")
       {
+        return EXIT_FAILURE;
+      }
+    }
+    else if (argName == "--check-environment-load-level1")
+    {
       verboseLibInstantiation = false;
       if (check_env_var(
             /* varname= */ "VAR_FOR_ENV_LOAD_TEST",
             /* expected_value= */ "set-from-level-1") != EXIT_SUCCESS)
-        {
+      {
         return EXIT_FAILURE;
-        }
+      }
       if (check_env_var(
             /* varname= */ "VAR_FROM_SETTINGS",
             /* expected_value= */ "set-from-settings") != EXIT_SUCCESS)
-        {
+      {
         return EXIT_FAILURE;
-        }
+      }
       // Check that the loaded environment is also saved
       if (check_env_var(
             /* varname= */ "APPLAUNCHER_LEVEL",
             /* expected_value= */ "1") != EXIT_SUCCESS)
-        {
-        return EXIT_FAILURE;
-        }
-      }
-    else if (argName == "--check-reserved-argument")
       {
+        return EXIT_FAILURE;
+      }
+    }
+    else if (argName == "--check-reserved-argument")
+    {
       std::string expectedArgName2("-widgetcount");
       int expectedArgCount = 3;
       if (argc != expectedArgCount)
-        {
+      {
         std::cerr << "Unexpected number of arguments"
                   << "\n\texpected: " << expectedArgCount
                   << "\n\t current: " << argc
                   << std::endl;
         std::cerr << "Argument passed:" << argName;
         for(int i=2; i < argc; i++)
-          {
+        {
           std::cerr << " " << argv[i];
-          }
+        }
         std::cerr << std::endl;
         return EXIT_FAILURE;
-        }
+      }
       std::string argName2(argv[2]);
       if (argName2 != expectedArgName2)
-        {
+      {
         std::cerr << "Unexpected argument #2:"
           << "\n\texpected: " << expectedArgName2
           << "\n\t current: " << argName2
           << std::endl;
         display_arguments(std::cerr, argc, argv);
         return EXIT_FAILURE;
-        }
-      std::cout << expectedArgName2 << " argument passed" << std::endl;
       }
+      std::cout << expectedArgName2 << " argument passed" << std::endl;
     }
+  }
   else if (argc == 1)
-    {
+  {
     std::cout << "No argument provided" << std::endl;
-    }
+  }
 
   // Instantiate library objects
 @LIB_INSTANCIATES@

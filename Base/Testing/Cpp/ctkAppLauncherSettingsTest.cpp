@@ -152,9 +152,9 @@ void ctkAppLauncherSettingsTester::testReadSettings()
   QTemporaryFile regularSettingFile("regularSettings");
   regularSettingFile.setAutoRemove(false);
   if (!regularSettingFile.open())
-    {
+  {
     QFAIL("Failed to open settings file");
-    }
+  }
 
   // user additional settings
   bool success = true;
@@ -171,9 +171,9 @@ void ctkAppLauncherSettingsTester::testReadSettings()
   QTemporaryFile additionalSettingFile("additionalSettings/additionalSettings");
   additionalSettingFile.setAutoRemove(false);
   if (!additionalSettingFile.open())
-    {
+  {
     QFAIL("Failed to open additional settings file");
-    }
+  }
 
   // write regular settings
   {
