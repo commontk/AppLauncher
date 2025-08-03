@@ -1,6 +1,8 @@
 CTKAppLauncher
 ==============
 
+[![Actions Status][actions-badge]][actions-link]
+
 Overview
 --------
 
@@ -9,23 +11,6 @@ CTK Application launcher is a lightweight open-source utility allowing to set en
 The launcher is available on Linux, Windows and macOS.
 
 Read the [wiki](http://www.commontk.org/index.php/Tools:_Application_launcher) for more details.
-
-Build Status
-------------
-
-| Linux                          | macOS                         | Windows                       |
-|--------------------------------|-------------------------------|-------------------------------|
-| [![][circleci]][circleci-lnk]  | [![][gha]][gha-lnk]           | [![][appveyor]][appveyor-lnk] |
-
-
-[appveyor]: https://ci.appveyor.com/api/projects/status/s6jen6mde8n72o8u/branch/main?svg=true
-[appveyor-lnk]: https://ci.appveyor.com/project/commontk/AppLauncher
-
-[circleci]: https://circleci.com/gh/commontk/AppLauncher.svg?style=svg
-[circleci-lnk]: https://circleci.com/gh/commontk/AppLauncher
-
-[gha]: https://github.com/commontk/AppLauncher/actions/workflows/CI.yml/badge.svg?branch=main
-[gha-lnk]: https://github.com/commontk/AppLauncher/actions/workflows/CI.yml
 
 contributing
 ------------
@@ -109,3 +94,8 @@ License
 It is covered by the Apache License, Version 2.0:
 
 http://www.apache.org/licenses/LICENSE-2.0
+
+<!-- prettier-ignore-start -->
+[actions-badge]:            https://github.com/commontk/AppLauncher/actions/workflows/CI.yml/badge.svg?branch=main
+[actions-link]:             https://github.com/commontk/AppLauncher/actions/workflows/CI.yml
+<!-- prettier-ignore-end -->
