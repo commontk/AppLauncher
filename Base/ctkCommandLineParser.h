@@ -1,3 +1,23 @@
+/*=========================================================================
+
+  Library:   CTK
+
+  Copyright (c) Kitware Inc.
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0.txt
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+
+=========================================================================*/
+
 #ifndef __ctkCommandLineParser_h
 #define __ctkCommandLineParser_h
 
@@ -13,7 +33,7 @@
 class QSettings;
 
 // CTK includes
-//#include "CTKCoreExport.h"
+//#include "ctkCoreExport.h"
 
 /**
  * The CTK command line parser.
@@ -39,55 +59,33 @@ class QSettings;
  *
  * Here is an example how to use this class inside a main function:
  *
- * \code
- * #include <ctkCommandLineParser.h>
- * #include <QCoreApplication>
- * #include <QTextStream>
- *
- * int main(int argc, char** argv)
- * {
- *   QCoreApplication app(argc, argv);
- *   // This is used by QSettings
- *   QCoreApplication::setOrganizationName("MyOrg");
- *   QCoreApplication::setApplicationName("MyApp");
- *
- *   ctkCommandLineParser parser;
- *   // Use Unix-style argument names
- *   parser.setArgumentPrefix("--", "-");
- *   // Enable QSettings support
- *   parser.enableSettings("disable-settings");
- *
- *   // Add command line argument names
- *   parser.addArgument("disable-settings", "", QVariant::Bool, "Do not use QSettings");
- *   parser.addArgument("help", "h", QVariant::Bool, "Show this help text");
- *   parser.addArgument("search-paths", "s", QVariant::StringList, "A list of paths to search");
- *
- *   // Parse the command line arguments
- *   bool ok = false;
- *   QHash<QString, QVariant> parsedArgs = parser.parseArguments(QCoreApplication::arguments(), &ok);
- *   if (!ok)
- *   {
- *     QTextStream(stderr, QIODevice::WriteOnly) << "Error parsing arguments: "
- *                                               << parser.errorString() << "\n";
- *     return EXIT_FAILURE;
- *   }
- *
- *   // Show a help message
- *   if (parsedArgs.contains("help") || parsedArgs.contains("h"))
- *   {
- *     QTextStream(stdout, QIODevice::WriteOnly) << parser.helpText();
- *     return EXIT_SUCCESS;
- *   }
- *
- *   // Do something
- *
- *   return EXIT_SUCCESS;
- * }
- * \endcode
+ * \snippet CommandLineParser/main.cpp 0
  */
-class /*CTK_CORE_EXPORT*/ ctkCommandLineParser
+class /*CTK_CORE_EXPORT*/ ctkCommandLineParser : public QObject
 {
+  Q_OBJECT
+  Q_PROPERTY(QString errorString READ errorString)
+  Q_PROPERTY(QStringList unparsedArguments READ unparsedArguments)
+  Q_PROPERTY(bool settingsEnabled READ settingsEnabled)
+
 public:
+
+  typedef QObject Superclass;
+
+  /**
+   * \ingroup Core
+   *
+   * Constructs a parser instance.
+   *
+   * If QSettings support is enabled by a call to <code>enableSettings()</code>
+   * a default constructed QSettings instance will be used when parsing
+   * the command line arguments. Make sure to call <code>QCoreApplication::setOrganizationName()</code>
+   * and <code>QCoreApplication::setApplicationName()</code> before using default
+   * constructed QSettings objects.
+   *
+   * @param newParent The QObject parent.
+   */
+  ctkCommandLineParser(QObject* newParent = 0);
 
   /**
    * Constructs a parser instance.
@@ -100,8 +98,11 @@ public:
    * and <code>QCoreApplication::setApplicationName()</code>.
    *
    * @param settings A QSettings instance which should be used.
+   * @param newParent The QObject parent.
+   *
+   *
    */
-  ctkCommandLineParser(QSettings* settings = 0);
+  ctkCommandLineParser(QSettings* settings, QObject* newParent = 0);
 
   ~ctkCommandLineParser();
 
@@ -163,7 +164,7 @@ public:
    * @return <code>true</code> if the argument was added, <code>false</code>
    *         otherwise.
    */
-  bool argumentAdded(const QString& argument) const;
+  Q_INVOKABLE bool argumentAdded(const QString& argument) const;
 
   /**
    * Checks if the given argument has been parsed successfully by a previous
@@ -173,7 +174,7 @@ public:
    * @return <code>true</code> if the argument was parsed, <code>false</code>
    *         otherwise.
    */
-  bool argumentParsed(const QString& argument) const;
+  Q_INVOKABLE bool argumentParsed(const QString& argument) const;
 
   /**
    * Adds a command line argument. An argument can have a long name

@@ -1,3 +1,23 @@
+/*=========================================================================
+
+  Library:   CTK
+
+  Copyright (c) Kitware Inc.
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0.txt
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+
+=========================================================================*/
+
 // STL includes
 #include <stdexcept>
 
@@ -63,6 +83,13 @@ public:
         NumberOfParametersToProcess = 1;
         RegularExpression = "-?[0-9]+";
         ExactMatchFailedMessage = "A negative or positive integer is expected.";
+        }
+        break;
+      case QVariant::Double:
+        {
+        NumberOfParametersToProcess = 1;
+        RegularExpression = "-?[0-9]*\\.?[0-9]+";
+        ExactMatchFailedMessage = "A double is expected.";
         }
         break;
       default:
@@ -137,6 +164,11 @@ bool CommandLineParserArgumentDescription::addParameter(const QString& value)
     case QVariant::Int:
       {
       Value.setValue(value.toInt());
+      }
+      break;
+    case QVariant::Double:
+      {
+      Value.setValue(value.toDouble());
       }
       break;
     default:
@@ -273,7 +305,14 @@ CommandLineParserArgumentDescription*
 // ctkCommandLineParser methods
 
 // --------------------------------------------------------------------------
-ctkCommandLineParser::ctkCommandLineParser(QSettings* settings)
+ctkCommandLineParser::ctkCommandLineParser(QObject* newParent) : Superclass(newParent)
+{
+  this->Internal = new ctkInternal(0);
+}
+
+// --------------------------------------------------------------------------
+ctkCommandLineParser::ctkCommandLineParser(QSettings* settings, QObject* newParent) :
+    Superclass(newParent)
 {
   this->Internal = new ctkInternal(settings);
 }

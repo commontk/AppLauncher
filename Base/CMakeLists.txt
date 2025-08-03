@@ -81,6 +81,7 @@ set(KIT_MOC_SRCS
   ctkAppLauncher_p.h
   ctkAppLauncherSettings.h
   ctkAppLauncherSettings_p.h
+  ctkCommandLineParser.h
   )
 
 # Resources
