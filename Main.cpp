@@ -125,9 +125,9 @@ int appLauncherMain(int argc, char** argv)
   // "CTKAppLauncher.exe" or just "CTKAppLauncher"). Make sure here that executable
   // path includes file extension so that the file can be found.
   if (!executableName.toLower().endsWith(".exe"))
-    {
+  {
     executableName.append(".exe");
-    }
+  }
 #endif
 
   QFileInfo launcherFile(QDir::current(), executableName);
@@ -137,24 +137,24 @@ int appLauncherMain(int argc, char** argv)
   QScopedPointer<ctkAppLauncher> appLauncher(new ctkAppLauncher);
   appLauncher->setArguments(appArguments.arguments());
   if (!appLauncher->initialize(launcherFile.absoluteFilePath()))
-    {
+  {
     return EXIT_FAILURE;
-    }
+  }
   int status = appLauncher->configure();
   if (status != ctkAppLauncher::Continue)
-    {
+  {
     return status == ctkAppLauncher::ExitWithSuccess ? EXIT_SUCCESS : EXIT_FAILURE;
-    }
+  }
 
   QScopedPointer<QCoreApplication> app;
   if (appLauncher->disableSplash())
-    {
+  {
     app.reset(new QCoreApplication(
                 appArguments.argumentCount(ctkAppArguments::ARG_REGULAR_LIST),
                 appArguments.argumentValues(ctkAppArguments::ARG_REGULAR_LIST)));
-    }
+  }
   else
-    {
+  {
     // Initialize platform plugin in static build
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0) && defined Q_OS_WIN32 && defined QT_STATIC)
     Q_IMPORT_PLUGIN(QWindowsIntegrationPlugin)
@@ -166,7 +166,7 @@ int appLauncherMain(int argc, char** argv)
     app.reset(new QApplication(
                 appArguments.argumentCount(ctkAppArguments::ARG_REGULAR_LIST),
                 appArguments.argumentValues(ctkAppArguments::ARG_REGULAR_LIST)));
-    }
+  }
 
   appLauncher.reset(new ctkAppLauncher);
   appLauncher->setArguments(appArguments.arguments());
@@ -214,9 +214,9 @@ int __stdcall wWinMain(HINSTANCE hInstance,
   int ret = appLauncherMain(argc, argv);
 
   for (int i = 0; i < argc; ++i)
-    {
+  {
     delete [] argv[i];
-    }
+  }
   delete [] argv;
 
   return ret;

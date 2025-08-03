@@ -11,7 +11,7 @@ bool CheckList(int line, const QString& description,
 {
   QString msg;
   if (current.count() != expected.count())
-    {
+  {
     qWarning() << "\nLine " << line << " - " << description
                << " : " << testName << " failed"
                << "\nCompared lists have different sizes."
@@ -20,11 +20,11 @@ bool CheckList(int line, const QString& description,
                << "\n\tcurrent:" << current
                << "\n\texpected:" << expected;
     return false;
-    }
+  }
   for (int idx = 0; idx < current.count(); ++idx)
-    {
+  {
     if (current.at(idx) != expected.at(idx))
-      {
+    {
       qWarning() << "\nLine " << line << " - " << description
                  << " : " << testName << " failed"
                  << "\nCompared lists differ at index " << idx
@@ -33,8 +33,8 @@ bool CheckList(int line, const QString& description,
                  << "\n\tcurrent:" << current
                  << "\n\texpected:" << expected;
       return false;
-      }
     }
+  }
   return true;
 }
 
@@ -48,26 +48,26 @@ bool Check(int line, const QString& description,
 {
   QString testName = _testName.isEmpty() ? "Check" : _testName;
   if (errorIfDifferent)
-    {
+  {
     if(current != expected)
-      {
+    {
       qWarning() << "\nLine " << line << " - " << description
                  << " : " << testName << " failed"
                  << "\n\tcurrent :" << current
                  << "\n\texpected:" << expected;
       return false;
-      }
     }
+  }
   else
-    {
+  {
     if(current == expected)
-      {
+    {
       qWarning() << "\nLine " << line << " - " << description
                  << " : " << testName << " failed"
                  << "\n\tcurrent :" << current
                  << "\n\texpected to be different from:" << expected;
       return false;
-      }
     }
+  }
   return true;
 }

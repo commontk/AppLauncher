@@ -43,11 +43,11 @@ public:
   ~ctkAppArguments();
 
   enum ArgListType
-    {
+  {
     ARG_RESERVED_LIST = 0x1,
     ARG_REGULAR_LIST = 0x2,
     ARG_FULL_LIST = ARG_RESERVED_LIST & ARG_REGULAR_LIST
-    };
+  };
   Q_DECLARE_FLAGS(ArgListTypes, ArgListType)
 
   QStringList arguments(ArgListTypes option = ARG_FULL_LIST)const;
@@ -57,11 +57,11 @@ public:
   int& argumentCount(ArgListTypes option = ARG_FULL_LIST);
 
   enum ArgToFilterOption
-    {
+  {
     ARG_TO_FILTER_NO_VALUE = 0x0,
     ARG_TO_FILTER_EQUAL_VALUE = 0x1,
     ARG_TO_FILTER_SPACE_VALUE = 0x2
-    };
+  };
   Q_DECLARE_FLAGS(ArgToFilterOptions, ArgToFilterOption)
 
   class ArgToFilterType : public QPair<QString, ArgToFilterOptions>

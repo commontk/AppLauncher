@@ -48,18 +48,18 @@ void ctkChar2DArray::setValues(const QStringList& list)
   Q_D(ctkChar2DArray);
   this->clear();
   if (list.isEmpty())
-    {
+  {
     return;
-    }
+  }
   d->List = list;
   d->Count = list.count();
   d->Values = new char*[list.count()];
   for(int index = 0; index < d->List.count(); ++index)
-    {
+  {
     QString item = d->List.at(index);
     d->Values[index] = new char[item.size() + 1];
     qstrcpy(d->Values[index], item.toLocal8Bit().data());
-    }
+  }
 }
 
 // --------------------------------------------------------------------------
@@ -67,9 +67,9 @@ void ctkChar2DArray::clear()
 {
   Q_D(ctkChar2DArray);
   for (int index = 0; index < d->List.count(); ++index)
-    {
+  {
     delete[] d->Values[index];
-    }
+  }
   delete [] d->Values;
   d->Values = 0;
   d->Count = 0;
@@ -127,14 +127,14 @@ ctkAppArgumentsPrivate::ctkAppArgumentsPrivate(int &argc, char **argv) :
 {
   static const char *const empty = "";
   if (this->Argc == 0 || this->Argv == 0)
-    {
+  {
     this->Argc = 0;
     this->Argv = const_cast<char **>(&empty);
-    }
+  }
   for(int index = 0; index < this->Argc; ++index)
-    {
+  {
     this->Arguments << this->Argv[index];
-    }
+  }
   this->filterArguments();
 }
 
@@ -150,31 +150,31 @@ void ctkAppArgumentsPrivate::filterArguments()
   this->ReservedArguments.clear();
 
   for(int index = 0; index < this->Argc; ++index)
-    {
+  {
     ctkAppArguments::ArgToFilterType argToFilter = this->findArgToFilter(this->Argv[index]);
     if (argToFilter.first.isEmpty())
-      {
+    {
       this->RegularArguments << this->Argv[index];
       continue;
-      }
+    }
     if (argToFilter.second == ctkAppArguments::ARG_TO_FILTER_NO_VALUE ||
         argToFilter.second & ctkAppArguments::ARG_TO_FILTER_EQUAL_VALUE)
-      {
+    {
       this->ReservedArguments << this->Argv[index];
       continue;
-      }
+    }
     else if (argToFilter.second & ctkAppArguments::ARG_TO_FILTER_SPACE_VALUE)
-      {
+    {
       this->ReservedArguments << this->Argv[index];
       if (index + 1 < this->Argc)
-        {
+      {
         this->ReservedArguments << this->Argv[index + 1];
         ++index;
         continue;
-        }
       }
-    Q_ASSERT(false);
     }
+    Q_ASSERT(false);
+  }
   this->RegularArgumentsAsCharStarArray.setValues(this->RegularArguments);
   this->ReservedArgumentsAsCharStarArray.setValues(this->ReservedArguments);
 }
@@ -183,35 +183,35 @@ void ctkAppArgumentsPrivate::filterArguments()
 ctkAppArguments::ArgToFilterType ctkAppArgumentsPrivate::findArgToFilter(const char* arg)
 {
   if (arg == 0)
-    {
+  {
     return ctkAppArguments::ArgToFilterType();
-    }
+  }
 
   foreach(const ctkAppArguments::ArgToFilterType& argToFilter, this->ArgToFilterList)
-    {
+  {
     if (argToFilter.second == ctkAppArguments::ARG_TO_FILTER_NO_VALUE)
-      {
+    {
       if (arg == argToFilter.first)
-        {
-        return argToFilter;
-        }
-      }
-    else if (argToFilter.second & ctkAppArguments::ARG_TO_FILTER_EQUAL_VALUE)
       {
-      if (QString(arg).startsWith(
-            argToFilter.first.endsWith("=") ? argToFilter.first : QString(argToFilter.first).append("=")))
-        {
         return argToFilter;
-        }
-      }
-    else if (argToFilter.second & ctkAppArguments::ARG_TO_FILTER_SPACE_VALUE)
-      {
-      if (arg == argToFilter.first)
-        {
-        return argToFilter;
-        }
       }
     }
+    else if (argToFilter.second & ctkAppArguments::ARG_TO_FILTER_EQUAL_VALUE)
+    {
+      if (QString(arg).startsWith(
+            argToFilter.first.endsWith("=") ? argToFilter.first : QString(argToFilter.first).append("=")))
+      {
+        return argToFilter;
+      }
+    }
+    else if (argToFilter.second & ctkAppArguments::ARG_TO_FILTER_SPACE_VALUE)
+    {
+      if (arg == argToFilter.first)
+      {
+        return argToFilter;
+      }
+    }
+  }
   return ctkAppArguments::ArgToFilterType();
 }
 
@@ -219,21 +219,21 @@ ctkAppArguments::ArgToFilterType ctkAppArgumentsPrivate::findArgToFilter(const c
 void ctkAppArgumentsPrivate::addArgumentToFilter(const ctkAppArguments::ArgToFilterType &argToFilter, bool filter)
 {
   if (argToFilter.second & ctkAppArguments::ARG_TO_FILTER_EQUAL_VALUE)
-    {
+  {
     this->ArgToFilterList << ctkAppArguments::ArgToFilterType(argToFilter.first, ctkAppArguments::ARG_TO_FILTER_EQUAL_VALUE);
-    }
+  }
   if (argToFilter.second & ctkAppArguments::ARG_TO_FILTER_SPACE_VALUE)
-    {
+  {
     this->ArgToFilterList << ctkAppArguments::ArgToFilterType(argToFilter.first, ctkAppArguments::ARG_TO_FILTER_SPACE_VALUE);
-    }
+  }
   if (argToFilter.second == ctkAppArguments::ARG_TO_FILTER_NO_VALUE)
-    {
+  {
     this->ArgToFilterList << ctkAppArguments::ArgToFilterType(argToFilter.first, ctkAppArguments::ARG_TO_FILTER_NO_VALUE);
-    }
+  }
   if (filter)
-    {
+  {
     this->filterArguments();
-    }
+  }
 }
 
 // --------------------------------------------------------------------------
@@ -255,17 +255,17 @@ QStringList ctkAppArguments::arguments(ctkAppArguments::ArgListTypes option)cons
 {
   Q_D(const ctkAppArguments);
   if (option == ctkAppArguments::ARG_REGULAR_LIST)
-    {
+  {
     return d->RegularArguments;
-    }
+  }
   else if (option == ctkAppArguments::ARG_RESERVED_LIST)
-    {
+  {
     return d->ReservedArguments;
-    }
+  }
   else //if (option == ctkAppArguments::ARG_FULL_LIST)
-    {
+  {
     return d->Arguments;
-    }
+  }
 }
 
 // --------------------------------------------------------------------------
@@ -273,17 +273,17 @@ char** ctkAppArguments::argumentValues(ctkAppArguments::ArgListTypes option) con
 {
   Q_D(const ctkAppArguments);
   if (option == ctkAppArguments::ARG_REGULAR_LIST)
-    {
+  {
     return d->RegularArgumentsAsCharStarArray.values();
-    }
+  }
   else if (option == ctkAppArguments::ARG_RESERVED_LIST)
-    {
+  {
     return d->ReservedArgumentsAsCharStarArray.values();
-    }
+  }
   else // if (option == ctkAppArguments::ARG_FULL_LIST)
-    {
+  {
     return d->Argv;
-    }
+  }
 }
 
 // --------------------------------------------------------------------------
@@ -291,17 +291,17 @@ int& ctkAppArguments::argumentCount(ctkAppArguments::ArgListTypes option)
 {
   Q_D(ctkAppArguments);
   if (option == ctkAppArguments::ARG_REGULAR_LIST)
-    {
+  {
     return d->RegularArgumentsAsCharStarArray.count();
-    }
+  }
   else if (option == ctkAppArguments::ARG_RESERVED_LIST)
-    {
+  {
     return d->ReservedArgumentsAsCharStarArray.count();
-    }
+  }
   else // if (option == ctkAppArguments::ARG_FULL_LIST)
-    {
+  {
     return d->Argc;
-    }
+  }
 }
 
 // --------------------------------------------------------------------------
@@ -324,8 +324,8 @@ void ctkAppArguments::setArgumentToFilterList(const ArgToFilterListType& list)
   Q_D(ctkAppArguments);
   d->ArgToFilterList.clear();
   foreach(const ArgToFilterType& argToFilter, list)
-    {
+  {
     d->addArgumentToFilter(argToFilter, /* filter = */ false);
-    }
+  }
   d->filterArguments();
 }

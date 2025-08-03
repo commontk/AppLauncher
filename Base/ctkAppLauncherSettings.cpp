@@ -64,9 +64,9 @@ QString ctkAppLauncherSettingsPrivate::findUserAdditionalSettings()const
   QString prefix = QFileInfo(QSettings().fileName()).completeBaseName();
   QString suffix;
   if (!this->ApplicationRevision.isEmpty())
-    {
+  {
     suffix = "-" + this->ApplicationRevision;
-    }
+  }
 
   QStringList candidateUserAdditionalSettingsDirs;
 
@@ -78,16 +78,16 @@ QString ctkAppLauncherSettingsPrivate::findUserAdditionalSettings()const
   candidateUserAdditionalSettingsDirs << fileInfo.path();
 
   foreach(QString candidateUserAdditionalSettingsDir, candidateUserAdditionalSettingsDirs)
-    {
+  {
     QString fileName = QDir(candidateUserAdditionalSettingsDir).filePath(QString("%1%2%3.ini").
         arg(prefix).
         arg(this->UserAdditionalSettingsFileBaseName).
         arg(suffix));
     if (QFile::exists(fileName))
-      {
+    {
       return fileName;
-      }
     }
+  }
 
   return QString();
 }
@@ -96,34 +96,34 @@ QString ctkAppLauncherSettingsPrivate::findUserAdditionalSettings()const
 QString ctkAppLauncherSettingsPrivate::settingsTypeToString(const SettingsType& settingsType)
 {
   if (settingsType == Self::RegularSettings)
-    {
+  {
     return QLatin1String("RegularSettings");
-    }
+  }
   else if (settingsType == Self::UserAdditionalSettings)
-    {
+  {
     return QLatin1String("UserAdditionalSettings");
-    }
+  }
   else // if (settingsType == Self::AdditionalSettings)
-    {
+  {
     return QLatin1String("AdditionalSettings");
-    }
+  }
 }
 
 // --------------------------------------------------------------------------
 QString ctkAppLauncherSettingsPrivate::settingsDirPlaceHolder(const SettingsType& settingsType)
 {
   if (settingsType == Self::RegularSettings)
-    {
+  {
     return QLatin1String("<APPLAUNCHER_REGULAR_SETTINGS_DIR>");
-    }
+  }
   else if (settingsType == Self::UserAdditionalSettings)
-    {
+  {
     return QLatin1String("<APPLAUNCHER_USER_ADDITIONAL_SETTINGS_DIR>");
-    }
+  }
   else // if (settingsType == Self::AdditionalSettings)
-    {
+  {
     return QLatin1String("<APPLAUNCHER_ADDITIONAL_SETTINGS_DIR>");
-    }
+  }
 }
 
 // --------------------------------------------------------------------------
@@ -140,9 +140,9 @@ QStringList ctkAppLauncherSettingsPrivate::updateSettingDirPlaceHolder(
 {
   QStringList updatedValues;
   foreach(const QString& value, values)
-    {
+  {
     updatedValues.append(Self::updateSettingDirPlaceHolder(value, settingsType));
-    }
+  }
   return updatedValues;
 }
 
@@ -151,37 +151,37 @@ bool ctkAppLauncherSettingsPrivate::checkSettings(const QString& fileName, int s
 {
   QString settingsTypeDesc;
   if(settingsType == Self::AdditionalSettings)
-    {
+  {
     settingsTypeDesc = QLatin1String(" additional");
-    }
+  }
   if(settingsType == Self::UserAdditionalSettings)
-    {
+  {
     settingsTypeDesc = QLatin1String(" user additional");
-    }
+  }
 
   this->ReadSettingsError = QString();
 
   // Check if settings file exists
   if (fileName.isEmpty() || !QFile::exists(fileName))
-    {
+  {
     return false;
-    }
+  }
 
   if (! (QFile::permissions(fileName) & QFile::ReadOwner) )
-    {
+  {
     this->ReadSettingsError =
         QString("Failed to read%1 launcher setting file [%2]").arg(settingsTypeDesc).arg(fileName);
     return false;
-    }
+  }
 
   // Open settings file ...
   QSettings settings(fileName, QSettings::IniFormat);
   if (settings.status() != QSettings::NoError)
-    {
+  {
     this->ReadSettingsError =
         QString("Failed to open%1 setting file [%2]").arg(settingsTypeDesc).arg(fileName);
     return false;
-    }
+  }
   return true;
 }
 
@@ -205,13 +205,13 @@ void ctkAppLauncherSettingsPrivate::readAdditionalSettingsInfo(QSettings& settin
 {
   Q_Q(ctkAppLauncherSettings);
   if (settings.contains("additionalSettingsFilePath"))
-    {
+  {
     q->setAdditionalSettingsFilePath(this->expandValue(settings.value("additionalSettingsFilePath", "").toString()));
-    }
+  }
   if (settings.contains("additionalSettingsExcludeGroups"))
-    {
+  {
     this->AdditionalSettingsExcludeGroups = settings.value("additionalSettingsExcludeGroups").toStringList();
-    }
+  }
 }
 
 // --------------------------------------------------------------------------
@@ -220,38 +220,38 @@ void ctkAppLauncherSettingsPrivate::readPathSettings(QSettings& settings, const 
   // Read additional environment variables
   QHash<QString, QString> mapOfEnvVars;
   if (!excludeGroups.contains("EnvironmentVariables"))
-    {
+  {
     mapOfEnvVars = ctk::readKeyValuePairs(settings, "EnvironmentVariables");
     foreach(const QString& envVarName, mapOfEnvVars.keys())
-      {
+    {
       this->MapOfEnvVars.insert(envVarName, mapOfEnvVars[envVarName]);
-      }
+    }
 
     this->expandEnvVars(mapOfEnvVars.keys());
-    }
+  }
 
   // Read PATHs
   if (!excludeGroups.contains("Paths"))
-    {
+  {
     this->ListOfPaths = Self::updateSettingDirPlaceHolder(
           ctk::readArrayValues(settings, "Paths", "path"), this->LauncherSettingsDirType) + this->ListOfPaths;
-    }
+  }
 
   // Read LibraryPaths
   if (!excludeGroups.contains("LibraryPaths"))
-    {
+  {
     this->ListOfLibraryPaths = Self::updateSettingDirPlaceHolder(
           ctk::readArrayValues(settings, "LibraryPaths", "path"), this->LauncherSettingsDirType) + this->ListOfLibraryPaths;
-    }
+  }
 
   // Read additional path environment variables
   if (!excludeGroups.contains("Environment") // additionalPathVariables key is associated with the "Environment" group
       ||
       !excludeGroups.contains("General") // XXX Deprecated: additionalPathVariables key used to be associated with the "General" group
       )
-    {
+  {
     if (!excludeGroups.contains("General"))
-      {
+    {
       #if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
       QStringList additionalPathVariablesList = settings.value("additionalPathVariables").toStringList();
       QSet<QString> additionalPathVariablesSet = QSet<QString> (additionalPathVariablesList.begin(), additionalPathVariablesList.end());
@@ -259,9 +259,9 @@ void ctkAppLauncherSettingsPrivate::readPathSettings(QSettings& settings, const 
       QSet<QString> additionalPathVariablesSet = settings.value("additionalPathVariables").toStringList().toSet();
       #endif
       this->AdditionalPathVariables.unite(additionalPathVariablesSet); // XXX Deprecated
-      }
+    }
     if (!excludeGroups.contains("Environment"))
-      {
+    {
       settings.beginGroup("Environment");
       #if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
       QStringList additionalPathVariablesList = settings.value("additionalPathVariables").toStringList();
@@ -271,25 +271,25 @@ void ctkAppLauncherSettingsPrivate::readPathSettings(QSettings& settings, const 
       #endif
       this->AdditionalPathVariables.unite(additionalPathVariablesSet);
       settings.endGroup();
-      }
+    }
 
     foreach(const QString& envVarName, this->AdditionalPathVariables)
-      {
+    {
       if (!envVarName.isEmpty())
-        {
+      {
         QStringList paths = Self::updateSettingDirPlaceHolder(
               ctk::readArrayValues(settings, envVarName, "path"), this->LauncherSettingsDirType);
         if (!paths.empty())
-          {
+        {
           if (this->MapOfPathVars.contains(envVarName))
-            {
+          {
             paths.append(this->MapOfPathVars[envVarName]);
-            }
-          this->MapOfPathVars.insert(envVarName, paths);
           }
+          this->MapOfPathVars.insert(envVarName, paths);
         }
       }
     }
+  }
 }
 
 // --------------------------------------------------------------------------
@@ -297,13 +297,13 @@ QString ctkAppLauncherSettingsPrivate::resolvePath(const QString& path) const
 {
   QFileInfo fileInfo(path);
   if (!this->LauncherDir.isEmpty() && fileInfo.isRelative())
-    {
+  {
     return QDir(this->LauncherDir).filePath(path);
-    }
+  }
   else
-    {
+  {
     return path;
-    }
+  }
 }
 
 // --------------------------------------------------------------------------
@@ -317,21 +317,21 @@ QString ctkAppLauncherSettingsPrivate::expandValue(const QString& value) const
   QRegExp regex("\\<env\\:([a-zA-Z0-9\\-\\_]+)\\>");
   int pos = 0;
   while ((pos = regex.indexIn(value, pos)) != -1)
-    {
+  {
     pos += regex.matchedLength();
     Q_ASSERT(regex.captureCount() == 1);
     QString envVarName = regex.cap(1);
     QString envVarValue = QString("<env-NOTFOUND:%1>").arg(envVarName);
     if (mapOfEnvVars.contains(envVarName))
-      {
+    {
       envVarValue = mapOfEnvVars.value(envVarName);
-      }
-    else if (this->SystemEnvironment.contains(envVarName))
-      {
-      envVarValue = this->SystemEnvironment.value(envVarName);
-      }
-    updatedValue.replace(QString("<env:%1>").arg(envVarName), envVarValue, Qt::CaseInsensitive);
     }
+    else if (this->SystemEnvironment.contains(envVarName))
+    {
+      envVarValue = this->SystemEnvironment.value(envVarName);
+    }
+    updatedValue.replace(QString("<env:%1>").arg(envVarName), envVarValue, Qt::CaseInsensitive);
+  }
   return updatedValue;
 }
 
@@ -350,9 +350,9 @@ QString ctkAppLauncherSettingsPrivate::expandPlaceHolders(const QString& value) 
 
   QString updatedValue = value;
   foreach(const QString& key, keyValueMap.keys())
-    {
+  {
     updatedValue.replace(key, keyValueMap.value(key), Qt::CaseInsensitive);
-    }
+  }
   return updatedValue;
 }
 
@@ -364,46 +364,46 @@ void ctkAppLauncherSettingsPrivate::expandEnvVars(const QStringList& envVarNames
   QHash<QString, QString> expanded = this->MapOfEnvVars;
 
   foreach(const QString& key, this->MapOfEnvVars.keys())
-    {
+  {
     QString value = this->MapOfEnvVars[key];
     int pos = 0;
     int previousPos = pos;
     while ((pos = regex.indexIn(value, pos)) != -1)
-      {
+    {
       pos += regex.matchedLength();
       Q_ASSERT(regex.captureCount() == 1);
       QString envVarName = regex.cap(1);
       QString envVarValue = QString("<env:%1>").arg(envVarName);
       if (this->MapOfExpandedEnvVars.contains(envVarName))
-        {
+      {
         envVarValue = this->MapOfExpandedEnvVars[envVarName];
         value.replace(QString("<env:%1>").arg(envVarName), envVarValue, Qt::CaseInsensitive);
         pos = previousPos;
-        }
+      }
       else if (expanded.contains(envVarName) && envVarName != key)
-        {
+      {
         envVarValue = expanded[envVarName];
         value.replace(QString("<env:%1>").arg(envVarName), envVarValue, Qt::CaseInsensitive);
         pos = previousPos;
-        }
-      else if (this->SystemEnvironment.contains(envVarName))
-        {
-        value = this->SystemEnvironment.value(envVarName);
-        }
-      else
-        {
-        value = QString("<env-NOTFOUND:%1>").arg(envVarName);
-        }
-      previousPos = pos;
       }
-    expanded[key] = this->expandPlaceHolders(value);
+      else if (this->SystemEnvironment.contains(envVarName))
+      {
+        value = this->SystemEnvironment.value(envVarName);
+      }
+      else
+      {
+        value = QString("<env-NOTFOUND:%1>").arg(envVarName);
+      }
+      previousPos = pos;
     }
+    expanded[key] = this->expandPlaceHolders(value);
+  }
 
   // Update only variables explicitly listed in the settings
   foreach(const QString& envVarName, envVarNames)
-    {
+  {
     this->MapOfExpandedEnvVars[envVarName] = expanded[envVarName];
-    }
+  }
 }
 
 // --------------------------------------------------------------------------
@@ -440,15 +440,15 @@ QString ctkAppLauncherSettings::userAdditionalSettingsDir()const
   Q_D(const ctkAppLauncherSettings);
   QString userAdditionalSettingsFileName = d->findUserAdditionalSettings();
   if (!userAdditionalSettingsFileName.isEmpty())
-    {
+  {
     return QFileInfo(userAdditionalSettingsFileName).absolutePath();
-    }
+  }
   else
-    {
+  {
     // No user settings file is found, return default location
     QFileInfo fileInfo(QSettings().fileName());
     return fileInfo.path();
-    }
+  }
 }
 
 // --------------------------------------------------------------------------
@@ -493,9 +493,9 @@ bool ctkAppLauncherSettings::readSettings(const QString& fileName)
 
   // Read regular settings
   if (!d->checkSettings(fileName, ctkAppLauncherSettingsPrivate::RegularSettings))
-    {
+  {
     return false;
-    }
+  }
 
   d->LauncherSettingsDirs[ctkAppLauncherSettingsPrivate::RegularSettings] = QFileInfo(fileName).absolutePath();
 
@@ -507,30 +507,30 @@ bool ctkAppLauncherSettings::readSettings(const QString& fileName)
   // Read user additional settings
   QString userAdditionalSettingsFileName = this->findUserAdditionalSettings();
   if(!userAdditionalSettingsFileName.isEmpty())
-    {
+  {
     if (!d->checkSettings(userAdditionalSettingsFileName, ctkAppLauncherSettingsPrivate::UserAdditionalSettings))
-      {
+    {
       return false;
-      }
+    }
     d->LauncherSettingsDirs[ctkAppLauncherSettingsPrivate::UserAdditionalSettings] = QFileInfo(userAdditionalSettingsFileName).absolutePath();
     ctkAppLauncherSettingsPrivate::ScopedLauncherSettingsDir scopedLauncherSettingsDir(d, ctkAppLauncherSettingsPrivate::UserAdditionalSettings);
     Q_UNUSED(scopedLauncherSettingsDir);
     QSettings userAdditionalSettings(userAdditionalSettingsFileName, QSettings::IniFormat);
     d->readPathSettings(userAdditionalSettings);
-    }
+  }
 
   // Read additional settings
   if(!this->additionalSettingsFilePath().isEmpty())
-    {
+  {
     if (!d->checkSettings(this->additionalSettingsFilePath(), ctkAppLauncherSettingsPrivate::AdditionalSettings))
-      {
+    {
       return false;
-      }
+    }
     ctkAppLauncherSettingsPrivate::ScopedLauncherSettingsDir scopedLauncherSettingsDir(d, ctkAppLauncherSettingsPrivate::AdditionalSettings);
     Q_UNUSED(scopedLauncherSettingsDir);
     QSettings additionalSettings(this->additionalSettingsFilePath(), QSettings::IniFormat);
     d->readPathSettings(additionalSettings, this->additionalSettingsExcludeGroups());
-    }
+  }
 
   return true;
 }
@@ -554,9 +554,9 @@ void ctkAppLauncherSettings::setAdditionalSettingsFilePath(const QString& filePa
 {
   Q_D(ctkAppLauncherSettings);
   if (!filePath.isEmpty())
-    {
+  {
     d->LauncherSettingsDirs[ctkAppLauncherSettingsPrivate::AdditionalSettings] = QFileInfo(filePath).absolutePath();
-    }
+  }
   d->AdditionalSettingsFilePath = filePath;
 }
 
@@ -580,9 +580,9 @@ QStringList ctkAppLauncherSettings::libraryPaths(bool expand /* = true */)const
   Q_D(const ctkAppLauncherSettings);
   QStringList expanded;
   foreach(const QString& path, d->ListOfLibraryPaths)
-    {
+  {
     expanded << (expand ? d->resolvePath(d->expandValue(path)) : path);
-    }
+  }
   return expanded;
 }
 
@@ -592,9 +592,9 @@ QStringList ctkAppLauncherSettings::paths(bool expand /* = true */)const
   Q_D(const ctkAppLauncherSettings);
   QStringList expanded;
   foreach(const QString& path, d->ListOfPaths)
-    {
+  {
     expanded << (expand ? d->resolvePath(d->expandValue(path)) : path);
-    }
+  }
   return expanded;
 }
 
@@ -605,18 +605,18 @@ QString ctkAppLauncherSettings::envVar(const QString& variableName, bool expand 
   QString value = expand ? d->MapOfExpandedEnvVars[variableName] : d->MapOfEnvVars[variableName];
 
   if (d->MapOfPathVars.contains(variableName))
-    {
+  {
     QStringList paths = this->additionalPaths(variableName, expand);
     QString pathsAsStr = paths.join(d->PathSep);
     if (value.isEmpty())
-      {
+    {
       value = pathsAsStr;
-      }
-    else
-      {
-      value = QString("%1%2%3").arg(pathsAsStr, d->PathSep, value);
-      }
     }
+    else
+    {
+      value = QString("%1%2%3").arg(pathsAsStr, d->PathSep, value);
+    }
+  }
 
   return value;
 }
@@ -647,9 +647,9 @@ QStringList ctkAppLauncherSettings::additionalPaths(const QString& variableName,
   Q_D(const ctkAppLauncherSettings);
   QStringList expanded;
   foreach(const QString& path, d->MapOfPathVars.value(variableName))
-    {
+  {
     expanded << (expand ? d->resolvePath(d->expandValue(path)) : path);
-    }
+  }
   return expanded;
 }
 
@@ -659,9 +659,9 @@ QHash<QString, QStringList> ctkAppLauncherSettings::additionalPathsVars(bool exp
   Q_D(const ctkAppLauncherSettings);
   QHash<QString, QStringList> newVars;
   foreach(const QString& varName, d->MapOfPathVars.keys())
-    {
+  {
     newVars.insert(varName, this->additionalPaths(varName, expand));
-    }
+  }
   return newVars;
 }
 

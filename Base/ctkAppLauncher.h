@@ -123,11 +123,11 @@ public:
   ~ctkAppLauncher();
 
   enum ProcessArgumentsStatus
-    {
+  {
     ExitWithError = 0,
     ExitWithSuccess,
     Continue
-    };
+  };
 
   /// Display environment variables on standard output
   void displayEnvironment(std::ostream &output = std::cout);
