@@ -257,6 +257,7 @@ jobs:
   pass: # This job does nothing and is only used for the branch protection
     if: always()
     needs:
+      - changes
       - linux-tests
       - macos-tests
       - win-tests
@@ -264,6 +265,15 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Validate paths-to-include value
+        run: |
+          value="${{ needs.changes.outputs.paths-to-include }}"
+          echo "paths-to-include = '$value'"
+          if [[ "$value" != "true" && "$value" != "false" ]]; then
+            echo "::error::Invalid paths-to-include value: '$value'. Expected 'true' or 'false'."
+            exit 1
+          fi
+
       - name: Set allowed skips
         id: allow
         run: |
