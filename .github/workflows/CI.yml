@@ -199,11 +199,11 @@ jobs:
                 -DCTKAppLauncher_BUILD_DIR:PATH=build \
                 -P src/linux-static-configure.cmake
 
-      - name: Build
+      - name: Build and Package
         run: |
           ${dockbuild_script} \
             src/.github/scripts/dockbuild_with_qt_env.sh "${qt_archive_basename}" \
-              cmake --build build
+              cmake --build build --target package
 
       - name: Test
         run: |
@@ -283,13 +283,9 @@ jobs:
           CC: clang
           CXX: clang++
 
-      - name: Build
+      - name: Build and Package
         run: |
-          cmake --build build -- -j4
-
-      - name: Package
-        run: |
-          cmake --build build --target package
+          cmake --build build --target package -- -j4
 
       # Exclude tests requiring X Display
       - name: Test
