@@ -268,3 +268,12 @@ jobs:
         uses: re-actors/alls-green@223e4bb7a751b91f43eda76992bcfbf23b8b0302 # v1.2.2
         with:
           jobs: ${{ toJSON(needs) }}
+          # Allow test jobs to be skipped when the 'paths-to-include' filter determined
+          # that no relevant files were modified (e.g., only docs or README changed).
+          # This ensures the 'pass' job still succeeds and branch protection is satisfied.
+          allowed-skips: >
+            ${{
+              fromJSON(needs.changes.outputs.paths-to-include) == false
+              && '["win-tests","linux-tests","macos-tests"]'
+              || '[]'
+            }}
