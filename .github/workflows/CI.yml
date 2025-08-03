@@ -2,20 +2,38 @@ name: CI
 
 on:
   pull_request:
-    paths-ignore:
-      - "README.md"
-      - "Docs/**"
   push:
     branches:
       - main
     tags:
       - "v*"
-    paths-ignore:
-      - "README.md"
-      - "Docs/**"
 
 jobs:
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      paths-to-include: ${{ steps.changes.outputs.paths-to-include }}
+    steps:
+      - uses: actions/checkout@v4
+
+      # Filter paths to determine whether to proceed with the build
+      - name: "Filter Paths"
+        uses: dorny/paths-filter@de90cc6fb38fc0963ad72b210f1f284cd68cea36 # v3.0.2
+        id: changes
+        with:
+          filters: |
+            paths-to-include:
+              - '**/CMakeLists.txt'
+              - '**/*.cmake'
+              - '**/*.cpp'
+              - '**/*.h'
+              - '**/*.h.in'
+              - '**/*.ini'
+              - '.github/workflows/CI.yml'
+
   win-tests:
+    needs: changes
+    if: ${{ needs.changes.outputs.paths-to-include == 'true' }}
     runs-on: windows-2022
     strategy:
       matrix:
@@ -137,6 +155,8 @@ jobs:
     #    GITHUB_TOKEN: secrets.COMMONTKBOT_GITHUB_TOKEN
 
   linux-tests:
+    needs: changes
+    if: ${{ needs.changes.outputs.paths-to-include == 'true' }}
     runs-on: ubuntu-latest
     env:
       qt_archive_basename: qt-5.15.2-manylinux2.28-static-x86_64
@@ -225,6 +245,8 @@ jobs:
     #    GITHUB_TOKEN: secrets.COMMONTKBOT_GITHUB_TOKEN
 
   macos-tests:
+    needs: changes
+    if: ${{ needs.changes.outputs.paths-to-include == 'true' }}
     runs-on: macos-13
     name: macos-13
     steps:
@@ -306,14 +328,14 @@ jobs:
   pass: # This job does nothing and is only used for the branch protection
     if: always()
     needs:
-    - linux-tests
-    - macos-tests
-    - win-tests
+      - linux-tests
+      - macos-tests
+      - win-tests
 
     runs-on: ubuntu-latest
 
     steps:
-    - name: Decide whether the needed jobs succeeded or failed
-      uses: re-actors/alls-green@223e4bb7a751b91f43eda76992bcfbf23b8b0302 # v1.2.2
-      with:
-        jobs: ${{ toJSON(needs) }}
+      - name: Decide whether the needed jobs succeeded or failed
+        uses: re-actors/alls-green@223e4bb7a751b91f43eda76992bcfbf23b8b0302 # v1.2.2
+        with:
+          jobs: ${{ toJSON(needs) }}
