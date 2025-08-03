@@ -1,10 +1,8 @@
-CTKAppLauncher
-==============
+# CTKAppLauncher
 
 [![Actions Status][actions-badge]][actions-link]
 
-Overview
---------
+## overview
 
 CTK Application launcher is a lightweight open-source utility allowing to set environment before starting a real application.
 
@@ -12,8 +10,7 @@ The launcher is available on Linux, Windows and macOS.
 
 Read the [wiki](http://www.commontk.org/index.php/Tools:_Application_launcher) for more details.
 
-contributing
-------------
+## contributing
 
 Contributions are welcome, and they are greatly appreciated! Every
 little bit helps, and credit will always be given.
@@ -22,8 +19,7 @@ See [CONTRIBUTING.md][contributing] for more details.
 
 [contributing]: https://github.com/commontk/AppLauncher/blob/main/CONTRIBUTING.md
 
-maintainers: how to make a release ?
-------------------------------------
+## maintainers: how to make a release ?
 
 *Follow step below after checking that all tests pass*
 
@@ -88,8 +84,7 @@ _**Important:** Until issue [scikit-build/scikit-ci-addons/issues/96](https://gi
     git push origin main
     ```
 
-License
--------
+## License
 
 It is covered by the Apache License, Version 2.0:
 
