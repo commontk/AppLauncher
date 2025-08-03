@@ -1,0 +1,59 @@
+name: CD
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Git tag to publish artifacts for"
+        required: true
+  release:
+    types:
+      - published
+
+jobs:
+  upload-release-assets:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Set TAG_NAME
+        id: vars
+        run: |
+          echo "TAG_NAME=${{ github.event.release.tag_name || inputs.tag }}" >> $GITHUB_OUTPUT
+
+      - name: Checkout repo
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 0 # Required to resolve tag commits
+
+      - name: Resolve commit SHA for tag
+        id: resolve_sha
+        run: |
+          git fetch --tags
+          COMMIT_SHA=$(git rev-list -n 1 $TAG_NAME)
+          echo "COMMIT_SHA [$COMMIT_SHA]"
+          echo "commit-sha=$COMMIT_SHA" >> $GITHUB_OUTPUT
+        env:
+          TAG_NAME: ${{ steps.vars.outputs.TAG_NAME }}
+
+      - name: Download artifact
+        id: download-artifact
+        uses: dawidd6/action-download-artifact@v11
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          workflow: CI.yml
+          workflow_conclusion: success
+          commit: ${{ steps.resolve_sha.outputs.commit-sha }}
+          repo: ${{ github.repository }}
+          name: ".+-packages"
+          name_is_regexp: true
+
+      - name: List downloaded files
+        run: ls -1 -R
+
+      - name: Upload release assets
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            **/CTKAppLauncher-*.tar.gz
+        env:
+          GITHUB_TOKEN: ${{ secrets.COMMONTKBOT_GITHUB_TOKEN }}

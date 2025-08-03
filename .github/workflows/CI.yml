@@ -131,29 +131,6 @@ jobs:
           name: win-packages
           path: build/CTKAppLauncher-*.tar.gz
 
-    #- name: Setup Python
-    #  uses: actions/setup-python@v5
-    #  with:
-    #    python-version: '3.12'
-
-    #- name: Install scikit-ci-addons
-    #  run: pip install -U scikit-ci-addons
-
-    # See https://github.com/scikit-build/scikit-ci-addons/issues/96
-    #- name: Publish packages
-    #  shell: pwsh
-    #  run: |
-    #    cd build
-    #    ci_addons publish_github_release commontk/applauncher       `
-    #      --exit-success-if-missing-token                           `
-    #      --prerelease-sha main                                     `
-    #      --prerelease-packages CTKAppLauncher-*.tar.gz             `
-    #      --prerelease-packages-clear-pattern "*win*"               `
-    #      --prerelease-packages-keep-pattern "*<COMMIT_SHORT_SHA>*" `
-    #      --release-packages CTKAppLauncher-*.tar.gz
-    #  env:
-    #    GITHUB_TOKEN: secrets.COMMONTKBOT_GITHUB_TOKEN
-
   linux-tests:
     needs: changes
     if: ${{ needs.changes.outputs.paths-to-include == 'true' }}
@@ -222,28 +199,6 @@ jobs:
           name: linux-packages
           path: build/CTKAppLauncher-*.tar.gz
 
-    #- name: Setup Python
-    #  uses: actions/setup-python@v5
-    #  with:
-    #    python-version: '3.12'
-
-    #- name: Install scikit-ci-addons
-    #  run: pip install -U scikit-ci-addons
-
-    # See https://github.com/scikit-build/scikit-ci-addons/issues/96
-    #- name: Publish packages
-    #  run: |
-    #    cd src
-    #    ci_addons publish_github_release commontk/applauncher \
-    #      --exit-success-if-missing-token \
-    #      --prerelease-sha main \
-    #      --prerelease-packages ../build/CTKAppLauncher-*.tar.gz \
-    #      --prerelease-packages-clear-pattern "*linux*" \
-    #      --prerelease-packages-keep-pattern "*<COMMIT_SHORT_SHA>*" \
-    #      --release-packages build/CTKAppLauncher-*.tar.gz
-    #  env:
-    #    GITHUB_TOKEN: secrets.COMMONTKBOT_GITHUB_TOKEN
-
   macos-tests:
     needs: changes
     if: ${{ needs.changes.outputs.paths-to-include == 'true' }}
@@ -298,28 +253,6 @@ jobs:
         with:
           name: macos-packages
           path: build/CTKAppLauncher-*.tar.gz
-
-    #- name: Setup Python
-    #  uses: actions/setup-python@v5
-    #  with:
-    #    python-version: '3.12'
-
-    #- name: Install scikit-ci-addons
-    #  run: pip install -U scikit-ci-addons
-
-    # See https://github.com/scikit-build/scikit-ci-addons/issues/96
-    #- name: Publish packages
-    #  run: |
-    #    cd src
-    #    ci_addons publish_github_release commontk/applauncher \
-    #      --exit-success-if-missing-token \
-    #      --prerelease-sha main \
-    #      --prerelease-packages ../build/CTKAppLauncher-*.tar.gz \
-    #      --prerelease-packages-clear-pattern "*macosx*" \
-    #      --prerelease-packages-keep-pattern "*<COMMIT_SHORT_SHA>*" \
-    #      --release-packages build/CTKAppLauncher-*.tar.gz
-    #  env:
-    #    GITHUB_TOKEN: secrets.COMMONTKBOT_GITHUB_TOKEN
 
   pass: # This job does nothing and is only used for the branch protection
     if: always()
