@@ -23,10 +23,6 @@ else()
   set(pathsep ":")
 endif()
 
-
-# Extract test name
-get_filename_component(testname ${CMAKE_CURRENT_LIST_FILE} NAME_WE)
-
 # --------------------------------------------------------------------------
 function(run_laucher expected_level)
   message(STATUS "Executing launcher for level [${expected_level}]")
@@ -35,7 +31,7 @@ function(run_laucher expected_level)
     -DTEST_SOURCE_DIR:PATH=${TEST_SOURCE_DIR}
     -DTEST_BINARY_DIR:PATH=${TEST_BINARY_DIR}
     -DEXPECTED_LEVEL:BOOL=${expected_level}
-    -DTEST_NAME:STRING=${testname}
+    -DTEST_NAME:STRING=${TEST_NAME}
     -DAppLauncherTestPrerequisites_COPY_LAUNCHER:BOOL=FALSE
     -P ${CMAKE_CURRENT_LIST_FILE}
     )
