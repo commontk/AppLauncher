@@ -264,6 +264,23 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Set allowed skips
+        id: allow
+        run: |
+          if [[ "${{ needs.changes.outputs.paths-to-include }}" != "true" ]]; then
+            echo "value=[\"win-tests\",\"linux-tests\",\"macos-tests\"]" >> $GITHUB_OUTPUT
+          else
+            echo "value=[]" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Show job results
+        run: |
+          echo "paths-to-include = ${{ needs.changes.outputs.paths-to-include }}"
+          echo "win-tests result = ${{ needs.win-tests.result }}"
+          echo "linux-tests result = ${{ needs.linux-tests.result }}"
+          echo "macos-tests result = ${{ needs.macos-tests.result }}"
+          echo "allowed-skips value = ${{ steps.allow.outputs.value }}"
+
       - name: Decide whether the needed jobs succeeded or failed
         uses: re-actors/alls-green@223e4bb7a751b91f43eda76992bcfbf23b8b0302 # v1.2.2
         with:
@@ -271,9 +288,4 @@ jobs:
           # Allow test jobs to be skipped when the 'paths-to-include' filter determined
           # that no relevant files were modified (e.g., only docs or README changed).
           # This ensures the 'pass' job still succeeds and branch protection is satisfied.
-          allowed-skips: >
-            ${{
-              fromJSON(needs.changes.outputs.paths-to-include) == false
-              && '["win-tests","linux-tests","macos-tests"]'
-              || '[]'
-            }}
+          allowed-skips: ${{ steps.allow.outputs.value }}
