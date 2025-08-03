@@ -302,3 +302,18 @@ jobs:
     #      --release-packages build/CTKAppLauncher-*.tar.gz
     #  env:
     #    GITHUB_TOKEN: secrets.COMMONTKBOT_GITHUB_TOKEN
+
+  pass: # This job does nothing and is only used for the branch protection
+    if: always()
+    needs:
+    - linux-tests
+    - macos-tests
+    - win-tests
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Decide whether the needed jobs succeeded or failed
+      uses: re-actors/alls-green@223e4bb7a751b91f43eda76992bcfbf23b8b0302 # v1.2.2
+      with:
+        jobs: ${{ toJSON(needs) }}
