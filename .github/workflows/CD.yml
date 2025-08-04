@@ -41,7 +41,7 @@ jobs:
 
       - name: Download artifact
         id: download-artifact
-        uses: dawidd6/action-download-artifact@v11
+        uses: dawidd6/action-download-artifact@ac66b43f0e6a346234dd65d4d0c8fbb31cb316e5 # v11
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           workflow: CI.yml
@@ -55,7 +55,7 @@ jobs:
         run: ls -1 -R *-packages
 
       - name: Upload release assets
-        uses: softprops/action-gh-release@v2.3.2
+        uses: softprops/action-gh-release@72f2c25fcb47643c292f7107632f7a47c1df5cd8 # v2.3.2
         with:
           tag_name: ${{ steps.vars.outputs.TAG_NAME }}
           files: |
