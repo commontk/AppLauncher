@@ -33,7 +33,6 @@ jobs:
       - name: Resolve commit SHA for tag
         id: resolve_sha
         run: |
-          git fetch --tags
           COMMIT_SHA=$(git rev-list -n 1 $TAG_NAME)
           echo "COMMIT_SHA [$COMMIT_SHA]"
           echo "commit-sha=$COMMIT_SHA" >> $GITHUB_OUTPUT
