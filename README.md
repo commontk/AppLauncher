@@ -370,7 +370,7 @@ See [CONTRIBUTING.md][contributing] for more details.
 
 ## maintainers: How to make a release ?
 
-*Follow step below after checking that all tests pass*
+*Follow the steps below after verifying that all tests pass.*
 
 <details>
 <summary>click to expand</summary>
@@ -411,16 +411,22 @@ See [CONTRIBUTING.md][contributing] for more details.
     git tag -s -m "CTKAppLauncher $tag" $tag main
     ```
 
-5. Publish the tag and `main` branch to trigger the release build
+5. Publish the tag to trigger the release build
 
     ```bash
-    git push origin $tag && \
-    git push origin main
+    git push origin $tag
     ```
 
-_**Important:** Until issue [scikit-build/scikit-ci-addons/issues/96](https://github.com/scikit-build/scikit-ci-addons/issues/96) is addressed, macOS release package should be manually downloaded from the GitHub Actions artifact and uploaded as a GitHub release asset._
+6. Publish the GitHub Release
 
-6. Update `CMakeLists.txt` setting `CTKAppLauncher_VERSION_IS_RELEASE` to `0`
+   Once the [CI workflow][ci-workflow] completes for the pushed tag, create a GitHub release.
+
+   This will automatically trigger the [CD workflow][cd-workflow] to upload the release assets.
+
+[ci-workflow]: https://github.com/commontk/AppLauncher/actions/workflows/CI.yml
+[cd-workflow]: https://github.com/commontk/AppLauncher/actions/workflows/CD.yml
+
+7. Update `CMakeLists.txt` setting `CTKAppLauncher_VERSION_IS_RELEASE` to `0`
 
     ```bash
     sed -E "s/set\(CTKAppLauncher_VERSION_IS_RELEASE 1\)/set\(CTKAppLauncher_VERSION_IS_RELEASE 0\)/g" -i CMakeLists.txt && \
@@ -429,7 +435,7 @@ _**Important:** Until issue [scikit-build/scikit-ci-addons/issues/96](https://gi
     git diff HEAD^
     ```
 
-7. Publish the changes:
+8. Publish the changes:
 
     ```bash
     git push origin main
