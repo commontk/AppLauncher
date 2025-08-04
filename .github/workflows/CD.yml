@@ -10,9 +10,14 @@ on:
     types:
       - published
 
+permissions: {} # No permissions are granted at the workflow level
+
 jobs:
   upload-release-assets:
     runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
 
     steps:
       - name: Set TAG_NAME
@@ -48,12 +53,13 @@ jobs:
           name_is_regexp: true
 
       - name: List downloaded files
-        run: ls -1 -R
+        run: ls -1 -R *-packages
 
       - name: Upload release assets
         uses: softprops/action-gh-release@v1
         with:
+          tag_name: ${{ steps.vars.outputs.TAG_NAME }}
           files: |
-            **/CTKAppLauncher-*.tar.gz
+            *-packages/CTKAppLauncher-*.tar.gz
         env:
           GITHUB_TOKEN: ${{ secrets.COMMONTKBOT_GITHUB_TOKEN }}
