@@ -249,25 +249,19 @@ set(default_qt_version "5")
 set(CTKAppLauncher_QT_VERSION "${default_qt_version}" CACHE STRING "Expected Qt version")
 mark_as_advanced(CTKAppLauncher_QT_VERSION)
 
-set_property(CACHE CTKAppLauncher_QT_VERSION PROPERTY STRINGS 4 5)
+set_property(CACHE CTKAppLauncher_QT_VERSION PROPERTY STRINGS 5)
 
-if(NOT (CTKAppLauncher_QT_VERSION VERSION_EQUAL "4" OR CTKAppLauncher_QT_VERSION VERSION_EQUAL "5"))
-  message(FATAL_ERROR "Expected value for CTKAppLauncher_QT_VERSION is either '4' or '5'")
+if(NOT (CTKAppLauncher_QT_VERSION VERSION_EQUAL "5"))
+  message(FATAL_ERROR "Expected value for CTKAppLauncher_QT_VERSION is '5'")
 endif()
 
-if(CTKAppLauncher_QT_VERSION VERSION_GREATER "4")
+if(CTKAppLauncher_QT_VERSION VERSION_EQUAL "5")
   set(CTKAppLauncher_QT5_COMPONENTS Core Widgets)
   if(BUILD_TESTING)
     list(APPEND CTKAppLauncher_QT5_COMPONENTS Test)
   endif()
   find_package(Qt5 COMPONENTS ${CTKAppLauncher_QT5_COMPONENTS} REQUIRED)
   set(QT_LIBRARIES Qt5::Widgets ${CTKAppLauncher_QT_STATIC_LIBRARIES})
-
-else()
-  set(QT_USE_IMPORTED_TARGETS 1)
-  find_package(Qt4 4.6 REQUIRED)
-  set(QT_USE_QTTEST ${BUILD_TESTING})
-  include(${QT_USE_FILE})
 endif()
 
 #-----------------------------------------------------------------------------

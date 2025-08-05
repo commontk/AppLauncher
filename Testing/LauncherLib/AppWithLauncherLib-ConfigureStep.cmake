@@ -35,14 +35,12 @@ if(DEFINED CTKAppLauncher_QT_STATIC_LIBRARIES)
     -DCTKAppLauncher_QT_STATIC_LIBRARIES:STRING=${CTKAppLauncher_QT_STATIC_LIBRARIES}
     )
 endif()
-if(CTKAppLauncher_QT_VERSION VERSION_GREATER "4")
+if(CTKAppLauncher_QT_VERSION VERSION_EQUAL "5")
   list(APPEND args
     -DQt5_DIR:PATH=${Qt5_DIR}
     )
 else()
-  list(APPEND args
-    -DQT_QMAKE_EXECUTABLE:FILEPATH=${QT_QMAKE_EXECUTABLE}
-    )
+  message(FATAL_ERROR "Setting CTKAppLauncher_QT_VERSION to '${CTKAppLauncher_QT_VERSION}' is not supported")
 endif()
 foreach(varname IN ITEMS
     CMAKE_OSX_ARCHITECTURES

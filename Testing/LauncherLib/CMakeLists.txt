@@ -66,7 +66,7 @@ set(test_args
   -DCMAKE_CXX_FLAGS_${APPLIB_BUILD_TYPE_UC}:STRING=${CMAKE_CXX_FLAGS_${APPLIB_BUILD_TYPE_UC}}
   -DCTKAppLauncher_QT_VERSION:STRING=${CTKAppLauncher_QT_VERSION}
   )
-if(CTKAppLauncher_QT_VERSION VERSION_GREATER "4")
+if(CTKAppLauncher_QT_VERSION VERSION_EQUAL "5")
   list(APPEND test_args
     -DQt5_DIR:PATH=${Qt5_DIR}
     )
@@ -76,9 +76,7 @@ if(CTKAppLauncher_QT_VERSION VERSION_GREATER "4")
       )
   endif()
 else()
-  list(APPEND test_args
-    -DQT_QMAKE_EXECUTABLE:FILEPATH=${QT_QMAKE_EXECUTABLE}
-    )
+  message(FATAL_ERROR "Setting CTKAppLauncher_QT_VERSION to '${CTKAppLauncher_QT_VERSION}' is not supported")
 endif()
 foreach(varname IN ITEMS
     CMAKE_OSX_ARCHITECTURES
