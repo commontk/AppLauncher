@@ -13,14 +13,14 @@ applauncher_add_cmakescript_test(ctkAppLauncherAppendExtraAppToLaunchToListTest 
 applauncher_add_cmakescript_test(ctkAppLauncherExtraAppToLaunchListToQtSettingsTest ctkAppLauncher)
 
 # Get Qt library directory
-if(CTKAppLauncher_QT_VERSION VERSION_GREATER "4")
+if(CTKAppLauncher_QT_VERSION VERSION_EQUAL "5")
   get_target_property(_imported_location "Qt5::Core" IMPORTED_LOCATION_RELEASE)
   get_filename_component(QT_LIBRARY_DIR ${_imported_location} DIRECTORY)
   if(WIN32)
     set(QT_LIBRARY_DIR "${QT_LIBRARY_DIR}/../bin")
   endif()
 else()
-  # QT_LIBRARY_DIR is already set by FindQt4.cmake
+  message(FATAL_ERROR "Setting CTKAppLauncher_QT_VERSION to '${CTKAppLauncher_QT_VERSION}' is not supported")
 endif()
 
 # Run tests against a build tree of CTKAppLauncher

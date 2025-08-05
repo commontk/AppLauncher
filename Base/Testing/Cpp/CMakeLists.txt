@@ -46,10 +46,10 @@ foreach(file IN ITEMS
     ctkAppLauncherSettingsTest.cpp
     )
   set(moc_file moc_${file})
-  if(CTKAppLauncher_QT_VERSION VERSION_GREATER "4")
+  if(CTKAppLauncher_QT_VERSION VERSION_EQUAL "5")
     QT5_GENERATE_MOC(${file} ${moc_file})
   else()
-    QT4_GENERATE_MOC(${file} ${moc_file})
+    message(FATAL_ERROR "Setting CTKAppLauncher_QT_VERSION to '${CTKAppLauncher_QT_VERSION}' is not supported")
   endif()
   macro_add_file_dependencies(${file} ${CMAKE_CURRENT_BINARY_DIR}/${moc_file})
 endforeach()
@@ -62,11 +62,7 @@ set(${KIT}CppTests_TARGET_LIBRARIES
   CTKAppLauncherBase
   CTKAppLauncherTestingHelper
   )
-if(CTKAppLauncher_QT_VERSION VERSION_GREATER "4")
-  list(APPEND ${KIT}CppTests_TARGET_LIBRARIES Qt5::Test)
-else()
-  list(APPEND ${KIT}CppTests_TARGET_LIBRARIES Qt4::QtTest)
-endif()
+list(APPEND ${KIT}CppTests_TARGET_LIBRARIES Qt${CTKAppLauncher_QT_VERSION}::Test)
 target_link_libraries(${KIT}CppTests PUBLIC ${${KIT}CppTests_TARGET_LIBRARIES} ${QT_LIBRARIES})
 
 if(QT_MAC_USE_COCOA)

@@ -292,7 +292,7 @@ This system makes the launcher robust and self-contained — no manual backup or
 
 ## Building From Source
 
-To build CTKAppLauncher, you’ll need a C++ compiler, Qt 4.x or 5.x, and CMake 3.16+.
+To build CTKAppLauncher, you’ll need a C++ compiler, Qt 5.x, and CMake 3.16+.
 
 Clone the repository:
 
