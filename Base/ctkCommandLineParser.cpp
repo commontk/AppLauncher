@@ -852,13 +852,13 @@ void ctkCommandLineParser::setArgumentPrefix(const QString& longPrefix, const QS
 }
 
 // --------------------------------------------------------------------------
-QString ctkCommandLineParser::longPrefix()const
+QString ctkCommandLineParser::longPrefix() const
 {
   return this->Internal->LongPrefix;
 }
 
 // --------------------------------------------------------------------------
-QString ctkCommandLineParser::shortPrefix()const
+QString ctkCommandLineParser::shortPrefix() const
 {
   return this->Internal->ShortPrefix;
 }

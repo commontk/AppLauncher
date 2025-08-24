@@ -10,7 +10,7 @@
 #include <QTemporaryFile>
 
 // ----------------------------------------------------------------------------
-class ctkAppLauncherSettingsTester: public QObject
+class ctkAppLauncherSettingsTester : public QObject
 {
   Q_OBJECT
 

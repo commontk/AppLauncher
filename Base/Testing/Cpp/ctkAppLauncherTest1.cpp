@@ -10,7 +10,7 @@
 // STD includes
 #include <sstream>
 
-class ctkAppLauncherTest1er: public QObject
+class ctkAppLauncherTest1er : public QObject
 {
   Q_OBJECT
 

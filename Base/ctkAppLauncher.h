@@ -166,7 +166,7 @@ public:
   /// Set/Get list of arguments that will be passed to the program to launch.
   /// By default, \a arguments associated with the \a application are used.
   /// \sa ctkAppLauncher(), QCoreApplication::arguments(), setApplication()
-  QStringList arguments()const;
+  QStringList arguments() const;
   void setArguments(const QStringList& args);
 
   /// Parse arguments
@@ -177,35 +177,35 @@ public:
   /// Return associated settingsFileName
   /// Will return an empty string if the object is NOT initialized or
   /// if the file does NOT exist
-  QString findSettingsFile()const;
+  QString findSettingsFile() const;
 
   /// Read/Write settings
   /// Will return False if the object is NOT initialized
   bool writeSettings(const QString& outputFilePath);
 
   /// Get applicationToLaunch
-  QString applicationToLaunch()const;
+  QString applicationToLaunch() const;
 
   /// Start the ApplicationToLaunch as a child process
   /// Will return False if the object is NOT initialized
   void startApplication();
 
   /// Return the associated splash screen image path
-  QString splashImagePath()const;
+  QString splashImagePath() const;
 
   /// \brief Return the delay in ms before the launcher hides the splashscreen.
   /// The delay is applied after the application finishes to start.
-  int splashScreenHideDelayMs()const;
+  int splashScreenHideDelayMs() const;
 
   /// \brief Return true if the splash-screen should not be visible when
   /// starting the launched application, false otherwise.
   /// false by default.
-  bool disableSplash()const;
+  bool disableSplash() const;
 
   /// Get verbose flag
   /// If True, print to standard output information associated with the parameters
   /// passed to the launcher, launcher settings, etc ...
-  bool verbose()const;
+  bool verbose() const;
 
   bool generateTemplate();
 

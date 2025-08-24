@@ -165,7 +165,7 @@ public:
   /// Get list of library paths associated with the \c LibraryPaths group.
   ///
   /// \sa ctkAppLauncherSettingsPrivate::expandValue(const QString& value)
-  QStringList libraryPaths(bool expand = true)const;
+  QStringList libraryPaths(bool expand = true) const;
 
   /// Get list of paths associated with the \c Paths group.
   ///
@@ -174,7 +174,7 @@ public:
   ///
   /// \sa ctkAppLauncherSettingsPrivate::expandValue(const QString& value)
   /// \sa launcherDir()
-  QStringList paths(bool expand = true)const;
+  QStringList paths(bool expand = true) const;
 
   /// Get environment variable value associated with \c EnvironmentVariables
   /// group.
@@ -283,21 +283,21 @@ public:
   ///
   /// \sa readSettings(const QString&)
   /// \sa additionalSettingsDir()
-  QString findUserAdditionalSettings()const;
+  QString findUserAdditionalSettings() const;
 
   /// \brief Return location of user specific additional settings directory.
   ///
   /// The directory is the location where an existing user specific additional settings file
   /// is found using findUserAdditionalSettings(). If no such file is found then
   /// default location is returned: \c path/to/settings/<organizationDir>
-  QString userAdditionalSettingsDir()const;
+  QString userAdditionalSettingsDir() const;
 
   /// \brief Get organization subdirectory name determined from organization domain
   /// or name determined according to QSettings conventions.
   ///
   /// On Windows and Linux: QCoreApplication::organizationName() (if undefined then QCoreApplication::organizationDomain()).
   /// On macOS: QCoreApplication::organizationDomain() (if undefined then QCoreApplication::organizationName()).
-  QString organizationDir()const;
+  QString organizationDir() const;
 
   /// \brief Set/Get launcher directory.
   ///

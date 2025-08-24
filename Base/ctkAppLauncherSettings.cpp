@@ -58,7 +58,7 @@ ctkAppLauncherSettingsPrivate::ctkAppLauncherSettingsPrivate(ctkAppLauncherSetti
 }
 
 // --------------------------------------------------------------------------
-QString ctkAppLauncherSettingsPrivate::findUserAdditionalSettings()const
+QString ctkAppLauncherSettingsPrivate::findUserAdditionalSettings() const
 {
   Q_Q(const ctkAppLauncherSettings);
 
@@ -168,7 +168,7 @@ bool ctkAppLauncherSettingsPrivate::checkSettings(const QString& fileName, int s
     return false;
   }
 
-  if (! (QFile::permissions(fileName) & QFile::ReadOwner) )
+  if (! (QFile::permissions(fileName) & QFile::ReadOwner))
   {
     this->ReadSettingsError =
         QString("Failed to read%1 launcher setting file [%2]").arg(settingsTypeDesc).arg(fileName);
@@ -423,14 +423,14 @@ ctkAppLauncherSettings::~ctkAppLauncherSettings()
 }
 
 // --------------------------------------------------------------------------
-QString ctkAppLauncherSettings::findUserAdditionalSettings()const
+QString ctkAppLauncherSettings::findUserAdditionalSettings() const
 {
   Q_D(const ctkAppLauncherSettings);
   return d->findUserAdditionalSettings();
 }
 
 // --------------------------------------------------------------------------
-QString ctkAppLauncherSettings::userAdditionalSettingsDir()const
+QString ctkAppLauncherSettings::userAdditionalSettingsDir() const
 {
   Q_D(const ctkAppLauncherSettings);
   QString userAdditionalSettingsFileName = d->findUserAdditionalSettings();
@@ -570,7 +570,7 @@ void ctkAppLauncherSettings::setAdditionalSettingsExcludeGroups(const QStringLis
 }
 
 // --------------------------------------------------------------------------
-QStringList ctkAppLauncherSettings::libraryPaths(bool expand /* = true */)const
+QStringList ctkAppLauncherSettings::libraryPaths(bool expand /* = true */) const
 {
   Q_D(const ctkAppLauncherSettings);
   QStringList expanded;
@@ -582,7 +582,7 @@ QStringList ctkAppLauncherSettings::libraryPaths(bool expand /* = true */)const
 }
 
 // --------------------------------------------------------------------------
-QStringList ctkAppLauncherSettings::paths(bool expand /* = true */)const
+QStringList ctkAppLauncherSettings::paths(bool expand /* = true */) const
 {
   Q_D(const ctkAppLauncherSettings);
   QStringList expanded;
@@ -682,7 +682,7 @@ QString ctkAppLauncherSettings::pathVariableName() const
 }
 
 // --------------------------------------------------------------------------
-QString ctkAppLauncherSettings::organizationDir()const
+QString ctkAppLauncherSettings::organizationDir() const
 {
   // Logic for deciding between using organizationDoman or organizationName is
   // adopted from qtbase\src\corelib\io\qsettings.cpp.

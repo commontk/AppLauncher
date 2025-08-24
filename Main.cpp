@@ -215,9 +215,9 @@ int __stdcall wWinMain(HINSTANCE hInstance,
 
   for (int i = 0; i < argc; ++i)
   {
-    delete [] argv[i];
+    delete[] argv[i];
   }
-  delete [] argv;
+  delete[] argv;
 
   return ret;
 }

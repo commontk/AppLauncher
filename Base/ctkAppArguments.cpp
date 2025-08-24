@@ -70,14 +70,14 @@ void ctkChar2DArray::clear()
   {
     delete[] d->Values[index];
   }
-  delete [] d->Values;
+  delete[] d->Values;
   d->Values = 0;
   d->Count = 0;
   d->List.clear();
 }
 
 // --------------------------------------------------------------------------
-char** ctkChar2DArray::values()const
+char** ctkChar2DArray::values() const
 {
   Q_D(const ctkChar2DArray);
   return d->Values;
@@ -251,7 +251,7 @@ ctkAppArguments::~ctkAppArguments()
 }
 
 // --------------------------------------------------------------------------
-QStringList ctkAppArguments::arguments(ctkAppArguments::ArgListTypes option)const
+QStringList ctkAppArguments::arguments(ctkAppArguments::ArgListTypes option) const
 {
   Q_D(const ctkAppArguments);
   if (option == ctkAppArguments::ARG_REGULAR_LIST)
@@ -312,7 +312,7 @@ void ctkAppArguments::addArgumentToFilter(const ArgToFilterType& argToFilter)
 }
 
 // --------------------------------------------------------------------------
-ctkAppArguments::ArgToFilterListType ctkAppArguments::argumentToFilterList()const
+ctkAppArguments::ArgToFilterListType ctkAppArguments::argumentToFilterList() const
 {
   Q_D(const ctkAppArguments);
   return d->ArgToFilterList;

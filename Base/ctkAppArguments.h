@@ -20,7 +20,7 @@ public:
   virtual ~ctkChar2DArray();
   void setValues(const QStringList& list);
   void clear();
-  char** values()const;
+  char** values() const;
   int& count();
 protected:
   QScopedPointer<ctkChar2DArrayPrivate> d_ptr;
@@ -50,7 +50,7 @@ public:
   };
   Q_DECLARE_FLAGS(ArgListTypes, ArgListType)
 
-  QStringList arguments(ArgListTypes option = ARG_FULL_LIST)const;
+  QStringList arguments(ArgListTypes option = ARG_FULL_LIST) const;
 
   char** argumentValues(ArgListTypes option = ARG_FULL_LIST) const;
 
@@ -76,7 +76,7 @@ public:
 
   void addArgumentToFilter(const ArgToFilterType& argToFilter);
 
-  ArgToFilterListType argumentToFilterList()const;
+  ArgToFilterListType argumentToFilterList() const;
 
   void setArgumentToFilterList(const ArgToFilterListType& list);
 

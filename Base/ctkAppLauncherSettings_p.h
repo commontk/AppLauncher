@@ -25,7 +25,7 @@ public:
   ~ctkAppLauncherSettingsPrivate(){}
   typedef ctkAppLauncherSettingsPrivate Self;
 
-  QString findUserAdditionalSettings()const;
+  QString findUserAdditionalSettings() const;
 
   /// Different type of settings files.
   enum SettingsType

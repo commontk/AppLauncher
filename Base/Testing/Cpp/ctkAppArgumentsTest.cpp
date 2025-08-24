@@ -5,7 +5,7 @@
 
 
 // ----------------------------------------------------------------------------
-class ctkAppArgumentsTester: public QObject
+class ctkAppArgumentsTester : public QObject
 {
   Q_OBJECT
   typedef ctkAppArgumentsTester Self;
