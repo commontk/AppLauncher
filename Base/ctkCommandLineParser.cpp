@@ -248,7 +248,7 @@ public:
 
   QList<CommandLineParserArgumentDescription*>                 ArgumentDescriptionList;
   QHash<QString, CommandLineParserArgumentDescription*>        ArgNameToArgumentDescriptionMap;
-  QMap<QString, QList<CommandLineParserArgumentDescription*> > GroupToArgumentDescriptionListMap;
+  QMap<QString, QList<CommandLineParserArgumentDescription*>>  GroupToArgumentDescriptionListMap;
 
   QStringList UnparsedArguments;
   QStringList ProcessedArguments;
@@ -783,7 +783,7 @@ QString ctkCommandLineParser::helpText(const char charPad) const
   QList<CommandLineParserArgumentDescription*> deprecatedArgs;
 
   // Loop over grouped argument descriptions
-  QMapIterator<QString, QList<CommandLineParserArgumentDescription*> > it(
+  QMapIterator<QString, QList<CommandLineParserArgumentDescription*>> it(
       this->Internal->GroupToArgumentDescriptionListMap);
   while(it.hasNext())
   {
