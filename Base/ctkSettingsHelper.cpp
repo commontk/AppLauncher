@@ -14,7 +14,7 @@ QStringList ctk::readArrayValues(
   Q_ASSERT(!fieldName.isEmpty());
   QStringList listOfValues;
   int size = settings.beginReadArray(arrayName);
-  for (int i=0; i < size; ++i)
+  for (int i = 0; i < size; ++i)
   {
     settings.setArrayIndex(i);
     listOfValues << settings.value(fieldName).toString();
@@ -45,7 +45,7 @@ void ctk::writeArrayValues(QSettings& settings, const QStringList& values,
   Q_ASSERT(!arrayName.isEmpty());
   Q_ASSERT(!fieldName.isEmpty());
   settings.beginWriteArray(arrayName);
-  for (int i=0; i < values.size(); ++i)
+  for (int i = 0; i < values.size(); ++i)
   {
     settings.setArrayIndex(i);
     settings.setValue(fieldName, values.at(i));

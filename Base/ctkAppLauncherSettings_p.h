@@ -70,7 +70,7 @@ public:
 
   void readAdditionalSettingsInfo(QSettings& settings);
 
-  void readPathSettings(QSettings& settings, const QStringList& excludeGroups=QStringList());
+  void readPathSettings(QSettings& settings, const QStringList& excludeGroups = QStringList());
 
   QString ReadSettingsError;
 
