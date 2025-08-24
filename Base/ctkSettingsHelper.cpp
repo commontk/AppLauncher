@@ -30,7 +30,7 @@ QHash<QString, QString> ctk::readKeyValuePairs(QSettings& settings,
   Q_ASSERT(!groupName.isEmpty());
   QHash<QString, QString> keyValuePairs;
   settings.beginGroup(groupName);
-  foreach(const QString& key, settings.childKeys())
+  foreach (const QString& key, settings.childKeys())
   {
     keyValuePairs[key] = settings.value(key).toString();
   }
@@ -45,7 +45,7 @@ void ctk::writeArrayValues(QSettings& settings, const QStringList& values,
   Q_ASSERT(!arrayName.isEmpty());
   Q_ASSERT(!fieldName.isEmpty());
   settings.beginWriteArray(arrayName);
-  for(int i=0; i < values.size(); ++i)
+  for (int i=0; i < values.size(); ++i)
   {
     settings.setArrayIndex(i);
     settings.setValue(fieldName, values.at(i));
@@ -59,7 +59,7 @@ void ctk::writeKeyValuePairs(QSettings& settings,
 {
   Q_ASSERT(!groupName.isEmpty());
   settings.beginGroup(groupName);
-  foreach(const QString& key, map.keys())
+  foreach (const QString& key, map.keys())
   {
     settings.setValue(key, map[key]);
   }

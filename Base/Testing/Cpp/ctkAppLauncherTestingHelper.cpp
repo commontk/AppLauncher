@@ -76,11 +76,11 @@ bool CheckString(int line, const QString& description,
   {
     different = !(current == 0 && expected == 0);
   }
-  else if(strcmp(current, expected) == 0)
+  else if (strcmp(current, expected) == 0)
   {
     different = false;
   }
-  if(different == errorIfDifferent)
+  if (different == errorIfDifferent)
   {
     qWarning() << "\nLine " << line << " - " << description
                << " : " << testName << "  failed"

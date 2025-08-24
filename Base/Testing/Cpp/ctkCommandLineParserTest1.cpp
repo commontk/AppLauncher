@@ -227,7 +227,7 @@ int ctkCommandLineParserTest1(int, char*[])
     "Value(s) associated with argument --string are incorrect."
     " ctkStop or ctkStart is expected.";
 
-  if(expectedErrorString != parser5.errorString())
+  if (expectedErrorString != parser5.errorString())
   {
     qCritical() << "Test5 - Failed - expectedErrorString" << expectedErrorString
             << ", parser5.errorString()" << parser5.errorString();
@@ -252,7 +252,7 @@ int ctkCommandLineParserTest1(int, char*[])
     "Value(s) associated with argument --int are incorrect."
     " Value 1, 2 or 3 is expected.";
 
-  if(expectedErrorString2 != parser5.errorString())
+  if (expectedErrorString2 != parser5.errorString())
   {
     qCritical() << "Test5 - Failed - expectedErrorString2" << expectedErrorString2
             << ", parser5.errorString()" << parser5.errorString();
@@ -278,7 +278,7 @@ int ctkCommandLineParserTest1(int, char*[])
     "Value(s) associated with argument --list are incorrect."
     " Element of the form item[0-9] are expected.";
 
-  if(expectedErrorString3 != parser5.errorString())
+  if (expectedErrorString3 != parser5.errorString())
   {
     qCritical() << "Test5 - Failed - expectedErrorString3" << expectedErrorString3
             << ", parser5.errorString()" << parser5.errorString();
@@ -443,7 +443,7 @@ int ctkCommandLineParserTest1(int, char*[])
   parser10.addArgument("--bool", "", QVariant::Bool, "This is a boolean");
 
   // Since parseArguments hasn't been called, argumentParsed should return False
-  if(parser10.argumentParsed("--bool"))
+  if (parser10.argumentParsed("--bool"))
   {
     qCritical() << "Test10 - Problem with argumentParsed() - Should return False";
     return EXIT_FAILURE;
@@ -461,14 +461,14 @@ int ctkCommandLineParserTest1(int, char*[])
     return EXIT_FAILURE;
   }
 
-  if(parser10.argumentParsed("--bool-notadded"))
+  if (parser10.argumentParsed("--bool-notadded"))
   {
     qCritical() << "Test10 - Problem with argumentParsed() - "
                    "Should return False since argument '--bool-notadded' hasn't been added.";
     return EXIT_FAILURE;
   }
 
-  if(!parser10.argumentParsed("--bool"))
+  if (!parser10.argumentParsed("--bool"))
   {
     qCritical() << "Test10 - Problem with argumentParsed() - Should return True";
     return EXIT_FAILURE;

@@ -74,7 +74,7 @@ QProcessEnvironment ctkAppLauncherEnvironment::environment(int requestedLevel)
   QProcessEnvironment env(currentEnv);
   QStringList currentEnvKeys = Self::envKeys(currentEnv);
   QStringList requestedEnvKeys;
-  foreach(const QString& varname, currentEnvKeys)
+  foreach (const QString& varname, currentEnvKeys)
   {
     QRegularExpressionMatch match = ctkAppLauncherEnvironmentPrivate::LevelVarNameRegex.match(varname);
     if (match.hasMatch() && match.capturedStart() == 0)
@@ -115,7 +115,7 @@ QProcessEnvironment ctkAppLauncherEnvironment::environment(int requestedLevel)
       ctkAppLauncherEnvironment::excludeReservedVariableNames(currentEnvKeys).toSet()
       - ctkAppLauncherEnvironment::excludeReservedVariableNames(requestedEnvKeys).toSet();
 #endif
-  foreach(const QString& varname, variablesToRemove.values())
+  foreach (const QString& varname, variablesToRemove.values())
   {
     env.remove(varname);
   }
@@ -138,7 +138,7 @@ void ctkAppLauncherEnvironment::saveEnvironment(
   env.insert("APPLAUNCHER_LEVEL", QString("%1").arg(launcher_level));
 
   // Save value environment variables
-  foreach(const QString& varname, variables)
+  foreach (const QString& varname, variables)
   {
     if (!systemEnvironment.contains(varname)
         || ctkAppLauncherEnvironment::isReservedVariableName(varname))
@@ -165,7 +165,7 @@ void ctkAppLauncherEnvironment::updateCurrentEnvironment(const QProcessEnvironme
 #else
   QStringList variablesToUnset = (curKeys.toSet() - envKeys.toSet()).toList();
 #endif
-  foreach(const QString& varName, variablesToUnset)
+  foreach (const QString& varName, variablesToUnset)
   {
 #if defined(Q_OS_WIN32)
     bool success = qputenv(varName.toLocal8Bit(), QString().toLocal8Bit());
@@ -179,7 +179,7 @@ void ctkAppLauncherEnvironment::updateCurrentEnvironment(const QProcessEnvironme
   }
 
   // Set variables
-  foreach(const QString& varName, envKeys)
+  foreach (const QString& varName, envKeys)
   {
     QString varValue = environment.value(varName);
     bool success = qputenv(varName.toLocal8Bit(), varValue.toLocal8Bit());
@@ -234,7 +234,7 @@ QString ctkAppLauncherEnvironment::casedVariableName(const QStringList& names, c
 QStringList ctkAppLauncherEnvironment::excludeReservedVariableNames(const QStringList& variableNames)
 {
   QStringList updatedList;
-  foreach(const QString& varname, variableNames)
+  foreach (const QString& varname, variableNames)
   {
     if (ctkAppLauncherEnvironment::isReservedVariableName(varname))
     {

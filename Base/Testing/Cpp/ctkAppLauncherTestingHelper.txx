@@ -49,7 +49,7 @@ bool Check(int line, const QString& description,
   QString testName = _testName.isEmpty() ? "Check" : _testName;
   if (errorIfDifferent)
   {
-    if(current != expected)
+    if (current != expected)
     {
       qWarning() << "\nLine " << line << " - " << description
                  << " : " << testName << " failed"
@@ -60,7 +60,7 @@ bool Check(int line, const QString& description,
   }
   else
   {
-    if(current == expected)
+    if (current == expected)
     {
       qWarning() << "\nLine " << line << " - " << description
                  << " : " << testName << " failed"

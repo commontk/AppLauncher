@@ -54,7 +54,7 @@ void ctkChar2DArray::setValues(const QStringList& list)
   d->List = list;
   d->Count = list.count();
   d->Values = new char*[list.count()];
-  for(int index = 0; index < d->List.count(); ++index)
+  for (int index = 0; index < d->List.count(); ++index)
   {
     QString item = d->List.at(index);
     d->Values[index] = new char[item.size() + 1];
@@ -131,7 +131,7 @@ ctkAppArgumentsPrivate::ctkAppArgumentsPrivate(int& argc, char** argv) :
     this->Argc = 0;
     this->Argv = const_cast<char**>(&empty);
   }
-  for(int index = 0; index < this->Argc; ++index)
+  for (int index = 0; index < this->Argc; ++index)
   {
     this->Arguments << this->Argv[index];
   }
@@ -149,7 +149,7 @@ void ctkAppArgumentsPrivate::filterArguments()
   this->RegularArguments.clear();
   this->ReservedArguments.clear();
 
-  for(int index = 0; index < this->Argc; ++index)
+  for (int index = 0; index < this->Argc; ++index)
   {
     ctkAppArguments::ArgToFilterType argToFilter = this->findArgToFilter(this->Argv[index]);
     if (argToFilter.first.isEmpty())
@@ -187,7 +187,7 @@ ctkAppArguments::ArgToFilterType ctkAppArgumentsPrivate::findArgToFilter(const c
     return ctkAppArguments::ArgToFilterType();
   }
 
-  foreach(const ctkAppArguments::ArgToFilterType& argToFilter, this->ArgToFilterList)
+  foreach (const ctkAppArguments::ArgToFilterType& argToFilter, this->ArgToFilterList)
   {
     if (argToFilter.second == ctkAppArguments::ARG_TO_FILTER_NO_VALUE)
     {
@@ -323,7 +323,7 @@ void ctkAppArguments::setArgumentToFilterList(const ArgToFilterListType& list)
 {
   Q_D(ctkAppArguments);
   d->ArgToFilterList.clear();
-  foreach(const ArgToFilterType& argToFilter, list)
+  foreach (const ArgToFilterType& argToFilter, list)
   {
     d->addArgumentToFilter(argToFilter, /* filter = */ false);
   }
