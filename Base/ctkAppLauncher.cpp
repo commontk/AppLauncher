@@ -34,7 +34,7 @@
 int ctkInteractiveProcess::StdinClone = -1;
 
 // --------------------------------------------------------------------------
-ctkInteractiveProcess::ctkInteractiveProcess(QObject *parent)
+ctkInteractiveProcess::ctkInteractiveProcess(QObject* parent)
   : QProcess(parent)
 {
   if (StdinClone == -1)
@@ -497,7 +497,7 @@ QString ctkAppLauncherPrivate::shellQuote(bool posix, QString text, const QStrin
 }
 
 // --------------------------------------------------------------------------
-void ctkAppLauncherPrivate::buildEnvironment(QProcessEnvironment &env)
+void ctkAppLauncherPrivate::buildEnvironment(QProcessEnvironment& env)
 {
   Q_Q(ctkAppLauncher);
 
@@ -770,7 +770,7 @@ ctkAppLauncher::~ctkAppLauncher()
 }
 
 // --------------------------------------------------------------------------
-void ctkAppLauncher::displayEnvironment(std::ostream &output)
+void ctkAppLauncher::displayEnvironment(std::ostream& output)
 {
   Q_D(ctkAppLauncher);
   if (d->LauncherName.isEmpty())
@@ -792,7 +792,7 @@ void ctkAppLauncher::displayEnvironment(std::ostream &output)
 }
 
 // --------------------------------------------------------------------------
-void ctkAppLauncher::generateEnvironmentScript(QTextStream &output, bool posix)
+void ctkAppLauncher::generateEnvironmentScript(QTextStream& output, bool posix)
 {
   Q_D(ctkAppLauncher);
   if (d->LauncherName.isEmpty())
@@ -887,7 +887,7 @@ bool ctkAppLauncher::generateExecWrapperScript()
 }
 
 // --------------------------------------------------------------------------
-void ctkAppLauncher::displayHelp(std::ostream &output)
+void ctkAppLauncher::displayHelp(std::ostream& output)
 {
   Q_D(ctkAppLauncher);
   if (d->LauncherName.isEmpty())
@@ -912,7 +912,7 @@ void ctkAppLauncher::displayHelp(std::ostream &output)
 }
 
 // --------------------------------------------------------------------------
-void ctkAppLauncher::displayVersion(std::ostream &output)
+void ctkAppLauncher::displayVersion(std::ostream& output)
 {
   Q_D(ctkAppLauncher);
   if (d->LauncherName.isEmpty())
@@ -945,7 +945,7 @@ bool ctkAppLauncher::initialize(QString launcherFilePath)
     return false;
   }
 
-  ctkCommandLineParser & parser = d->Parser;
+  ctkCommandLineParser& parser = d->Parser;
   parser.setArgumentPrefix(d->LongArgPrefix, d->ShortArgPrefix);
 
   parser.addArgument("launcher-help","", QVariant::Bool, "Display help");

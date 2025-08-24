@@ -126,11 +126,11 @@ public:
    * @return A QHash object mapping the long argument (if empty, the short one)
    *         to a QVariant containing the value.
    */
-  QHash<QString, QVariant> parseArguments(const QStringList &arguments, bool* ok = 0);
+  QHash<QString, QVariant> parseArguments(const QStringList& arguments, bool* ok = 0);
 
   /**
     * Convenient method allowing to parse a given list of command line arguments.
-    * @see parseArguments(const QStringList &, bool*)
+    * @see parseArguments(const QStringList&, bool*)
     */
   QHash<QString, QVariant> parseArguments(int argc, char** argv, bool* ok = 0);
 
@@ -384,7 +384,7 @@ public:
     * Can be used to teach the parser to stop parsing the arguments and return False when
     * an unknown argument is encountered. By default <code>StrictMode</code> is disabled.
     *
-    * @see parseArguments(const QStringList &, bool*)
+    * @see parseArguments(const QStringList&, bool*)
     */
   void setStrictModeEnabled(bool strictMode);
 
@@ -403,6 +403,6 @@ public:
 
 private:
   class ctkInternal;
-  ctkInternal * Internal;
+  ctkInternal* Internal;
 };
 #endif

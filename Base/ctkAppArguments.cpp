@@ -84,7 +84,7 @@ char** ctkChar2DArray::values()const
 }
 
 // --------------------------------------------------------------------------
-int &ctkChar2DArray::count()
+int& ctkChar2DArray::count()
 {
   Q_D(ctkChar2DArray);
   return d->Count;
@@ -97,17 +97,17 @@ int &ctkChar2DArray::count()
 class ctkAppArgumentsPrivate
 {
 public:
-  ctkAppArgumentsPrivate(int &argc, char **argv);
+  ctkAppArgumentsPrivate(int& argc, char** argv);
   virtual ~ctkAppArgumentsPrivate();
 
   void filterArguments();
 
   ctkAppArguments::ArgToFilterType findArgToFilter(const char* arg);
 
-  void addArgumentToFilter(const ctkAppArguments::ArgToFilterType &argToFilter, bool filter);
+  void addArgumentToFilter(const ctkAppArguments::ArgToFilterType& argToFilter, bool filter);
 
-  int &Argc;
-  char **Argv;
+  int& Argc;
+  char** Argv;
 
   ctkAppArguments::ArgToFilterListType ArgToFilterList;
 
@@ -122,14 +122,14 @@ public:
 // ctkAppArgumentsPrivate methods
 
 // --------------------------------------------------------------------------
-ctkAppArgumentsPrivate::ctkAppArgumentsPrivate(int &argc, char **argv) :
+ctkAppArgumentsPrivate::ctkAppArgumentsPrivate(int& argc, char** argv) :
   Argc(argc), Argv(argv)
 {
-  static const char *const empty = "";
+  static const char* const empty = "";
   if (this->Argc == 0 || this->Argv == 0)
   {
     this->Argc = 0;
-    this->Argv = const_cast<char **>(&empty);
+    this->Argv = const_cast<char**>(&empty);
   }
   for(int index = 0; index < this->Argc; ++index)
   {
@@ -216,7 +216,7 @@ ctkAppArguments::ArgToFilterType ctkAppArgumentsPrivate::findArgToFilter(const c
 }
 
 // --------------------------------------------------------------------------
-void ctkAppArgumentsPrivate::addArgumentToFilter(const ctkAppArguments::ArgToFilterType &argToFilter, bool filter)
+void ctkAppArgumentsPrivate::addArgumentToFilter(const ctkAppArguments::ArgToFilterType& argToFilter, bool filter)
 {
   if (argToFilter.second & ctkAppArguments::ARG_TO_FILTER_EQUAL_VALUE)
   {
@@ -240,7 +240,7 @@ void ctkAppArgumentsPrivate::addArgumentToFilter(const ctkAppArguments::ArgToFil
 // ctkAppArguments methods
 
 // --------------------------------------------------------------------------
-ctkAppArguments::ctkAppArguments(int &argc, char *argv[]):
+ctkAppArguments::ctkAppArguments(int& argc, char* argv[]):
   d_ptr(new ctkAppArgumentsPrivate(argc, argv))
 {
 }
@@ -305,7 +305,7 @@ int& ctkAppArguments::argumentCount(ctkAppArguments::ArgListTypes option)
 }
 
 // --------------------------------------------------------------------------
-void ctkAppArguments::addArgumentToFilter(const ArgToFilterType &argToFilter)
+void ctkAppArguments::addArgumentToFilter(const ArgToFilterType& argToFilter)
 {
   Q_D(ctkAppArguments);
   d->addArgumentToFilter(argToFilter, /* filter = */ true);

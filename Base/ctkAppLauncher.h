@@ -130,17 +130,17 @@ public:
   };
 
   /// Display environment variables on standard output
-  void displayEnvironment(std::ostream &output = std::cout);
+  void displayEnvironment(std::ostream& output = std::cout);
 
-  void generateEnvironmentScript(QTextStream &output, bool posix = false);
+  void generateEnvironmentScript(QTextStream& output, bool posix = false);
 
   bool generateExecWrapperScript();
 
   /// Display help string on standard output
-  void displayHelp(std::ostream &output = std::cout);
+  void displayHelp(std::ostream& output = std::cout);
 
   /// Display version information string on standard output
-  void displayVersion(std::ostream &output = std::cout);
+  void displayVersion(std::ostream& output = std::cout);
 
   /// Initialize launcher by extracting associated name and directory, and
   /// configuring the command line parser.
