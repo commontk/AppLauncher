@@ -72,7 +72,7 @@ public:
     ArgToFilterType(const QString& arg, ctkAppArguments::ArgToFilterOptions options = ARG_TO_FILTER_NO_VALUE) :
       Superclass(arg, options){}
   };
-  typedef QList< ArgToFilterType > ArgToFilterListType;
+  typedef QList<ArgToFilterType> ArgToFilterListType;
 
   void addArgumentToFilter(const ArgToFilterType& argToFilter);
 
