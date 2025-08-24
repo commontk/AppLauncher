@@ -25,7 +25,7 @@ class ctkInteractiveProcess : public QProcess
 {
   static int StdinClone;
 public:
-  ctkInteractiveProcess(QObject *parent = 0);
+  ctkInteractiveProcess(QObject* parent = 0);
 protected:
   virtual void setupChildProcess();
 };

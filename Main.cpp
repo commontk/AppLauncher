@@ -187,7 +187,7 @@ int appLauncherMain(int argc, char** argv)
 // --------------------------------------------------------------------------
 #ifndef CTKAPPLAUNCHER_WITHOUT_CONSOLE_IO_SUPPORT
 // NOTE: On Windows, wmain should be used to allow non-ASCII characters in command-line arguments
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
   // Uncomment the next two lines to stop at application start (to give a chance to connect with a debugger)
   // std::cout << "Attach debugger and hit Enter" << std::endl;
@@ -208,7 +208,7 @@ int __stdcall wWinMain(HINSTANCE hInstance,
   Q_UNUSED(nShowCmd);
 
   int argc;
-  char **argv;
+  char** argv;
   ctkCommandLineParser::convertWindowsCommandLineToUnixArguments(lpCmdLine, &argc, &argv);
 
   int ret = appLauncherMain(argc, argv);

@@ -22,7 +22,7 @@
 #include <QtTest/QtTest>
 
 #define CTK_TEST_NOOP_MAIN(TestObject) \
-int TestObject(int argc, char *argv[]) \
+int TestObject(int argc, char* argv[]) \
 { \
     QObject tc; \
     return QTest::qExec(&tc, argc, argv); \
@@ -42,7 +42,7 @@ int TestObject(int argc, char *argv[]) \
 
 //-----------------------------------------------------------------------------
 #define CTK_TEST_MAIN(TestObject) \
-  int TestObject(int argc, char *argv[]) \
+  int TestObject(int argc, char* argv[]) \
   { \
     CTK_TEST_SKIP_NIB_MENU_LOADER \
     QApplication app(argc, argv); \
@@ -54,7 +54,7 @@ int TestObject(int argc, char *argv[]) \
 
 //-----------------------------------------------------------------------------
 #define CTK_TEST_MAIN(TestObject) \
-  int TestObject(int argc, char *argv[]) \
+  int TestObject(int argc, char* argv[]) \
   { \
     QCoreApplication app(argc, argv); \
     QTEST_DISABLE_KEYPAD_NAVIGATION \
@@ -66,7 +66,7 @@ int TestObject(int argc, char *argv[]) \
 
 namespace ctkTest
 {
-static void mouseEvent(QTest::MouseAction action, QWidget *widget, Qt::MouseButton button,
+static void mouseEvent(QTest::MouseAction action, QWidget* widget, Qt::MouseButton button,
                        Qt::KeyboardModifiers stateKey, QPoint pos, int delay=-1)
 {
   if (action != QTest::MouseMove)
@@ -95,14 +95,14 @@ static void mouseEvent(QTest::MouseAction action, QWidget *widget, Qt::MouseButt
   QSpontaneKeyEvent::setSpontaneous(&me);
   if (!qApp->notify(widget, &me))
   {
-    static const char *mouseActionNames[] =
+    static const char* mouseActionNames[] =
         { "MousePress", "MouseRelease", "MouseClick", "MouseDClick", "MouseMove" };
     QString warning = QLatin1String("Mouse event \"%1\" not accepted by receiving widget");
     QTest::qWarn(warning.arg(QLatin1String(mouseActionNames[static_cast<int>(action)])).toLocal8Bit());
   }
 }
 
-inline void mouseMove(QWidget *widget, Qt::MouseButton button, Qt::KeyboardModifiers stateKey = 0,
+inline void mouseMove(QWidget* widget, Qt::MouseButton button, Qt::KeyboardModifiers stateKey = 0,
                       QPoint pos = QPoint(), int delay=-1)
   { ctkTest::mouseEvent(QTest::MouseMove, widget, button, stateKey, pos, delay); }
 
