@@ -208,7 +208,7 @@ QString CommandLineParserArgumentDescription::helpText(int fieldWidth, const cha
     shortAndLongArg += QString("%1%2").arg(this->LongArgPrefix).arg(this->LongArg);
   }
 
-  if(!this->ArgHelp.isEmpty())
+  if (!this->ArgHelp.isEmpty())
   {
     stream.setFieldWidth(fieldWidth);
   }
@@ -347,7 +347,7 @@ QHash<QString, QVariant> ctkCommandLineParser::parseArguments(const QStringList&
   bool useSettings = this->Internal->UseQSettings;
   CommandLineParserArgumentDescription * currentArgDesc = 0;
   QList<CommandLineParserArgumentDescription*> parsedArgDescriptions;
-  for(int i = 1; i < arguments.size(); ++i)
+  for (int i = 1; i < arguments.size(); ++i)
   {
     QString argument = arguments.at(i);
     if (this->Internal->Debug) { qDebug() << "Processing" << argument; }
@@ -437,7 +437,7 @@ QHash<QString, QVariant> ctkCommandLineParser::parseArguments(const QStringList&
       {
         QString missingParameterError =
             "Argument %1 has %2 value(s) associated whereas exactly %3 are expected.";
-        for(int j=1; j <= numberOfParametersToProcess; ++j)
+        for (int j=1; j <= numberOfParametersToProcess; ++j)
         {
           if (i + j >= arguments.size())
           {
@@ -483,7 +483,7 @@ QHash<QString, QVariant> ctkCommandLineParser::parseArguments(const QStringList&
           qDebug() << "  Processing StringList ...";
         }
         int j = 1;
-        while(j + i < arguments.size())
+        while (j + i < arguments.size())
         {
           if (this->Internal->argumentDescription(arguments.at(j + i)) != 0)
           {
@@ -632,7 +632,7 @@ QHash<QString, QVariant> ctkCommandLineParser::parseArguments(int argc, char** a
   QStringList arguments;
 
   // Create a QStringList of arguments
-  for(int i = 0; i < argc; ++i)
+  for (int i = 0; i < argc; ++i)
   {
     arguments << argv[i];
   }
@@ -785,14 +785,14 @@ QString ctkCommandLineParser::helpText(const char charPad) const
   // Loop over grouped argument descriptions
   QMapIterator<QString, QList<CommandLineParserArgumentDescription*>> it(
       this->Internal->GroupToArgumentDescriptionListMap);
-  while(it.hasNext())
+  while (it.hasNext())
   {
     it.next();
     if (!it.key().isEmpty())
     {
       stream << "\n" << it.key() << "\n";
     }
-    foreach(CommandLineParserArgumentDescription* argDesc, it.value())
+    foreach (CommandLineParserArgumentDescription* argDesc, it.value())
     {
       if (argDesc->Deprecated)
       {
@@ -823,7 +823,7 @@ QString ctkCommandLineParser::helpText(const char charPad) const
   if (!deprecatedArgs.empty())
   {
     stream << "\nDeprecated arguments:\n";
-    foreach(CommandLineParserArgumentDescription* argDesc, deprecatedArgs)
+    foreach (CommandLineParserArgumentDescription* argDesc, deprecatedArgs)
     {
       stream << argDesc->helpText(this->Internal->FieldWidth, charPad);
     }

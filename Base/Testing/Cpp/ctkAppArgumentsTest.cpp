@@ -178,14 +178,14 @@ void ctkAppArgumentsTester::testArgumentValues()
   ctkChar2DArray inputArgv(inputArguments);
 
   ctkAppArguments appArguments(inputArgv.count(), inputArgv.values());
-  foreach(const Self::ArgToFilterType& argToFilter, argToFilterList)
+  foreach (const Self::ArgToFilterType& argToFilter, argToFilterList)
   {
     appArguments.addArgumentToFilter(argToFilter);
   }
 
   char** filtedArgumentsAsCharStarArray = appArguments.argumentValues(QFlags<ctkAppArguments::ArgListType>(filteringOption));
   QStringList filtedArguments;
-  for(int index = 0; index < appArguments.argumentCount(QFlags<ctkAppArguments::ArgListType>(filteringOption)); ++index)
+  for (int index = 0; index < appArguments.argumentCount(QFlags<ctkAppArguments::ArgListType>(filteringOption)); ++index)
   {
     filtedArguments << filtedArgumentsAsCharStarArray[index];
   }
@@ -209,7 +209,7 @@ void ctkAppArgumentsTester::testArgumentCount()
   ctkChar2DArray inputArgv(inputArguments);
 
   ctkAppArguments appArguments(inputArgv.count(), inputArgv.values());
-  foreach(const Self::ArgToFilterType& argToFilter, argToFilterList)
+  foreach (const Self::ArgToFilterType& argToFilter, argToFilterList)
   {
     appArguments.addArgumentToFilter(argToFilter);
   }
@@ -267,7 +267,7 @@ void ctkAppArgumentsTester::testAddArgumentToFilter()
   ctkAppArguments appArguments(inputArgv.count(), inputArgv.values());
   QVERIFY(appArguments.argumentToFilterList().isEmpty());
 
-  foreach(const ArgToFilterType& argToFilter, argToFilterList)
+  foreach (const ArgToFilterType& argToFilter, argToFilterList)
   {
     appArguments.addArgumentToFilter(argToFilter);
   }

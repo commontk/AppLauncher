@@ -197,7 +197,7 @@ bool ctkAppLauncherPrivate::processUserAdditionalSettings()
   }
 
   QString additionalSettings = this->findUserAdditionalSettings();
-  if(additionalSettings.isEmpty())
+  if (additionalSettings.isEmpty())
   {
     return true;
   }
@@ -301,7 +301,7 @@ bool ctkAppLauncherPrivate::processApplicationToLaunchArgument()
 // --------------------------------------------------------------------------
 bool ctkAppLauncherPrivate::processExtraApplicationToLaunchArgument(const QStringList& unparsedArgs)
 {
-  foreach(const QString& extraAppLongArgument, this->ExtraApplicationToLaunchList.keys())
+  foreach (const QString& extraAppLongArgument, this->ExtraApplicationToLaunchList.keys())
   {
     ctkAppLauncherPrivate::ExtraApplicationToLaunchProperty extraAppToLaunchProperty =
         this->ExtraApplicationToLaunchList[extraAppLongArgument];
@@ -328,7 +328,7 @@ QString ctkAppLauncherPrivate::invalidSettingsMessage() const
 {
   QString msg = QString("Launcher setting file [%1LauncherSettings.ini] does NOT exist in "
                         "any of these directories:\n").arg(this->LauncherName);
-  foreach(const QString& subdir, this->LauncherSettingSubDirs)
+  foreach (const QString& subdir, this->LauncherSettingSubDirs)
   {
     msg.append(QString("%1/%2\n").arg(this->LauncherDir).arg(subdir));
   }
@@ -356,7 +356,7 @@ QString ctkAppLauncherPrivate::splashImagePath()const
 bool ctkAppLauncherPrivate::disableSplash() const
 {
   bool hasNoSplashArgument = false;
-  foreach(const QString& arg, this->LauncherAdditionalNoSplashArguments)
+  foreach (const QString& arg, this->LauncherAdditionalNoSplashArguments)
   {
 
     if (this->Parser.unparsedArguments().contains(arg) ||
@@ -383,10 +383,10 @@ QString ctkAppLauncherPrivate::searchPaths(const QString& executableName, const 
 {
   QStringList paths = this->SystemEnvironment.value(this->PathVariableName).split(this->PathSep);
   paths = this->ListOfPaths + paths;
-  foreach(const QString& path, paths)
+  foreach (const QString& path, paths)
   {
     QString expandedPath = this->expandValue(path);
-    foreach(const QString& extension, extensions)
+    foreach (const QString& extension, extensions)
     {
       QString executableNameWithExt = executableName;
       if (!extension.isEmpty())
@@ -435,7 +435,7 @@ bool ctkAppLauncherPrivate::extractLauncherNameAndDir(const QString& application
   if (!fileInfo.exists())
   {
     QStringList paths = this->SystemEnvironment.value(this->PathVariableName).split(this->PathSep);
-    foreach(const QString& path, paths)
+    foreach (const QString& path, paths)
     {
       QString executablePath = QDir(path).filePath(fileInfo.fileName());
       QString msg = QString("Checking if [%1] exists in [%2]").arg(fileInfo.fileName()).arg(path);
@@ -503,7 +503,7 @@ void ctkAppLauncherPrivate::buildEnvironment(QProcessEnvironment& env)
 
   this->reportInfo(QString("<APPLAUNCHER_DIR> -> [%1]").arg(this->LauncherDir));
   this->reportInfo(QString("<APPLAUNCHER_NAME> -> [%1]").arg(this->LauncherName));
-  foreach(const Self::SettingsType& settingsType, this->LauncherSettingsDirs.keys())
+  foreach (const Self::SettingsType& settingsType, this->LauncherSettingsDirs.keys())
   {
     ScopedLauncherSettingsDir scopedLauncherSettingsDir(this, settingsType);
     Q_UNUSED(scopedLauncherSettingsDir);
@@ -512,14 +512,14 @@ void ctkAppLauncherPrivate::buildEnvironment(QProcessEnvironment& env)
   }
   this->reportInfo(QString("<PATHSEP> -> [%1]").arg(this->PathSep));
 
-  if(this->LoadEnvironment >= 0)
+  if (this->LoadEnvironment >= 0)
   {
     env = ctkAppLauncherEnvironment::environment(this->LoadEnvironment);
   }
 
   // Regular environment variables
   QHash<QString, QString> envVars = q->envVars();
-  foreach(const QString& key, envVars.keys())
+  foreach (const QString& key, envVars.keys())
   {
     this->reportInfo(QString("Setting env. variable [%1]:%2").arg(key, envVars[key]));
     env.insert(key, envVars[key]);
@@ -527,7 +527,7 @@ void ctkAppLauncherPrivate::buildEnvironment(QProcessEnvironment& env)
 
   // Path environment variables
   QHash<QString, QStringList> pathsEnvVars = q->pathsEnvVars();
-  foreach(const QString& key, pathsEnvVars.keys())
+  foreach (const QString& key, pathsEnvVars.keys())
   {
     const QStringList& paths = pathsEnvVars[key];
     QString value = paths.join(this->PathSep);
@@ -540,7 +540,7 @@ void ctkAppLauncherPrivate::buildEnvironment(QProcessEnvironment& env)
   }
 
   // Do not save environment if one should be loaded
-  if(this->LoadEnvironment >= 0)
+  if (this->LoadEnvironment >= 0)
   {
     return;
   }
@@ -583,7 +583,7 @@ bool ctkAppLauncherPrivate::readSettings(const QString& fileName, int settingsTy
 
   this->LoadEnvironment = settings.value("launcherLoadEnvironment", -1).toInt();
 
-  if(settingsType == Self::RegularSettings)
+  if (settingsType == Self::RegularSettings)
   {
     // Read "user additional settings" and "additional settings" info
     this->readUserAdditionalSettingsInfo(settings);
@@ -650,7 +650,7 @@ bool ctkAppLauncherPrivate::readSettings(const QString& fileName, int settingsTy
     // Read list of 'extra application to launch'
     settings.beginGroup("ExtraApplicationToLaunch");
     QStringList extraApplicationToLaunchLongArguments = settings.childGroups();
-    foreach(const QString& extraApplicationLongArgument, extraApplicationToLaunchLongArguments)
+    foreach (const QString& extraApplicationLongArgument, extraApplicationToLaunchLongArguments)
     {
       this->ExtraApplicationToLaunchList[extraApplicationLongArgument] =
           ctk::readKeyValuePairs(settings, extraApplicationLongArgument);
@@ -681,7 +681,7 @@ void ctkAppLauncherPrivate::runProcess()
   this->reportInfo(QString("Starting [%1]").arg(this->ApplicationToLaunch));
   if (this->verbose())
   {
-    foreach(const QString& argument, this->ApplicationToLaunchArguments)
+    foreach (const QString& argument, this->ApplicationToLaunchArguments)
     {
       this->reportInfo(QString("argument [%1]").arg(argument));
     }
@@ -736,7 +736,7 @@ void ctkAppLauncherPrivate::applicationStarted()
 {
   this->reportInfo(
     QString("DisableSplash [%1]").arg(this->disableSplash()));
-  if(!this->disableSplash())
+  if (!this->disableSplash())
   {
     this->SplashPixmap.reset(
       new QPixmap(this->splashImagePath()));
@@ -785,7 +785,7 @@ void ctkAppLauncher::displayEnvironment(std::ostream& output)
   {
     output << qPrintable(envArg) << std::endl;
   }
-  if(envAsList.isEmpty())
+  if (envAsList.isEmpty())
   {
     output << "(No environment to display)" << std::endl;
   }
@@ -821,7 +821,7 @@ void ctkAppLauncher::generateEnvironmentScript(QTextStream& output, bool posix)
   const QString appendFormat(appendFormatPosix);
 #endif
 
-  foreach(const QString& key, envKeys)
+  foreach (const QString& key, envKeys)
   {
     const QString pair = QString("%1=%2").arg(key, env.value(key));
     if (appendVars.contains(key))
@@ -896,7 +896,7 @@ void ctkAppLauncher::displayHelp(std::ostream& output)
   }
 
   // Add "extra application to launch" arguments so that helpText() consider them.
-  foreach(const QString& extraAppLongArgument, d->ExtraApplicationToLaunchList.keys())
+  foreach (const QString& extraAppLongArgument, d->ExtraApplicationToLaunchList.keys())
   {
     ctkAppLauncherPrivate::ExtraApplicationToLaunchProperty extraAppToLaunchProperty =
         d->ExtraApplicationToLaunchList[extraAppLongArgument];
@@ -1218,7 +1218,7 @@ QString ctkAppLauncher::findSettingsFile()const
     return QString();
   }
 
-  foreach(const QString& subdir, d->LauncherSettingSubDirs)
+  foreach (const QString& subdir, d->LauncherSettingSubDirs)
   {
     QString fileName = QString("%1/%2/%3LauncherSettings.ini").
                        arg(d->LauncherDir).arg(subdir).
@@ -1264,7 +1264,7 @@ bool ctkAppLauncher::writeSettings(const QString& outputFilePath)
   ctk::writeKeyValuePairs(settings, applicationGroup, "Application");
 
   settings.beginGroup("ExtraApplicationToLaunch");
-  foreach(const QString& extraAppLongArgument, d->ExtraApplicationToLaunchList.keys())
+  foreach (const QString& extraAppLongArgument, d->ExtraApplicationToLaunchList.keys())
   {
     ctkAppLauncherPrivate::ExtraApplicationToLaunchProperty extraAppToLaunchProperty =
         d->ExtraApplicationToLaunchList.value(extraAppLongArgument);

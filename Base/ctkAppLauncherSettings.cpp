@@ -78,7 +78,7 @@ QString ctkAppLauncherSettingsPrivate::findUserAdditionalSettings()const
   QFileInfo fileInfo(QSettings().fileName());
   candidateUserAdditionalSettingsDirs << fileInfo.path();
 
-  foreach(QString candidateUserAdditionalSettingsDir, candidateUserAdditionalSettingsDirs)
+  foreach (QString candidateUserAdditionalSettingsDir, candidateUserAdditionalSettingsDirs)
   {
     QString fileName = QDir(candidateUserAdditionalSettingsDir).filePath(QString("%1%2%3.ini").
         arg(prefix).
@@ -140,7 +140,7 @@ QStringList ctkAppLauncherSettingsPrivate::updateSettingDirPlaceHolder(
     const QStringList& values, const ctkAppLauncherSettingsPrivate::SettingsType& settingsType)
 {
   QStringList updatedValues;
-  foreach(const QString& value, values)
+  foreach (const QString& value, values)
   {
     updatedValues.append(Self::updateSettingDirPlaceHolder(value, settingsType));
   }
@@ -151,11 +151,11 @@ QStringList ctkAppLauncherSettingsPrivate::updateSettingDirPlaceHolder(
 bool ctkAppLauncherSettingsPrivate::checkSettings(const QString& fileName, int settingsType)
 {
   QString settingsTypeDesc;
-  if(settingsType == Self::AdditionalSettings)
+  if (settingsType == Self::AdditionalSettings)
   {
     settingsTypeDesc = QLatin1String(" additional");
   }
-  if(settingsType == Self::UserAdditionalSettings)
+  if (settingsType == Self::UserAdditionalSettings)
   {
     settingsTypeDesc = QLatin1String(" user additional");
   }
@@ -223,7 +223,7 @@ void ctkAppLauncherSettingsPrivate::readPathSettings(QSettings& settings, const 
   if (!excludeGroups.contains("EnvironmentVariables"))
   {
     mapOfEnvVars = ctk::readKeyValuePairs(settings, "EnvironmentVariables");
-    foreach(const QString& envVarName, mapOfEnvVars.keys())
+    foreach (const QString& envVarName, mapOfEnvVars.keys())
     {
       this->MapOfEnvVars.insert(envVarName, mapOfEnvVars[envVarName]);
     }
@@ -274,7 +274,7 @@ void ctkAppLauncherSettingsPrivate::readPathSettings(QSettings& settings, const 
       settings.endGroup();
     }
 
-    foreach(const QString& envVarName, this->AdditionalPathVariables)
+    foreach (const QString& envVarName, this->AdditionalPathVariables)
     {
       if (!envVarName.isEmpty())
       {
@@ -349,7 +349,7 @@ QString ctkAppLauncherSettingsPrivate::expandPlaceHolders(const QString& value) 
   keyValueMap["<PATHSEP>"] = this->PathSep;
 
   QString updatedValue = value;
-  foreach(const QString& key, keyValueMap.keys())
+  foreach (const QString& key, keyValueMap.keys())
   {
     updatedValue.replace(key, keyValueMap.value(key), Qt::CaseInsensitive);
   }
@@ -363,7 +363,7 @@ void ctkAppLauncherSettingsPrivate::expandEnvVars(const QStringList& envVarNames
 
   QHash<QString, QString> expanded = this->MapOfEnvVars;
 
-  foreach(const QString& key, this->MapOfEnvVars.keys())
+  foreach (const QString& key, this->MapOfEnvVars.keys())
   {
     QString value = this->MapOfEnvVars[key];
     QRegularExpressionMatchIterator iter = regex.globalMatch(value);
@@ -395,7 +395,7 @@ void ctkAppLauncherSettingsPrivate::expandEnvVars(const QStringList& envVarNames
   }
 
   // Update only variables explicitly listed in the settings
-  foreach(const QString& envVarName, envVarNames)
+  foreach (const QString& envVarName, envVarNames)
   {
     this->MapOfExpandedEnvVars[envVarName] = expanded[envVarName];
   }
@@ -501,7 +501,7 @@ bool ctkAppLauncherSettings::readSettings(const QString& fileName)
 
   // Read user additional settings
   QString userAdditionalSettingsFileName = this->findUserAdditionalSettings();
-  if(!userAdditionalSettingsFileName.isEmpty())
+  if (!userAdditionalSettingsFileName.isEmpty())
   {
     if (!d->checkSettings(userAdditionalSettingsFileName, ctkAppLauncherSettingsPrivate::UserAdditionalSettings))
     {
@@ -515,7 +515,7 @@ bool ctkAppLauncherSettings::readSettings(const QString& fileName)
   }
 
   // Read additional settings
-  if(!this->additionalSettingsFilePath().isEmpty())
+  if (!this->additionalSettingsFilePath().isEmpty())
   {
     if (!d->checkSettings(this->additionalSettingsFilePath(), ctkAppLauncherSettingsPrivate::AdditionalSettings))
     {
@@ -574,7 +574,7 @@ QStringList ctkAppLauncherSettings::libraryPaths(bool expand /* = true */)const
 {
   Q_D(const ctkAppLauncherSettings);
   QStringList expanded;
-  foreach(const QString& path, d->ListOfLibraryPaths)
+  foreach (const QString& path, d->ListOfLibraryPaths)
   {
     expanded << (expand ? d->resolvePath(d->expandValue(path)) : path);
   }
@@ -586,7 +586,7 @@ QStringList ctkAppLauncherSettings::paths(bool expand /* = true */)const
 {
   Q_D(const ctkAppLauncherSettings);
   QStringList expanded;
-  foreach(const QString& path, d->ListOfPaths)
+  foreach (const QString& path, d->ListOfPaths)
   {
     expanded << (expand ? d->resolvePath(d->expandValue(path)) : path);
   }
@@ -641,7 +641,7 @@ QStringList ctkAppLauncherSettings::additionalPaths(const QString& variableName,
 {
   Q_D(const ctkAppLauncherSettings);
   QStringList expanded;
-  foreach(const QString& path, d->MapOfPathVars.value(variableName))
+  foreach (const QString& path, d->MapOfPathVars.value(variableName))
   {
     expanded << (expand ? d->resolvePath(d->expandValue(path)) : path);
   }
@@ -653,7 +653,7 @@ QHash<QString, QStringList> ctkAppLauncherSettings::additionalPathsVars(bool exp
 {
   Q_D(const ctkAppLauncherSettings);
   QHash<QString, QStringList> newVars;
-  foreach(const QString& varName, d->MapOfPathVars.keys())
+  foreach (const QString& varName, d->MapOfPathVars.keys())
   {
     newVars.insert(varName, this->additionalPaths(varName, expand));
   }
