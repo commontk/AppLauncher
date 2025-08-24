@@ -305,14 +305,14 @@ public:
    *
    * @return The long prefix
    */
-  QString longPrefix()const;
+  QString longPrefix() const;
 
   /**
    * Expected prefix in front of short argument.
    *
    * @return The short prefix
    */
-  QString shortPrefix()const;
+  QString shortPrefix() const;
 
   /**
    * Begins a new group for documenting arguments. All newly added arguments via

@@ -342,7 +342,7 @@ bool ctkAppLauncherPrivate::verbose() const
 }
 
 // --------------------------------------------------------------------------
-QString ctkAppLauncherPrivate::splashImagePath()const
+QString ctkAppLauncherPrivate::splashImagePath() const
 {
   if (!this->Initialized)
   {
@@ -1000,7 +1000,7 @@ void ctkAppLauncher::setApplication(const QCoreApplication& app)
 }
 
 // --------------------------------------------------------------------------
-QStringList ctkAppLauncher::arguments()const
+QStringList ctkAppLauncher::arguments() const
 {
   Q_D(const ctkAppLauncher);
   return d->Arguments;
@@ -1210,7 +1210,7 @@ int ctkAppLauncher::processArguments()
 }
 
 // --------------------------------------------------------------------------
-QString ctkAppLauncher::findSettingsFile()const
+QString ctkAppLauncher::findSettingsFile() const
 {
   Q_D(const ctkAppLauncher);
   if (!d->Initialized)
@@ -1280,21 +1280,21 @@ bool ctkAppLauncher::writeSettings(const QString& outputFilePath)
 }
 
 // --------------------------------------------------------------------------
-QString ctkAppLauncher::applicationToLaunch()const
+QString ctkAppLauncher::applicationToLaunch() const
 {
   Q_D(const ctkAppLauncher);
   return d->ApplicationToLaunch;
 }
 
 // --------------------------------------------------------------------------
-QString ctkAppLauncher::splashImagePath()const
+QString ctkAppLauncher::splashImagePath() const
 {
   Q_D(const ctkAppLauncher);
   return d->splashImagePath();
 }
 
 // --------------------------------------------------------------------------
-int ctkAppLauncher::splashScreenHideDelayMs()const
+int ctkAppLauncher::splashScreenHideDelayMs() const
 {
   Q_D(const ctkAppLauncher);
   if (!d->Initialized)
@@ -1313,7 +1313,7 @@ bool ctkAppLauncher::disableSplash() const
 }
 
 // --------------------------------------------------------------------------
-bool ctkAppLauncher::verbose()const
+bool ctkAppLauncher::verbose() const
 {
   Q_D(const ctkAppLauncher);
   return d->verbose();

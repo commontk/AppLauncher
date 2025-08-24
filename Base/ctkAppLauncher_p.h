@@ -42,10 +42,10 @@ public:
   typedef ctkAppLauncherSettingsPrivate Superclass;
 
   /// Display error on Standard Error
-  void reportError(const QString& msg)const;
+  void reportError(const QString& msg) const;
 
   /// Display status on Standard Output
-  void reportInfo(const QString& msg, bool force = false)const;
+  void reportInfo(const QString& msg, bool force = false) const;
 
   /// Exit the application if the application has been set.
   /// \sa ctkAppLauncher::setApplication
@@ -92,10 +92,10 @@ public:
   /// \sa ctkAppLauncherSettings::envVars(), ctkAppLauncherSettings::pathsEnvVars()
   void buildEnvironment(QProcessEnvironment&);
 
-  QString invalidSettingsMessage()const;
-  bool verbose()const;
-  QString splashImagePath()const;
-  bool disableSplash()const;
+  QString invalidSettingsMessage() const;
+  bool verbose() const;
+  QString splashImagePath() const;
+  bool disableSplash() const;
 
   QString searchPaths(const QString& programName, const QStringList& extensions);
 

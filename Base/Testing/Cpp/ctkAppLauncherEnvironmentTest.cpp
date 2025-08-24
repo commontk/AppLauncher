@@ -10,7 +10,7 @@
 #include <QProcessEnvironment>
 
 // ----------------------------------------------------------------------------
-class ctkAppLauncherEnvironmentTester: public QObject
+class ctkAppLauncherEnvironmentTester : public QObject
 {
   Q_OBJECT
 
