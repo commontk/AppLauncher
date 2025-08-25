@@ -698,7 +698,9 @@ void ctkCommandLineParser::addArgument(const QString& longarg,
 
   Q_ASSERT_X(!defaultValue.isValid() || defaultValue.type() == type, "addArgument", "defaultValue type does not match");
   if (defaultValue.isValid() && defaultValue.type() != type)
+  {
     throw std::logic_error("The QVariant type of defaultValue does not match the specified type");
+  }
 
   /* Make sure it's not already added */
   bool added = this->Internal->ArgNameToArgumentDescriptionMap.contains(longarg);
