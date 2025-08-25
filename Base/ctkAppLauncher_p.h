@@ -24,8 +24,10 @@ class QCoreApplication;
 class ctkInteractiveProcess : public QProcess
 {
   static int StdinClone;
+
 public:
   ctkInteractiveProcess(QObject* parent = 0);
+
 protected:
   virtual void setupChildProcess();
 };
@@ -37,7 +39,7 @@ class ctkAppLauncherPrivate : public ctkAppLauncherSettingsPrivate
   Q_DECLARE_PUBLIC(ctkAppLauncher)
 public:
   ctkAppLauncherPrivate(ctkAppLauncher& object);
-  ~ctkAppLauncherPrivate(){}
+  ~ctkAppLauncherPrivate() {}
   typedef ctkAppLauncherPrivate Self;
   typedef ctkAppLauncherSettingsPrivate Superclass;
 
@@ -86,9 +88,11 @@ public:
   /// If the internal variable \c LoadEnvironment was set to value >=0, environment
   /// values are restored using ctkAppLauncherEnvironment::environment(int requestedLevel).
   ///
-  /// Otherwise, the environment is saved using ctkAppLauncherEnvironment::saveEnvironment(const QProcessEnvironment& systemEnvironment, const QStringList& variables, QProcessEnvironment& env)
+  /// Otherwise, the environment is saved using ctkAppLauncherEnvironment::saveEnvironment(const QProcessEnvironment& systemEnvironment, const QStringList& variables,
+  /// QProcessEnvironment& env)
   ///
-  /// \sa ctkAppLauncherEnvironment::environment(int requestedLevel), ctkAppLauncherEnvironment::saveEnvironment(const QProcessEnvironment& systemEnvironment, const QStringList& variables, QProcessEnvironment& env)
+  /// \sa ctkAppLauncherEnvironment::environment(int requestedLevel), ctkAppLauncherEnvironment::saveEnvironment(const QProcessEnvironment& systemEnvironment, const QStringList&
+  /// variables, QProcessEnvironment& env)
   /// \sa ctkAppLauncherSettings::envVars(), ctkAppLauncherSettings::pathsEnvVars()
   void buildEnvironment(QProcessEnvironment&);
 
@@ -111,7 +115,7 @@ public slots:
   void terminateProcess();
 
   /// Slot called when the ApplicationToLaunch process is terminated
-  void applicationFinished(int exitCode, QProcess::ExitStatus  exitStatus);
+  void applicationFinished(int exitCode, QProcess::ExitStatus exitStatus);
 
   /// Slot called when the ApplicationToLaunch process is started
   void applicationStarted();

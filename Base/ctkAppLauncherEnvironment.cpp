@@ -18,6 +18,7 @@ class ctkAppLauncherEnvironmentPrivate
   Q_DECLARE_PUBLIC(ctkAppLauncherEnvironment)
 protected:
   ctkAppLauncherEnvironment* q_ptr;
+
 public:
   ctkAppLauncherEnvironmentPrivate(ctkAppLauncherEnvironment& object);
 
@@ -37,15 +38,14 @@ ctkAppLauncherEnvironmentPrivate::ctkAppLauncherEnvironmentPrivate(ctkAppLaunche
 // ctkAppLauncherEnvironment
 
 // --------------------------------------------------------------------------
-ctkAppLauncherEnvironment::ctkAppLauncherEnvironment(QObject* parentObject) :
-  Superclass(parentObject), d_ptr(new ctkAppLauncherEnvironmentPrivate(*this))
+ctkAppLauncherEnvironment::ctkAppLauncherEnvironment(QObject* parentObject)
+  : Superclass(parentObject)
+  , d_ptr(new ctkAppLauncherEnvironmentPrivate(*this))
 {
 }
 
 // --------------------------------------------------------------------------
-ctkAppLauncherEnvironment::~ctkAppLauncherEnvironment()
-{
-}
+ctkAppLauncherEnvironment::~ctkAppLauncherEnvironment() {}
 
 // --------------------------------------------------------------------------
 int ctkAppLauncherEnvironment::currentLevel()
@@ -112,8 +112,7 @@ QProcessEnvironment ctkAppLauncherEnvironment::environment(int requestedLevel)
   auto variablesToRemove = currentSet - requestedSet;
 #else
   QSet<QString> variablesToRemove =
-      ctkAppLauncherEnvironment::excludeReservedVariableNames(currentEnvKeys).toSet()
-      - ctkAppLauncherEnvironment::excludeReservedVariableNames(requestedEnvKeys).toSet();
+    ctkAppLauncherEnvironment::excludeReservedVariableNames(currentEnvKeys).toSet() - ctkAppLauncherEnvironment::excludeReservedVariableNames(requestedEnvKeys).toSet();
 #endif
   foreach (const QString& varname, variablesToRemove.values())
   {
@@ -133,8 +132,7 @@ void ctkAppLauncherEnvironment::saveEnvironment( //
   int launcher_level = 1;
   if (systemEnvironment.contains("APPLAUNCHER_LEVEL"))
   {
-    launcher_level =
-        systemEnvironment.value("APPLAUNCHER_LEVEL").toInt() + 1;
+    launcher_level = systemEnvironment.value("APPLAUNCHER_LEVEL").toInt() + 1;
   }
   env.insert("APPLAUNCHER_LEVEL", QString("%1").arg(launcher_level));
 
@@ -162,7 +160,7 @@ void ctkAppLauncherEnvironment::updateCurrentEnvironment(const QProcessEnvironme
 
   // Unset variables not found in the provided environment
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
-  QStringList variablesToUnset = (QSet<QString> (curKeys.begin(), curKeys.end()) - QSet<QString> (envKeys.begin(), envKeys.end())).values();
+  QStringList variablesToUnset = (QSet<QString>(curKeys.begin(), curKeys.end()) - QSet<QString>(envKeys.begin(), envKeys.end())).values();
 #else
   QStringList variablesToUnset = (curKeys.toSet() - envKeys.toSet()).toList();
 #endif
@@ -186,8 +184,7 @@ void ctkAppLauncherEnvironment::updateCurrentEnvironment(const QProcessEnvironme
     bool success = qputenv(varName.toLocal8Bit(), varValue.toLocal8Bit());
     if (!success)
     {
-      qWarning() << "Failed to set environment variable"
-                 << varName << "=" << varValue;
+      qWarning() << "Failed to set environment variable" << varName << "=" << varValue;
     }
   }
 }

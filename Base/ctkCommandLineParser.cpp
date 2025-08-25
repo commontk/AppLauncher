@@ -33,8 +33,8 @@
 // CTK includes
 #include "ctkCommandLineParser.h"
 
-#if defined (_WIN32)
-#include <windows.h>
+#if defined(_WIN32)
+# include <windows.h>
 #endif
 
 namespace
@@ -43,16 +43,26 @@ namespace
 class CommandLineParserArgumentDescription
 {
 public:
-  CommandLineParserArgumentDescription(
-    const QString& longArg, const QString& longArgPrefix,
-    const QString& shortArg, const QString& shortArgPrefix,
-    QVariant::Type type, const QString& argHelp,
-    const QVariant& defaultValue, bool ignoreRest,
-    bool deprecated)
-      : LongArg(longArg), LongArgPrefix(longArgPrefix),
-      ShortArg(shortArg), ShortArgPrefix(shortArgPrefix),
-      ArgHelp(argHelp), IgnoreRest(ignoreRest), NumberOfParametersToProcess(0),
-      Deprecated(deprecated), DefaultValue(defaultValue), Value(type), ValueType(type)
+  CommandLineParserArgumentDescription(const QString& longArg,
+                                       const QString& longArgPrefix,
+                                       const QString& shortArg,
+                                       const QString& shortArgPrefix,
+                                       QVariant::Type type,
+                                       const QString& argHelp,
+                                       const QVariant& defaultValue,
+                                       bool ignoreRest,
+                                       bool deprecated)
+    : LongArg(longArg)
+    , LongArgPrefix(longArgPrefix)
+    , ShortArg(shortArg)
+    , ShortArgPrefix(shortArgPrefix)
+    , ArgHelp(argHelp)
+    , IgnoreRest(ignoreRest)
+    , NumberOfParametersToProcess(0)
+    , Deprecated(deprecated)
+    , DefaultValue(defaultValue)
+    , Value(type)
+    , ValueType(type)
   {
     if (defaultValue.isValid())
     {
@@ -66,40 +76,38 @@ public:
         NumberOfParametersToProcess = 1;
         RegularExpression = ".*";
       }
-        break;
+      break;
       case QVariant::Bool:
       {
         NumberOfParametersToProcess = 0;
         RegularExpression = "";
       }
-        break;
+      break;
       case QVariant::StringList:
       {
         NumberOfParametersToProcess = -1;
         RegularExpression = ".*";
       }
-        break;
+      break;
       case QVariant::Int:
       {
         NumberOfParametersToProcess = 1;
         RegularExpression = "-?[0-9]+";
         ExactMatchFailedMessage = "A negative or positive integer is expected.";
       }
-        break;
+      break;
       case QVariant::Double:
       {
         NumberOfParametersToProcess = 1;
         RegularExpression = "-?[0-9]*\\.?[0-9]+";
         ExactMatchFailedMessage = "A double is expected.";
       }
-        break;
-      default:
-        ExactMatchFailedMessage = QString("Type %1 not supported.").arg(static_cast<int>(type));
+      break;
+      default: ExactMatchFailedMessage = QString("Type %1 not supported.").arg(static_cast<int>(type));
     }
-
   }
 
-  ~CommandLineParserArgumentDescription(){}
+  ~CommandLineParserArgumentDescription() {}
 
   bool addParameter(const QString& value);
 
@@ -110,14 +118,14 @@ public:
   QString ShortArg;
   QString ShortArgPrefix;
   QString ArgHelp;
-  bool    IgnoreRest;
-  int     NumberOfParametersToProcess;
+  bool IgnoreRest;
+  int NumberOfParametersToProcess;
   QString RegularExpression;
   QString ExactMatchFailedMessage;
-  bool    Deprecated;
+  bool Deprecated;
 
-  QVariant       DefaultValue;
-  QVariant       Value;
+  QVariant DefaultValue;
+  QVariant Value;
   QVariant::Type ValueType;
 };
 
@@ -140,12 +148,12 @@ bool CommandLineParserArgumentDescription::addParameter(const QString& value)
     {
       Value.setValue(value);
     }
-      break;
+    break;
     case QVariant::Bool:
     {
       Value.setValue(!QString::compare(value, "true", Qt::CaseInsensitive));
     }
-      break;
+    break;
     case QVariant::StringList:
     {
       if (Value.isNull())
@@ -161,27 +169,25 @@ bool CommandLineParserArgumentDescription::addParameter(const QString& value)
         Value.setValue(list);
       }
     }
-      break;
+    break;
     case QVariant::Int:
     {
       Value.setValue(value.toInt());
     }
-      break;
+    break;
     case QVariant::Double:
     {
       Value.setValue(value.toDouble());
     }
-      break;
-    default:
-      return false;
+    break;
+    default: return false;
   }
 
   return true;
 }
 
 // --------------------------------------------------------------------------
-QString CommandLineParserArgumentDescription::helpText(int fieldWidth, const char charPad,
-                                                       const QString& settingsValue)
+QString CommandLineParserArgumentDescription::helpText(int fieldWidth, const char charPad, const QString& settingsValue)
 {
   QString text;
   QTextStream stream(&text);
@@ -213,7 +219,7 @@ QString CommandLineParserArgumentDescription::helpText(int fieldWidth, const cha
     stream.setFieldWidth(fieldWidth);
   }
 
-  stream  << shortAndLongArg;
+  stream << shortAndLongArg;
   stream.setFieldWidth(0);
   stream << this->ArgHelp;
   if (!settingsValue.isNull())
@@ -228,7 +234,7 @@ QString CommandLineParserArgumentDescription::helpText(int fieldWidth, const cha
   return text;
 }
 
-}
+} // namespace
 
 // --------------------------------------------------------------------------
 // ctkCommandLineParser::ctkInternal class
@@ -238,17 +244,22 @@ class ctkCommandLineParser::ctkInternal
 {
 public:
   ctkInternal(QSettings* settings)
-    : Debug(false), FieldWidth(0), UseQSettings(false),
-      Settings(settings), MergeSettings(true), StrictMode(false)
-  {}
+    : Debug(false)
+    , FieldWidth(0)
+    , UseQSettings(false)
+    , Settings(settings)
+    , MergeSettings(true)
+    , StrictMode(false)
+  {
+  }
 
   ~ctkInternal() { qDeleteAll(ArgumentDescriptionList); }
 
   CommandLineParserArgumentDescription* argumentDescription(const QString& argument);
 
-  QList<CommandLineParserArgumentDescription*>                 ArgumentDescriptionList;
-  QHash<QString, CommandLineParserArgumentDescription*>        ArgNameToArgumentDescriptionMap;
-  QMap<QString, QList<CommandLineParserArgumentDescription*>>  GroupToArgumentDescriptionListMap;
+  QList<CommandLineParserArgumentDescription*> ArgumentDescriptionList;
+  QHash<QString, CommandLineParserArgumentDescription*> ArgNameToArgumentDescriptionMap;
+  QMap<QString, QList<CommandLineParserArgumentDescription*>> GroupToArgumentDescriptionListMap;
 
   // clang-format off
   QStringList UnparsedArguments;
@@ -272,8 +283,7 @@ public:
 // ctkCommandLineParser::ctkInternal methods
 
 // --------------------------------------------------------------------------
-CommandLineParserArgumentDescription*
-  ctkCommandLineParser::ctkInternal::argumentDescription(const QString& argument)
+CommandLineParserArgumentDescription* ctkCommandLineParser::ctkInternal::argumentDescription(const QString& argument)
 {
   QString unprefixedArg = argument;
   if (!LongPrefix.isEmpty() && argument.startsWith(LongPrefix))
@@ -308,14 +318,15 @@ CommandLineParserArgumentDescription*
 // ctkCommandLineParser methods
 
 // --------------------------------------------------------------------------
-ctkCommandLineParser::ctkCommandLineParser(QObject* newParent) : Superclass(newParent)
+ctkCommandLineParser::ctkCommandLineParser(QObject* newParent)
+  : Superclass(newParent)
 {
   this->Internal = new ctkInternal(0);
 }
 
 // --------------------------------------------------------------------------
-ctkCommandLineParser::ctkCommandLineParser(QSettings* settings, QObject* newParent) :
-    Superclass(newParent)
+ctkCommandLineParser::ctkCommandLineParser(QSettings* settings, QObject* newParent)
+  : Superclass(newParent)
 {
   this->Internal = new ctkInternal(settings);
 }
@@ -327,15 +338,13 @@ ctkCommandLineParser::~ctkCommandLineParser()
 }
 
 // --------------------------------------------------------------------------
-QHash<QString, QVariant> ctkCommandLineParser::parseArguments(const QStringList& arguments,
-                                                              bool* ok)
+QHash<QString, QVariant> ctkCommandLineParser::parseArguments(const QStringList& arguments, bool* ok)
 {
   // Reset
   this->Internal->UnparsedArguments.clear();
   this->Internal->ProcessedArguments.clear();
   this->Internal->ErrorString.clear();
-  foreach (CommandLineParserArgumentDescription* desc,
-           this->Internal->ArgumentDescriptionList)
+  foreach (CommandLineParserArgumentDescription* desc, this->Internal->ArgumentDescriptionList)
   {
     desc->Value = QVariant(desc->ValueType);
     if (desc->DefaultValue.isValid())
@@ -347,12 +356,15 @@ QHash<QString, QVariant> ctkCommandLineParser::parseArguments(const QStringList&
   bool error = false;
   bool ignoreRest = false;
   bool useSettings = this->Internal->UseQSettings;
-  CommandLineParserArgumentDescription * currentArgDesc = 0;
+  CommandLineParserArgumentDescription* currentArgDesc = 0;
   QList<CommandLineParserArgumentDescription*> parsedArgDescriptions;
   for (int i = 1; i < arguments.size(); ++i)
   {
     QString argument = arguments.at(i);
-    if (this->Internal->Debug) { qDebug() << "Processing" << argument; }
+    if (this->Internal->Debug)
+    {
+      qDebug() << "Processing" << argument;
+    }
 
     // should argument be ignored ?
     if (ignoreRest)
@@ -366,8 +378,7 @@ QHash<QString, QVariant> ctkCommandLineParser::parseArguments(const QStringList&
     }
 
     // Skip if the argument does not start with the defined prefix
-    if (!(argument.startsWith(this->Internal->LongPrefix)
-      || argument.startsWith(this->Internal->ShortPrefix)))
+    if (!(argument.startsWith(this->Internal->LongPrefix) || argument.startsWith(this->Internal->ShortPrefix)))
     {
       if (this->Internal->StrictMode)
       {
@@ -408,7 +419,7 @@ QHash<QString, QVariant> ctkCommandLineParser::parseArguments(const QStringList&
       // If the argument is deprecated, print the help text but continue processing
       if (currentArgDesc->Deprecated)
       {
-        qWarning().nospace() << "Deprecated argument " << argument << ": "  << currentArgDesc->ArgHelp;
+        qWarning().nospace() << "Deprecated argument " << argument << ": " << currentArgDesc->ArgHelp;
       }
       else
       {
@@ -417,7 +428,7 @@ QHash<QString, QVariant> ctkCommandLineParser::parseArguments(const QStringList&
 
       // Is the argument the special "disable QSettings" argument?
       if ((!currentArgDesc->LongArg.isEmpty() && currentArgDesc->LongArg == this->Internal->DisableQSettingsLongArg)
-        || (!currentArgDesc->ShortArg.isEmpty() && currentArgDesc->ShortArg == this->Internal->DisableQSettingsShortArg))
+          || (!currentArgDesc->ShortArg.isEmpty() && currentArgDesc->ShortArg == this->Internal->DisableQSettingsShortArg))
       {
         useSettings = false;
       }
@@ -437,16 +448,20 @@ QHash<QString, QVariant> ctkCommandLineParser::parseArguments(const QStringList&
       }
       else if (numberOfParametersToProcess > 0)
       {
-        QString missingParameterError =
-            "Argument %1 has %2 value(s) associated whereas exactly %3 are expected.";
+        QString missingParameterError = "Argument %1 has %2 value(s) associated whereas exactly %3 are expected.";
         for (int j = 1; j <= numberOfParametersToProcess; ++j)
         {
           if (i + j >= arguments.size())
           {
-            this->Internal->ErrorString =
-                missingParameterError.arg(argument).arg(j-1).arg(numberOfParametersToProcess);
-            if (this->Internal->Debug) { qDebug() << this->Internal->ErrorString; }
-            if (ok) { *ok = false; }
+            this->Internal->ErrorString = missingParameterError.arg(argument).arg(j - 1).arg(numberOfParametersToProcess);
+            if (this->Internal->Debug)
+            {
+              qDebug() << this->Internal->ErrorString;
+            }
+            if (ok)
+            {
+              *ok = false;
+            }
             return QHash<QString, QVariant>();
           }
           QString parameter = arguments.at(i + j);
@@ -458,20 +473,29 @@ QHash<QString, QVariant> ctkCommandLineParser::parseArguments(const QStringList&
           {
             // we've found a known argument, it means there are no more
             // parameter for the current argument
-            this->Internal->ErrorString =
-                missingParameterError.arg(argument).arg(j-1).arg(numberOfParametersToProcess);
-            if (this->Internal->Debug) { qDebug() << this->Internal->ErrorString; }
-            if (ok) { *ok = false; }
+            this->Internal->ErrorString = missingParameterError.arg(argument).arg(j - 1).arg(numberOfParametersToProcess);
+            if (this->Internal->Debug)
+            {
+              qDebug() << this->Internal->ErrorString;
+            }
+            if (ok)
+            {
+              *ok = false;
+            }
             return QHash<QString, QVariant>();
           }
           if (!currentArgDesc->addParameter(parameter))
           {
-            this->Internal->ErrorString = QString(
-                "Value(s) associated with argument %1 are incorrect. %2").
-                arg(argument).arg(currentArgDesc->ExactMatchFailedMessage);
+            this->Internal->ErrorString = QString("Value(s) associated with argument %1 are incorrect. %2").arg(argument).arg(currentArgDesc->ExactMatchFailedMessage);
 
-            if (this->Internal->Debug) { qDebug() << this->Internal->ErrorString; }
-            if (ok) { *ok = false; }
+            if (this->Internal->Debug)
+            {
+              qDebug() << this->Internal->ErrorString;
+            }
+            if (ok)
+            {
+              *ok = false;
+            }
             return QHash<QString, QVariant>();
           }
         }
@@ -505,12 +529,16 @@ QHash<QString, QVariant> ctkCommandLineParser::parseArguments(const QStringList&
           }
           if (!currentArgDesc->addParameter(parameter))
           {
-            this->Internal->ErrorString = QString(
-                "Value(s) associated with argument %1 are incorrect. %2").
-                arg(argument).arg(currentArgDesc->ExactMatchFailedMessage);
+            this->Internal->ErrorString = QString("Value(s) associated with argument %1 are incorrect. %2").arg(argument).arg(currentArgDesc->ExactMatchFailedMessage);
 
-            if (this->Internal->Debug) { qDebug() << this->Internal->ErrorString; }
-            if (ok) { *ok = false; }
+            if (this->Internal->Debug)
+            {
+              qDebug() << this->Internal->ErrorString;
+            }
+            if (ok)
+            {
+              *ok = false;
+            }
             return QHash<QString, QVariant>();
           }
           j++;
@@ -578,8 +606,7 @@ QHash<QString, QVariant> ctkCommandLineParser::parseArguments(const QStringList&
         // Merge with QSettings
         QVariant settingsVal = settings->value(key);
 
-        if (desc->ValueType == QVariant::StringList &&
-            settingsVal.canConvert(QVariant::StringList))
+        if (desc->ValueType == QVariant::StringList && settingsVal.canConvert(QVariant::StringList))
         {
           QStringList stringList = desc->Value.toStringList();
           stringList.append(settingsVal.toStringList());
@@ -655,33 +682,41 @@ const QStringList& ctkCommandLineParser::unparsedArguments() const
 }
 
 // --------------------------------------------------------------------------
-void ctkCommandLineParser::addArgument(const QString& longarg, const QString& shortarg,
-                                       QVariant::Type type, const QString& argHelp,
-                                       const QVariant& defaultValue, bool ignoreRest,
+void ctkCommandLineParser::addArgument(const QString& longarg,
+                                       const QString& shortarg,
+                                       QVariant::Type type,
+                                       const QString& argHelp,
+                                       const QVariant& defaultValue,
+                                       bool ignoreRest,
                                        bool deprecated)
 {
-  Q_ASSERT_X(!(longarg.isEmpty() && shortarg.isEmpty()), "addArgument",
-             "both long and short argument names are empty");
-  if (longarg.isEmpty() && shortarg.isEmpty()) { return; }
+  Q_ASSERT_X(!(longarg.isEmpty() && shortarg.isEmpty()), "addArgument", "both long and short argument names are empty");
+  if (longarg.isEmpty() && shortarg.isEmpty())
+  {
+    return;
+  }
 
-  Q_ASSERT_X(!defaultValue.isValid() || defaultValue.type() == type, "addArgument",
-             "defaultValue type does not match");
+  Q_ASSERT_X(!defaultValue.isValid() || defaultValue.type() == type, "addArgument", "defaultValue type does not match");
   if (defaultValue.isValid() && defaultValue.type() != type)
     throw std::logic_error("The QVariant type of defaultValue does not match the specified type");
 
   /* Make sure it's not already added */
   bool added = this->Internal->ArgNameToArgumentDescriptionMap.contains(longarg);
   Q_ASSERT_X(!added, "addArgument", "long argument already added");
-  if (added) { return; }
+  if (added)
+  {
+    return;
+  }
 
   added = this->Internal->ArgNameToArgumentDescriptionMap.contains(shortarg);
   Q_ASSERT_X(!added, "addArgument", "short argument already added");
-  if (added) { return; }
+  if (added)
+  {
+    return;
+  }
 
   CommandLineParserArgumentDescription* argDesc =
-    new CommandLineParserArgumentDescription(longarg, this->Internal->LongPrefix,
-                                             shortarg, this->Internal->ShortPrefix, type,
-                                             argHelp, defaultValue, ignoreRest, deprecated);
+    new CommandLineParserArgumentDescription(longarg, this->Internal->LongPrefix, shortarg, this->Internal->ShortPrefix, type, argHelp, defaultValue, ignoreRest, deprecated);
 
   int argWidth = 0;
   if (!longarg.isEmpty())
@@ -707,18 +742,15 @@ void ctkCommandLineParser::addArgument(const QString& longarg, const QString& sh
 }
 
 // --------------------------------------------------------------------------
-void ctkCommandLineParser::addDeprecatedArgument(
-    const QString& longarg, const QString& shortarg, const QString& argHelp)
+void ctkCommandLineParser::addDeprecatedArgument(const QString& longarg, const QString& shortarg, const QString& argHelp)
 {
   addArgument(longarg, shortarg, QVariant::StringList, argHelp, QVariant(), false, true);
 }
 
 // --------------------------------------------------------------------------
-bool ctkCommandLineParser::setExactMatchRegularExpression(
-    const QString& argument, const QString& expression, const QString& exactMatchFailedMessage)
+bool ctkCommandLineParser::setExactMatchRegularExpression(const QString& argument, const QString& expression, const QString& exactMatchFailedMessage)
 {
-  CommandLineParserArgumentDescription * argDesc =
-      this->Internal->argumentDescription(argument);
+  CommandLineParserArgumentDescription* argDesc = this->Internal->argumentDescription(argument);
   if (!argDesc)
   {
     return false;
@@ -785,8 +817,7 @@ QString ctkCommandLineParser::helpText(const char charPad) const
   QList<CommandLineParserArgumentDescription*> deprecatedArgs;
 
   // Loop over grouped argument descriptions
-  QMapIterator<QString, QList<CommandLineParserArgumentDescription*>> it(
-      this->Internal->GroupToArgumentDescriptionListMap);
+  QMapIterator<QString, QList<CommandLineParserArgumentDescription*>> it(this->Internal->GroupToArgumentDescriptionListMap);
   while (it.hasNext())
   {
     it.next();
@@ -871,10 +902,9 @@ void ctkCommandLineParser::setStrictModeEnabled(bool strictMode)
   this->Internal->StrictMode = strictMode;
 }
 
-#if defined (_WIN32)
+#if defined(_WIN32)
 // --------------------------------------------------------------------------
-void ctkCommandLineParser::convertWindowsCommandLineToUnixArguments(
-  PWSTR cmd_line, int* argc, char*** argv)
+void ctkCommandLineParser::convertWindowsCommandLineToUnixArguments(PWSTR cmd_line, int* argc, char*** argv)
 {
   if (!cmd_line || !argc || !argv)
   {
@@ -899,7 +929,7 @@ void ctkCommandLineParser::convertWindowsCommandLineToUnixArguments(
 
   // Allocate space for pointers in argv
   (*argc) = numArgs + 1; // +1 because the first argument is the executable name
-  (*argv) = new char* [numArgs + 1];
+  (*argv) = new char*[numArgs + 1];
   for (int i = 0; i < numArgs + 1; i++)
   {
     (*argv)[i] = nullptr;
@@ -922,7 +952,7 @@ void ctkCommandLineParser::convertWindowsCommandLineToUnixArguments(
         continue;
       }
       utf8buffer[utf8length] = '\0'; // Make sure the string is null-terminated
-      (*argv)[i + 1] = utf8buffer; // +1 because the first argument is the executable name
+      (*argv)[i + 1] = utf8buffer;   // +1 because the first argument is the executable name
     }
     LocalFree(wideArgs);
   }

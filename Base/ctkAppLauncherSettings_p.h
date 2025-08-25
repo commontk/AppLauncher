@@ -20,9 +20,10 @@ class ctkAppLauncherSettingsPrivate : public QObject
   Q_DECLARE_PUBLIC(ctkAppLauncherSettings)
 protected:
   ctkAppLauncherSettings* q_ptr;
+
 public:
   ctkAppLauncherSettingsPrivate(ctkAppLauncherSettings& object);
-  ~ctkAppLauncherSettingsPrivate(){}
+  ~ctkAppLauncherSettingsPrivate() {}
   typedef ctkAppLauncherSettingsPrivate Self;
 
   QString findUserAdditionalSettings() const;
@@ -99,10 +100,7 @@ public:
       this->PreviousLauncherSettingsDirType = this->LauncherSettingsPrivate->LauncherSettingsDirType;
       this->LauncherSettingsPrivate->LauncherSettingsDirType = launcherSettingsDirType;
     }
-    ~ScopedLauncherSettingsDir()
-    {
-      this->LauncherSettingsPrivate->LauncherSettingsDirType = this->PreviousLauncherSettingsDirType;
-    }
+    ~ScopedLauncherSettingsDir() { this->LauncherSettingsPrivate->LauncherSettingsDirType = this->PreviousLauncherSettingsDirType; }
     ctkAppLauncherSettingsPrivate* LauncherSettingsPrivate;
     SettingsType PreviousLauncherSettingsDirType;
   };
@@ -150,7 +148,6 @@ public:
   // typedef QHash<QString, QString>                  ExtraApplicationToLaunchProperty;
   // QHash<QString, ExtraApplicationToLaunchProperty> ExtraApplicationToLaunchList;
   // clang-format on
-
 };
 
 #endif

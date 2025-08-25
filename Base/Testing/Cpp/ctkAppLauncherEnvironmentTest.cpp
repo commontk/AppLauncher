@@ -203,8 +203,7 @@ void ctkAppLauncherEnvironmentTester::testEnvironment()
     this->setEnv(varName, env.value(varName));
   }
 
-  QProcessEnvironment requestedEnv =
-      ctkAppLauncherEnvironment::environment(requestedLevel);
+  QProcessEnvironment requestedEnv = ctkAppLauncherEnvironment::environment(requestedLevel);
 
   QCOMPARE_QSTRINGLIST(requestedEnv.toStringList(), expectedEnv.toStringList())
 }

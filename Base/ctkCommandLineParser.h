@@ -21,8 +21,8 @@
 #ifndef __ctkCommandLineParser_h
 #define __ctkCommandLineParser_h
 
-#if defined (_WIN32)
-#include <windows.h>
+#if defined(_WIN32)
+# include <windows.h>
 #endif
 
 // Qt includes
@@ -33,7 +33,7 @@
 class QSettings;
 
 // CTK includes
-//#include "ctkCoreExport.h"
+// #include "ctkCoreExport.h"
 
 /**
  * The CTK command line parser.
@@ -69,7 +69,6 @@ class /*CTK_CORE_EXPORT*/ ctkCommandLineParser : public QObject
   Q_PROPERTY(bool settingsEnabled READ settingsEnabled)
 
 public:
-
   typedef QObject Superclass;
 
   /**
@@ -129,9 +128,9 @@ public:
   QHash<QString, QVariant> parseArguments(const QStringList& arguments, bool* ok = 0);
 
   /**
-    * Convenient method allowing to parse a given list of command line arguments.
-    * @see parseArguments(const QStringList&, bool*)
-    */
+   * Convenient method allowing to parse a given list of command line arguments.
+   * @see parseArguments(const QStringList&, bool*)
+   */
   QHash<QString, QVariant> parseArguments(int argc, char** argv, bool* ok = 0);
 
   /**
@@ -220,10 +219,13 @@ public:
    * @throws std::logic_error If the QVariant type of <code>defaultValue</code>
    *         does not match <code>type</code>, a <code>std::logic_error</code> is thrown.
    */
-  void addArgument(const QString& longarg, const QString& shortarg,
-                   QVariant::Type type, const QString& argHelp = QString(),
+  void addArgument(const QString& longarg,
+                   const QString& shortarg,
+                   QVariant::Type type,
+                   const QString& argHelp = QString(),
                    const QVariant& defaultValue = QVariant(),
-                   bool ignoreRest = false, bool deprecated = false);
+                   bool ignoreRest = false,
+                   bool deprecated = false);
 
   /**
    * Adds a deprecated command line argument. If a deprecated argument is provided
@@ -237,8 +239,7 @@ public:
    * @param shortarg The short argument name.
    * @param argHelp A help string describing alternatives to the deprecated argument.
    */
-  void addDeprecatedArgument(const QString& longarg, const QString& shortarg,
-                             const QString& argHelp);
+  void addDeprecatedArgument(const QString& longarg, const QString& shortarg, const QString& argHelp);
 
   /**
    * Sets a custom regular expression for validating argument parameters. The method
@@ -254,8 +255,7 @@ public:
    *
    * @see errorString()
    */
-  bool setExactMatchRegularExpression(const QString& argument, const QString& expression,
-                                      const QString& exactMatchFailedMessage);
+  bool setExactMatchRegularExpression(const QString& argument, const QString& expression, const QString& exactMatchFailedMessage);
 
   /**
    * The field width for the argument names without the help text.
@@ -354,8 +354,7 @@ public:
    *
    * @see ctkCommandLineParser(QSettings*)
    */
-  void enableSettings(const QString& disableLongArg = "",
-                      const QString& disableShortArg = "");
+  void enableSettings(const QString& disableLongArg = "", const QString& disableShortArg = "");
 
   /**
    * Controls the merging behavior of user values and QSettings values.
@@ -379,16 +378,15 @@ public:
    */
   bool settingsEnabled() const;
 
-
   /**
-    * Can be used to teach the parser to stop parsing the arguments and return False when
-    * an unknown argument is encountered. By default <code>StrictMode</code> is disabled.
-    *
-    * @see parseArguments(const QStringList&, bool*)
-    */
+   * Can be used to teach the parser to stop parsing the arguments and return False when
+   * an unknown argument is encountered. By default <code>StrictMode</code> is disabled.
+   *
+   * @see parseArguments(const QStringList&, bool*)
+   */
   void setStrictModeEnabled(bool strictMode);
 
-#if defined (_WIN32)
+#if defined(_WIN32)
   /**
    * Convert windows-style arguments given as a command-line string
    * into more traditional argc/argv arguments.
@@ -397,8 +395,7 @@ public:
    *
    * @note argv[0] will be assigned the executable name using the ::GetModuleFileName function.
    */
-  static void convertWindowsCommandLineToUnixArguments(
-    PWSTR cmd_line, int* argc, char*** argv);
+  static void convertWindowsCommandLineToUnixArguments(PWSTR cmd_line, int* argc, char*** argv);
 #endif
 
 private:

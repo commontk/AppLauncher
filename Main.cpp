@@ -24,11 +24,11 @@
 // --------------------------------------------------------------------------
 int appLauncherMain(int argc, char** argv)
 {
-  #ifdef QT_MAC_USE_COCOA
+#ifdef QT_MAC_USE_COCOA
   // See http://doc.trolltech.com/4.7/qt.html#ApplicationAttribute-enum
   // Setting the application to be a plugin will avoid the loading of qt_menu.nib files
   QCoreApplication::setAttribute(Qt::AA_MacPluginApplication, true);
-  #endif
+#endif
 
   ctkAppArguments appArguments(argc, argv);
 
@@ -121,7 +121,7 @@ int appLauncherMain(int argc, char** argv)
     << ctkAppArguments::ArgToFilterType("-fontengine=", ctkAppArguments::ARG_TO_FILTER_EQUAL_VALUE)
 #endif
     // clang-format on
-        );
+  );
 
   QString executableName = argv[0];
 #if defined Q_OS_WIN32
@@ -200,9 +200,7 @@ int main(int argc, char* argv[])
   return appLauncherMain(argc, argv);
 }
 #elif defined Q_OS_WIN32
-int __stdcall wWinMain(HINSTANCE hInstance,
-                      HINSTANCE hPrevInstance,
-                      PWSTR lpCmdLine, int nShowCmd)
+int __stdcall wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR lpCmdLine, int nShowCmd)
 {
   // Uncomment the next line to stop at application start (to give a chance to connect with a debugger)
   // int msgboxID = MessageBox(NULL, "Attach your debugger", "Debug", MB_ICONWARNING);
