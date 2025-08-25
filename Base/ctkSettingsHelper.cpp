@@ -7,8 +7,7 @@
 #include "ctkSettingsHelper.h"
 
 // --------------------------------------------------------------------------
-QStringList ctk::readArrayValues(
-  QSettings& settings, const QString& arrayName, const QString fieldName)
+QStringList ctk::readArrayValues(QSettings& settings, const QString& arrayName, const QString fieldName)
 {
   Q_ASSERT(!arrayName.isEmpty());
   Q_ASSERT(!fieldName.isEmpty());
@@ -24,8 +23,7 @@ QStringList ctk::readArrayValues(
 }
 
 // --------------------------------------------------------------------------
-QHash<QString, QString> ctk::readKeyValuePairs(QSettings& settings,
-  const QString& groupName)
+QHash<QString, QString> ctk::readKeyValuePairs(QSettings& settings, const QString& groupName)
 {
   Q_ASSERT(!groupName.isEmpty());
   QHash<QString, QString> keyValuePairs;
@@ -39,8 +37,7 @@ QHash<QString, QString> ctk::readKeyValuePairs(QSettings& settings,
 }
 
 // --------------------------------------------------------------------------
-void ctk::writeArrayValues(QSettings& settings, const QStringList& values,
-    const QString& arrayName, const QString fieldName)
+void ctk::writeArrayValues(QSettings& settings, const QStringList& values, const QString& arrayName, const QString fieldName)
 {
   Q_ASSERT(!arrayName.isEmpty());
   Q_ASSERT(!fieldName.isEmpty());
@@ -54,8 +51,7 @@ void ctk::writeArrayValues(QSettings& settings, const QStringList& values,
 }
 
 // --------------------------------------------------------------------------
-void ctk::writeKeyValuePairs(QSettings& settings,
-  const QHash<QString, QString>& map, const QString& groupName)
+void ctk::writeKeyValuePairs(QSettings& settings, const QHash<QString, QString>& map, const QString& groupName)
 {
   Q_ASSERT(!groupName.isEmpty());
   settings.beginGroup(groupName);

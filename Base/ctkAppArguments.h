@@ -22,6 +22,7 @@ public:
   void clear();
   char** values() const;
   int& count();
+
 protected:
   QScopedPointer<ctkChar2DArrayPrivate> d_ptr;
 
@@ -32,7 +33,8 @@ private:
 
 // --------------------------------------------------------------------------
 class ctkAppArgumentsPrivate;
-template <typename T> class QList;
+template <typename T>
+class QList;
 
 // --------------------------------------------------------------------------
 class ctkAppArguments
@@ -68,9 +70,14 @@ public:
   {
   public:
     typedef QPair<QString, ctkAppArguments::ArgToFilterOptions> Superclass;
-    ArgToFilterType():Superclass(){}
-    ArgToFilterType(const QString& arg, ctkAppArguments::ArgToFilterOptions options = ARG_TO_FILTER_NO_VALUE) :
-      Superclass(arg, options){}
+    ArgToFilterType()
+      : Superclass()
+    {
+    }
+    ArgToFilterType(const QString& arg, ctkAppArguments::ArgToFilterOptions options = ARG_TO_FILTER_NO_VALUE)
+      : Superclass(arg, options)
+    {
+    }
   };
   typedef QList<ArgToFilterType> ArgToFilterListType;
 

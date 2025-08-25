@@ -21,53 +21,51 @@
 // Qt includes
 #include <QtTest/QtTest>
 
-#define CTK_TEST_NOOP_MAIN(TestObject) \
-int TestObject(int argc, char* argv[]) \
-{ \
-    QObject tc; \
+#define CTK_TEST_NOOP_MAIN(TestObject)    \
+  int TestObject(int argc, char* argv[])  \
+  {                                       \
+    QObject tc;                           \
     return QTest::qExec(&tc, argc, argv); \
-}
+  }
 
 #ifdef QT_GUI_LIB
 
 //-----------------------------------------------------------------------------
-#ifdef QT_MAC_USE_COCOA
+# ifdef QT_MAC_USE_COCOA
 // See http://doc.trolltech.com/4.7/qt.html#ApplicationAttribute-enum
 // Setting the application to be a plugin will avoid the loading of qt_menu.nib files
-#define CTK_TEST_SKIP_NIB_MENU_LOADER \
-   QCoreApplication::setAttribute(Qt::AA_MacPluginApplication, true);
-#else
-#define CTK_TEST_SKIP_NIB_MENU_LOADER
-#endif
+#  define CTK_TEST_SKIP_NIB_MENU_LOADER QCoreApplication::setAttribute(Qt::AA_MacPluginApplication, true);
+# else
+#  define CTK_TEST_SKIP_NIB_MENU_LOADER
+# endif
 
 //-----------------------------------------------------------------------------
-#define CTK_TEST_MAIN(TestObject) \
-  int TestObject(int argc, char* argv[]) \
-  { \
-    CTK_TEST_SKIP_NIB_MENU_LOADER \
-    QApplication app(argc, argv); \
-    TestObject##er tc; \
-    return QTest::qExec(&tc, argc, argv); \
-  }
+# define CTK_TEST_MAIN(TestObject)         \
+   int TestObject(int argc, char* argv[])  \
+   {                                       \
+     CTK_TEST_SKIP_NIB_MENU_LOADER         \
+     QApplication app(argc, argv);         \
+     TestObject##er tc;                    \
+     return QTest::qExec(&tc, argc, argv); \
+   }
 
 #else
 
 //-----------------------------------------------------------------------------
-#define CTK_TEST_MAIN(TestObject) \
-  int TestObject(int argc, char* argv[]) \
-  { \
-    QCoreApplication app(argc, argv); \
-    QTEST_DISABLE_KEYPAD_NAVIGATION \
-    TestObject##er tc; \
-    return QTest::qExec(&tc, argc, argv); \
-  }
+# define CTK_TEST_MAIN(TestObject)         \
+   int TestObject(int argc, char* argv[])  \
+   {                                       \
+     QCoreApplication app(argc, argv);     \
+     QTEST_DISABLE_KEYPAD_NAVIGATION       \
+     TestObject##er tc;                    \
+     return QTest::qExec(&tc, argc, argv); \
+   }
 
 #endif // QT_GUI_LIB
 
 namespace ctkTest
 {
-static void mouseEvent(QTest::MouseAction action, QWidget* widget, Qt::MouseButton button,
-                       Qt::KeyboardModifiers stateKey, QPoint pos, int delay=-1)
+static void mouseEvent(QTest::MouseAction action, QWidget* widget, Qt::MouseButton button, Qt::KeyboardModifiers stateKey, QPoint pos, int delay = -1)
 {
   if (action != QTest::MouseMove)
   {
@@ -75,14 +73,14 @@ static void mouseEvent(QTest::MouseAction action, QWidget* widget, Qt::MouseButt
     return;
   }
   QTEST_ASSERT(widget);
-  //extern int Q_TESTLIB_EXPORT defaultMouseDelay();
-  //if (delay == -1 || delay < defaultMouseDelay())
-  //    delay = defaultMouseDelay();
+  // extern int Q_TESTLIB_EXPORT defaultMouseDelay();
+  // if (delay == -1 || delay < defaultMouseDelay())
+  //     delay = defaultMouseDelay();
   if (delay > 0)
-      QTest::qWait(delay);
+    QTest::qWait(delay);
 
   if (pos.isNull())
-      pos = widget->rect().center();
+    pos = widget->rect().center();
 
   QTEST_ASSERT(button == Qt::NoButton || button & Qt::MouseButtonMask);
   QTEST_ASSERT(stateKey == 0 || stateKey & Qt::KeyboardModifierMask);
@@ -95,15 +93,15 @@ static void mouseEvent(QTest::MouseAction action, QWidget* widget, Qt::MouseButt
   QSpontaneKeyEvent::setSpontaneous(&me);
   if (!qApp->notify(widget, &me))
   {
-    static const char* mouseActionNames[] =
-        { "MousePress", "MouseRelease", "MouseClick", "MouseDClick", "MouseMove" };
+    static const char* mouseActionNames[] = { "MousePress", "MouseRelease", "MouseClick", "MouseDClick", "MouseMove" };
     QString warning = QLatin1String("Mouse event \"%1\" not accepted by receiving widget");
     QTest::qWarn(warning.arg(QLatin1String(mouseActionNames[static_cast<int>(action)])).toLocal8Bit());
   }
 }
 
-inline void mouseMove(QWidget* widget, Qt::MouseButton button, Qt::KeyboardModifiers stateKey = 0,
-                      QPoint pos = QPoint(), int delay=-1)
-  { ctkTest::mouseEvent(QTest::MouseMove, widget, button, stateKey, pos, delay); }
-
+inline void mouseMove(QWidget* widget, Qt::MouseButton button, Qt::KeyboardModifiers stateKey = 0, QPoint pos = QPoint(), int delay = -1)
+{
+  ctkTest::mouseEvent(QTest::MouseMove, widget, button, stateKey, pos, delay);
 }
+
+} // namespace ctkTest

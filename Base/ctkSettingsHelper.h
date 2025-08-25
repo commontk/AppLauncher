@@ -8,7 +8,8 @@
 class QSettings;
 class QStringList;
 
-namespace ctk {
+namespace ctk
+{
 
 /// Read list of value stored in an array into a QStringList
 QStringList readArrayValues(QSettings& settings, const QString& arrayName, const QString fieldName);
@@ -17,13 +18,11 @@ QStringList readArrayValues(QSettings& settings, const QString& arrayName, const
 QHash<QString, QString> readKeyValuePairs(QSettings& settings, const QString& groupName);
 
 /// Write QStringList
-void writeArrayValues(QSettings& settings, const QStringList& values,
-                      const QString& arrayName, const QString fieldName);
+void writeArrayValues(QSettings& settings, const QStringList& values, const QString& arrayName, const QString fieldName);
 
 /// Write QHash<QString, QString>
-void writeKeyValuePairs(QSettings& settings,
-                        const QHash<QString, QString>& map, const QString& groupName);
+void writeKeyValuePairs(QSettings& settings, const QHash<QString, QString>& map, const QString& groupName);
 
-} // end of ctk namespace
+} // namespace ctk
 
 #endif

@@ -3,7 +3,6 @@
 #include <ctkAppArguments.h>
 #include <ctkTest.h>
 
-
 // ----------------------------------------------------------------------------
 class ctkAppArgumentsTester : public QObject
 {
@@ -15,7 +14,6 @@ public:
   typedef ctkAppArguments::ArgToFilterListType ArgToFilterListType;
 
 private:
-
   QStringList InputArguments;
   QStringList RegularArguments;
   QStringList ReservedArguments;
@@ -40,7 +38,6 @@ private slots:
 
   void testSetArgumentToFilterList();
   void testSetArgumentToFilterList_data();
-
 };
 
 Q_DECLARE_METATYPE(ctkAppArguments::ArgListTypes)

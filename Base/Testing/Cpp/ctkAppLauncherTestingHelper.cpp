@@ -13,8 +13,7 @@
 #include <ctkAppLauncherTestingHelper.h>
 
 //----------------------------------------------------------------------------
-bool CheckStringList(int line, const QString& description,
-                     const QStringList& current, const QStringList& expected)
+bool CheckStringList(int line, const QString& description, const QStringList& current, const QStringList& expected)
 {
   QString testName("CheckStringList");
   if (current.count() != expected.count())
@@ -70,8 +69,7 @@ bool CheckStringList(int line, const QString& description,
 
 //----------------------------------------------------------------------------
 // Copied from CTK/Libs/Core/ctkCoreTestingUtilities.{h,cpp,tpp}
-bool CheckString(int line, const QString& description,
-                 const char* current, const char* expected, bool errorIfDifferent)
+bool CheckString(int line, const QString& description, const char* current, const char* expected, bool errorIfDifferent)
 {
   QString testName = "CheckString";
 
@@ -99,8 +97,7 @@ bool CheckString(int line, const QString& description,
 
 //----------------------------------------------------------------------------
 // Copied from CTK/Libs/Core/ctkCoreTestingUtilities.{h,cpp,tpp}
-bool CheckInt(int line, const QString& description,
-              int current, int expected)
+bool CheckInt(int line, const QString& description, int current, int expected)
 {
   return Check<int>(line, description, current, expected, "CheckInt");
 }

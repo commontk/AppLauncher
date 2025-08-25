@@ -14,8 +14,12 @@
 class ctkChar2DArrayPrivate
 {
 public:
-  ctkChar2DArrayPrivate() : Values(0), Count(0) {}
-  virtual ~ctkChar2DArrayPrivate(){}
+  ctkChar2DArrayPrivate()
+    : Values(0)
+    , Count(0)
+  {
+  }
+  virtual ~ctkChar2DArrayPrivate() {}
   char** Values;
   int Count;
   QStringList List;
@@ -25,13 +29,15 @@ public:
 // ctkChar2DArray methods
 
 // --------------------------------------------------------------------------
-ctkChar2DArray::ctkChar2DArray() : d_ptr(new ctkChar2DArrayPrivate)
+ctkChar2DArray::ctkChar2DArray()
+  : d_ptr(new ctkChar2DArrayPrivate)
 {
   this->setValues(QStringList());
 }
 
 // --------------------------------------------------------------------------
-ctkChar2DArray::ctkChar2DArray(const QStringList& list) : d_ptr(new ctkChar2DArrayPrivate)
+ctkChar2DArray::ctkChar2DArray(const QStringList& list)
+  : d_ptr(new ctkChar2DArrayPrivate)
 {
   this->setValues(list);
 }
@@ -122,8 +128,9 @@ public:
 // ctkAppArgumentsPrivate methods
 
 // --------------------------------------------------------------------------
-ctkAppArgumentsPrivate::ctkAppArgumentsPrivate(int& argc, char** argv) :
-  Argc(argc), Argv(argv)
+ctkAppArgumentsPrivate::ctkAppArgumentsPrivate(int& argc, char** argv)
+  : Argc(argc)
+  , Argv(argv)
 {
   static const char* const empty = "";
   if (this->Argc == 0 || this->Argv == 0)
@@ -139,9 +146,7 @@ ctkAppArgumentsPrivate::ctkAppArgumentsPrivate(int& argc, char** argv) :
 }
 
 // --------------------------------------------------------------------------
-ctkAppArgumentsPrivate::~ctkAppArgumentsPrivate()
-{
-}
+ctkAppArgumentsPrivate::~ctkAppArgumentsPrivate() {}
 
 // --------------------------------------------------------------------------
 void ctkAppArgumentsPrivate::filterArguments()
@@ -198,8 +203,7 @@ ctkAppArguments::ArgToFilterType ctkAppArgumentsPrivate::findArgToFilter(const c
     }
     else if (argToFilter.second & ctkAppArguments::ARG_TO_FILTER_EQUAL_VALUE)
     {
-      if (QString(arg).startsWith(
-            argToFilter.first.endsWith("=") ? argToFilter.first : QString(argToFilter.first).append("=")))
+      if (QString(arg).startsWith(argToFilter.first.endsWith("=") ? argToFilter.first : QString(argToFilter.first).append("=")))
       {
         return argToFilter;
       }
@@ -240,15 +244,13 @@ void ctkAppArgumentsPrivate::addArgumentToFilter(const ctkAppArguments::ArgToFil
 // ctkAppArguments methods
 
 // --------------------------------------------------------------------------
-ctkAppArguments::ctkAppArguments(int& argc, char* argv[]):
-  d_ptr(new ctkAppArgumentsPrivate(argc, argv))
+ctkAppArguments::ctkAppArguments(int& argc, char* argv[])
+  : d_ptr(new ctkAppArgumentsPrivate(argc, argv))
 {
 }
 
 // --------------------------------------------------------------------------
-ctkAppArguments::~ctkAppArguments()
-{
-}
+ctkAppArguments::~ctkAppArguments() {}
 
 // --------------------------------------------------------------------------
 QStringList ctkAppArguments::arguments(ctkAppArguments::ArgListTypes option) const
