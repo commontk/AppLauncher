@@ -250,6 +250,7 @@ public:
   QHash<QString, CommandLineParserArgumentDescription*>        ArgNameToArgumentDescriptionMap;
   QMap<QString, QList<CommandLineParserArgumentDescription*>>  GroupToArgumentDescriptionListMap;
 
+  // clang-format off
   QStringList UnparsedArguments;
   QStringList ProcessedArguments;
   QString     ErrorString;
@@ -264,6 +265,7 @@ public:
   QString     DisableQSettingsShortArg;
   bool        MergeSettings;
   bool        StrictMode;
+  // clang-format on
 };
 
 // --------------------------------------------------------------------------

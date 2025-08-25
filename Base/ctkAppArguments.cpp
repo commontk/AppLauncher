@@ -157,7 +157,7 @@ void ctkAppArgumentsPrivate::filterArguments()
       this->RegularArguments << this->Argv[index];
       continue;
     }
-    if (argToFilter.second == ctkAppArguments::ARG_TO_FILTER_NO_VALUE ||
+    if (argToFilter.second == ctkAppArguments::ARG_TO_FILTER_NO_VALUE || //
         argToFilter.second & ctkAppArguments::ARG_TO_FILTER_EQUAL_VALUE)
     {
       this->ReservedArguments << this->Argv[index];
@@ -262,7 +262,7 @@ QStringList ctkAppArguments::arguments(ctkAppArguments::ArgListTypes option) con
   {
     return d->ReservedArguments;
   }
-  else //if (option == ctkAppArguments::ARG_FULL_LIST)
+  else // if (option == ctkAppArguments::ARG_FULL_LIST)
   {
     return d->Arguments;
   }

@@ -124,9 +124,10 @@ QProcessEnvironment ctkAppLauncherEnvironment::environment(int requestedLevel)
 }
 
 // --------------------------------------------------------------------------
-void ctkAppLauncherEnvironment::saveEnvironment(
-    const QProcessEnvironment& systemEnvironment,
-    const QStringList& variables, QProcessEnvironment& env)
+void ctkAppLauncherEnvironment::saveEnvironment( //
+  const QProcessEnvironment& systemEnvironment,
+  const QStringList& variables,
+  QProcessEnvironment& env)
 {
   // Keep track of launcher level
   int launcher_level = 1;
@@ -140,7 +141,7 @@ void ctkAppLauncherEnvironment::saveEnvironment(
   // Save value environment variables
   foreach (const QString& varname, variables)
   {
-    if (!systemEnvironment.contains(varname)
+    if (!systemEnvironment.contains(varname) //
         || ctkAppLauncherEnvironment::isReservedVariableName(varname))
     {
       continue;
@@ -210,9 +211,9 @@ QStringList ctkAppLauncherEnvironment::envKeys(const QProcessEnvironment& env)
 bool ctkAppLauncherEnvironment::isReservedVariableName(const QString& varname)
 {
   QRegularExpressionMatch match = ctkAppLauncherEnvironmentPrivate::LevelVarNameRegex.match(varname);
-  return
-      (match.hasMatch() && match.capturedStart() == 0)
-      || varname == "APPLAUNCHER_LEVEL";
+  return                                             //
+    (match.hasMatch() && match.capturedStart() == 0) //
+    || varname == "APPLAUNCHER_LEVEL";
 }
 
 // --------------------------------------------------------------------------

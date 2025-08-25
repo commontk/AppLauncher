@@ -115,7 +115,7 @@ bool ctkAppLauncherPrivate::processSplashPathArgument()
   this->reportInfo(QString("LauncherSplashImagePath [%1]").arg(this->LauncherSplashImagePath));
 
   // Make sure the splash image exists if a splashscreen is used
-  if (!QFile::exists(this->LauncherSplashImagePath)
+  if (!QFile::exists(this->LauncherSplashImagePath) //
       && !this->disableSplash() )
   {
     this->reportError(
@@ -359,7 +359,7 @@ bool ctkAppLauncherPrivate::disableSplash() const
   foreach (const QString& arg, this->LauncherAdditionalNoSplashArguments)
   {
 
-    if (this->Parser.unparsedArguments().contains(arg) ||
+    if (this->Parser.unparsedArguments().contains(arg) || //
         this->ParsedArgs.contains(this->trimArgumentPrefix(arg))
         )
     {
@@ -367,10 +367,10 @@ bool ctkAppLauncherPrivate::disableSplash() const
       break;
     }
   }
-  if (this->ParsedArgs.value("launcher-no-splash").toBool()
-      || hasNoSplashArgument
-      || !this->ExtraApplicationToLaunch.isEmpty()
-      || this->LauncherNoSplashScreen
+  if (this->ParsedArgs.value("launcher-no-splash").toBool() //
+      || hasNoSplashArgument                                //
+      || !this->ExtraApplicationToLaunch.isEmpty()          //
+      || this->LauncherNoSplashScreen                       //
       || !this->ParsedArgs.value("launch").toString().isEmpty())
   {
     return true;
@@ -548,15 +548,15 @@ void ctkAppLauncherPrivate::buildEnvironment(QProcessEnvironment& env)
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
   QStringList envVarNames = q->envVars().keys();
   QStringList pathsEnvVarNames = q->envVars().keys();
-  QSet<QString> variables =
-      QSet<QString> (envVarNames.begin(), envVarNames.end()) +
-      QSet<QString> (pathsEnvVarNames.begin(), pathsEnvVarNames.end()) +
-      QSet<QString> (this->SystemEnvironmentKeys.begin(), this->SystemEnvironmentKeys.end());
+  QSet<QString> variables =                                           //
+    QSet<QString>(envVarNames.begin(), envVarNames.end()) +           //
+    QSet<QString>(pathsEnvVarNames.begin(), pathsEnvVarNames.end()) + //
+    QSet<QString>(this->SystemEnvironmentKeys.begin(), this->SystemEnvironmentKeys.end());
 #else
-  QSet<QString> variables =
-      q->envVars().keys().toSet() +
-      q->pathsEnvVars().keys().toSet() +
-      this->SystemEnvironmentKeys.toSet();
+  QSet<QString> variables =            //
+    q->envVars().keys().toSet() +      //
+    q->pathsEnvVars().keys().toSet() + //
+    this->SystemEnvironmentKeys.toSet();
 #endif
 
   ctkAppLauncherEnvironment::saveEnvironment(
@@ -1032,13 +1032,13 @@ int ctkAppLauncher::processArguments()
     return Self::ExitWithError;
   }
 
-  bool reportInfo = d->LauncherStarting
-      || d->ParsedArgs.value("launcher-help").toBool()
-      || d->ParsedArgs.value("launcher-version").toBool()
-      || d->ParsedArgs.value("launcher-dump-environment").toBool()
-      || d->ParsedArgs.value("launcher-show-set-environment-commands").toBool()
-      || d->ParsedArgs.value("launcher-generate-template").toBool()
-      || d->ParsedArgs.value("launcher-generate-exec-wrapper-script").toBool();
+  bool reportInfo = d->LauncherStarting                                                       //
+                    || d->ParsedArgs.value("launcher-help").toBool()                          //
+                    || d->ParsedArgs.value("launcher-version").toBool()                       //
+                    || d->ParsedArgs.value("launcher-dump-environment").toBool()              //
+                    || d->ParsedArgs.value("launcher-show-set-environment-commands").toBool() //
+                    || d->ParsedArgs.value("launcher-generate-template").toBool()             //
+                    || d->ParsedArgs.value("launcher-generate-exec-wrapper-script").toBool();
 
   if (d->ParsedArgs.value("launcher-help").toBool())
   {
@@ -1157,7 +1157,7 @@ int ctkAppLauncher::processArguments()
     return Self::ExitWithError;
   }
 
-  if (unparsedArgs.contains(d->LauncherAdditionalHelpShortArgument) ||
+  if (unparsedArgs.contains(d->LauncherAdditionalHelpShortArgument) || //
       unparsedArgs.contains(d->LauncherAdditionalHelpLongArgument))
   {
     if (d->LauncherStarting && d->ExtraApplicationToLaunch.isEmpty())
@@ -1220,9 +1220,10 @@ QString ctkAppLauncher::findSettingsFile() const
 
   foreach (const QString& subdir, d->LauncherSettingSubDirs)
   {
-    QString fileName = QString("%1/%2/%3LauncherSettings.ini").
-                       arg(d->LauncherDir).arg(subdir).
-                       arg(d->LauncherName);
+    QString fileName = QString("%1/%2/%3LauncherSettings.ini")
+                         .arg(d->LauncherDir) //
+                         .arg(subdir)         //
+                         .arg(d->LauncherName);
     if (QFile::exists(fileName))
     {
       return fileName;
@@ -1364,9 +1365,9 @@ bool ctkAppLauncher::generateTemplate()
   d->ApplicationToLaunchArguments.clear();
   d->ApplicationToLaunchArguments << "-rpn";
 
-  QString outputFile = QString("%1/%2LauncherSettings.ini.template").
-    arg(d->LauncherDir).
-    arg(d->LauncherName);
+  QString outputFile = QString("%1/%2LauncherSettings.ini.template"). //
+                       arg(d->LauncherDir). //
+                       arg(d->LauncherName);
 
   return this->writeSettings(outputFile);
 }
