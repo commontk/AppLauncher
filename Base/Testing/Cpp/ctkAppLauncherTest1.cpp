@@ -53,12 +53,12 @@ void ctkAppLauncherTest1er::testSetArguments_data()
   QTest::addColumn<QStringList>("argumentsToSet");
   QTest::addColumn<QStringList>("expectedArguments");
 
-  QTest::newRow("0") << false
-                     << QStringList()
+  QTest::newRow("0") << false         //
+                     << QStringList() //
                      << qApp->arguments();
 
-  QTest::newRow("1") << true
-                     << (QStringList() << "ctkAppLauncherTest" << "-bar")
+  QTest::newRow("1") << true                                              //
+                     << (QStringList() << "ctkAppLauncherTest" << "-bar") //
                      << (QStringList() << "ctkAppLauncherTest" << "-bar");
 }
 

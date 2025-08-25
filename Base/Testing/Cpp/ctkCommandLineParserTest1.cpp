@@ -597,8 +597,8 @@ int ctkCommandLineParserTest1(int, char*[])
     return EXIT_FAILURE;
   }
 
-  if (parser14.unparsedArguments().size() != 1 ||
-      !parser14.unparsedArguments().contains("unknown"))
+  if (parser14.unparsedArguments().size() != 1 //
+      || !parser14.unparsedArguments().contains("unknown"))
   {
     qCritical() << "Test14 - Parsing unknown arguments failed.";
     return EXIT_FAILURE;

@@ -80,10 +80,11 @@ QString ctkAppLauncherSettingsPrivate::findUserAdditionalSettings() const
 
   foreach (QString candidateUserAdditionalSettingsDir, candidateUserAdditionalSettingsDirs)
   {
-    QString fileName = QDir(candidateUserAdditionalSettingsDir).filePath(QString("%1%2%3.ini").
-        arg(prefix).
-        arg(this->UserAdditionalSettingsFileBaseName).
-        arg(suffix));
+    QString fileName = QDir(candidateUserAdditionalSettingsDir)
+                         .filePath(QString("%1%2%3.ini")
+                                     .arg(prefix)                                   //
+                                     .arg(this->UserAdditionalSettingsFileBaseName) //
+                                     .arg(suffix));
     if (QFile::exists(fileName))
     {
       return fileName;

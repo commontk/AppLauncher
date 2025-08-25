@@ -77,8 +77,8 @@ void ctkAppLauncherSettingsTester::testReadSettingsError()
   QFile file(nonreadable.fileName());
   QVERIFY(file.setPermissions(QFile::WriteOwner));
   QCOMPARE(appLauncherSettings.readSettings(nonreadable.fileName()), false);
-  QCOMPARE(appLauncherSettings.readSettingsError(),
-        QString("Failed to read launcher setting file [%1]").arg(nonreadable.fileName()));
+  QCOMPARE(appLauncherSettings.readSettingsError(), //
+           QString("Failed to read launcher setting file [%1]").arg(nonreadable.fileName()));
 #endif
 }
 
@@ -178,42 +178,42 @@ void ctkAppLauncherSettingsTester::testReadSettings()
   // write regular settings
   {
     QTextStream outputStream(&regularSettingFile);
-    outputStream
-        << "[General]\n"
-        << QString("additionalSettingsFilePath=%1\n").arg(additionalSettingFile.fileName())
-        << "[Application]\n"
-           "path=/path/to/AwesomeApp\n"
-           "organizationDomain=www.commontk-AppLauncherSettingsTest.org\n"
-           "organizationName=Common ToolKit AppLauncherSettingsTest\n"
-        << QString("name=%1\n").arg(appName)
-        << QString("revision=%1\n").arg(appRevision)
-        << "\n"
-           "[Environment]\n"
-           "additionalPathVariables=EXTRA_PATH\n"
-           "\n"
-           "[EnvironmentVariables]\n"
-           "REGULAR_SETTINGS_OVERRIDE_BY_NONE=RegularSettings\n"
-           "REGULAR_SETTINGS_OVERRIDE_BY_USER_ADDITIONAL_SETTINGS=UNEXPECTED\n"
-           "REGULAR_SETTINGS_OVERRIDE_BY_ADDITIONAL_SETTINGS=UNEXPECTED\n"
-           "APPLAUNCHER_SETTINGS_DIR_IN_REGULAR_SETTINGS=<APPLAUNCHER_SETTINGS_DIR>\n"
-           "\n"
-           "[Paths]\n"
-           "1\\path=<APPLAUNCHER_SETTINGS_DIR>/regular-settings-path\n"
-           "2\\path=/path/within/regular-settings\n"
-           "3\\path=relative-path/within/regular-settings\n"
-           "size=3\n"
-           "\n"
-           "[LibraryPaths]\n"
-           "1\\path=<APPLAUNCHER_SETTINGS_DIR>/regular-settings-librarypath\n"
-           "2\\path=/librarypath/within/regular-settings\n"
-           "3\\path=relative-librarypath/within/regular-settings\n"
-           "size=3\n"
-           "\n"
-           "[EXTRA_PATH]\n"
-           "1\\path=<APPLAUNCHER_SETTINGS_DIR>/regular-settings-extrapath\n"
-           "2\\path=/extrapath/within/regular-settings\n"
-           "3\\path=relative-extrapath/within/regular-settings\n"
-           "size=3\n";
+    outputStream //
+      << "[General]\n"
+      << QString("additionalSettingsFilePath=%1\n").arg(additionalSettingFile.fileName())
+      << "[Application]\n"
+         "path=/path/to/AwesomeApp\n"
+         "organizationDomain=www.commontk-AppLauncherSettingsTest.org\n"
+         "organizationName=Common ToolKit AppLauncherSettingsTest\n"
+      << QString("name=%1\n").arg(appName) //
+      << QString("revision=%1\n").arg(appRevision)
+      << "\n"
+         "[Environment]\n"
+         "additionalPathVariables=EXTRA_PATH\n"
+         "\n"
+         "[EnvironmentVariables]\n"
+         "REGULAR_SETTINGS_OVERRIDE_BY_NONE=RegularSettings\n"
+         "REGULAR_SETTINGS_OVERRIDE_BY_USER_ADDITIONAL_SETTINGS=UNEXPECTED\n"
+         "REGULAR_SETTINGS_OVERRIDE_BY_ADDITIONAL_SETTINGS=UNEXPECTED\n"
+         "APPLAUNCHER_SETTINGS_DIR_IN_REGULAR_SETTINGS=<APPLAUNCHER_SETTINGS_DIR>\n"
+         "\n"
+         "[Paths]\n"
+         "1\\path=<APPLAUNCHER_SETTINGS_DIR>/regular-settings-path\n"
+         "2\\path=/path/within/regular-settings\n"
+         "3\\path=relative-path/within/regular-settings\n"
+         "size=3\n"
+         "\n"
+         "[LibraryPaths]\n"
+         "1\\path=<APPLAUNCHER_SETTINGS_DIR>/regular-settings-librarypath\n"
+         "2\\path=/librarypath/within/regular-settings\n"
+         "3\\path=relative-librarypath/within/regular-settings\n"
+         "size=3\n"
+         "\n"
+         "[EXTRA_PATH]\n"
+         "1\\path=<APPLAUNCHER_SETTINGS_DIR>/regular-settings-extrapath\n"
+         "2\\path=/extrapath/within/regular-settings\n"
+         "3\\path=relative-extrapath/within/regular-settings\n"
+         "size=3\n";
 
     regularSettingFile.close();
   }
@@ -224,60 +224,60 @@ void ctkAppLauncherSettingsTester::testReadSettings()
     QVERIFY(userAdditionalSettingFile.open(QFile::WriteOnly));
 
     QTextStream outputStream(&userAdditionalSettingFile);
-    outputStream
-        << "[EnvironmentVariables]\n"
-           "REGULAR_SETTINGS_OVERRIDE_BY_USER_ADDITIONAL_SETTINGS=UserAdditionalSettingsOverride\n"
-           "USER_ADDITIONAL_SETTINGS_OVERRIDE_BY_NONE=UserAdditionalSettings-<env:REGULAR_SETTINGS_OVERRIDE_BY_NONE>\n"
-           "USER_ADDITIONAL_SETTINGS_OVERRIDE_BY_ADDITIONAL_SETTINGS=UNEXPECTED\n"
-           "APPLAUNCHER_SETTINGS_DIR_IN_USER_ADDITIONAL_SETTINGS=<APPLAUNCHER_SETTINGS_DIR>\n"
-           "\n"
-           "[Paths]\n"
-           "1\\path=<APPLAUNCHER_SETTINGS_DIR>/user-additional-settings-path\n"
-           "2\\path=/path/within/user-additional-settings\n"
-           "3\\path=relative-path/within/user-additional-settings\n"
-           "size=3\n"
-           "\n"
-           "[LibraryPaths]\n"
-           "1\\path=<APPLAUNCHER_SETTINGS_DIR>/user-additional-settings-librarypath\n"
-           "2\\path=/librarypath/within/user-additional-settings\n"
-           "3\\path=relative-librarypath/within/user-additional-settings\n"
-           "size=3\n"
-           "\n"
-           "[EXTRA_PATH]\n"
-           "1\\path=<APPLAUNCHER_SETTINGS_DIR>/user-additional-settings-extrapath\n"
-           "2\\path=/extrapath/within/user-additional-settings\n"
-           "3\\path=relative-extrapath/within/user-additional-settings\n"
-           "size=3\n";
+    outputStream //
+      << "[EnvironmentVariables]\n"
+         "REGULAR_SETTINGS_OVERRIDE_BY_USER_ADDITIONAL_SETTINGS=UserAdditionalSettingsOverride\n"
+         "USER_ADDITIONAL_SETTINGS_OVERRIDE_BY_NONE=UserAdditionalSettings-<env:REGULAR_SETTINGS_OVERRIDE_BY_NONE>\n"
+         "USER_ADDITIONAL_SETTINGS_OVERRIDE_BY_ADDITIONAL_SETTINGS=UNEXPECTED\n"
+         "APPLAUNCHER_SETTINGS_DIR_IN_USER_ADDITIONAL_SETTINGS=<APPLAUNCHER_SETTINGS_DIR>\n"
+         "\n"
+         "[Paths]\n"
+         "1\\path=<APPLAUNCHER_SETTINGS_DIR>/user-additional-settings-path\n"
+         "2\\path=/path/within/user-additional-settings\n"
+         "3\\path=relative-path/within/user-additional-settings\n"
+         "size=3\n"
+         "\n"
+         "[LibraryPaths]\n"
+         "1\\path=<APPLAUNCHER_SETTINGS_DIR>/user-additional-settings-librarypath\n"
+         "2\\path=/librarypath/within/user-additional-settings\n"
+         "3\\path=relative-librarypath/within/user-additional-settings\n"
+         "size=3\n"
+         "\n"
+         "[EXTRA_PATH]\n"
+         "1\\path=<APPLAUNCHER_SETTINGS_DIR>/user-additional-settings-extrapath\n"
+         "2\\path=/extrapath/within/user-additional-settings\n"
+         "3\\path=relative-extrapath/within/user-additional-settings\n"
+         "size=3\n";
 
   }
 
   // write additional settings
   {
     QTextStream outputStream(&additionalSettingFile);
-    outputStream
-        << "[EnvironmentVariables]\n"
-           "REGULAR_SETTINGS_OVERRIDE_BY_ADDITIONAL_SETTINGS=AdditionalSettingsOverride\n"
-           "USER_ADDITIONAL_SETTINGS_OVERRIDE_BY_ADDITIONAL_SETTINGS=AdditionalSettingsOverride\n"
-           "ADDITIONAL_SETTINGS_OVERRIDE_BY_NONE=AdditionalSettings-<env:REGULAR_SETTINGS_OVERRIDE_BY_NONE>-<env:USER_ADDITIONAL_SETTINGS_OVERRIDE_BY_NONE>\n"
-           "APPLAUNCHER_SETTINGS_DIR_IN_ADDITIONAL_SETTINGS=<APPLAUNCHER_SETTINGS_DIR>\n"
-           "\n"
-           "[Paths]\n"
-           "1\\path=<APPLAUNCHER_SETTINGS_DIR>/additional-settings-path\n"
-           "2\\path=/path/within/additional-settings\n"
-           "3\\path=relative-path/within/additional-settings\n"
-           "size=3\n"
-           "\n"
-           "[LibraryPaths]\n"
-           "1\\path=<APPLAUNCHER_SETTINGS_DIR>/additional-settings-librarypath\n"
-           "2\\path=/librarypath/within/additional-settings\n"
-           "3\\path=relative-librarypath/within/additional-settings\n"
-           "size=3\n"
-           "\n"
-           "[EXTRA_PATH]\n"
-           "1\\path=<APPLAUNCHER_SETTINGS_DIR>/additional-settings-extrapath\n"
-           "2\\path=/extrapath/within/additional-settings\n"
-           "3\\path=relative-extrapath/within/additional-settings\n"
-           "size=3\n";
+    outputStream //
+      << "[EnvironmentVariables]\n"
+         "REGULAR_SETTINGS_OVERRIDE_BY_ADDITIONAL_SETTINGS=AdditionalSettingsOverride\n"
+         "USER_ADDITIONAL_SETTINGS_OVERRIDE_BY_ADDITIONAL_SETTINGS=AdditionalSettingsOverride\n"
+         "ADDITIONAL_SETTINGS_OVERRIDE_BY_NONE=AdditionalSettings-<env:REGULAR_SETTINGS_OVERRIDE_BY_NONE>-<env:USER_ADDITIONAL_SETTINGS_OVERRIDE_BY_NONE>\n"
+         "APPLAUNCHER_SETTINGS_DIR_IN_ADDITIONAL_SETTINGS=<APPLAUNCHER_SETTINGS_DIR>\n"
+         "\n"
+         "[Paths]\n"
+         "1\\path=<APPLAUNCHER_SETTINGS_DIR>/additional-settings-path\n"
+         "2\\path=/path/within/additional-settings\n"
+         "3\\path=relative-path/within/additional-settings\n"
+         "size=3\n"
+         "\n"
+         "[LibraryPaths]\n"
+         "1\\path=<APPLAUNCHER_SETTINGS_DIR>/additional-settings-librarypath\n"
+         "2\\path=/librarypath/within/additional-settings\n"
+         "3\\path=relative-librarypath/within/additional-settings\n"
+         "size=3\n"
+         "\n"
+         "[EXTRA_PATH]\n"
+         "1\\path=<APPLAUNCHER_SETTINGS_DIR>/additional-settings-extrapath\n"
+         "2\\path=/extrapath/within/additional-settings\n"
+         "3\\path=relative-extrapath/within/additional-settings\n"
+         "size=3\n";
 
     additionalSettingFile.close();
   }
@@ -305,29 +305,29 @@ void ctkAppLauncherSettingsTester::testReadSettings()
   QString additionalSettingsDir = QFileInfo(additionalSettingFile.fileName()).absolutePath();
   QCOMPARE(appLauncherSettings.envVar("APPLAUNCHER_SETTINGS_DIR_IN_ADDITIONAL_SETTINGS"), additionalSettingsDir);
 
-  QCOMPARE_QSTRINGLIST(
-        appLauncherSettings.paths(),
-        QStringList()
-        << additionalSettingsDir + "/additional-settings-path" << "/path/within/additional-settings" << "/path/to/relative-path/within/additional-settings"
-        << userAdditionalSettingsDir + "/user-additional-settings-path" << "/path/within/user-additional-settings" << "/path/to/relative-path/within/user-additional-settings"
-        << regularSettingsDir + "/regular-settings-path" << "/path/within/regular-settings" << "/path/to/relative-path/within/regular-settings"
-        );
+  QCOMPARE_QSTRINGLIST( //
+    appLauncherSettings.paths(),
+    QStringList() //
+      << additionalSettingsDir + "/additional-settings-path" << "/path/within/additional-settings" << "/path/to/relative-path/within/additional-settings"
+      << userAdditionalSettingsDir + "/user-additional-settings-path" << "/path/within/user-additional-settings" << "/path/to/relative-path/within/user-additional-settings" //
+      << regularSettingsDir + "/regular-settings-path" << "/path/within/regular-settings" << "/path/to/relative-path/within/regular-settings"
+    );
 
-  QCOMPARE_QSTRINGLIST(
-        appLauncherSettings.libraryPaths(),
-        QStringList()
-        << additionalSettingsDir + "/additional-settings-librarypath" << "/librarypath/within/additional-settings" << "/path/to/relative-librarypath/within/additional-settings"
-        << userAdditionalSettingsDir + "/user-additional-settings-librarypath" << "/librarypath/within/user-additional-settings" << "/path/to/relative-librarypath/within/user-additional-settings"
-        << regularSettingsDir + "/regular-settings-librarypath" << "/librarypath/within/regular-settings" << "/path/to/relative-librarypath/within/regular-settings"
-        );
+  QCOMPARE_QSTRINGLIST( //
+    appLauncherSettings.libraryPaths(),
+    QStringList() //
+      << additionalSettingsDir + "/additional-settings-librarypath" << "/librarypath/within/additional-settings" << "/path/to/relative-librarypath/within/additional-settings"
+      << userAdditionalSettingsDir + "/user-additional-settings-librarypath" << "/librarypath/within/user-additional-settings" << "/path/to/relative-librarypath/within/user-additional-settings" //
+      << regularSettingsDir + "/regular-settings-librarypath" << "/librarypath/within/regular-settings" << "/path/to/relative-librarypath/within/regular-settings"
+    );
 
-  QCOMPARE_QSTRINGLIST(
-        appLauncherSettings.pathsEnvVars().value("EXTRA_PATH"),
-        QStringList()
-        << additionalSettingsDir + "/additional-settings-extrapath" << "/extrapath/within/additional-settings" << "/path/to/relative-extrapath/within/additional-settings"
-        << userAdditionalSettingsDir + "/user-additional-settings-extrapath" << "/extrapath/within/user-additional-settings" << "/path/to/relative-extrapath/within/user-additional-settings"
-        << regularSettingsDir + "/regular-settings-extrapath" << "/extrapath/within/regular-settings" << "/path/to/relative-extrapath/within/regular-settings"
-        );
+  QCOMPARE_QSTRINGLIST( //
+    appLauncherSettings.pathsEnvVars().value("EXTRA_PATH"),
+    QStringList() //
+      << additionalSettingsDir + "/additional-settings-extrapath" << "/extrapath/within/additional-settings" << "/path/to/relative-extrapath/within/additional-settings"
+      << userAdditionalSettingsDir + "/user-additional-settings-extrapath" << "/extrapath/within/user-additional-settings" << "/path/to/relative-extrapath/within/user-additional-settings" //
+      << regularSettingsDir + "/regular-settings-extrapath" << "/extrapath/within/regular-settings" << "/path/to/relative-extrapath/within/regular-settings"
+      );
 }
 
 // ----------------------------------------------------------------------------

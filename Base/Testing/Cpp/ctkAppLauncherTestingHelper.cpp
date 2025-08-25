@@ -32,12 +32,14 @@ bool CheckStringList(int line, const QString& description,
     {
       longerList.removeOne(name);
     }
+    // clang-format off
     qWarning() << "\nLine " << line << " - " << description
                << " : " << testName << " failed"
                << "\nCompared lists have different sizes."
                << "\n\tcurrent size :" << current.count()
                << "\n\texpected size:" << expected.count()
                << "\n\tcurrent list" << qPrintable(status) << "values:" << longerList;
+    // clang-format on
     return false;
   }
   QStringList sortedCurrent(current);
@@ -50,6 +52,7 @@ bool CheckStringList(int line, const QString& description,
   {
     if (sortedCurrent.at(idx) != sortedExpected.at(idx))
     {
+      // clang-format off
       qWarning() << "\nLine " << line << " - " << description
                  << " : " << testName << " failed"
                  << "\nCompared lists differ at index " << idx
@@ -58,6 +61,7 @@ bool CheckStringList(int line, const QString& description,
       qWarning().nospace()
                  << "\n\tcurrent list values:\n\t\t" << sortedCurrent.join("\n\t\t")
                  << "\n\texpected list values:\n\t\t" << sortedExpected.join("\n\t\t");
+      // clang-format on
       return false;
     }
   }
@@ -82,10 +86,12 @@ bool CheckString(int line, const QString& description,
   }
   if (different == errorIfDifferent)
   {
+    // clang-format off
     qWarning() << "\nLine " << line << " - " << description
                << " : " << testName << "  failed"
                << "\n\tcurrent :" << (current ? current : "<null>")
                << "\n\texpected:" << (expected ? expected : "<null>");
+    // clang-format on
     return false;
   }
   return true;

@@ -32,91 +32,95 @@ int appLauncherMain(int argc, char** argv)
 
   ctkAppArguments appArguments(argc, argv);
 
-  appArguments.setArgumentToFilterList(
-        ctkAppArguments::ArgToFilterListType()
+  appArguments.setArgumentToFilterList(    //
+    ctkAppArguments::ArgToFilterListType() //
 
-        //
-        // Qt4 built-in arguments - See https://qt-project.org/doc/qt-4.8/qapplication.html#QApplication
-        //
-        << ctkAppArguments::ArgToFilterType("-style", ctkAppArguments::ARG_TO_FILTER_EQUAL_VALUE | ctkAppArguments::ARG_TO_FILTER_SPACE_VALUE)
-        << ctkAppArguments::ArgToFilterType("-stylesheet", ctkAppArguments::ARG_TO_FILTER_EQUAL_VALUE | ctkAppArguments::ARG_TO_FILTER_SPACE_VALUE)
-        << ctkAppArguments::ArgToFilterType("-session", ctkAppArguments::ARG_TO_FILTER_EQUAL_VALUE | ctkAppArguments::ARG_TO_FILTER_SPACE_VALUE)
-        << ctkAppArguments::ArgToFilterType("-widgetcount")
-        << ctkAppArguments::ArgToFilterType("-reverse")
-        << ctkAppArguments::ArgToFilterType("-graphicssystem")
-        << ctkAppArguments::ArgToFilterType("-qmljsdebugger=", ctkAppArguments::ARG_TO_FILTER_EQUAL_VALUE)
+    //
+    // Qt4 built-in arguments - See https://qt-project.org/doc/qt-4.8/qapplication.html#QApplication
+    //
+    // clang-format off
+    << ctkAppArguments::ArgToFilterType("-style", ctkAppArguments::ARG_TO_FILTER_EQUAL_VALUE | ctkAppArguments::ARG_TO_FILTER_SPACE_VALUE)
+    << ctkAppArguments::ArgToFilterType("-stylesheet", ctkAppArguments::ARG_TO_FILTER_EQUAL_VALUE | ctkAppArguments::ARG_TO_FILTER_SPACE_VALUE)
+    << ctkAppArguments::ArgToFilterType("-session", ctkAppArguments::ARG_TO_FILTER_EQUAL_VALUE | ctkAppArguments::ARG_TO_FILTER_SPACE_VALUE)
+    << ctkAppArguments::ArgToFilterType("-widgetcount")
+    << ctkAppArguments::ArgToFilterType("-reverse")
+    << ctkAppArguments::ArgToFilterType("-graphicssystem")
+    << ctkAppArguments::ArgToFilterType("-qmljsdebugger=", ctkAppArguments::ARG_TO_FILTER_EQUAL_VALUE)
 #ifdef QT_DEBUG
-        << ctkAppArguments::ArgToFilterType("-nograb")
+    << ctkAppArguments::ArgToFilterType("-nograb")
 #endif
 #ifdef Q_WS_X11
-        << ctkAppArguments::ArgToFilterType("-display")
-        << ctkAppArguments::ArgToFilterType("-geometry")
-        << ctkAppArguments::ArgToFilterType("-fn")
-        << ctkAppArguments::ArgToFilterType("-font")
-        << ctkAppArguments::ArgToFilterType("-bg")
-        << ctkAppArguments::ArgToFilterType("-background")
-        << ctkAppArguments::ArgToFilterType("-fg")
-        << ctkAppArguments::ArgToFilterType("-foreground")
-        << ctkAppArguments::ArgToFilterType("-btn")
-        << ctkAppArguments::ArgToFilterType("-button")
-        << ctkAppArguments::ArgToFilterType("-name")
-        << ctkAppArguments::ArgToFilterType("-title")
-        << ctkAppArguments::ArgToFilterType("-visual")
-        << ctkAppArguments::ArgToFilterType("-ncols")
-        << ctkAppArguments::ArgToFilterType("-cmap")
-        << ctkAppArguments::ArgToFilterType("-im")
-        << ctkAppArguments::ArgToFilterType("-inputstyle")
+    << ctkAppArguments::ArgToFilterType("-display")
+    << ctkAppArguments::ArgToFilterType("-geometry")
+    << ctkAppArguments::ArgToFilterType("-fn")
+    << ctkAppArguments::ArgToFilterType("-font")
+    << ctkAppArguments::ArgToFilterType("-bg")
+    << ctkAppArguments::ArgToFilterType("-background")
+    << ctkAppArguments::ArgToFilterType("-fg")
+    << ctkAppArguments::ArgToFilterType("-foreground")
+    << ctkAppArguments::ArgToFilterType("-btn")
+    << ctkAppArguments::ArgToFilterType("-button")
+    << ctkAppArguments::ArgToFilterType("-name")
+    << ctkAppArguments::ArgToFilterType("-title")
+    << ctkAppArguments::ArgToFilterType("-visual")
+    << ctkAppArguments::ArgToFilterType("-ncols")
+    << ctkAppArguments::ArgToFilterType("-cmap")
+    << ctkAppArguments::ArgToFilterType("-im")
+    << ctkAppArguments::ArgToFilterType("-inputstyle")
 # ifdef QT_DEBUG
-        << ctkAppArguments::ArgToFilterType("-dograb")
-        << ctkAppArguments::ArgToFilterType("-sync")
+    << ctkAppArguments::ArgToFilterType("-dograb")
+    << ctkAppArguments::ArgToFilterType("-sync")
 # endif
 #endif
+    // clang-format on
 
-        //
-        // Qt5 built-in arguments - See https://doc.qt.io/qt-5/qapplication.html#QApplication
-        //
-        // -style/-style=
-        // -stylesheet/-stylesheet=
-        // -widgetcount
-        // -reverse
-        // -qmljsdebugger=
+    //
+    // Qt5 built-in arguments - See https://doc.qt.io/qt-5/qapplication.html#QApplication
+    //
+    // -style/-style=
+    // -stylesheet/-stylesheet=
+    // -widgetcount
+    // -reverse
+    // -qmljsdebugger=
 
-        //
-        // Qt5 built-in arguments - See https://doc.qt.io/qt-5/qguiapplication.html#QGuiApplication
-        //
-        << ctkAppArguments::ArgToFilterType("-platform", ctkAppArguments::ARG_TO_FILTER_SPACE_VALUE)
-        << ctkAppArguments::ArgToFilterType("-platformpluginpath", ctkAppArguments::ARG_TO_FILTER_SPACE_VALUE)
-        << ctkAppArguments::ArgToFilterType("-platformtheme", ctkAppArguments::ARG_TO_FILTER_SPACE_VALUE)
-        << ctkAppArguments::ArgToFilterType("-plugin", ctkAppArguments::ARG_TO_FILTER_SPACE_VALUE)
-        // -qmljsdebugger=
-        << ctkAppArguments::ArgToFilterType("-qwindowgeometry", ctkAppArguments::ARG_TO_FILTER_SPACE_VALUE)
-        << ctkAppArguments::ArgToFilterType("-qwindowicon", ctkAppArguments::ARG_TO_FILTER_SPACE_VALUE)
-        << ctkAppArguments::ArgToFilterType("-qwindowtitle", ctkAppArguments::ARG_TO_FILTER_SPACE_VALUE)
-        // -reverse
-        // -session/-session=
+    //
+    // Qt5 built-in arguments - See https://doc.qt.io/qt-5/qguiapplication.html#QGuiApplication
+    //
+    // clang-format off
+    << ctkAppArguments::ArgToFilterType("-platform", ctkAppArguments::ARG_TO_FILTER_SPACE_VALUE)
+    << ctkAppArguments::ArgToFilterType("-platformpluginpath", ctkAppArguments::ARG_TO_FILTER_SPACE_VALUE)
+    << ctkAppArguments::ArgToFilterType("-platformtheme", ctkAppArguments::ARG_TO_FILTER_SPACE_VALUE)
+    << ctkAppArguments::ArgToFilterType("-plugin", ctkAppArguments::ARG_TO_FILTER_SPACE_VALUE)
+    // -qmljsdebugger=
+    << ctkAppArguments::ArgToFilterType("-qwindowgeometry", ctkAppArguments::ARG_TO_FILTER_SPACE_VALUE)
+    << ctkAppArguments::ArgToFilterType("-qwindowicon", ctkAppArguments::ARG_TO_FILTER_SPACE_VALUE)
+    << ctkAppArguments::ArgToFilterType("-qwindowtitle", ctkAppArguments::ARG_TO_FILTER_SPACE_VALUE)
+    // -reverse
+    // -session/-session=
 #if defined Q_WS_X11
-        // -display
-        // -geometry
+    // -display
+    // -geometry
 #endif
-        << ctkAppArguments::ArgToFilterType("-qwindowtitle", ctkAppArguments::ARG_TO_FILTER_SPACE_VALUE)
-        << ctkAppArguments::ArgToFilterType("-fontengine", ctkAppArguments::ARG_TO_FILTER_SPACE_VALUE)
+    << ctkAppArguments::ArgToFilterType("-qwindowtitle", ctkAppArguments::ARG_TO_FILTER_SPACE_VALUE)
+    << ctkAppArguments::ArgToFilterType("-fontengine", ctkAppArguments::ARG_TO_FILTER_SPACE_VALUE)
 #if defined Q_OS_WIN32
-        << ctkAppArguments::ArgToFilterType("-altgr")
-        << ctkAppArguments::ArgToFilterType("-darkmode=", ctkAppArguments::ARG_TO_FILTER_EQUAL_VALUE)
-        << ctkAppArguments::ArgToFilterType("-dialogs=", ctkAppArguments::ARG_TO_FILTER_EQUAL_VALUE)
-        << ctkAppArguments::ArgToFilterType("-dpiawareness=", ctkAppArguments::ARG_TO_FILTER_EQUAL_VALUE)
-        << ctkAppArguments::ArgToFilterType("-fontengine=", ctkAppArguments::ARG_TO_FILTER_EQUAL_VALUE)
-        << ctkAppArguments::ArgToFilterType("-menus=", ctkAppArguments::ARG_TO_FILTER_EQUAL_VALUE)
-        << ctkAppArguments::ArgToFilterType("-nocolorfonts")
-        << ctkAppArguments::ArgToFilterType("-nodirectwrite")
-        << ctkAppArguments::ArgToFilterType("-nomousefromtouch")
-        << ctkAppArguments::ArgToFilterType("-nowmpointer")
-        // -reverse
-        << ctkAppArguments::ArgToFilterType("-tabletabsoluterange=", ctkAppArguments::ARG_TO_FILTER_EQUAL_VALUE)
+    << ctkAppArguments::ArgToFilterType("-altgr")
+    << ctkAppArguments::ArgToFilterType("-darkmode=", ctkAppArguments::ARG_TO_FILTER_EQUAL_VALUE)
+    << ctkAppArguments::ArgToFilterType("-dialogs=", ctkAppArguments::ARG_TO_FILTER_EQUAL_VALUE)
+    << ctkAppArguments::ArgToFilterType("-dpiawareness=", ctkAppArguments::ARG_TO_FILTER_EQUAL_VALUE)
+    << ctkAppArguments::ArgToFilterType("-fontengine=", ctkAppArguments::ARG_TO_FILTER_EQUAL_VALUE)
+    << ctkAppArguments::ArgToFilterType("-menus=", ctkAppArguments::ARG_TO_FILTER_EQUAL_VALUE)
+    << ctkAppArguments::ArgToFilterType("-nocolorfonts")
+    << ctkAppArguments::ArgToFilterType("-nodirectwrite")
+    << ctkAppArguments::ArgToFilterType("-nomousefromtouch")
+    << ctkAppArguments::ArgToFilterType("-nowmpointer")
+    // -reverse
+    << ctkAppArguments::ArgToFilterType("-tabletabsoluterange=", ctkAppArguments::ARG_TO_FILTER_EQUAL_VALUE)
 #endif
 #if defined Q_OS_MAC
-        << ctkAppArguments::ArgToFilterType("-fontengine=", ctkAppArguments::ARG_TO_FILTER_EQUAL_VALUE)
+    << ctkAppArguments::ArgToFilterType("-fontengine=", ctkAppArguments::ARG_TO_FILTER_EQUAL_VALUE)
 #endif
+    // clang-format on
         );
 
   QString executableName = argv[0];
@@ -149,9 +153,9 @@ int appLauncherMain(int argc, char** argv)
   QScopedPointer<QCoreApplication> app;
   if (appLauncher->disableSplash())
   {
-    app.reset(new QCoreApplication(
-                appArguments.argumentCount(ctkAppArguments::ARG_REGULAR_LIST),
-                appArguments.argumentValues(ctkAppArguments::ARG_REGULAR_LIST)));
+    app.reset(new QCoreApplication( //
+      appArguments.argumentCount(ctkAppArguments::ARG_REGULAR_LIST),
+      appArguments.argumentValues(ctkAppArguments::ARG_REGULAR_LIST)));
   }
   else
   {
@@ -163,9 +167,9 @@ int appLauncherMain(int argc, char** argv)
     Q_IMPORT_PLUGIN(QXcbIntegrationPlugin)
 #endif
 
-    app.reset(new QApplication(
-                appArguments.argumentCount(ctkAppArguments::ARG_REGULAR_LIST),
-                appArguments.argumentValues(ctkAppArguments::ARG_REGULAR_LIST)));
+    app.reset(new QApplication( //
+      appArguments.argumentCount(ctkAppArguments::ARG_REGULAR_LIST),
+      appArguments.argumentValues(ctkAppArguments::ARG_REGULAR_LIST)));
   }
 
   appLauncher.reset(new ctkAppLauncher);

@@ -53,10 +53,10 @@ int checkReadArrayValues()
     return EXIT_FAILURE;
   }
 
-  CHECK_QSTRINGLIST(
-        ctk::readArrayValues(settings, "Paths", "path"),
-        QStringList() << "/foo" << "/bar"
-        );
+  CHECK_QSTRINGLIST( //
+    ctk::readArrayValues(settings, "Paths", "path"),
+    QStringList() << "/foo" << "/bar"
+    );
 
   return EXIT_SUCCESS;
 }
@@ -67,90 +67,90 @@ int checkReadSettingsWithoutExpand()
   ctkAppLauncherSettings appLauncherSettings;
   appLauncherSettings.readSettings("launcher-settings.ini");
 
-  CHECK_QSTRINGLIST(
-        appLauncherSettings.paths(/* expand= */ false),
-        QStringList()
-                << "<APPLAUNCHER_DIR>/cow/<APPLAUNCHER_NAME>"
-                << "/path/to/pig-<env:BOTH>"
-                << "/path/to/<env:PET>"
-                << "<APPLAUNCHER_REGULAR_SETTINGS_DIR>/sheep/<APPLAUNCHER_NAME>"
-                << "relative-path/sheep/<APPLAUNCHER_NAME>"
-        );
+  CHECK_QSTRINGLIST( //
+    appLauncherSettings.paths(/* expand= */ false),
+    QStringList() //
+      << "<APPLAUNCHER_DIR>/cow/<APPLAUNCHER_NAME>"
+      << "/path/to/pig-<env:BOTH>"
+      << "/path/to/<env:PET>"
+      << "<APPLAUNCHER_REGULAR_SETTINGS_DIR>/sheep/<APPLAUNCHER_NAME>"
+      << "relative-path/sheep/<APPLAUNCHER_NAME>"
+    );
 
-  CHECK_QSTRINGLIST(
-        appLauncherSettings.libraryPaths(/* expand= */ false),
-        QStringList()
-                << "/path/to/libA"
-                << "<APPLAUNCHER_DIR>/libB"
-                << "/path/to/libC-<env:PET>"
-                << "<APPLAUNCHER_REGULAR_SETTINGS_DIR>/libC"
-                << "relative-path/libC"
-        );
+  CHECK_QSTRINGLIST( //
+    appLauncherSettings.libraryPaths(/* expand= */ false),
+    QStringList() //
+      << "/path/to/libA"
+      << "<APPLAUNCHER_DIR>/libB"
+      << "/path/to/libC-<env:PET>"
+      << "<APPLAUNCHER_REGULAR_SETTINGS_DIR>/libC"
+      << "relative-path/libC"
+    );
 
-  CHECK_QSTRING(
-        appLauncherSettings.envVar("BAR", /* expand= */ false),
-        "ASSOCIATION"
-        );
+  CHECK_QSTRING( //
+    appLauncherSettings.envVar("BAR", /* expand= */ false),
+    "ASSOCIATION"
+    );
 
-  CHECK_QSTRING(
-        appLauncherSettings.envVar("PET", /* expand= */ false),
-        "dog"
-        );
+  CHECK_QSTRING( //
+    appLauncherSettings.envVar("PET", /* expand= */ false),
+    "dog"
+    );
 
-  CHECK_QSTRING(
-        appLauncherSettings.envVar("BOTH", /* expand= */ false),
-        "cat-and-<env:PET>"
-        );
+  CHECK_QSTRING( //
+    appLauncherSettings.envVar("BOTH", /* expand= */ false),
+    "cat-and-<env:PET>"
+    );
 
-  CHECK_QSTRING(
-        appLauncherSettings.envVar("PLACEHOLDER", /* expand= */ false),
-        "<APPLAUNCHER_DIR>-<APPLAUNCHER_NAME>"
-        );
+  CHECK_QSTRING( //
+    appLauncherSettings.envVar("PLACEHOLDER", /* expand= */ false),
+    "<APPLAUNCHER_DIR>-<APPLAUNCHER_NAME>"
+    );
 
-  CHECK_QSTRING(
-        appLauncherSettings.envVar("SETTINGSPLACEHOLDER", /* expand= */ false),
-        "<APPLAUNCHER_SETTINGS_DIR>-<APPLAUNCHER_NAME>"
-        );
+  CHECK_QSTRING( //
+    appLauncherSettings.envVar("SETTINGSPLACEHOLDER", /* expand= */ false),
+    "<APPLAUNCHER_SETTINGS_DIR>-<APPLAUNCHER_NAME>"
+    );
 
 #if defined(Q_OS_WIN32)
-  CHECK_QSTRING(
-        appLauncherSettings.envVar("PYTHONPATH", /* expand= */ false),
-        "<APPLAUNCHER_DIR>/lib/python/site-packages;/path/to/site-packages-2;<APPLAUNCHER_REGULAR_SETTINGS_DIR>/lib/python/site-packages-settings;relative-path/to/site-packages-3"
-        );
+  CHECK_QSTRING( //
+    appLauncherSettings.envVar("PYTHONPATH", /* expand= */ false),
+    "<APPLAUNCHER_DIR>/lib/python/site-packages;/path/to/site-packages-2;<APPLAUNCHER_REGULAR_SETTINGS_DIR>/lib/python/site-packages-settings;relative-path/to/site-packages-3"
+    );
 
-  CHECK_QSTRING(
-        appLauncherSettings.envVar("QT_PLUGIN_PATH", /* expand= */ false),
-        "<APPLAUNCHER_DIR>/libexec/qt;<APPLAUNCHER_DIR>/libexec/<env:BAR>;<APPLAUNCHER_REGULAR_SETTINGS_DIR>/libexec-settings/<env:BAR>;relative-path/libexec-settings/<env:BAR>"
-        );
+  CHECK_QSTRING( //
+    appLauncherSettings.envVar("QT_PLUGIN_PATH", /* expand= */ false),
+    "<APPLAUNCHER_DIR>/libexec/qt;<APPLAUNCHER_DIR>/libexec/<env:BAR>;<APPLAUNCHER_REGULAR_SETTINGS_DIR>/libexec-settings/<env:BAR>;relative-path/libexec-settings/<env:BAR>"
+    );
 #else
-  CHECK_QSTRING(
-        appLauncherSettings.envVar("PYTHONPATH", /* expand= */ false),
-        "<APPLAUNCHER_DIR>/lib/python/site-packages:/path/to/site-packages-2:<APPLAUNCHER_REGULAR_SETTINGS_DIR>/lib/python/site-packages-settings:relative-path/to/site-packages-3"
-        );
+  CHECK_QSTRING( //
+    appLauncherSettings.envVar("PYTHONPATH", /* expand= */ false),
+    "<APPLAUNCHER_DIR>/lib/python/site-packages:/path/to/site-packages-2:<APPLAUNCHER_REGULAR_SETTINGS_DIR>/lib/python/site-packages-settings:relative-path/to/site-packages-3"
+    );
 
-  CHECK_QSTRING(
-        appLauncherSettings.envVar("QT_PLUGIN_PATH", /* expand= */ false),
-        "<APPLAUNCHER_DIR>/libexec/qt:<APPLAUNCHER_DIR>/libexec/<env:BAR>:<APPLAUNCHER_REGULAR_SETTINGS_DIR>/libexec-settings/<env:BAR>:relative-path/libexec-settings/<env:BAR>"
-        );
+  CHECK_QSTRING( //
+    appLauncherSettings.envVar("QT_PLUGIN_PATH", /* expand= */ false),
+    "<APPLAUNCHER_DIR>/libexec/qt:<APPLAUNCHER_DIR>/libexec/<env:BAR>:<APPLAUNCHER_REGULAR_SETTINGS_DIR>/libexec-settings/<env:BAR>:relative-path/libexec-settings/<env:BAR>"
+    );
 #endif
 
-  CHECK_QSTRINGLIST(
-        appLauncherSettings.additionalPaths("PYTHONPATH", /* expand= */ false),
-        QStringList()
-                << "<APPLAUNCHER_DIR>/lib/python/site-packages"
-                << "/path/to/site-packages-2"
-                << "<APPLAUNCHER_REGULAR_SETTINGS_DIR>/lib/python/site-packages-settings"
-                << "relative-path/to/site-packages-3"
-        );
+  CHECK_QSTRINGLIST( //
+    appLauncherSettings.additionalPaths("PYTHONPATH", /* expand= */ false),
+    QStringList() //
+      << "<APPLAUNCHER_DIR>/lib/python/site-packages"
+      << "/path/to/site-packages-2"
+      << "<APPLAUNCHER_REGULAR_SETTINGS_DIR>/lib/python/site-packages-settings"
+      << "relative-path/to/site-packages-3"
+    );
 
-  CHECK_QSTRINGLIST(
-        appLauncherSettings.additionalPaths("QT_PLUGIN_PATH", /* expand= */ false),
-        QStringList()
-                << "<APPLAUNCHER_DIR>/libexec/qt"
-                << "<APPLAUNCHER_DIR>/libexec/<env:BAR>"
-                << "<APPLAUNCHER_REGULAR_SETTINGS_DIR>/libexec-settings/<env:BAR>"
-                << "relative-path/libexec-settings/<env:BAR>"
-        );
+  CHECK_QSTRINGLIST( //
+    appLauncherSettings.additionalPaths("QT_PLUGIN_PATH", /* expand= */ false),
+    QStringList() //
+      << "<APPLAUNCHER_DIR>/libexec/qt"
+      << "<APPLAUNCHER_DIR>/libexec/<env:BAR>"
+      << "<APPLAUNCHER_REGULAR_SETTINGS_DIR>/libexec-settings/<env:BAR>"
+      << "relative-path/libexec-settings/<env:BAR>"
+    );
 
   //
   // pathsEnvVars
@@ -160,59 +160,59 @@ int checkReadSettingsWithoutExpand()
       appLauncherSettings.pathsEnvVars(/* expand= */ false);
 
 #if defined(Q_OS_WIN32)
-  CHECK_QSTRINGLIST(
-        pathsEnvVars.value("Path"),
-        QStringList()
-                << "<APPLAUNCHER_DIR>/cow/<APPLAUNCHER_NAME>"
-                << "/path/to/pig-<env:BOTH>"
-                << "/path/to/<env:PET>"
-                << "<APPLAUNCHER_REGULAR_SETTINGS_DIR>/sheep/<APPLAUNCHER_NAME>"
-                << "relative-path/sheep/<APPLAUNCHER_NAME>"
-                << "/path/to/libA"
-                << "<APPLAUNCHER_DIR>/libB"
-                << "/path/to/libC-<env:PET>"
-                << "<APPLAUNCHER_REGULAR_SETTINGS_DIR>/libC"
-                << "relative-path/libC"
-        );
+  CHECK_QSTRINGLIST( //
+    pathsEnvVars.value("Path"),
+    QStringList() //
+      << "<APPLAUNCHER_DIR>/cow/<APPLAUNCHER_NAME>"
+      << "/path/to/pig-<env:BOTH>"
+      << "/path/to/<env:PET>"
+      << "<APPLAUNCHER_REGULAR_SETTINGS_DIR>/sheep/<APPLAUNCHER_NAME>"
+      << "relative-path/sheep/<APPLAUNCHER_NAME>"
+      << "/path/to/libA"
+      << "<APPLAUNCHER_DIR>/libB"
+      << "/path/to/libC-<env:PET>"
+      << "<APPLAUNCHER_REGULAR_SETTINGS_DIR>/libC"
+      << "relative-path/libC"
+    );
 #else
-  CHECK_QSTRINGLIST(
-        pathsEnvVars.value("PATH"),
-        QStringList()
-                << "<APPLAUNCHER_DIR>/cow/<APPLAUNCHER_NAME>"
-                << "/path/to/pig-<env:BOTH>"
-                << "/path/to/<env:PET>"
-                << "<APPLAUNCHER_REGULAR_SETTINGS_DIR>/sheep/<APPLAUNCHER_NAME>"
-                << "relative-path/sheep/<APPLAUNCHER_NAME>"
-        );
+  CHECK_QSTRINGLIST( //
+    pathsEnvVars.value("PATH"),
+    QStringList() //
+      << "<APPLAUNCHER_DIR>/cow/<APPLAUNCHER_NAME>"
+      << "/path/to/pig-<env:BOTH>"
+      << "/path/to/<env:PET>"
+      << "<APPLAUNCHER_REGULAR_SETTINGS_DIR>/sheep/<APPLAUNCHER_NAME>"
+      << "relative-path/sheep/<APPLAUNCHER_NAME>"
+    );
 
-  CHECK_QSTRINGLIST(
-        pathsEnvVars.value(appLauncherSettings.libraryPathVariableName()),
-        QStringList()
-                << "/path/to/libA"
-                << "<APPLAUNCHER_DIR>/libB"
-                << "/path/to/libC-<env:PET>"
-                << "<APPLAUNCHER_REGULAR_SETTINGS_DIR>/libC"
-                << "relative-path/libC"
-        );
+  CHECK_QSTRINGLIST( //
+    pathsEnvVars.value(appLauncherSettings.libraryPathVariableName()),
+    QStringList() //
+      << "/path/to/libA"
+      << "<APPLAUNCHER_DIR>/libB"
+      << "/path/to/libC-<env:PET>"
+      << "<APPLAUNCHER_REGULAR_SETTINGS_DIR>/libC"
+      << "relative-path/libC"
+    );
 #endif
 
-  CHECK_QSTRINGLIST(
-        pathsEnvVars.value("PYTHONPATH"),
-        QStringList()
-                << "<APPLAUNCHER_DIR>/lib/python/site-packages"
-                << "/path/to/site-packages-2"
-                << "<APPLAUNCHER_REGULAR_SETTINGS_DIR>/lib/python/site-packages-settings"
-                << "relative-path/to/site-packages-3"
-        );
+  CHECK_QSTRINGLIST( //
+    pathsEnvVars.value("PYTHONPATH"),
+    QStringList() //
+      << "<APPLAUNCHER_DIR>/lib/python/site-packages"
+      << "/path/to/site-packages-2"
+      << "<APPLAUNCHER_REGULAR_SETTINGS_DIR>/lib/python/site-packages-settings"
+      << "relative-path/to/site-packages-3"
+    );
 
-  CHECK_QSTRINGLIST(
-        pathsEnvVars.value("QT_PLUGIN_PATH"),
-        QStringList()
-                << "<APPLAUNCHER_DIR>/libexec/qt"
-                << "<APPLAUNCHER_DIR>/libexec/<env:BAR>"
-                << "<APPLAUNCHER_REGULAR_SETTINGS_DIR>/libexec-settings/<env:BAR>"
-                << "relative-path/libexec-settings/<env:BAR>"
-        );
+  CHECK_QSTRINGLIST( //
+    pathsEnvVars.value("QT_PLUGIN_PATH"),
+    QStringList() //
+      << "<APPLAUNCHER_DIR>/libexec/qt"
+      << "<APPLAUNCHER_DIR>/libexec/<env:BAR>"
+      << "<APPLAUNCHER_REGULAR_SETTINGS_DIR>/libexec-settings/<env:BAR>"
+      << "relative-path/libexec-settings/<env:BAR>"
+    );
 
 #if defined(Q_OS_WIN32)
   int expectedPathsEnvVarsCount = 3;
@@ -244,108 +244,102 @@ int checkReadSettingsWithExpand()
 
   QString regularSettingsDir = QFileInfo("launcher-settings.ini").absolutePath();
 
-  CHECK_QSTRINGLIST(
-        appLauncherSettings.paths(),
-        QStringList()
-                << "/awesome/path/to/cow/AwesomeApp"
-                << "/path/to/pig-cat-and-dog"
-                << "/path/to/dog"
-                << QString("%1/sheep/AwesomeApp").arg(regularSettingsDir)
-                << "/awesome/path/to/relative-path/sheep/AwesomeApp"
-        );
+  CHECK_QSTRINGLIST( //
+    appLauncherSettings.paths(),
+    QStringList() //
+      << "/awesome/path/to/cow/AwesomeApp"
+      << "/path/to/pig-cat-and-dog"
+      << "/path/to/dog"                                         //
+      << QString("%1/sheep/AwesomeApp").arg(regularSettingsDir) //
+      << "/awesome/path/to/relative-path/sheep/AwesomeApp");
 
-  CHECK_QSTRINGLIST(
-        appLauncherSettings.libraryPaths(),
-        QStringList()
-                << "/path/to/libA"
-                << "/awesome/path/to/libB"
-                << "/path/to/libC-dog"
-                << QString("%1/libC").arg(regularSettingsDir)
-                << "/awesome/path/to/relative-path/libC"
-        );
+  CHECK_QSTRINGLIST( //
+    appLauncherSettings.libraryPaths(),
+    QStringList() //
+      << "/path/to/libA"
+      << "/awesome/path/to/libB"
+      << "/path/to/libC-dog"                        //
+      << QString("%1/libC").arg(regularSettingsDir) //
+      << "/awesome/path/to/relative-path/libC");
 
-  CHECK_QSTRING(
-        appLauncherSettings.envVar("BAR"),
-        "ASSOCIATION"
-        );
+  CHECK_QSTRING( //
+    appLauncherSettings.envVar("BAR"),
+    "ASSOCIATION"
+    );
 
-  CHECK_QSTRING(
-        appLauncherSettings.envVar("PET"),
-        "dog"
-        );
+  CHECK_QSTRING( //
+    appLauncherSettings.envVar("PET"),
+    "dog"
+    );
 
-  CHECK_QSTRING(
-        appLauncherSettings.envVar("BOTH"),
-        "cat-and-dog"
-        );
+  CHECK_QSTRING( //
+    appLauncherSettings.envVar("BOTH"),
+    "cat-and-dog"
+    );
 
-  CHECK_QSTRING(
-        appLauncherSettings.envVar("PLACEHOLDER"),
-        "/awesome/path/to-AwesomeApp"
-        );
+  CHECK_QSTRING( //
+    appLauncherSettings.envVar("PLACEHOLDER"),
+    "/awesome/path/to-AwesomeApp"
+    );
 
-  CHECK_QSTRING(
-        appLauncherSettings.envVar("SETTINGSPLACEHOLDER"),
-        QString("%1-AwesomeApp").arg(regularSettingsDir)
-        );
+  CHECK_QSTRING( //
+    appLauncherSettings.envVar("SETTINGSPLACEHOLDER"),
+    QString("%1-AwesomeApp").arg(regularSettingsDir)
+    );
 
 #if defined(Q_OS_WIN32)
-  CHECK_QSTRING(
-        appLauncherSettings.envVar("PYTHONPATH"),
-        QString("/awesome/path/to/lib/python/site-packages;/path/to/site-packages-2;%1/lib/python/site-packages-settings;/awesome/path/to/relative-path/to/site-packages-3").arg(regularSettingsDir)
-        );
+  CHECK_QSTRING( //
+    appLauncherSettings.envVar("PYTHONPATH"),
+    QString("/awesome/path/to/lib/python/site-packages;/path/to/site-packages-2;%1/lib/python/site-packages-settings;/awesome/path/to/relative-path/to/site-packages-3").arg(regularSettingsDir)
+    );
 
-  CHECK_QSTRING(
-        appLauncherSettings.envVar("QT_PLUGIN_PATH"),
-        QString("/awesome/path/to/libexec/qt;/awesome/path/to/libexec/ASSOCIATION;%1/libexec-settings/ASSOCIATION;/awesome/path/to/relative-path/libexec-settings/ASSOCIATION").arg(regularSettingsDir)
-        );
+  CHECK_QSTRING( //
+    appLauncherSettings.envVar("QT_PLUGIN_PATH"),
+    QString("/awesome/path/to/libexec/qt;/awesome/path/to/libexec/ASSOCIATION;%1/libexec-settings/ASSOCIATION;/awesome/path/to/relative-path/libexec-settings/ASSOCIATION").arg(regularSettingsDir)
+    );
 #else
-  CHECK_QSTRING(
+  CHECK_QSTRING( //
         appLauncherSettings.envVar("PYTHONPATH"),
         QString("/awesome/path/to/lib/python/site-packages:/path/to/site-packages-2:%1/lib/python/site-packages-settings:/awesome/path/to/relative-path/to/site-packages-3").arg(regularSettingsDir)
         );
 
-  CHECK_QSTRING(
-        appLauncherSettings.envVar("QT_PLUGIN_PATH"),
-        QString("/awesome/path/to/libexec/qt:/awesome/path/to/libexec/ASSOCIATION:%1/libexec-settings/ASSOCIATION:/awesome/path/to/relative-path/libexec-settings/ASSOCIATION").arg(regularSettingsDir)
-        );
+  CHECK_QSTRING( //
+    appLauncherSettings.envVar("QT_PLUGIN_PATH"),
+    QString("/awesome/path/to/libexec/qt:/awesome/path/to/libexec/ASSOCIATION:%1/libexec-settings/ASSOCIATION:/awesome/path/to/relative-path/libexec-settings/ASSOCIATION").arg(regularSettingsDir)
+    );
 #endif
 
-  CHECK_QSTRINGLIST(
-        appLauncherSettings.additionalPaths("PYTHONPATH"),
-        QStringList()
-                << "/awesome/path/to/lib/python/site-packages"
-                << "/path/to/site-packages-2"
-                << QString("%1/lib/python/site-packages-settings").arg(regularSettingsDir)
-                << "/awesome/path/to/relative-path/to/site-packages-3"
-        );
+  CHECK_QSTRINGLIST( //
+    appLauncherSettings.additionalPaths("PYTHONPATH"),
+    QStringList() //
+      << "/awesome/path/to/lib/python/site-packages"
+      << "/path/to/site-packages-2"                                              //
+      << QString("%1/lib/python/site-packages-settings").arg(regularSettingsDir) //
+      << "/awesome/path/to/relative-path/to/site-packages-3");
 
-  CHECK_QSTRINGLIST(
-        appLauncherSettings.additionalPaths("QT_PLUGIN_PATH"),
-        QStringList()
-                << "/awesome/path/to/libexec/qt"
-                << "/awesome/path/to/libexec/ASSOCIATION"
-                << QString("%1/libexec-settings/ASSOCIATION").arg(regularSettingsDir)
-                << "/awesome/path/to/relative-path/libexec-settings/ASSOCIATION"
-        );
+  CHECK_QSTRINGLIST( //
+    appLauncherSettings.additionalPaths("QT_PLUGIN_PATH"),
+    QStringList() //
+      << "/awesome/path/to/libexec/qt"
+      << "/awesome/path/to/libexec/ASSOCIATION"                             //
+      << QString("%1/libexec-settings/ASSOCIATION").arg(regularSettingsDir) //
+      << "/awesome/path/to/relative-path/libexec-settings/ASSOCIATION");
 
-  CHECK_QSTRINGLIST(
-        appLauncherSettings.additionalPathsVars().value("PYTHONPATH"),
-        QStringList()
-                << "/awesome/path/to/lib/python/site-packages"
-                << "/path/to/site-packages-2"
-                << QString("%1/lib/python/site-packages-settings").arg(regularSettingsDir)
-                << "/awesome/path/to/relative-path/to/site-packages-3"
-        );
+  CHECK_QSTRINGLIST( //
+    appLauncherSettings.additionalPathsVars().value("PYTHONPATH"),
+    QStringList() //
+      << "/awesome/path/to/lib/python/site-packages"
+      << "/path/to/site-packages-2"                                              //
+      << QString("%1/lib/python/site-packages-settings").arg(regularSettingsDir) //
+      << "/awesome/path/to/relative-path/to/site-packages-3");
 
-  CHECK_QSTRINGLIST(
-        appLauncherSettings.additionalPathsVars().value("QT_PLUGIN_PATH"),
-        QStringList()
-                << "/awesome/path/to/libexec/qt"
-                << "/awesome/path/to/libexec/ASSOCIATION"
-                << QString("%1/libexec-settings/ASSOCIATION").arg(regularSettingsDir)
-                << "/awesome/path/to/relative-path/libexec-settings/ASSOCIATION"
-        );
+  CHECK_QSTRINGLIST( //
+    appLauncherSettings.additionalPathsVars().value("QT_PLUGIN_PATH"),
+    QStringList() //
+      << "/awesome/path/to/libexec/qt"
+      << "/awesome/path/to/libexec/ASSOCIATION"                             //
+      << QString("%1/libexec-settings/ASSOCIATION").arg(regularSettingsDir) //
+      << "/awesome/path/to/relative-path/libexec-settings/ASSOCIATION");
 
   //
   // pathsEnvVars
@@ -355,59 +349,52 @@ int checkReadSettingsWithExpand()
       appLauncherSettings.pathsEnvVars();
 
 #if defined(Q_OS_WIN32)
-  CHECK_QSTRINGLIST(
-        pathsEnvVars.value("Path"),
-        QStringList()
-                << "/awesome/path/to/cow/AwesomeApp"
-                << "/path/to/pig-cat-and-dog"
-                << "/path/to/dog"
-                << QString("%1/sheep/AwesomeApp").arg(regularSettingsDir)
-                << "/awesome/path/to/relative-path/sheep/AwesomeApp"
-                << "/path/to/libA"
-                << "/awesome/path/to/libB"
-                << "/path/to/libC-dog"
-                << QString("%1/libC").arg(regularSettingsDir)
-                << "/awesome/path/to/relative-path/libC"
-        );
+  CHECK_QSTRINGLIST( //
+    pathsEnvVars.value("Path"),
+    QStringList() //
+      << "/awesome/path/to/cow/AwesomeApp"
+      << "/path/to/pig-cat-and-dog"
+      << "/path/to/dog" << QString("%1/sheep/AwesomeApp").arg(regularSettingsDir) << "/awesome/path/to/relative-path/sheep/AwesomeApp"
+      << "/path/to/libA"
+      << "/awesome/path/to/libB"
+      << "/path/to/libC-dog"                        //
+      << QString("%1/libC").arg(regularSettingsDir) //
+      << "/awesome/path/to/relative-path/libC");
 #else
-  CHECK_QSTRINGLIST(
-        pathsEnvVars.value("PATH"),
-        QStringList()
-                << "/awesome/path/to/cow/AwesomeApp"
-                << "/path/to/pig-cat-and-dog"
-                << "/path/to/dog"
-                << QString("%1/sheep/AwesomeApp").arg(regularSettingsDir)
-                << "/awesome/path/to/relative-path/sheep/AwesomeApp"
-        );
+  CHECK_QSTRINGLIST( //
+    pathsEnvVars.value("PATH"),
+    QStringList() //
+      << "/awesome/path/to/cow/AwesomeApp"
+      << "/path/to/pig-cat-and-dog"
+      << "/path/to/dog"                                         //
+      << QString("%1/sheep/AwesomeApp").arg(regularSettingsDir) //
+      << "/awesome/path/to/relative-path/sheep/AwesomeApp");
 
-  CHECK_QSTRINGLIST(
-        pathsEnvVars.value(appLauncherSettings.libraryPathVariableName()),
-        QStringList()
-                << "/path/to/libA"
-                << "/awesome/path/to/libB"
-                << "/path/to/libC-dog"
-                << QString("%1/libC").arg(regularSettingsDir)
-                << "/awesome/path/to/relative-path/libC"
-        );
+  CHECK_QSTRINGLIST( //
+    pathsEnvVars.value(appLauncherSettings.libraryPathVariableName()),
+    QStringList() //
+      << "/path/to/libA"
+      << "/awesome/path/to/libB"
+      << "/path/to/libC-dog"                        //
+      << QString("%1/libC").arg(regularSettingsDir) //
+      << "/awesome/path/to/relative-path/libC");
 #endif
 
-  CHECK_QSTRINGLIST(
-        pathsEnvVars.value("PYTHONPATH"),
-        QStringList()
-                << "/awesome/path/to/lib/python/site-packages"
-                << "/path/to/site-packages-2"
-                << QString("%1/lib/python/site-packages-settings").arg(regularSettingsDir)
-                << "/awesome/path/to/relative-path/to/site-packages-3"
-        );
+  CHECK_QSTRINGLIST( //
+    pathsEnvVars.value("PYTHONPATH"),
+    QStringList() //
+      << "/awesome/path/to/lib/python/site-packages"
+      << "/path/to/site-packages-2"                                              //
+      << QString("%1/lib/python/site-packages-settings").arg(regularSettingsDir) //
+      << "/awesome/path/to/relative-path/to/site-packages-3");
 
-  CHECK_QSTRINGLIST(
-        pathsEnvVars.value("QT_PLUGIN_PATH"),
-        QStringList()
-                << "/awesome/path/to/libexec/qt"
-                << "/awesome/path/to/libexec/ASSOCIATION"
-                << QString("%1/libexec-settings/ASSOCIATION").arg(regularSettingsDir)
-                << "/awesome/path/to/relative-path/libexec-settings/ASSOCIATION"
-        );
+  CHECK_QSTRINGLIST( //
+    pathsEnvVars.value("QT_PLUGIN_PATH"),
+    QStringList() //
+      << "/awesome/path/to/libexec/qt"
+      << "/awesome/path/to/libexec/ASSOCIATION"                             //
+      << QString("%1/libexec-settings/ASSOCIATION").arg(regularSettingsDir) //
+      << "/awesome/path/to/relative-path/libexec-settings/ASSOCIATION");
 
 #if defined(Q_OS_WIN32)
   int expectedPathsEnvVarsCount = 3;
@@ -478,90 +465,84 @@ int checkReadAdditionalSettingsWithExpand()
   QString regularSettingsDir = QFileInfo("launcher-settings.ini").absolutePath();
   QString userAdditionalSettingsDir = QFileInfo(userAdditionalSettingsFileName).absolutePath();
 
-  CHECK_QSTRINGLIST(
-        appLauncherSettings.paths(),
-        QStringList()
-                << "/awesome/path/to/fawn"
-                << "/path/to/cat-and-dog"
-                << "/path/to/Klimt"
-                << QString("%1/osprey").arg(userAdditionalSettingsDir)
-                << "/awesome/path/to/relative-path/osprey"
-                << QString("/awesome/path/to/cow/%1").arg(appName)
-                << "/path/to/pig-cat-and-dog"
-                << "/path/to/dog"
-                << QString("%1/sheep/%2").arg(regularSettingsDir).arg(appName)
-                << QString("/awesome/path/to/relative-path/sheep/%1").arg(appName)
-        );
+  CHECK_QSTRINGLIST( //
+    appLauncherSettings.paths(),
+    QStringList() //
+      << "/awesome/path/to/fawn"
+      << "/path/to/cat-and-dog"
+      << "/path/to/Klimt"                                            //
+      << QString("%1/osprey").arg(userAdditionalSettingsDir)         //
+      << "/awesome/path/to/relative-path/osprey"                     //
+      << QString("/awesome/path/to/cow/%1").arg(appName)             //
+      << "/path/to/pig-cat-and-dog"                                  //
+      << "/path/to/dog"                                              //
+      << QString("%1/sheep/%2").arg(regularSettingsDir).arg(appName) //
+      << QString("/awesome/path/to/relative-path/sheep/%1").arg(appName));
 
-  CHECK_QSTRINGLIST(
-        appLauncherSettings.libraryPaths(),
-        QStringList()
-                << "/path/to/libD"
-                << "/awesome/path/to/libE-dog"
-                << QString("%1/libF").arg(userAdditionalSettingsDir)
-                << "/awesome/path/to/relative-path/libF"
-                << "/path/to/libA"
-                << "/awesome/path/to/libB"
-                << "/path/to/libC-dog"
-                << QString("%1/libC").arg(regularSettingsDir)
-                << "/awesome/path/to/relative-path/libC"
-        );
+  CHECK_QSTRINGLIST( //
+    appLauncherSettings.libraryPaths(),
+    QStringList() //
+      << "/path/to/libD"
+      << "/awesome/path/to/libE-dog"                       //
+      << QString("%1/libF").arg(userAdditionalSettingsDir) //
+      << "/awesome/path/to/relative-path/libF"
+      << "/path/to/libA"
+      << "/awesome/path/to/libB"
+      << "/path/to/libC-dog"                        //
+      << QString("%1/libC").arg(regularSettingsDir) //
+      << "/awesome/path/to/relative-path/libC");
 
-  CHECK_QSTRING(
-        appLauncherSettings.envVar("BAR"),
-        "RAB"
-        );
+  CHECK_QSTRING( //
+    appLauncherSettings.envVar("BAR"),
+    "RAB"
+    );
 
-  CHECK_QSTRING(
-        appLauncherSettings.envVar("PET"),
-        "dog"
-        );
+  CHECK_QSTRING( //
+    appLauncherSettings.envVar("PET"),
+    "dog"
+    );
 
-  CHECK_QSTRINGLIST(
-        appLauncherSettings.additionalPaths("PYTHONPATH"),
-        QStringList()
-                << "/awesome/path/to/lib/python/site-packages"
-                << "/awesome/path/to/lib/python/site-packages-3"
-                << "/path/to/site-packages-RAB"
-                << QString("%1/lib/python/site-packages-settings-2").arg(userAdditionalSettingsDir)
-                << "/awesome/path/to/relative-path/lib/python/site-packages-settings-2"
-                << "/awesome/path/to/lib/python/site-packages"
-                << "/path/to/site-packages-2"
-                << QString("%1/lib/python/site-packages-settings").arg(regularSettingsDir)
-                << "/awesome/path/to/relative-path/to/site-packages-3"
-        );
+  CHECK_QSTRINGLIST( //
+    appLauncherSettings.additionalPaths("PYTHONPATH"),
+    QStringList() //
+      << "/awesome/path/to/lib/python/site-packages"
+      << "/awesome/path/to/lib/python/site-packages-3"
+      << "/path/to/site-packages-RAB"                                                     //
+      << QString("%1/lib/python/site-packages-settings-2").arg(userAdditionalSettingsDir) //
+      << "/awesome/path/to/relative-path/lib/python/site-packages-settings-2"
+      << "/awesome/path/to/lib/python/site-packages"
+      << "/path/to/site-packages-2"                                              //
+      << QString("%1/lib/python/site-packages-settings").arg(regularSettingsDir) //
+      << "/awesome/path/to/relative-path/to/site-packages-3");
 
-  CHECK_QSTRINGLIST(
-        appLauncherSettings.additionalPathsVars().value("PYTHONPATH"),
-        QStringList()
-                << "/awesome/path/to/lib/python/site-packages"
-                << "/awesome/path/to/lib/python/site-packages-3"
-                << "/path/to/site-packages-RAB"
-                << QString("%1/lib/python/site-packages-settings-2").arg(userAdditionalSettingsDir)
-                << "/awesome/path/to/relative-path/lib/python/site-packages-settings-2"
-                << "/awesome/path/to/lib/python/site-packages"
-                << "/path/to/site-packages-2"
-                << QString("%1/lib/python/site-packages-settings").arg(regularSettingsDir)
-                << "/awesome/path/to/relative-path/to/site-packages-3"
-        );
+  CHECK_QSTRINGLIST( //
+    appLauncherSettings.additionalPathsVars().value("PYTHONPATH"),
+    QStringList() //
+      << "/awesome/path/to/lib/python/site-packages"
+      << "/awesome/path/to/lib/python/site-packages-3"
+      << "/path/to/site-packages-RAB"                                                     //
+      << QString("%1/lib/python/site-packages-settings-2").arg(userAdditionalSettingsDir) //
+      << "/awesome/path/to/relative-path/lib/python/site-packages-settings-2"
+      << "/awesome/path/to/lib/python/site-packages"
+      << "/path/to/site-packages-2"                                              //
+      << QString("%1/lib/python/site-packages-settings").arg(regularSettingsDir) //
+      << "/awesome/path/to/relative-path/to/site-packages-3");
 
-  CHECK_QSTRINGLIST(
-        appLauncherSettings.additionalPaths("QT_PLUGIN_PATH"),
-        QStringList()
-                << "/awesome/path/to/libexec/qt"
-                << "/awesome/path/to/libexec/RAB"
-                << QString("%1/libexec-settings/RAB").arg(regularSettingsDir)
-                << "/awesome/path/to/relative-path/libexec-settings/RAB"
-        );
+  CHECK_QSTRINGLIST( //
+    appLauncherSettings.additionalPaths("QT_PLUGIN_PATH"),
+    QStringList() //
+      << "/awesome/path/to/libexec/qt"
+      << "/awesome/path/to/libexec/RAB"                             //
+      << QString("%1/libexec-settings/RAB").arg(regularSettingsDir) //
+      << "/awesome/path/to/relative-path/libexec-settings/RAB");
 
-  CHECK_QSTRINGLIST(
-        appLauncherSettings.additionalPathsVars().value("QT_PLUGIN_PATH"),
-        QStringList()
-                << "/awesome/path/to/libexec/qt"
-                << "/awesome/path/to/libexec/RAB"
-                << QString("%1/libexec-settings/RAB").arg(regularSettingsDir)
-                << "/awesome/path/to/relative-path/libexec-settings/RAB"
-        );
+  CHECK_QSTRINGLIST( //
+    appLauncherSettings.additionalPathsVars().value("QT_PLUGIN_PATH"),
+    QStringList() //
+      << "/awesome/path/to/libexec/qt"
+      << "/awesome/path/to/libexec/RAB"                             //
+      << QString("%1/libexec-settings/RAB").arg(regularSettingsDir) //
+      << "/awesome/path/to/relative-path/libexec-settings/RAB");
 
   return EXIT_SUCCESS;
 }

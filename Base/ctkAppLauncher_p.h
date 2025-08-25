@@ -118,13 +118,16 @@ public slots:
 
 public:
   /// Options passed to the launcher from the command line
+  // clang-format off
   QString     ApplicationToLaunch;
   QStringList ApplicationToLaunchArguments;
   QString     LauncherSplashImagePath;
   int         LauncherSplashScreenHideDelayMs;
   bool        LauncherNoSplashScreen;
+  // clang-format on
 
   /// Variable used internally
+  // clang-format off
   bool                            LauncherStarting;
   QStringList                     Arguments;
   ctkInteractiveProcess           Process;
@@ -137,10 +140,10 @@ public:
   QString                         DefaultLauncherSplashImagePath;
   int                             DefaultLauncherSplashScreenHideDelayMs;
   QString                         DefaultApplicationToLaunchArguments;
-//  QString                         LauncherName;
-//  QString                         LauncherDir;
-//  QString                         AdditionalSettingsFilePath;
-//  QStringList                     AdditionalSettingsExcludeGroups;
+  // QString                         LauncherName;
+  // QString                         LauncherDir;
+  // QString                         AdditionalSettingsFilePath;
+  // QStringList                     AdditionalSettingsExcludeGroups;
   QStringList                     LauncherSettingSubDirs;
   bool                            ValidSettingsFile;
 //  QString                         OrganizationName;
@@ -164,14 +167,17 @@ public:
   QSharedPointer<QSplashScreen>   SplashScreen;
   QScopedPointer<QPixmap>         SplashPixmap;
 //  QProcessEnvironment             SystemEnvironment;
+  // clang-format on
 
   /// Extra 'application to launch'
+  // clang-format off
   QString                                          ExtraApplicationToLaunchLongArgument;
   QString                                          ExtraApplicationToLaunchShortArgument;
   QString                                          ExtraApplicationToLaunch;
   QString                                          ExtraApplicationToLaunchArguments;
   typedef QHash<QString, QString>                  ExtraApplicationToLaunchProperty;
   QHash<QString, ExtraApplicationToLaunchProperty> ExtraApplicationToLaunchList;
+  // clang-format on
 };
 
 #endif

@@ -97,9 +97,10 @@ public:
   /// was not set or incremented. The function currentLevel() returns its value.
   ///
   /// \sa currentLevel()
-  static void saveEnvironment(
-      const QProcessEnvironment& systemEnvironment,
-      const QStringList& variables, QProcessEnvironment& env);
+  static void saveEnvironment( //
+    const QProcessEnvironment& systemEnvironment,
+    const QStringList& variables,
+    QProcessEnvironment& env);
 
   /// Update current environment using \c environment.
   ///
