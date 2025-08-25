@@ -77,10 +77,14 @@ static void mouseEvent(QTest::MouseAction action, QWidget* widget, Qt::MouseButt
   // if (delay == -1 || delay < defaultMouseDelay())
   //     delay = defaultMouseDelay();
   if (delay > 0)
+  {
     QTest::qWait(delay);
+  }
 
   if (pos.isNull())
+  {
     pos = widget->rect().center();
+  }
 
   QTEST_ASSERT(button == Qt::NoButton || button & Qt::MouseButtonMask);
   QTEST_ASSERT(stateKey == 0 || stateKey & Qt::KeyboardModifierMask);
