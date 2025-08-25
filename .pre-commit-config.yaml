@@ -7,6 +7,7 @@ repos:
       - id: check-merge-conflict
       - id: check-symlinks
       - id: check-yaml
+        exclude: ^\.clang-format$ # check-yaml do not support multi-document file
       - id: end-of-file-fixer
       - id: mixed-line-ending
       - id: trailing-whitespace
@@ -29,3 +30,8 @@ repos:
     hooks:
       - id: check-dependabot
       - id: check-github-workflows
+
+  - repo: https://github.com/pre-commit/mirrors-clang-format
+    rev: "v20.1.8"
+    hooks:
+      - id: clang-format
