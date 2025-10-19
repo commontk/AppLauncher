@@ -22,7 +22,8 @@
 #include <iostream>
 #include <cstdlib>
 #ifdef Q_OS_WIN32
-# include <io.h> // For _dup and _dup2
+# include <fcntl.h> // for O_BINARY
+# include <io.h>    // For _dup and _dup2
 #else
 # include <unistd.h> // For dup and dup2
 #endif
@@ -70,10 +71,13 @@ ctkAppLauncherPrivate::ctkAppLauncherPrivate(ctkAppLauncher& object)
   this->Initialized = false;
   this->DetachApplicationToLaunch = false;
   this->LauncherSplashScreenHideDelayMs = -1;
+  this->LauncherSplashScreenIgnoreOutput = false;
+  this->LauncherSplashScreenHidden = false;
   this->LauncherNoSplashScreen = false;
   this->LoadEnvironment = -1;
   this->DefaultLauncherSplashImagePath = ":Images/ctk-splash.png";
   this->DefaultLauncherSplashScreenHideDelayMs = 800;
+  this->DisplayHelpAfterProcessFinished = false;
   this->LauncherSettingSubDirs << "." << "bin" << "lib";
 
   this->ValidSettingsFile = false;
@@ -319,12 +323,13 @@ bool ctkAppLauncherPrivate::processExtraApplicationToLaunchArgument(const QStrin
 // --------------------------------------------------------------------------
 QString ctkAppLauncherPrivate::invalidSettingsMessage() const
 {
-  QString msg = QString("Launcher setting file [%1LauncherSettings.ini] does NOT exist in "
-                        "any of these directories:\n")
-                  .arg(this->LauncherName);
-  foreach (const QString& subdir, this->LauncherSettingSubDirs)
+  // QTextStream is in text mode by default, therefore we can write "\n" for newline.
+  QString msg;
+  QTextStream stream(&msg);
+  stream << QString("Launcher setting file [%1LauncherSettings.ini] does NOT exist in any of these directories:").arg(this->LauncherName) << "\n";
+  for (const QString& subdir : this->LauncherSettingSubDirs)
   {
-    msg.append(QString("%1/%2\n").arg(this->LauncherDir).arg(subdir));
+    stream << this->LauncherDir << "/" << subdir << "\n";
   }
   return msg;
 }
@@ -602,6 +607,11 @@ bool ctkAppLauncherPrivate::readSettings(const QString& fileName, int settingsTy
       this->DefaultLauncherSplashScreenHideDelayMs = splashScreenHideDelayMsVariant.toInt();
     }
 
+    if (settings.contains("launcherSplashScreenIgnoreOutput"))
+    {
+      this->LauncherSplashScreenIgnoreOutput = settings.value("launcherSplashScreenIgnoreOutput").toBool();
+    }
+
     if (settings.contains("launcherNoSplashScreen"))
     {
       this->LauncherNoSplashScreen = settings.value("launcherNoSplashScreen").toBool();
@@ -655,7 +665,18 @@ bool ctkAppLauncherPrivate::readSettings(const QString& fileName, int settingsTy
 // --------------------------------------------------------------------------
 void ctkAppLauncherPrivate::runProcess()
 {
-  this->Process.setProcessChannelMode(QProcess::ForwardedChannels);
+  // If a splashscreen is shown then we need to intercept the launched process output
+  // (unless we are asked to ignore the output).
+  bool interceptProcessOutput = !disableSplash() && !this->LauncherSplashScreenIgnoreOutput;
+  if (interceptProcessOutput)
+  {
+    this->Process.setProcessChannelMode(QProcess::SeparateChannels);
+  }
+  else
+  {
+    this->Process.setProcessChannelMode(QProcess::ForwardedChannels);
+  }
+
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 2, 0))
   // This is required for forwarding standard input on Windows
   this->Process.setInputChannelMode(QProcess::ForwardedInputChannel);
@@ -678,6 +699,12 @@ void ctkAppLauncherPrivate::runProcess()
 
   connect(&this->Process, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(applicationFinished(int, QProcess::ExitStatus)));
   connect(&this->Process, SIGNAL(started()), this, SLOT(applicationStarted()));
+
+  if (interceptProcessOutput)
+  {
+    connect(&this->Process, SIGNAL(readyReadStandardOutput()), this, SLOT(onReadyReadStandardOutput()));
+    connect(&this->Process, SIGNAL(readyReadStandardError()), this, SLOT(onReadyReadStandardError()));
+  }
 
   if (!this->DetachApplicationToLaunch)
   {
@@ -705,6 +732,12 @@ void ctkAppLauncherPrivate::terminateProcess()
 // --------------------------------------------------------------------------
 void ctkAppLauncherPrivate::applicationFinished(int exitCode, QProcess::ExitStatus exitStatus)
 {
+  Q_Q(ctkAppLauncher);
+  if (this->DisplayHelpAfterProcessFinished)
+  {
+    q->displayHelp();
+  }
+
   if (exitStatus == QProcess::NormalExit)
   {
     this->exit(exitCode);
@@ -727,6 +760,39 @@ void ctkAppLauncherPrivate::applicationStarted()
     this->SplashScreen->show();
     QTimer::singleShot(this->LauncherSplashScreenHideDelayMs, this->SplashScreen.data(), SLOT(hide()));
   }
+}
+
+// --------------------------------------------------------------------------
+void ctkAppLauncherPrivate::forwardProcessOutput(std::ostream& outputStream, QByteArray& data)
+{
+  if (data.isEmpty())
+  {
+    return;
+  }
+  if (!this->LauncherSplashScreenHidden)
+  {
+    this->LauncherSplashScreenHidden = true;
+    if (this->SplashScreen)
+    {
+      this->SplashScreen->hide();
+    }
+  }
+  outputStream.write(data.constData(), data.size());
+  outputStream.flush();
+}
+
+// --------------------------------------------------------------------------
+void ctkAppLauncherPrivate::onReadyReadStandardOutput()
+{
+  QByteArray data = this->Process.readAllStandardOutput();
+  this->forwardProcessOutput(std::cout, data);
+}
+
+// --------------------------------------------------------------------------
+void ctkAppLauncherPrivate::onReadyReadStandardError()
+{
+  QByteArray data = this->Process.readAllStandardError();
+  this->forwardProcessOutput(std::cerr, data);
 }
 
 // --------------------------------------------------------------------------
@@ -880,9 +946,9 @@ void ctkAppLauncher::displayHelp(std::ostream& output)
     d->Parser.addArgument(extraAppLongArgument, extraAppShortArgument, QVariant::Bool, extraAppToLaunchProperty.value("help"));
   }
 
-  output << "Usage\n";
-  output << "  " << qPrintable(d->LauncherName) << " [options]\n\n";
-  output << "Options\n";
+  output << "Usage" << std::endl;
+  output << "  " << qPrintable(d->LauncherName) << " [options]" << std::endl << std::endl;
+  output << "Options" << std::endl;
   output << qPrintable(d->Parser.helpText());
 }
 
@@ -894,7 +960,7 @@ void ctkAppLauncher::displayVersion(std::ostream& output)
   {
     return;
   }
-  output << qPrintable(d->LauncherName) << " launcher version " CTKAppLauncher_VERSION << "\n";
+  output << qPrintable(d->LauncherName) << " launcher version " CTKAppLauncher_VERSION << std::endl;
 }
 
 // --------------------------------------------------------------------------
@@ -953,7 +1019,8 @@ bool ctkAppLauncher::initialize(QString launcherFilePath)
   parser.addArgument("launcher-generate-exec-wrapper-script", "", QVariant::Bool, "Generate executable wrapper script allowing to set the environment");
   parser.addArgument("launcher-generate-template", "", QVariant::Bool, "Generate an example of setting file");
 
-  // TODO Should SplashImagePath and SplashScreenHideDelayMs be added as parameters ?
+  // To keep the API simpler, we do not add arguments for options that would be probably never used,
+  // such as SplashImagePath, SplashScreenHideDelayMs, SplashScreenIgnoreOutput.
 
   d->Initialized = true;
   return true;
@@ -997,7 +1064,7 @@ int ctkAppLauncher::processArguments()
   d->ParsedArgs = d->Parser.parseArguments(d->Arguments, &ok);
   if (!ok)
   {
-    std::cerr << "Error\n  " << qPrintable(d->Parser.errorString()) << "\n" << std::endl;
+    std::cerr << "Error" << std::endl << "  " << qPrintable(d->Parser.errorString()) << std::endl << std::endl;
     return Self::ExitWithError;
   }
 
@@ -1081,6 +1148,8 @@ int ctkAppLauncher::processArguments()
     d->reportInfo(QString("AdditionalLauncherHelpLongArgument [%1]").arg(d->LauncherAdditionalHelpLongArgument));
 
     d->reportInfo(QString("AdditionalLauncherNoSplashArguments [%1]").arg(d->LauncherAdditionalNoSplashArguments.join(",")));
+
+    d->reportInfo(QString("LauncherSplashScreenIgnoreOutput [%1]").arg(d->LauncherSplashScreenIgnoreOutput));
   }
 
   d->DetachApplicationToLaunch = d->ParsedArgs.value("launcher-detach").toBool();
@@ -1110,7 +1179,9 @@ int ctkAppLauncher::processArguments()
   {
     if (d->LauncherStarting && d->ExtraApplicationToLaunch.isEmpty())
     {
-      this->displayHelp();
+      // This argument requests the main application to print help message.
+      // The launcher should append information about itself _after_ the application displayed its own help message.
+      d->DisplayHelpAfterProcessFinished = true;
     }
   }
 
@@ -1201,6 +1272,7 @@ bool ctkAppLauncher::writeSettings(const QString& outputFilePath)
 
   settings.setValue("launcherSplashImagePath", d->LauncherSplashImagePath);
   settings.setValue("launcherSplashScreenHideDelayMs", d->LauncherSplashScreenHideDelayMs);
+  settings.setValue("launcherSplashScreenIgnoreOutput", d->LauncherSplashScreenIgnoreOutput);
   settings.setValue("launcherNoSplashScreen", d->LauncherNoSplashScreen);
   settings.setValue("additionalLauncherHelpShortArgument", d->LauncherAdditionalHelpShortArgument);
   settings.setValue("additionalLauncherHelpLongArgument", d->LauncherAdditionalHelpLongArgument);
@@ -1264,6 +1336,13 @@ bool ctkAppLauncher::verbose() const
 {
   Q_D(const ctkAppLauncher);
   return d->verbose();
+}
+
+// --------------------------------------------------------------------------
+bool ctkAppLauncher::splashScreenIgnoreOutput() const
+{
+  Q_D(const ctkAppLauncher);
+  return d->LauncherSplashScreenIgnoreOutput;
 }
 
 // --------------------------------------------------------------------------
@@ -1392,6 +1471,17 @@ void ctkAppLauncher::startLauncher()
 {
   Q_D(ctkAppLauncher);
   d->LauncherStarting = true;
+
+#ifdef Q_OS_WIN32
+  // Avoid automatic translation of \n to \r\n on Windows.
+  // This is required to properly forward the launched application output
+  // when the application output is intercepted.
+  // This means that std::endl must be used everywhere (instead of "\n")
+  // when writing directly to the standard output or error.
+  _setmode(_fileno(stdout), O_BINARY);
+  _setmode(_fileno(stderr), O_BINARY);
+#endif
+
   int res = this->configure();
   if (res != Self::Continue)
   {

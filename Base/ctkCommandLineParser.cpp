@@ -813,6 +813,7 @@ bool ctkCommandLineParser::settingsEnabled() const
 // --------------------------------------------------------------------------
 QString ctkCommandLineParser::helpText(const char charPad) const
 {
+  // QTextStream is in text mode by default, therefore we can write "\n" for newline.
   QString text;
   QTextStream stream(&text);
 
@@ -857,7 +858,7 @@ QString ctkCommandLineParser::helpText(const char charPad) const
 
   if (!deprecatedArgs.empty())
   {
-    stream << "\nDeprecated arguments:\n";
+    stream << "\n" << "Deprecated arguments:" << "\n";
     foreach (CommandLineParserArgumentDescription* argDesc, deprecatedArgs)
     {
       stream << argDesc->helpText(this->Internal->FieldWidth, charPad);

@@ -69,6 +69,9 @@ class ctkAppLauncherPrivate;
 /// ------------------------------------|----------------------------------------------
 /// launcherSplashImagePath             | Absolute or relative path to splashscreen. If empty, it defaults to ``:Images/ctk-splash.png`.
 /// launcherSplashScreenHideDelayMs     | Delay in milliseconds before hiding the launcher splashscreen. Default is 800ms.
+/// launcherSplashScreenIgnoreOutput    | If set to 1, the splashscreen ignores launched process output and only hides after the launcherSplashScreenHideDelayMs timeout.
+///                                     | By default, launcher hides its splashscreen, as it is only needed for the time when the launched process is being loaded.
+///                                     | If the launched process writes to its output it means that it is already loaded and it can display progress information as needed.
 /// launcherNoSplashScreen              | If set to 1, no splashscreen is shown.
 /// launcherLoadEnvironment             | Optionally specify an integer identifying the saved environment to use.
 /// additionalLauncherHelpShortArgument | Short argument indicating that the launcher help should be displayed (e.g `-h`). This argument is passed down to the application.
@@ -197,7 +200,12 @@ public:
   /// The delay is applied after the application finishes to start.
   int splashScreenHideDelayMs() const;
 
-  /// \brief Return true if the splash-screen should not be visible when
+  /// \brief Return true if the splashscreen should ignore when the launched
+  /// process produces output on stdout or stderr. In this case the splashscreen
+  /// is hidden after splashScreenHideDelayMs timeout is reached.
+  bool splashScreenIgnoreOutput() const;
+
+  /// \brief Return true if the splashscreen should not be visible when
   /// starting the launched application, false otherwise.
   /// false by default.
   bool disableSplash() const;

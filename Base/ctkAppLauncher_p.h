@@ -120,6 +120,12 @@ public slots:
   /// Slot called when the ApplicationToLaunch process is started
   void applicationStarted();
 
+  /// Slots used to forward child process output.
+  /// It is used when the splashscreen is hidden on process output.
+  void onReadyReadStandardOutput();
+  void onReadyReadStandardError();
+  void forwardProcessOutput(std::ostream& outputStream, QByteArray& data);
+
 public:
   /// Options passed to the launcher from the command line
   // clang-format off
@@ -148,6 +154,7 @@ public:
   // QString                         LauncherDir;
   // QString                         AdditionalSettingsFilePath;
   // QStringList                     AdditionalSettingsExcludeGroups;
+  bool                            DisplayHelpAfterProcessFinished;
   QStringList                     LauncherSettingSubDirs;
   bool                            ValidSettingsFile;
 //  QString                         OrganizationName;
@@ -172,6 +179,11 @@ public:
   QScopedPointer<QPixmap>         SplashPixmap;
 //  QProcessEnvironment             SystemEnvironment;
   // clang-format on
+
+  /// If true, the splash screen will be hidden as soon as the launched
+  /// process writes something to stdout or stderr, instead of waiting for LauncherSplashScreenHideDelayMs.
+  bool LauncherSplashScreenIgnoreOutput;
+  bool LauncherSplashScreenHidden;
 
   /// Extra 'application to launch'
   // clang-format off

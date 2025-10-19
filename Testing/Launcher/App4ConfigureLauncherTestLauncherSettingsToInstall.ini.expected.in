@@ -2,6 +2,7 @@
 launcherNoSplashScreen=false
 launcherSplashImagePath=
 launcherSplashScreenHideDelayMs=
+launcherSplashScreenIgnoreOutput=false
 additionalLauncherHelpShortArgument=-h
 additionalLauncherHelpLongArgument=--help
 additionalLauncherNoSplashArguments=--no-splash
