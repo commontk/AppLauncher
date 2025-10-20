@@ -9,7 +9,7 @@ set(PRINT_COMMAND 0)
 # Attempt to start launcher from its directory
 # Since there is no setting file and no parameter are given to the launcher,
 # we expect it to fail with the following message:
-set(expected_error_msg "error: Application does NOT exists []
+set(expected_error_msg "error: Application does NOT exist []
 error: --launch argument has NOT been specified
 error: Launcher setting file [${launcher_name}LauncherSettings.ini] does NOT exist in any of these directories:
 ${launcher_dir}/.

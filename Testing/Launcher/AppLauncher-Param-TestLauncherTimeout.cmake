@@ -62,8 +62,8 @@ if(NOT rv)
   message(FATAL_ERROR "Failed to run [${launcher_exe}] with parameter --launcher-timeout\n${ev}")
 endif()
 
-# Since launcher-timeout < App4Test-timeout, file ${application}-timeout.txt should NOT exists
-# Note: On windows, since out App4Test does NOT support the WM_CLOSE event, let's skip the test.
+# Since launcher-timeout < App4Test-timeout, file ${application}-timeout.txt should NOT exist
+# Note: On windows, since our App4Test does NOT support the WM_CLOSE event, let's skip the test.
 #       See https://github.com/commontk/AppLauncher/issues/15
 set(_exists)
 set(_exists_msg " NOT")

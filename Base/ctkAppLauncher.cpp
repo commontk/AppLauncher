@@ -256,7 +256,7 @@ bool ctkAppLauncherPrivate::processApplicationToLaunchArgument()
   // Make sure the program to launch exists
   if (this->ApplicationToLaunch.isEmpty() || !QFile::exists(this->ApplicationToLaunch))
   {
-    this->reportError(QString("Application does NOT exists [%1]").arg(this->ApplicationToLaunch));
+    this->reportError(QString("Application does NOT exist [%1]").arg(this->ApplicationToLaunch));
 
     if (!this->ParsedArgs.contains("launch") && !this->ValidSettingsFile)
     {
