@@ -81,14 +81,14 @@ macro(ctkMacroBuildLib)
   set(${prefix}_QRC_SRCS)
 
   # Wrap
-  if(CTKAppLauncher_QT_VERSION VERSION_EQUAL "5")
-    QT5_WRAP_CPP(${prefix}_MOC_CXX ${${prefix}_MOC_SRCS})
-    QT5_WRAP_UI(${prefix}_UI_CXX ${${prefix}_UI_FORMS})
-    if(DEFINED ${prefix}_RESOURCES)
-      QT5_ADD_RESOURCES(${prefix}_QRC_SRCS ${${prefix}_RESOURCES})
-    endif()
-  else()
+  if(NOT CTKAppLauncher_QT_VERSION MATCHES "^(5|6)$")
     message(FATAL_ERROR "Setting CTKAppLauncher_QT_VERSION to '${CTKAppLauncher_QT_VERSION}' is not supported")
+  endif()
+
+  qt_wrap_cpp(${prefix}_MOC_CXX ${${prefix}_MOC_SRCS})
+  qt_wrap_ui(${prefix}_UI_CXX ${${prefix}_UI_FORMS})
+  if(DEFINED ${prefix}_RESOURCES)
+    qt_add_resources(${prefix}_QRC_SRCS ${${prefix}_RESOURCES})
   endif()
 
   source_group("Resources" FILES

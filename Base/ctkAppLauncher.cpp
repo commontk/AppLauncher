@@ -49,6 +49,7 @@ ctkInteractiveProcess::ctkInteractiveProcess(QObject* parent)
 }
 
 // --------------------------------------------------------------------------
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 void ctkInteractiveProcess::setupChildProcess()
 {
 #ifdef Q_OS_WIN32
@@ -57,6 +58,7 @@ void ctkInteractiveProcess::setupChildProcess()
   ::dup2(StdinClone, fileno(stdin));
 #endif
 }
+#endif
 
 // --------------------------------------------------------------------------
 // ctkAppLauncherPrivate methods
