@@ -299,7 +299,7 @@ jobs:
           echo "allowed-skips value = ${{ steps.allow.outputs.value }}"
 
       - name: Decide whether the needed jobs succeeded or failed
-        uses: re-actors/alls-green@2765efec08f0fd63e83ad900f5fd75646be69ff6 # v1.2.2
+        uses: re-actors/alls-green@a638d6464689bbb24c325bb3fe9404d63a913030 # v1.2.2
         with:
           jobs: ${{ toJSON(needs) }}
           # Allow test jobs to be skipped when the 'paths-to-include' filter determined
