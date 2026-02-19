@@ -46,7 +46,7 @@ foreach(file IN ITEMS
     ctkAppLauncherSettingsTest.cpp
     )
   set(moc_file moc_${file})
-  if(CTKAppLauncher_QT_VERSION VERSION_EQUAL "5")
+  if(CTKAppLauncher_QT_VERSION MATCHES "^(5|6)$")
     QT5_GENERATE_MOC(${file} ${moc_file})
   else()
     message(FATAL_ERROR "Setting CTKAppLauncher_QT_VERSION to '${CTKAppLauncher_QT_VERSION}' is not supported")
