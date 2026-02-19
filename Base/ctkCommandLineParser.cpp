@@ -20,6 +20,7 @@
 
 // STL includes
 #include <stdexcept>
+#include <vector>
 
 // Qt includes
 #include <QHash>
@@ -906,6 +907,79 @@ void ctkCommandLineParser::setStrictModeEnabled(bool strictMode)
 }
 
 #if defined(_WIN32)
+namespace
+{
+// --------------------------------------------------------------------------
+std::vector<wchar_t> getWindowsExecutableNameBuffer()
+{
+  const size_t MAX_UNICODE_PATH = 32767; // maximum length for an extended-length path
+  std::vector<wchar_t> executableNameBuffer(MAX_UNICODE_PATH + 1, L'\0');
+  DWORD executableNameLength = GetModuleFileNameW(NULL, executableNameBuffer.data(), static_cast<DWORD>(executableNameBuffer.size()));
+  if (executableNameLength == 0 || executableNameLength >= executableNameBuffer.size())
+  {
+    // Failed to get path or path too long, set executable name to empty string
+    executableNameBuffer[0] = L'\0';
+  }
+  return executableNameBuffer;
+}
+
+// --------------------------------------------------------------------------
+char* convertWindowsWideArgumentToUtf8(PWSTR wideArgument)
+{
+  if (wideArgument == nullptr)
+  {
+    char* empty = new char[1];
+    empty[0] = '\0';
+    return empty;
+  }
+
+  const int utf8Length = WideCharToMultiByte(CP_UTF8, 0, wideArgument, -1, NULL, 0, NULL, NULL);
+  if (utf8Length <= 0)
+  {
+    char* empty = new char[1];
+    empty[0] = '\0';
+    return empty;
+  }
+
+  char* utf8Buffer = new char[utf8Length];
+  const int convertedLength = WideCharToMultiByte(CP_UTF8, 0, wideArgument, -1, utf8Buffer, utf8Length, NULL, NULL);
+  if (convertedLength <= 0)
+  {
+    utf8Buffer[0] = '\0';
+  }
+  return utf8Buffer;
+}
+
+// --------------------------------------------------------------------------
+void convertWindowsWideArgumentsToUtf8(int wideArgc, PWSTR* wideArgv, int* argc, char*** argv)
+{
+  if (argc == nullptr || argv == nullptr)
+  {
+    return;
+  }
+
+  *argc = 0;
+  *argv = nullptr;
+
+  if (wideArgc < 0 || (wideArgc > 0 && wideArgv == nullptr))
+  {
+    return;
+  }
+
+  if (wideArgc == 0)
+  {
+    return;
+  }
+
+  *argc = wideArgc;
+  *argv = new char*[wideArgc];
+  for (int i = 0; i < wideArgc; ++i)
+  {
+    (*argv)[i] = convertWindowsWideArgumentToUtf8(wideArgv[i]);
+  }
+}
+} // namespace
+
 // --------------------------------------------------------------------------
 void ctkCommandLineParser::convertWindowsCommandLineToUnixArguments(PWSTR cmd_line, int* argc, char*** argv)
 {
@@ -926,48 +1000,77 @@ void ctkCommandLineParser::convertWindowsCommandLineToUnixArguments(PWSTR cmd_li
     wideArgs = CommandLineToArgvW(cmd_line, &numArgs);
     if (wideArgs == nullptr)
     {
-      return;
+      numArgs = 0;
     }
   }
 
-  // Allocate space for pointers in argv
-  (*argc) = numArgs + 1; // +1 because the first argument is the executable name
-  (*argv) = new char*[numArgs + 1];
-  for (int i = 0; i < numArgs + 1; i++)
+  // Build a wide-argument list that includes the executable name as argv[0].
+  std::vector<wchar_t> executableNameBuffer = getWindowsExecutableNameBuffer();
+
+  int totalWideArgc = numArgs + 1;
+  PWSTR* totalWideArgv = new PWSTR[totalWideArgc];
+  totalWideArgv[0] = executableNameBuffer.data();
+  for (int i = 0; i < numArgs; ++i)
   {
-    (*argv)[i] = nullptr;
+    totalWideArgv[i + 1] = wideArgs[i];
   }
 
+  convertWindowsWideArgumentsToUtf8(totalWideArgc, totalWideArgv, argc, argv);
+
+  delete[] totalWideArgv;
   if (wideArgs)
   {
-    // Convert each argument to UTF8 and save it in argv
-    for (int i = 0; i < numArgs; ++i)
-    {
-      BOOL lpUsedDefaultChar = false;
-      // Get length
-      int utf8length = WideCharToMultiByte(CP_UTF8, 0, wideArgs[i], -1, NULL, 0, NULL, &lpUsedDefaultChar);
-      char* utf8buffer = new char[utf8length + 1];
-      int retval = WideCharToMultiByte(CP_UTF8, 0, wideArgs[i], -1, utf8buffer, utf8length, NULL, &lpUsedDefaultChar);
-      if (!SUCCEEDED(retval))
-      {
-        // set to empty string in case of encoding error
-        utf8buffer[0] = '\0';
-        continue;
-      }
-      utf8buffer[utf8length] = '\0'; // Make sure the string is null-terminated
-      (*argv)[i + 1] = utf8buffer;   // +1 because the first argument is the executable name
-    }
     LocalFree(wideArgs);
   }
+}
 
-  // Get the application name
-  wchar_t wideBuffer[MAX_PATH];
-  DWORD wideLength = GetModuleFileNameW(NULL, wideBuffer, MAX_PATH);
-  // Convert the wide string to UTF-8
-  int utf8length = WideCharToMultiByte(CP_UTF8, 0, wideBuffer, wideLength, NULL, 0, NULL, NULL);
-  char* utf8buffer = new char[utf8length + 1];
-  WideCharToMultiByte(CP_UTF8, 0, wideBuffer, wideLength, utf8buffer, utf8length, NULL, NULL);
-  utf8buffer[utf8length] = '\0'; // Make sure the string is null-terminated
-  (*argv)[0] = utf8buffer;
+// --------------------------------------------------------------------------
+void ctkCommandLineParser::convertWindowsCommandLineToUnixArguments(int wideArgc, wchar_t* wideArgv[], int* argc, char*** argv)
+{
+  if (!argc || !argv)
+  {
+    return;
+  }
+
+  *argc = 0;
+  *argv = nullptr;
+
+  if (wideArgc < 0 || (wideArgc > 0 && wideArgv == nullptr))
+  {
+    return;
+  }
+
+  // Create a copy of the input wide-argument list because we modify the executable path.
+  // We do not use the executable path that we got on the command-line, because it is not always
+  // easy to get the full path from the command (which will be needed later).
+  int totalWideArgc = wideArgc > 0 ? wideArgc : 1;
+  PWSTR* totalWideArgv = new PWSTR[totalWideArgc];
+  // overwrite the first argument by the full executable file path
+  std::vector<wchar_t> executableNameBuffer = getWindowsExecutableNameBuffer();
+  totalWideArgv[0] = executableNameBuffer.data();
+  // copy all the other arguments
+  for (int i = 1; i < totalWideArgc; ++i)
+  {
+    totalWideArgv[i] = wideArgv[i];
+  }
+
+  convertWindowsWideArgumentsToUtf8(totalWideArgc, totalWideArgv, argc, argv);
+
+  delete[] totalWideArgv;
+}
+
+// --------------------------------------------------------------------------
+void ctkCommandLineParser::deleteUnixArguments(int argc, char** argv)
+{
+  if (argv == nullptr)
+  {
+    return;
+  }
+
+  for (int i = 0; i < argc; ++i)
+  {
+    delete[] argv[i];
+  }
+  delete[] argv;
 }
 #endif
