@@ -1,11 +1,36 @@
 
 // Qt includes
+#include <QByteArray>
 #include <QList>
 #include <QPair>
 #include <QStringList>
 
 // CTK includes
 #include "ctkAppArguments.h"
+
+// --------------------------------------------------------------------------
+namespace
+{
+QString decodeArgument(const char* argument)
+{
+#if defined(Q_OS_WIN32)
+  // On Windows, we always convert command-line arguments to UTF8
+  return QString::fromUtf8(argument);
+#else
+  return QString::fromLocal8Bit(argument);
+#endif
+}
+
+QByteArray encodeArgument(const QString& argument)
+{
+#if defined(Q_OS_WIN32)
+  // On Windows, we always convert command-line arguments to UTF8
+  return argument.toUtf8();
+#else
+  return argument.toLocal8Bit();
+#endif
+}
+} // namespace
 
 // --------------------------------------------------------------------------
 // ctkChar2DArrayPrivate
@@ -62,9 +87,9 @@ void ctkChar2DArray::setValues(const QStringList& list)
   d->Values = new char*[list.count()];
   for (int index = 0; index < d->List.count(); ++index)
   {
-    QString item = d->List.at(index);
+    QByteArray item = encodeArgument(d->List.at(index));
     d->Values[index] = new char[item.size() + 1];
-    qstrcpy(d->Values[index], item.toLocal8Bit().data());
+    qstrcpy(d->Values[index], item.constData());
   }
 }
 
@@ -140,7 +165,7 @@ ctkAppArgumentsPrivate::ctkAppArgumentsPrivate(int& argc, char** argv)
   }
   for (int index = 0; index < this->Argc; ++index)
   {
-    this->Arguments << this->Argv[index];
+    this->Arguments << decodeArgument(this->Argv[index]);
   }
   this->filterArguments();
 }
@@ -159,21 +184,21 @@ void ctkAppArgumentsPrivate::filterArguments()
     ctkAppArguments::ArgToFilterType argToFilter = this->findArgToFilter(this->Argv[index]);
     if (argToFilter.first.isEmpty())
     {
-      this->RegularArguments << this->Argv[index];
+      this->RegularArguments << decodeArgument(this->Argv[index]);
       continue;
     }
     if (argToFilter.second == ctkAppArguments::ARG_TO_FILTER_NO_VALUE || //
         argToFilter.second & ctkAppArguments::ARG_TO_FILTER_EQUAL_VALUE)
     {
-      this->ReservedArguments << this->Argv[index];
+      this->ReservedArguments << decodeArgument(this->Argv[index]);
       continue;
     }
     else if (argToFilter.second & ctkAppArguments::ARG_TO_FILTER_SPACE_VALUE)
     {
-      this->ReservedArguments << this->Argv[index];
+      this->ReservedArguments << decodeArgument(this->Argv[index]);
       if (index + 1 < this->Argc)
       {
-        this->ReservedArguments << this->Argv[index + 1];
+        this->ReservedArguments << decodeArgument(this->Argv[index + 1]);
         ++index;
         continue;
       }

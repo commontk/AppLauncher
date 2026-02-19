@@ -190,7 +190,26 @@ int appLauncherMain(int argc, char** argv)
 
 // --------------------------------------------------------------------------
 #ifndef CTKAPPLAUNCHER_WITHOUT_CONSOLE_IO_SUPPORT
-// NOTE: On Windows, wmain should be used to allow non-ASCII characters in command-line arguments
+# if defined(Q_OS_WIN32)
+// Windows console launcher
+int wmain(int argc, wchar_t* argv[])
+{
+  // Uncomment the next two lines to stop at application start (to give a chance to connect with a debugger)
+  // std::cout << "Attach debugger and hit Enter" << std::endl;
+  // std::cin.get();
+
+  int convertedArgc = 0;
+  char** convertedArgv = nullptr;
+  ctkCommandLineParser::convertWindowsCommandLineToUnixArguments(argc, argv, &convertedArgc, &convertedArgv);
+
+  const int ret = appLauncherMain(convertedArgc, convertedArgv);
+
+  ctkCommandLineParser::deleteUnixArguments(convertedArgc, convertedArgv);
+
+  return ret;
+}
+# else
+// Linux/macOS launcher
 int main(int argc, char* argv[])
 {
   // Uncomment the next two lines to stop at application start (to give a chance to connect with a debugger)
@@ -199,7 +218,9 @@ int main(int argc, char* argv[])
 
   return appLauncherMain(argc, argv);
 }
+# endif
 #elif defined Q_OS_WIN32
+// Windows GUI launcher
 int __stdcall wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR lpCmdLine, int nShowCmd)
 {
   // Uncomment the next line to stop at application start (to give a chance to connect with a debugger)
@@ -215,11 +236,7 @@ int __stdcall wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR lpCmd
 
   int ret = appLauncherMain(argc, argv);
 
-  for (int i = 0; i < argc; ++i)
-  {
-    delete[] argv[i];
-  }
-  delete[] argv;
+  ctkCommandLineParser::deleteUnixArguments(argc, argv);
 
   return ret;
 }

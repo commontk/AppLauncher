@@ -389,13 +389,30 @@ public:
 #if defined(_WIN32)
   /**
    * Convert windows-style arguments given as a command-line string
-   * into more traditional argc/argv arguments.
+   * into more traditional argc/argv arguments with UTF-8 encoding.
    * If an argument is failed to be retrieved (for example, due to character encoding error)
    * then the corresponding argv pointer is set to point to an empty string.
    *
-   * @note argv[0] will be assigned the executable name using the ::GetModuleFileName function.
+   * @note argv[0] will be assigned the executable name using the GetModuleFileNameW function.
    */
   static void convertWindowsCommandLineToUnixArguments(PWSTR cmd_line, int* argc, char*** argv);
+
+  /**
+   * Convert Windows wide-character argv arguments into UTF-8 argc/argv arguments.
+   * If an argument fails to be converted, the corresponding argv pointer is set
+   * to an empty string.
+   *
+   * @note The first argument (the executable path) will be set from the executable
+   *       path determined by ::GetModuleFileNameW. The original value of wideArgv[0] is not used.
+   *       This helps to ensure that the full path of the executable path is available and correct,
+   *       regardless of how the application was launched.
+   */
+  static void convertWindowsCommandLineToUnixArguments(int wideArgc, wchar_t* wideArgv[], int* argc, char*** argv);
+
+  /**
+   * Delete argc/argv arguments created by convertWindowsCommandLineToUnixArguments().
+   */
+  static void deleteUnixArguments(int argc, char** argv);
 #endif
 
 private:
