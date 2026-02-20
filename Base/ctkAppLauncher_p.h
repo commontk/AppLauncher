@@ -29,7 +29,9 @@ public:
   ctkInteractiveProcess(QObject* parent = 0);
 
 protected:
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
   virtual void setupChildProcess();
+#endif
 };
 
 // --------------------------------------------------------------------------

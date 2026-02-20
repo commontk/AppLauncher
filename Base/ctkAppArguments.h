@@ -6,10 +6,10 @@
 #include <QPair>
 #include <QScopedPointer>
 #include <QString>
+#include <QStringList>
 
 // --------------------------------------------------------------------------
 class ctkChar2DArrayPrivate;
-class QStringList;
 
 // --------------------------------------------------------------------------
 class ctkChar2DArray
