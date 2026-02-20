@@ -375,14 +375,14 @@ See [CONTRIBUTING.md][contributing] for more details.
 <details>
 <summary>click to expand</summary>
 
-1. List all tags sorted by version
+1. List all tags sorted by version (overwrites any local tags)
 
     ```bash
-    git fetch --tags && \
+    git fetch --tags -f && \
     git tag -l | sort -V
     ```
 
-2. Choose the next release version number (without
+2. Choose the next release version number
 
     ```bash
     tag=vX.Y.Z
