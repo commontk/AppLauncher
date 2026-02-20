@@ -21,10 +21,8 @@ jobs:
         uses: dorny/paths-filter@de90cc6fb38fc0963ad72b210f1f284cd68cea36 # v3.0.2
         id: changes
         with:
-          list-files: shell
           filters: |
             paths-to-include:
-              - 'CMakeLists.txt'
               - '**/CMakeLists.txt'
               - '**/*.cmake'
               - '**/*.cpp'
@@ -32,11 +30,6 @@ jobs:
               - '**/*.h.in'
               - '**/*.ini'
               - '.github/workflows/CI.yml'
-
-      - name: "Show matched paths"
-        run: |
-          echo "paths-to-include=${{ steps.changes.outputs.paths-to-include }}"
-          echo "matched-files=${{ steps.changes.outputs.paths-to-include_files }}"
 
   win-tests:
     needs: changes
