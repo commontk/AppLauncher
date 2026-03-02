@@ -126,7 +126,7 @@ jobs:
 
       - name: Publish packages
         if: matrix.APPLAUNCHER_CMAKE_GENERATOR == 'Visual Studio 17 2022'
-        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
           name: win-packages
           path: build/CTKAppLauncher-*.tar.gz
@@ -194,7 +194,7 @@ jobs:
                  --parallel $(nproc)
 
       - name: Publish packages
-        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
           name: linux-packages
           path: build/CTKAppLauncher-*.tar.gz
@@ -249,7 +249,7 @@ jobs:
           ctest -LE XDisplayRequired --output-on-failure
 
       - name: Publish packages
-        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
           name: macos-packages
           path: build/CTKAppLauncher-*.tar.gz
@@ -292,7 +292,7 @@ jobs:
           echo "allowed-skips value = ${{ steps.allow.outputs.value }}"
 
       - name: Decide whether the needed jobs succeeded or failed
-        uses: re-actors/alls-green@2765efec08f0fd63e83ad900f5fd75646be69ff6 # v1.2.2
+        uses: re-actors/alls-green@a638d6464689bbb24c325bb3fe9404d63a913030 # v1.2.2
         with:
           jobs: ${{ toJSON(needs) }}
           # Allow test jobs to be skipped when the 'paths-to-include' filter determined
