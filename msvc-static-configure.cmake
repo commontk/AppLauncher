@@ -204,4 +204,5 @@ execute_process(COMMAND
       ${APPLAUNCHER_CMAKE_GENERATOR}
       -S ${CTKAppLauncher_SOURCE_DIR}
       -B ${CTKAppLauncher_BUILD_DIR}
+  COMMAND_ERROR_IS_FATAL ANY
   )

@@ -72,4 +72,5 @@ execute_process(COMMAND
     -G Ninja
     -S ${CTKAppLauncher_SOURCE_DIR}
     -B ${CTKAppLauncher_BUILD_DIR}
+  COMMAND_ERROR_IS_FATAL ANY
 )
