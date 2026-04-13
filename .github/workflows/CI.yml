@@ -65,7 +65,7 @@ jobs:
           mkdir build
 
       - name: Download Qt archive
-        uses: carlosperate/download-file-action@3ec6fcef61e19eaaa0236a95fbaf333f2baf341e # v2.0.2
+        uses: carlosperate/download-file-action@7021d227a45dcf2f828612344b03f6f09a4f7cad # v2.0.3
         with:
           file-url: "https://github.com/jcfr/qt-static-build/releases/download/applauncher-5.11.2-vs2017/qt-5.11.2-static-ltcg-msvc2017-x86.zip"
           sha256: "e2531150a00d68624257d7b40c5b9d7c07feab55fbf98f7cda31f08b74b71c01"
@@ -126,7 +126,7 @@ jobs:
 
       - name: Publish packages
         if: matrix.APPLAUNCHER_CMAKE_GENERATOR == 'Visual Studio 17 2022'
-        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: win-packages
           path: build/CTKAppLauncher-*.tar.gz
@@ -148,7 +148,7 @@ jobs:
           path: src
 
       - name: Download Qt archive
-        uses: carlosperate/download-file-action@3ec6fcef61e19eaaa0236a95fbaf333f2baf341e # v2.0.2
+        uses: carlosperate/download-file-action@7021d227a45dcf2f828612344b03f6f09a4f7cad # v2.0.3
         with:
           file-url:
             "https://github.com/jcfr/qt-static-build/releases/download/${{
@@ -194,7 +194,7 @@ jobs:
                  --parallel $(nproc)
 
       - name: Publish packages
-        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: linux-packages
           path: build/CTKAppLauncher-*.tar.gz
@@ -216,7 +216,7 @@ jobs:
           cmake-version: 3.22.2
 
       - name: Download Qt archive
-        uses: carlosperate/download-file-action@3ec6fcef61e19eaaa0236a95fbaf333f2baf341e # v2.0.2
+        uses: carlosperate/download-file-action@7021d227a45dcf2f828612344b03f6f09a4f7cad # v2.0.3
         with:
           file-url: "https://github.com/jcfr/qt-static-build/releases/download/qt-5.15.2-macosx10.13-static-x86_64/qt-5.15.2-macosx10.13-static-x86_64.tar.bz2"
           sha256: "13a1df0c939c22618fb979072c3c16191cb42f7759ea3d8ec344aa229a04bca0"
@@ -249,7 +249,7 @@ jobs:
           ctest -LE XDisplayRequired --output-on-failure
 
       - name: Publish packages
-        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: macos-packages
           path: build/CTKAppLauncher-*.tar.gz
