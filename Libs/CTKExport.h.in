@@ -1,0 +1,14 @@
+#ifndef __CTKExport_h
+#define __CTKExport_h
+
+#if defined(WIN32) && !defined(CTK_STATIC)
+#  if defined(CTKAppLauncherBase_EXPORTS)
+#    define CTK_BASE_EXPORT __declspec(dllexport)
+#  else
+#    define CTK_BASE_EXPORT __declspec(dllimport)
+#  endif
+#else
+#  define CTK_BASE_EXPORT
+#endif
+
+#endif

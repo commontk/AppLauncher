@@ -42,13 +42,14 @@ set(KIT_target_libraries
 
 ctkMacroBuildLib(
   NAME CTKAppLauncherLib
+  EXPORT_DIRECTIVE CTK_BASE_EXPORT
   INCLUDE_DIRECTORIES ${KIT_include_directories}
   INSTALL_INCLUDE_DIRECTORIES "${CTK_INSTALL_INCLUDE_DIR}"
   SRCS ${KIT_SRCS}
   MOC_SRCS ${KIT_MOC_SRCS}
   TARGET_LIBRARIES ${KIT_target_libraries}
   RESOURCES ${KIT_resources}
-  LIBRARY_TYPE "STATIC"
+  LIBRARY_TYPE ""
   LABEL ctkAppLauncher
   )
 
@@ -97,13 +98,14 @@ set(KIT_target_libraries
 
 ctkMacroBuildLib(
   NAME ${PROJECT_NAME}
+  EXPORT_DIRECTIVE CTK_LAUNCHER_EXPORT
   INCLUDE_DIRECTORIES ${KIT_include_directories}
   INSTALL_INCLUDE_DIRECTORIES "${CTK_INSTALL_INCLUDE_DIR}"
   SRCS ${KIT_SRCS}
   MOC_SRCS ${KIT_MOC_SRCS}
   TARGET_LIBRARIES ${KIT_target_libraries}
   RESOURCES ${KIT_resources}
-  LIBRARY_TYPE "STATIC"
+  LIBRARY_TYPE ""
   LABEL ctkAppLauncher
   )
 
