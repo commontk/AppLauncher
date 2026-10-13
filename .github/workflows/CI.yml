@@ -126,7 +126,7 @@ jobs:
 
       - name: Publish packages
         if: matrix.APPLAUNCHER_CMAKE_GENERATOR == 'Visual Studio 17 2022'
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: win-packages
           path: build/CTKAppLauncher-*.tar.gz
@@ -194,7 +194,7 @@ jobs:
                  --parallel $(nproc)
 
       - name: Publish packages
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: linux-packages
           path: build/CTKAppLauncher-*.tar.gz
@@ -249,7 +249,7 @@ jobs:
           ctest -LE XDisplayRequired --output-on-failure
 
       - name: Publish packages
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: macos-packages
           path: build/CTKAppLauncher-*.tar.gz
