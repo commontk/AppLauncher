@@ -26,6 +26,8 @@ project(CTKAppLauncher)
 #-----------------------------------------------------------------------------
 option(CTKAppLauncher_INSTALL_LauncherLibrary "Install CTKApplauncher launcher library" OFF)
 
+set(CTK_SOURCE_DIR ${CMAKE_SOURCE_DIR})
+
 #-----------------------------------------------------------------------------
 # Set a default build type if none was specified
 #
