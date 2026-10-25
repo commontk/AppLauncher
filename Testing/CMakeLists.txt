@@ -13,8 +13,8 @@ applauncher_add_cmakescript_test(ctkAppLauncherAppendExtraAppToLaunchToListTest 
 applauncher_add_cmakescript_test(ctkAppLauncherExtraAppToLaunchListToQtSettingsTest ctkAppLauncher)
 
 # Get Qt library directory
-if(CTKAppLauncher_QT_VERSION VERSION_EQUAL "5")
-  get_target_property(_imported_location "Qt5::Core" IMPORTED_LOCATION_RELEASE)
+if(CTKAppLauncher_QT_VERSION MATCHES "^(5|6)$")
+  get_target_property(_imported_location "Qt${CTKAppLauncher_QT_VERSION}::Core" IMPORTED_LOCATION_RELEASE)
   get_filename_component(QT_LIBRARY_DIR ${_imported_location} DIRECTORY)
   if(WIN32)
     set(QT_LIBRARY_DIR "${QT_LIBRARY_DIR}/../bin")
