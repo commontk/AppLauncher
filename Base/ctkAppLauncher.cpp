@@ -1,5 +1,6 @@
 
 // Qt includes
+#include <QCoreApplication>
 #include <QDebug>
 #include <QDir>
 #include <QFile>
@@ -105,10 +106,22 @@ void ctkAppLauncherPrivate::reportInfo(const QString& msg, bool force) const
 // --------------------------------------------------------------------------
 void ctkAppLauncherPrivate::exit(int exitCode)
 {
-  if (this->Application)
+  this->reportInfo(QString("Exiting with code [%1]").arg(exitCode));
+  if (!this->Application)
   {
-    this->Application->exit(exitCode);
+    return;
   }
+  this->Application->exit(exitCode);
+#ifdef Q_OS_MACOS
+  // On macOS, Qt stops the native application event loop ([NSApp stop:]) when exiting, but
+  // AppKit ignores this request during about a second after the application started running,
+  // and Qt does not repeat it. If the launched application finishes within that time, the
+  // launcher would never exit. Repeat the request until the event loop returns; the timer is
+  // deleted with the application.
+  QTimer* exitTimer = new QTimer(this->Application);
+  connect(exitTimer, &QTimer::timeout, [exitCode]() { QCoreApplication::exit(exitCode); });
+  exitTimer->start(100);
+#endif
 }
 
 // --------------------------------------------------------------------------
@@ -735,6 +748,7 @@ void ctkAppLauncherPrivate::terminateProcess()
 void ctkAppLauncherPrivate::applicationFinished(int exitCode, QProcess::ExitStatus exitStatus)
 {
   Q_Q(ctkAppLauncher);
+  this->reportInfo(QString("Application finished with exit code [%1] and exit status [%2]").arg(exitCode).arg(static_cast<int>(exitStatus)));
   if (this->DisplayHelpAfterProcessFinished)
   {
     q->displayHelp();
