@@ -35,9 +35,9 @@ if(DEFINED CTKAppLauncher_QT_STATIC_LIBRARIES)
     -DCTKAppLauncher_QT_STATIC_LIBRARIES:STRING=${CTKAppLauncher_QT_STATIC_LIBRARIES}
     )
 endif()
-if(CTKAppLauncher_QT_VERSION VERSION_EQUAL "5")
+if(CTKAppLauncher_QT_VERSION MATCHES "^(5|6)$")
   list(APPEND args
-    -DQt5_DIR:PATH=${Qt5_DIR}
+    -DQt${CTKAppLauncher_QT_VERSION}_DIR:PATH=${Qt${CTKAppLauncher_QT_VERSION}_DIR}
     )
 else()
   message(FATAL_ERROR "Setting CTKAppLauncher_QT_VERSION to '${CTKAppLauncher_QT_VERSION}' is not supported")

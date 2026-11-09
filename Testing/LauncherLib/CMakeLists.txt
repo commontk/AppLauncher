@@ -66,9 +66,9 @@ set(test_args
   -DCMAKE_CXX_FLAGS_${APPLIB_BUILD_TYPE_UC}:STRING=${CMAKE_CXX_FLAGS_${APPLIB_BUILD_TYPE_UC}}
   -DCTKAppLauncher_QT_VERSION:STRING=${CTKAppLauncher_QT_VERSION}
   )
-if(CTKAppLauncher_QT_VERSION VERSION_EQUAL "5")
+if(CTKAppLauncher_QT_VERSION MATCHES "^(5|6)$")
   list(APPEND test_args
-    -DQt5_DIR:PATH=${Qt5_DIR}
+    -DQt${CTKAppLauncher_QT_VERSION}_DIR:PATH=${Qt${CTKAppLauncher_QT_VERSION}_DIR}
     )
   if(TEST_TREE_TYPE STREQUAL "InstallTree" AND CTKAppLauncher_QT_STATIC_LIBRARIES)
     list(APPEND test_args

@@ -41,6 +41,19 @@
 namespace
 {
 // --------------------------------------------------------------------------
+// Since Qt 6, a QVariant holding a null QString is no longer considered null
+bool isNullVariant(const QVariant& value)
+{
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+  if (value.metaType().id() == QMetaType::QString)
+  {
+    return value.toString().isNull();
+  }
+#endif
+  return value.isNull();
+}
+
+// --------------------------------------------------------------------------
 class CommandLineParserArgumentDescription
 {
 public:
@@ -157,7 +170,7 @@ bool CommandLineParserArgumentDescription::addParameter(const QString& value)
     break;
     case QVariant::StringList:
     {
-      if (Value.isNull())
+      if (isNullVariant(Value))
       {
         QStringList list;
         list << value;
@@ -227,7 +240,7 @@ QString CommandLineParserArgumentDescription::helpText(int fieldWidth, const cha
   {
     stream << " (default: " << settingsValue << ")";
   }
-  else if (!this->DefaultValue.isNull())
+  else if (!isNullVariant(this->DefaultValue))
   {
     stream << " (default: " << this->DefaultValue.toString() << ")";
   }
@@ -631,7 +644,7 @@ QHash<QString, QVariant> ctkCommandLineParser::parseArguments(const QStringList&
       {
         // If there is a valid QSettings entry for the argument, use the value
         QVariant settingsVal = settings->value(key, desc->Value);
-        if (!settingsVal.isNull())
+        if (!isNullVariant(settingsVal))
         {
           parsedArguments.insert(key, settingsVal);
         }
@@ -639,7 +652,7 @@ QHash<QString, QVariant> ctkCommandLineParser::parseArguments(const QStringList&
       else
       {
         // Just insert the arguments with valid default values
-        if (!desc->Value.isNull())
+        if (!isNullVariant(desc->Value))
         {
           parsedArguments.insert(key, desc->Value);
         }

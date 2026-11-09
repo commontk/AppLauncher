@@ -334,7 +334,7 @@ ctest --test-dir CTKAppLauncher-build --build-config Release --output-on-failure
 > [!TIP]
 >
 > To generate a standalone package, you need to **either** build Qt statically
-> or reuse the archives available at [jcfr/qt-static-build](https://github.com/jcfr/qt-static-build).
+> or reuse the archives available at [lassoan/qt-static-build](https://github.com/lassoan/qt-static-build).
 >
 > See the [CI workflow](.github/workflows/CI.yml) for build configuration details.
 

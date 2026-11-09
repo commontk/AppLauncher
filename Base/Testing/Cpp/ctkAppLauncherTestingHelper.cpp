@@ -109,7 +109,7 @@ QString readFile(int line, const QString& filePath)
   if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
   {
     qWarning() << "Line" << line << "- Failed to open file for reading" << QDir::current().filePath(filePath);
-    return QString::null;
+    return QString();
   }
   QTextStream stream(&file);
   return stream.readAll();
